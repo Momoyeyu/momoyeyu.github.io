@@ -18,6 +18,7 @@ lang: 'zh_CN'
 
 - [HuaizhengZhang/AI-Infra-from-Zero-to-Hero](https://github.com/HuaizhengZhang/AI-Infra-from-Zero-to-Hero)：系统视角，从零开始覆盖整个领域。
 - [ai-infra-curriculum](https://github.com/ai-infra-curriculum)：一份课程化的学习路线图。
+- [AIInfraGuide](https://caomaolufei.github.io/AIInfraGuide/)：偏导航型的 AI Infra 学习指南，适合用来快速建立领域地图。
 
 ## CUDA 教程
 

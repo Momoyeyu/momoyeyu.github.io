@@ -1,0 +1,214 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-label="GPU 内存层次结构">
+  <style>
+    .bg { fill: #1a1d23; }
+    .title { fill: #e8ecf1; font: 700 28px "PingFang SC", "Microsoft YaHei", ui-sans-serif, system-ui, sans-serif; }
+    .subtitle { fill: #8b919a; font: 500 14px "PingFang SC", "Microsoft YaHei", ui-sans-serif, system-ui, sans-serif; }
+    .h1 { fill: #e8ecf1; font: 700 15px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .h2 { fill: #e8ecf1; font: 600 13px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .h3 { fill: #d0d5dc; font: 600 11px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .dim { fill: #8b95a3; font: 600 12px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .onBlue { fill: #d0e4ff; font: 600 12px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .onOrange { fill: #fde8d0; font: 600 12px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .badge { fill: #2a2e38; stroke: #4a5568; stroke-width: 1; }
+    .badgeTxt { fill: #a8b0bc; font: 600 11px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .legBox { fill: #22262e; stroke: #3a3f4a; stroke-width: 1; }
+    .legTxt { fill: #a8b0bc; font: 500 12px "PingFang SC", "Microsoft YaHei", ui-sans-serif, system-ui, sans-serif; }
+    .gpu { fill: #22262e; stroke: #3a3f4a; stroke-width: 1.5; stroke-dasharray: 6 4; }
+    .sm { fill: #1e2128; stroke: #3a3f4a; stroke-width: 1.5; }
+    .sched { fill: #7c2d3e; }
+    .reg { fill: #4a3970; }
+    .alu { fill: #2d6b3f; }
+    .tensor { fill: #1e5c35; stroke: #4ade80; stroke-width: 1; }
+    .ldst { fill: #3d5c1e; }
+    .sfu { fill: #2a4a3a; }
+    .l1 { fill: #5b3d8f; }
+    .l2 { fill: #2563a8; }
+    .dram { fill: #c2590a; }
+    .arr { fill: none; stroke: #6fb4ff; stroke-width: 2.5; stroke-linecap: round; marker-end: url(#ah); }
+    .arrD { fill: none; stroke: #4a5568; stroke-width: 2; stroke-linecap: round; marker-end: url(#ahd); }
+  </style>
+  <defs>
+    <marker id="ah" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M1 1 9 4 1 7Z" fill="#6fb4ff"/>
+    </marker>
+    <marker id="ahd" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M1 1 9 4 1 7Z" fill="#4a5568"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="1200" height="720" rx="16"/>
+  <text class="title" x="48" y="52">GPU 内存层次结构</text>
+  <text class="subtitle" x="50" y="76">L1/Shared 属于单个 SM; L2 和 DRAM 被整个 GPU 共享</text>
+
+  <rect class="gpu" x="36" y="100" width="1128" height="590" rx="14"/>
+  <text class="dim" x="56" y="124">GPU Device</text>
+
+  <!-- ====== SM 0 ====== -->
+  <g transform="translate(56,142)">
+    <rect class="sm" x="0" y="0" width="320" height="380" rx="10"/>
+    <text class="h1" x="14" y="28">SM 0</text>
+    <rect class="badge" x="260" y="12" width="46" height="20" rx="4"/>
+    <text class="badgeTxt" x="283" y="26" text-anchor="middle">local</text>
+
+    <rect class="sched" x="14" y="44" width="292" height="32" rx="6"/>
+    <text class="h2" x="160" y="65" text-anchor="middle">Scheduler</text>
+
+    <rect class="reg" x="14" y="86" width="292" height="40" rx="6"/>
+    <text class="h2" x="160" y="111" text-anchor="middle">Register File</text>
+
+    <rect class="alu" x="14" y="138" width="64" height="64" rx="6"/>
+    <text class="h2" x="46" y="175" text-anchor="middle">INT32</text>
+
+    <rect class="alu" x="88" y="138" width="64" height="64" rx="6"/>
+    <text class="h2" x="120" y="175" text-anchor="middle">FP32</text>
+
+    <rect class="tensor" x="162" y="138" width="144" height="64" rx="6"/>
+    <text class="h2" x="234" y="165" text-anchor="middle">Matrix/Tensor</text>
+    <text class="h2" x="234" y="183" text-anchor="middle">Cores</text>
+
+    <rect class="ldst" x="14" y="214" width="64" height="30" rx="5"/>
+    <text class="h3" x="46" y="233" text-anchor="middle">LD/ST</text>
+    <rect class="ldst" x="88" y="214" width="64" height="30" rx="5"/>
+    <text class="h3" x="120" y="233" text-anchor="middle">LD/ST</text>
+    <rect class="ldst" x="162" y="214" width="64" height="30" rx="5"/>
+    <text class="h3" x="194" y="233" text-anchor="middle">LD/ST</text>
+    <rect class="sfu" x="236" y="214" width="70" height="30" rx="5"/>
+    <text class="h3" x="271" y="233" text-anchor="middle">SFU</text>
+
+    <rect class="l1" x="14" y="260" width="292" height="40" rx="6"/>
+    <text class="h2" x="160" y="285" text-anchor="middle">L1 / Shared Mem</text>
+
+    <rect class="badge" x="14" y="316" width="132" height="20" rx="4"/>
+    <text class="badgeTxt" x="80" y="330" text-anchor="middle">Register ~1 cyc</text>
+    <rect class="badge" x="156" y="316" width="150" height="20" rx="4"/>
+    <text class="badgeTxt" x="231" y="330" text-anchor="middle">L1/Shared ~30 cyc</text>
+
+    <path class="arrD" d="M160 126 L160 138"/>
+    <path class="arrD" d="M160 202 L160 214"/>
+    <path class="arrD" d="M160 244 L160 260"/>
+  </g>
+
+  <!-- ====== SM 1 ====== -->
+  <g transform="translate(396,142)">
+    <rect class="sm" x="0" y="0" width="320" height="380" rx="10"/>
+    <text class="h1" x="14" y="28">SM 1</text>
+    <rect class="badge" x="260" y="12" width="46" height="20" rx="4"/>
+    <text class="badgeTxt" x="283" y="26" text-anchor="middle">local</text>
+
+    <rect class="sched" x="14" y="44" width="292" height="32" rx="6"/>
+    <text class="h2" x="160" y="65" text-anchor="middle">Scheduler</text>
+
+    <rect class="reg" x="14" y="86" width="292" height="40" rx="6"/>
+    <text class="h2" x="160" y="111" text-anchor="middle">Register File</text>
+
+    <rect class="alu" x="14" y="138" width="64" height="64" rx="6"/>
+    <text class="h2" x="46" y="175" text-anchor="middle">INT32</text>
+    <rect class="alu" x="88" y="138" width="64" height="64" rx="6"/>
+    <text class="h2" x="120" y="175" text-anchor="middle">FP32</text>
+    <rect class="tensor" x="162" y="138" width="144" height="64" rx="6"/>
+    <text class="h2" x="234" y="165" text-anchor="middle">Matrix/Tensor</text>
+    <text class="h2" x="234" y="183" text-anchor="middle">Cores</text>
+
+    <rect class="ldst" x="14" y="214" width="64" height="30" rx="5"/>
+    <text class="h3" x="46" y="233" text-anchor="middle">LD/ST</text>
+    <rect class="ldst" x="88" y="214" width="64" height="30" rx="5"/>
+    <text class="h3" x="120" y="233" text-anchor="middle">LD/ST</text>
+    <rect class="ldst" x="162" y="214" width="64" height="30" rx="5"/>
+    <text class="h3" x="194" y="233" text-anchor="middle">LD/ST</text>
+    <rect class="sfu" x="236" y="214" width="70" height="30" rx="5"/>
+    <text class="h3" x="271" y="233" text-anchor="middle">SFU</text>
+
+    <rect class="l1" x="14" y="260" width="292" height="40" rx="6"/>
+    <text class="h2" x="160" y="285" text-anchor="middle">L1 / Shared Mem</text>
+
+    <rect class="badge" x="14" y="316" width="132" height="20" rx="4"/>
+    <text class="badgeTxt" x="80" y="330" text-anchor="middle">Register ~1 cyc</text>
+    <rect class="badge" x="156" y="316" width="150" height="20" rx="4"/>
+    <text class="badgeTxt" x="231" y="330" text-anchor="middle">L1/Shared ~30 cyc</text>
+
+    <path class="arrD" d="M160 126 L160 138"/>
+    <path class="arrD" d="M160 202 L160 214"/>
+    <path class="arrD" d="M160 244 L160 260"/>
+  </g>
+
+  <!-- ====== SM 2 ====== -->
+  <g transform="translate(736,142)">
+    <rect class="sm" x="0" y="0" width="320" height="380" rx="10"/>
+    <text class="h1" x="14" y="28">SM 2</text>
+    <rect class="badge" x="260" y="12" width="46" height="20" rx="4"/>
+    <text class="badgeTxt" x="283" y="26" text-anchor="middle">local</text>
+
+    <rect class="sched" x="14" y="44" width="292" height="32" rx="6"/>
+    <text class="h2" x="160" y="65" text-anchor="middle">Scheduler</text>
+
+    <rect class="reg" x="14" y="86" width="292" height="40" rx="6"/>
+    <text class="h2" x="160" y="111" text-anchor="middle">Register File</text>
+
+    <rect class="alu" x="14" y="138" width="64" height="64" rx="6"/>
+    <text class="h2" x="46" y="175" text-anchor="middle">INT32</text>
+    <rect class="alu" x="88" y="138" width="64" height="64" rx="6"/>
+    <text class="h2" x="120" y="175" text-anchor="middle">FP32</text>
+    <rect class="tensor" x="162" y="138" width="144" height="64" rx="6"/>
+    <text class="h2" x="234" y="165" text-anchor="middle">Matrix/Tensor</text>
+    <text class="h2" x="234" y="183" text-anchor="middle">Cores</text>
+
+    <rect class="ldst" x="14" y="214" width="64" height="30" rx="5"/>
+    <text class="h3" x="46" y="233" text-anchor="middle">LD/ST</text>
+    <rect class="ldst" x="88" y="214" width="64" height="30" rx="5"/>
+    <text class="h3" x="120" y="233" text-anchor="middle">LD/ST</text>
+    <rect class="ldst" x="162" y="214" width="64" height="30" rx="5"/>
+    <text class="h3" x="194" y="233" text-anchor="middle">LD/ST</text>
+    <rect class="sfu" x="236" y="214" width="70" height="30" rx="5"/>
+    <text class="h3" x="271" y="233" text-anchor="middle">SFU</text>
+
+    <rect class="l1" x="14" y="260" width="292" height="40" rx="6"/>
+    <text class="h2" x="160" y="285" text-anchor="middle">L1 / Shared Mem</text>
+
+    <rect class="badge" x="14" y="316" width="132" height="20" rx="4"/>
+    <text class="badgeTxt" x="80" y="330" text-anchor="middle">Register ~1 cyc</text>
+    <rect class="badge" x="156" y="316" width="150" height="20" rx="4"/>
+    <text class="badgeTxt" x="231" y="330" text-anchor="middle">L1/Shared ~30 cyc</text>
+
+    <path class="arrD" d="M160 126 L160 138"/>
+    <path class="arrD" d="M160 202 L160 214"/>
+    <path class="arrD" d="M160 244 L160 260"/>
+  </g>
+
+  <!-- SM → L2 arrows -->
+  <path class="arr" d="M216 542 L216 562"/>
+  <path class="arr" d="M556 542 L556 562"/>
+  <path class="arr" d="M896 542 L896 562"/>
+
+  <!-- L2 -->
+  <rect class="l2" x="56" y="562" width="1000" height="48" rx="8"/>
+  <text class="h1" x="556" y="582" text-anchor="middle">L2 Cache</text>
+  <text class="onBlue" x="556" y="600" text-anchor="middle">all SM shared  ~200 cycles</text>
+
+  <!-- L2 → DRAM arrow -->
+  <path class="arr" d="M556 610 L556 630"/>
+
+  <!-- DRAM -->
+  <rect class="dram" x="56" y="630" width="1000" height="48" rx="8"/>
+  <text class="h1" x="556" y="650" text-anchor="middle">DRAM / Global Memory</text>
+  <text class="onOrange" x="556" y="668" text-anchor="middle">~400-800 cycles</text>
+
+  <!-- Legend -->
+  <g transform="translate(1076,142)">
+    <rect class="legBox" x="0" y="0" width="82" height="228" rx="8"/>
+    <text class="dim" x="10" y="22">Legend</text>
+    <rect class="sched" x="10" y="38" width="16" height="16" rx="3"/>
+    <text class="legTxt" x="32" y="51">Sched</text>
+    <rect class="reg" x="10" y="64" width="16" height="16" rx="3"/>
+    <text class="legTxt" x="32" y="77">Reg</text>
+    <rect class="alu" x="10" y="90" width="16" height="16" rx="3"/>
+    <text class="legTxt" x="32" y="103">ALU</text>
+    <rect class="ldst" x="10" y="116" width="16" height="16" rx="3"/>
+    <text class="legTxt" x="32" y="129">LD/ST</text>
+    <rect class="l1" x="10" y="142" width="16" height="16" rx="3"/>
+    <text class="legTxt" x="32" y="155">L1</text>
+    <rect class="l2" x="10" y="168" width="16" height="16" rx="3"/>
+    <text class="legTxt" x="32" y="181">L2</text>
+    <rect class="dram" x="10" y="194" width="16" height="16" rx="3"/>
+    <text class="legTxt" x="32" y="207">DRAM</text>
+  </g>
+</svg>

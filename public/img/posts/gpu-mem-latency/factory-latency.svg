@@ -1,0 +1,214 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="580" viewBox="0 0 1200 580" role="img" aria-label="GPU 访存延迟隐藏动画：warp A 等待显存时，SM 调度 warp B 继续执行">
+  <defs>
+    <marker id="arrowReq" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M1 1 9 4 1 7Z" fill="#6fb4ff"/>
+    </marker>
+    <marker id="arrowRet" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M1 1 9 4 1 7Z" fill="#f59e0b"/>
+    </marker>
+    <path id="reqMotion" d="M696 200 L738 200 L738 130 L820 130"/>
+    <path id="retMotion" d="M820 176 L738 176 L738 280 L696 280"/>
+  </defs>
+  <style>
+    .bg { fill: #1a1d23; }
+    .title { fill: #e8ecf1; font: 700 26px "PingFang SC", "Microsoft YaHei", ui-sans-serif, system-ui, sans-serif; }
+    .subtitle { fill: #8b919a; font: 500 13px "PingFang SC", "Microsoft YaHei", ui-sans-serif, system-ui, sans-serif; }
+    .label { fill: #e8ecf1; font: 700 15px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .labelSm { fill: #e8ecf1; font: 600 13px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .labelXs { fill: #d0d5dc; font: 600 11px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .dimLabel { fill: #8b95a3; font: 600 12px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .barLabel { fill: #e8ecf1; font: 700 11px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .sm-shell { fill: #22262e; stroke: #3a3f4a; stroke-width: 1.5; }
+    .dram-box { fill: #7c3a0a; stroke: #d97706; stroke-width: 1.5; }
+    .scheduler { fill: #7c2d3e; }
+    .warpSlot { fill: #2a2e38; stroke: #3a3f4a; stroke-width: 1; }
+    .compute { fill: #2d6b3f; }
+    .stall { fill: #7c2d3e; }
+    .dataBack { fill: #b45309; }
+    .ready { fill: #1e3a5f; }
+    .inactive { fill: #2a2e38; }
+    .legendBox { fill: #22262e; stroke: #3a3f4a; stroke-width: 1; }
+    .legendLabel { fill: #a8b0bc; font: 500 12px "PingFang SC", "Microsoft YaHei", ui-sans-serif, system-ui, sans-serif; }
+    .reqLine { fill: none; stroke: #6fb4ff; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; marker-end: url(#arrowReq); }
+    .retLine { fill: none; stroke: #f59e0b; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; marker-end: url(#arrowRet); }
+    .tlBox { fill: #1e2128; stroke: #3a3f4a; stroke-width: 1; }
+    .tick { stroke: #3a3f4a; stroke-width: 1; }
+    .onDram { fill: #fde8d0; font: 600 12px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+
+    .aCompute { animation: aCompute 7s ease-in-out infinite; }
+    .aStall   { animation: aStall 7s ease-in-out infinite; }
+    .bRun     { animation: bRun 7s ease-in-out infinite; }
+    .aResume  { animation: aResume 7s ease-in-out infinite; }
+    .schedA   { animation: schedA 7s ease-in-out infinite; }
+    .schedB   { animation: schedB 7s ease-in-out infinite; }
+    .reqPulse { animation: reqPulse 7s ease-in-out infinite; }
+    .retPulse { animation: retPulse 7s ease-in-out infinite; }
+
+    @keyframes aCompute {
+      0%, 24%   { opacity: 1; }
+      32%, 78%  { opacity: 0.15; }
+      86%, 100% { opacity: 1; }
+    }
+    @keyframes aStall {
+      0%, 24%   { opacity: 0; }
+      32%, 78%  { opacity: 1; }
+      86%, 100% { opacity: 0; }
+    }
+    @keyframes bRun {
+      0%, 30%   { opacity: 0.15; }
+      38%, 72%  { opacity: 1; }
+      80%, 100% { opacity: 0.15; }
+    }
+    @keyframes aResume {
+      0%, 74%   { opacity: 0; }
+      82%, 100% { opacity: 1; }
+    }
+    @keyframes schedA {
+      0%, 26%   { opacity: 1; }
+      34%, 74%  { opacity: 0.2; }
+      82%, 100% { opacity: 1; }
+    }
+    @keyframes schedB {
+      0%, 30%   { opacity: 0.2; }
+      38%, 74%  { opacity: 1; }
+      82%, 100% { opacity: 0.2; }
+    }
+    @keyframes reqPulse {
+      0%, 20%   { opacity: 0; }
+      28%, 44%  { opacity: 0.85; }
+      52%, 100% { opacity: 0; }
+    }
+    @keyframes retPulse {
+      0%, 62%   { opacity: 0; }
+      70%, 82%  { opacity: 0.85; }
+      90%, 100% { opacity: 0; }
+    }
+  </style>
+
+  <rect class="bg" width="1200" height="580" rx="16"/>
+
+  <text class="title" x="48" y="44">访存延迟如何被隐藏</text>
+  <text class="subtitle" x="50" y="66">一次 load 没有变快, SM 在等待窗口里切到另一个 ready warp, 让厂房不空转</text>
+
+  <!-- SM box -->
+  <rect class="sm-shell" x="36" y="88" width="660" height="370" rx="12"/>
+  <text class="label" x="56" y="116">SM / 厂房</text>
+  <text class="dimLabel" x="56" y="136">同一个 SM 驻留多个 warp, 调度器选择 ready 的发射</text>
+
+  <!-- Scheduler -->
+  <g transform="translate(56, 156)">
+    <rect class="scheduler" x="0" y="0" width="120" height="140" rx="8"/>
+    <text class="labelSm" x="60" y="24" text-anchor="middle">Warp</text>
+    <text class="labelSm" x="60" y="42" text-anchor="middle">Scheduler</text>
+    <g class="schedA">
+      <rect fill="#e8ecf1" x="14" y="62" width="92" height="3" rx="1.5"/>
+      <text class="labelXs" x="60" y="82" text-anchor="middle">warp A</text>
+    </g>
+    <g class="schedB">
+      <rect fill="#e8ecf1" x="14" y="100" width="92" height="3" rx="1.5"/>
+      <text class="labelXs" x="60" y="120" text-anchor="middle">warp B</text>
+    </g>
+  </g>
+
+  <!-- Warp A -->
+  <g transform="translate(196, 156)">
+    <text class="labelSm" x="0" y="-8">warp A</text>
+    <rect class="warpSlot" x="0" y="0" width="480" height="44" rx="6"/>
+    <rect class="compute aCompute" x="6" y="7" width="140" height="30" rx="4"/>
+    <text class="barLabel aCompute" x="76" y="27" text-anchor="middle">compute</text>
+    <rect class="stall aStall" x="152" y="7" width="180" height="30" rx="4"/>
+    <text class="barLabel aStall" x="242" y="27" text-anchor="middle">wait memory</text>
+    <rect class="dataBack aResume" x="338" y="7" width="136" height="30" rx="4"/>
+    <text class="barLabel aResume" x="406" y="27" text-anchor="middle">data back</text>
+  </g>
+
+  <!-- Warp B -->
+  <g transform="translate(196, 224)">
+    <text class="labelSm" x="0" y="-8">warp B</text>
+    <rect class="warpSlot" x="0" y="0" width="480" height="44" rx="6"/>
+    <rect class="inactive" x="6" y="7" width="140" height="30" rx="4" opacity="0.5"/>
+    <text class="barLabel" x="76" y="27" text-anchor="middle" opacity="0.5">idle</text>
+    <rect class="compute bRun" x="152" y="7" width="210" height="30" rx="4"/>
+    <text class="barLabel bRun" x="257" y="27" text-anchor="middle">run while A stalls</text>
+    <rect class="inactive" x="368" y="7" width="106" height="30" rx="4" opacity="0.5"/>
+    <text class="barLabel" x="421" y="27" text-anchor="middle" opacity="0.5">idle</text>
+  </g>
+
+  <!-- Warp C -->
+  <g transform="translate(196, 292)">
+    <text class="labelSm" x="0" y="-8">warp C</text>
+    <rect class="warpSlot" x="0" y="0" width="480" height="44" rx="6"/>
+    <rect class="ready" x="6" y="7" width="468" height="30" rx="4" opacity="0.45"/>
+    <text class="barLabel" x="240" y="27" text-anchor="middle" opacity="0.55">ready</text>
+  </g>
+
+  <!-- Issue timeline -->
+  <g transform="translate(56, 372)">
+    <text class="dimLabel" x="0" y="-8">SM issue timeline</text>
+    <rect class="tlBox" x="0" y="0" width="620" height="28" rx="6"/>
+    <line class="tick" x1="155" y1="4" x2="155" y2="24"/>
+    <line class="tick" x1="362" y1="4" x2="362" y2="24"/>
+    <rect class="compute aCompute" x="6" y="5" width="148" height="18" rx="4"/>
+    <rect class="compute bRun" x="156" y="5" width="205" height="18" rx="4"/>
+    <rect class="dataBack aResume" x="363" y="5" width="251" height="18" rx="4"/>
+    <text class="dimLabel" x="4" y="48">t0</text>
+    <text class="dimLabel" x="134" y="48">t1 A stalls</text>
+    <text class="dimLabel" x="350" y="48">t2</text>
+    <text class="dimLabel" x="460" y="48">t3 data back</text>
+  </g>
+
+  <!-- DRAM -->
+  <rect class="dram-box" x="820" y="96" width="340" height="112" rx="10"/>
+  <text class="label" x="848" y="128">DRAM / 总仓库</text>
+  <text class="onDram" x="848" y="150">容量大, 距离远, 返回慢</text>
+  <g transform="translate(848, 164)">
+    <rect fill="#d97706" x="0" y="0" width="28" height="24" rx="3" opacity="0.45"/>
+    <rect fill="#d97706" x="34" y="0" width="28" height="24" rx="3" opacity="0.45"/>
+    <rect fill="#d97706" x="68" y="0" width="28" height="24" rx="3" opacity="0.45"/>
+    <rect fill="#d97706" x="102" y="0" width="28" height="24" rx="3" opacity="0.45"/>
+    <rect fill="#d97706" x="136" y="0" width="28" height="24" rx="3" opacity="0.45"/>
+    <rect fill="#d97706" x="170" y="0" width="28" height="24" rx="3" opacity="0.45"/>
+    <rect fill="#d97706" x="204" y="0" width="28" height="24" rx="3" opacity="0.45"/>
+    <rect fill="#d97706" x="238" y="0" width="28" height="24" rx="3" opacity="0.45"/>
+    <rect fill="#d97706" x="272" y="0" width="28" height="24" rx="3" opacity="0.45"/>
+  </g>
+
+  <!-- Request arrow -->
+  <g class="reqPulse">
+    <path class="reqLine" d="M696 200 L738 200 L738 130 L820 130"/>
+    <circle fill="#6fb4ff" r="5">
+      <animateMotion dur="7s" repeatCount="indefinite" keyTimes="0;0.20;0.28;0.44;0.52;1" calcMode="linear">
+        <mpath href="#reqMotion"/>
+      </animateMotion>
+      <animate attributeName="opacity" dur="7s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.20;0.28;0.44;0.52;1"/>
+    </circle>
+  </g>
+  <!-- Return arrow -->
+  <g class="retPulse">
+    <path class="retLine" d="M820 176 L760 176 L760 280 L696 280"/>
+    <circle fill="#f59e0b" r="5">
+      <animateMotion dur="7s" repeatCount="indefinite" keyTimes="0;0.62;0.70;0.82;0.90;1" calcMode="linear">
+        <mpath href="#retMotion"/>
+      </animateMotion>
+      <animate attributeName="opacity" dur="7s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.62;0.70;0.82;0.90;1"/>
+    </circle>
+  </g>
+
+  <!-- Arrow labels -->
+  <text class="labelXs reqPulse" x="744" y="122" fill="#6fb4ff">load</text>
+  <text class="labelXs retPulse" x="764" y="244" fill="#f59e0b">data</text>
+
+  <!-- Legend -->
+  <g transform="translate(820, 240)">
+    <rect class="legendBox" x="0" y="0" width="340" height="168" rx="8"/>
+    <text class="dimLabel" x="16" y="24">动画含义</text>
+    <rect class="compute" x="16" y="40" width="16" height="16" rx="3"/>
+    <text class="legendLabel" x="42" y="53">warp A 发起 load 并执行计算</text>
+    <rect class="stall" x="16" y="68" width="16" height="16" rx="3"/>
+    <text class="legendLabel" x="42" y="81">A 等待显存返回数据 (stall)</text>
+    <rect fill="#2d6b3f" stroke="#4ade80" stroke-width="1" x="16" y="96" width="16" height="16" rx="3"/>
+    <text class="legendLabel" x="42" y="109">SM 切到 warp B 继续执行</text>
+    <rect class="dataBack" x="16" y="124" width="16" height="16" rx="3"/>
+    <text class="legendLabel" x="42" y="137">数据返回, A 可以继续执行</text>
+  </g>
+</svg>
