@@ -6,7 +6,6 @@ tags: [C++, 类型系统]
 category: C++ 入门
 episode: 10
 draft: false
-image: '/img/cover4.jpg'
 lang: 'zh_CN'
 ---
 

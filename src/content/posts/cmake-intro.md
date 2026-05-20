@@ -6,7 +6,6 @@ tags: [C++, 工具链]
 category: C++ 入门
 episode: 2
 draft: false
-image: '/img/cover1.jpg'
 lang: 'zh_CN'
 ---
 

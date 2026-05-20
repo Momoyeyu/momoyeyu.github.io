@@ -6,7 +6,6 @@ tags: [C++, 类型系统]
 category: C++ 进阶
 episode: 13
 draft: false
-image: '/img/cover1.jpg'
 lang: 'zh_CN'
 ---
 

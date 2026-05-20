@@ -6,7 +6,6 @@ tags: [C++, 并发, AI Infra]
 category: C++ 进阶
 episode: 12
 draft: false
-image: '/img/cover5.jpg'
 lang: 'zh_CN'
 ---
 

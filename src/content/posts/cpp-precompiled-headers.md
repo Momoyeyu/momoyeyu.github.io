@@ -6,7 +6,6 @@ tags: [C++, 编译, 工具链]
 category: C++ 进阶
 episode: 14
 draft: false
-image: '/img/cover5.jpg'
 lang: 'zh_CN'
 ---
 

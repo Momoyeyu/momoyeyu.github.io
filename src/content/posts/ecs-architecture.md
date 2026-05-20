@@ -5,7 +5,6 @@ description: '从游戏引擎到 AI Infra，理解 ECS 背后的数据导向设�
 tags: [C++, 性能, AI Infra]
 category: 随笔
 draft: false
-image: '/img/cover1.jpg'
 lang: 'zh_CN'
 ---
 

@@ -5,7 +5,6 @@ description: 'Ubuntu Server 装机全流程：系统安装、网络配置、Dock
 tags: [Linux, Docker, CUDA]
 category: 环境搭建
 draft: false
-image: '/img/cover4.jpg'
 lang: 'zh_CN'
 ---
 

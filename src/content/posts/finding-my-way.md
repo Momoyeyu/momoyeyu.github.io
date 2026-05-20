@@ -5,7 +5,6 @@ description: '在科研与工程之间反复摇摆后，想清楚自己真正想
 tags: [随笔, 生活]
 category: 随笔
 draft: false
-image: '/img/cover3.jpg'
 lang: 'zh_CN'
 ---
 

@@ -6,7 +6,6 @@ tags: [C++, STL, 内存]
 category: C++ 进阶
 episode: 19
 draft: false
-image: '/img/cover3.jpg'
 lang: 'zh_CN'
 ---
 

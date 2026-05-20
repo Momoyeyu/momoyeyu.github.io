@@ -6,7 +6,6 @@ tags: [C++, 性能]
 category: C++ 进阶
 episode: 8
 draft: false
-image: '/img/cover5.jpg'
 lang: 'zh_CN'
 ---
 

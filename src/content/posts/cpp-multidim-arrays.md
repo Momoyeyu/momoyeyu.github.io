@@ -6,7 +6,6 @@ tags: [C++, 内存, AI Infra]
 category: C++ 进阶
 episode: 6
 draft: false
-image: '/img/cover3.jpg'
 lang: 'zh_CN'
 ---
 

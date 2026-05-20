@@ -6,7 +6,6 @@ tags: [C++, STL]
 category: C++ 入门
 episode: 13
 draft: false
-image: '/img/cover3.jpg'
 lang: 'zh_CN'
 ---
 

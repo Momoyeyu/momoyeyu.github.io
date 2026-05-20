@@ -6,7 +6,6 @@ tags: [Python]
 category: Python 入门
 episode: 4
 draft: false
-image: '/img/cover1.jpg'
 lang: 'zh_CN'
 ---
 

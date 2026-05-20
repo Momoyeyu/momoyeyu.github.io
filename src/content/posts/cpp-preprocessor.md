@@ -6,7 +6,6 @@ tags: [C++, 编译]
 category: C++ 进阶
 episode: 15
 draft: false
-image: '/img/cover2.jpg'
 lang: 'zh_CN'
 ---
 

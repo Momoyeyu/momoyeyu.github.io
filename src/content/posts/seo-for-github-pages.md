@@ -5,7 +5,6 @@ description: '给 GitHub Pages 博客配置 Google Search Console 和 Bing Webma
 tags: [随笔]
 category: 随笔
 draft: false
-image: '/img/cover5.jpg'
 lang: 'zh_CN'
 ---
 

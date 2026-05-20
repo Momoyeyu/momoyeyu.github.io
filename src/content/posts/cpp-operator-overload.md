@@ -6,7 +6,6 @@ tags: [C++, OOP]
 category: C++ 入门
 episode: 11
 draft: false
-image: '/img/cover2.jpg'
 lang: 'zh_CN'
 ---
 

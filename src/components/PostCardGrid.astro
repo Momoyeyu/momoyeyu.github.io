@@ -3,6 +3,7 @@ import type { CollectionEntry } from "astro:content";
 import path from "node:path";
 import I18nKey from "../i18n/i18nKey";
 import { i18n } from "../i18n/translation";
+import { getCover } from "../utils/cover-utils";
 import { getDir } from "../utils/url-utils";
 import ImageWrapper from "./misc/ImageWrapper.astro";
 import PostMetadata from "./PostMeta.astro";
@@ -23,7 +24,8 @@ interface Props {
 }
 const { entry, title, url, published, updated, tags, category, image, description, style } = Astro.props;
 const className = Astro.props.class;
-const hasCover = image !== undefined && image !== null && image !== "";
+const coverSrc = getCover(entry.id, image || undefined);
+const hasCover = coverSrc !== "";
 const { remarkPluginFrontmatter } = await entry.render();
 ---
 
@@ -32,7 +34,7 @@ const { remarkPluginFrontmatter } = await entry.render();
     <a href={url} aria-label={title} class="block relative w-full overflow-hidden group" style="height: 11rem;">
         {hasCover && (
             <ImageWrapper
-                src={image}
+                src={coverSrc}
                 basePath={path.join("content/posts/", getDir(entry.id))}
                 alt={title}
                 class="w-full h-full transition-transform duration-500 group-hover:scale-105"

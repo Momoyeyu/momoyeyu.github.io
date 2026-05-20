@@ -6,7 +6,6 @@ tags: [Python, 深度学习]
 category: Python 入门
 episode: 6
 draft: false
-image: '/img/cover4.jpg'
 lang: 'zh_CN'
 ---
 

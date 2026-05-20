@@ -6,7 +6,6 @@ tags: [C++, 模板]
 category: C++ 进阶
 episode: 4
 draft: false
-image: '/img/cover4.jpg'
 lang: 'zh_CN'
 ---
 

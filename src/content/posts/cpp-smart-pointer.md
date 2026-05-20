@@ -6,7 +6,6 @@ tags: [C++, 内存]
 category: C++ 进阶
 episode: 1
 draft: false
-image: '/img/cover2.jpg'
 lang: 'zh_CN'
 ---
 

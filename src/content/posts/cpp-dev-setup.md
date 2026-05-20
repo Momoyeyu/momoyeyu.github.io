@@ -6,7 +6,6 @@ tags: [C++, macOS, 工具链]
 category: C++ 入门
 episode: 1
 draft: false
-image: '/img/cover5.jpg'
 lang: 'zh_CN'
 ---
 

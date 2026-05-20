@@ -6,7 +6,6 @@ tags: [C++, 编译]
 category: C++ 入门
 episode: 3
 draft: false
-image: '/img/cover1.jpg'
 lang: 'zh_CN'
 ---
 

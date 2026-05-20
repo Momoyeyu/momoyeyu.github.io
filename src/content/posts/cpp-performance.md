@@ -6,7 +6,6 @@ tags: [C++, 性能, AI Infra]
 category: C++ 进阶
 episode: 21
 draft: false
-image: '/img/cover2.jpg'
 lang: 'zh_CN'
 ---
 

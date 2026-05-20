@@ -6,7 +6,6 @@ tags: [随笔, 职业]
 category: 随笔
 draft: false
 pinned: true
-image: '/img/cover4.jpg'
 lang: 'zh_CN'
 ---
 

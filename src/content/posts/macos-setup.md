@@ -5,7 +5,6 @@ description: '面向开发者的 Mac 选购建议与软件配置：硬件选型�
 tags: [macOS, 工具链]
 category: 环境搭建
 draft: false
-image: '/img/cover3.jpg'
 lang: 'zh_CN'
 ---
 
