@@ -73,6 +73,7 @@ else:
     statement_3(s3)
 statement_4(s4)
 ```
+> [!NOTE]
 > 仅在循环由condition_1退出时才执行else，由break终止则不执行else
 
 ### 1.4 嵌套结构

@@ -300,6 +300,7 @@ private:
 
 C++11 之前有"Rule of Three"：如果你定义了析构函数，通常也需要定义拷贝构造和拷贝赋值。C++11 之后扩展到了"Rule of Five"：
 
+> [!IMPORTANT]
 > 如果你定义了**析构函数**，就要考虑显式定义以下五个特殊成员函数：
 > 1. 析构函数（Destructor）
 > 2. 拷贝构造函数（Copy Constructor）

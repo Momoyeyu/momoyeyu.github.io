@@ -39,7 +39,8 @@ lang: 'zh_CN'
 
 256GB 也能用，但 512GB 体验明显更舒服。靠移动硬盘补容量违背了 MacBook 的便携初衷，而且 512GB 留出来的余量能 cover 整个研究生周期。预算紧的话 256GB 配合自律的存储管理也可以接受。
 
-> 注意：MacBook Air M4 最低配（16GB + 256GB）会减配——充电器和 GPU 核心都比上一档少。买之前要看清楚。
+> [!IMPORTANT]
+> MacBook Air M4 最低配（16GB + 256GB）会减配——充电器和 GPU 核心都比上一档少。买之前要看清楚。
 
 ## 软件配置
 
@@ -70,7 +71,8 @@ export PATH="/opt/homebrew/bin:$PATH"
 
 然后 `source ~/.zshrc` 让它生效。
 
-> 一个建议：macOS 上装软件尽量走默认路径。这边不像 Windows 要分系统盘和数据盘，默认路径方便后面排查问题。
+> [!TIP]
+> macOS 上装软件尽量走默认路径。这边不像 Windows 要分系统盘和数据盘，默认路径方便后面排查问题。
 
 Homebrew 装好之后，常用工具基本一行命令搞定，比如 Maven、Node.js、JDK：
 

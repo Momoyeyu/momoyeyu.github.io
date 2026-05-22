@@ -366,7 +366,8 @@ int main() {
 
 这个技巧在做性能调优时非常好用：某个看似无害的函数调用了多少次 `new`？`std::vector` 在 `push_back` 时扩容了几次？一目了然。
 
-> **更成熟的方案**：生产环境里推荐用 Valgrind（Linux）、AddressSanitizer（`-fsanitize=address`）或者 Heaptrack，功能更完整，无需修改代码。
+> [!TIP]
+> 生产环境里推荐用 Valgrind（Linux）、AddressSanitizer（`-fsanitize=address`）或者 Heaptrack，功能更完整，无需修改代码。
 
 ## CUDA / GPU 侧的内存对齐（AI Infra 视角）
 
