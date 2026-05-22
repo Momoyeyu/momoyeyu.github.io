@@ -9,7 +9,7 @@ draft: false
 lang: 'zh_CN'
 ---
 
-这篇记录用 Mac 通过 SSH 直连 Windows 上的 WSL2，在原生 Linux 环境里调 GPU 跑深度学习的完整配置过程。
+这篇记录用 Mac 通过 SSH 直连 Windows 上的 WSL2，在原生 Linux 环境里调 GPU 进行 CUDA 开发的完整配置过程。
 
 方案的核心思路：**在 WSL2 内部装 sshd，配合 mirrored 网络模式，让 WSL 直接共享 Windows 的网络栈**。Mac 连 `<windows-ip>:22` 就是在连 WSL 里的 Linux，不需要经过 Windows OpenSSH，不需要 `.bat` 跳板脚本，不需要端口转发。SSH 和 SFTP 走的都是同一个原生 Linux sshd，PyCharm、VS Code Remote-SSH 直接就能用。
 
