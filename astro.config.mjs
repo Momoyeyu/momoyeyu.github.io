@@ -1,3 +1,4 @@
+import fs from "node:fs";
 import sitemap from "@astrojs/sitemap";
 import svelte from "@astrojs/svelte";
 import tailwind from "@astrojs/tailwind";
@@ -24,6 +25,34 @@ import { remarkExcerpt } from "./src/plugins/remark-excerpt.js";
 import { remarkReadingTime } from "./src/plugins/remark-reading-time.mjs";
 import { pluginCustomCopyButton } from "./src/plugins/expressive-code/custom-copy-button.js";
 import { remarkMermaid } from "./src/plugins/remark-mermaid.mjs";
+
+// Map each post's URL path (`/posts/<slug>/`) to its real last-modified date,
+// read from frontmatter `updated` (falling back to `published`). Used by the
+// sitemap so a post's <lastmod> reflects when it actually changed, instead of
+// the build time — which would otherwise mark every page as "just updated".
+function getPostLastmodByPath() {
+	const dir = "./src/content/posts";
+	const map = {};
+	for (const file of fs.readdirSync(dir)) {
+		if (!/\.mdx?$/.test(file)) continue;
+		const slug = file.replace(/\.mdx?$/, "");
+		const raw = fs.readFileSync(`${dir}/${file}`, "utf-8");
+		const frontmatter = raw.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+		if (!frontmatter) continue;
+		const read = (key) =>
+			frontmatter[1]
+				.match(new RegExp(`^${key}:\\s*(.+)$`, "m"))?.[1]
+				?.trim()
+				.replace(/^['"]|['"]$/g, "");
+		const date = read("updated") || read("published");
+		if (date && !Number.isNaN(new Date(date).getTime())) {
+			map[`/posts/${slug}/`] = new Date(date);
+		}
+	}
+	return map;
+}
+
+const postLastmodByPath = getPostLastmodByPath();
 
 // https://astro.build/config
 export default defineConfig({
@@ -91,12 +120,12 @@ export default defineConfig({
 				pluginCollapsibleSections(),
 				pluginLineNumbers(),
 				pluginLanguageBadge(),
-				pluginCustomCopyButton()
+				pluginCustomCopyButton(),
 			],
 			defaultProps: {
 				wrap: true,
 				overridesByLang: {
-					'shellsession': {
+					shellsession: {
 						showLineNumbers: false,
 					},
 				},
@@ -106,7 +135,8 @@ export default defineConfig({
 				borderRadius: "0.75rem",
 				borderColor: "none",
 				codeFontSize: "0.875rem",
-				codeFontFamily: "'JetBrains Mono Variable', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
+				codeFontFamily:
+					"'JetBrains Mono Variable', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
 				codeLineHeight: "1.5rem",
 				frames: {
 					editorBackground: "var(--codeblock-bg)",
@@ -117,23 +147,27 @@ export default defineConfig({
 					editorActiveTabIndicatorBottomColor: "var(--primary)",
 					editorActiveTabIndicatorTopColor: "none",
 					editorTabBarBorderBottomColor: "var(--codeblock-topbar-bg)",
-					terminalTitlebarBorderBottomColor: "none"
+					terminalTitlebarBorderBottomColor: "none",
 				},
 				textMarkers: {
 					delHue: 0,
 					insHue: 180,
-					markHue: 250
-				}
+					markHue: 250,
+				},
 			},
 			frames: {
 				showCopyToClipboardButton: false,
-			}
+			},
 		}),
-        svelte(),
+		svelte(),
 		sitemap({
 			filter: (page) => !page.includes("/link"),
 			serialize(item) {
-				item.lastmod = new Date();
+				// Posts get their real last-modified date; other pages (home,
+				// archive, ...) have no post date, so fall back to build time.
+				const path = new URL(item.url).pathname;
+				const postLastmod = postLastmodByPath[path];
+				item.lastmod = (postLastmod ?? new Date()).toISOString();
 				return item;
 			},
 		}),

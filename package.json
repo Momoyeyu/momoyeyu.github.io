@@ -8,6 +8,8 @@
     "build": "astro build && mv dist/sitemap-index.xml dist/sitemap.xml && pagefind --site dist",
     "preview": "astro preview",
     "check": "astro check",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "lint": "biome check src",
     "lint:fix": "biome check --write src",
     "format": "biome format --write src",
@@ -69,7 +71,8 @@
     "@types/mdast": "^4.0.4",
     "@types/sanitize-html": "^2.16.0",
     "postcss-import": "^16.1.1",
-    "postcss-nesting": "^13.0.2"
+    "postcss-nesting": "^13.0.2",
+    "vitest": "^4.1.7"
   },
   "engines": {
     "node": ">=20.0.0"

@@ -4,10 +4,16 @@ import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 import { getCategoryUrl } from "@utils/url-utils.ts";
 
-async function getRawSortedPosts() {
-	const allBlogPosts = await getCollection("posts", ({ data }) => {
+// Single source of truth for the "which posts are visible" rule: in production,
+// drafts are excluded; in dev, everything is shown. Used by every query below.
+async function getPublishedPosts() {
+	return await getCollection("posts", ({ data }) => {
 		return import.meta.env.PROD ? data.draft !== true : true;
 	});
+}
+
+async function getRawSortedPosts() {
+	const allBlogPosts = await getPublishedPosts();
 
 	const sorted = allBlogPosts.sort((a, b) => {
 		const dateA = new Date(a.data.published);
@@ -23,7 +29,7 @@ async function getRawSortedPosts() {
 // position (1..N) within the series; the raw `episode` value is only used as a
 // sort key, so inserting a new article with episode: 2.5 cleanly slots in without
 // renumbering siblings.
-function assignSeriesMetadata(sorted: CollectionEntry<"posts">[]) {
+export function assignSeriesMetadata(sorted: CollectionEntry<"posts">[]) {
 	const byCategory: Record<string, CollectionEntry<"posts">[]> = {};
 	for (const post of sorted) {
 		const cat = post.data.category;
@@ -98,9 +104,7 @@ export type Tag = {
 };
 
 export async function getTagList(): Promise<Tag[]> {
-	const allBlogPosts = await getCollection<"posts">("posts", ({ data }) => {
-		return import.meta.env.PROD ? data.draft !== true : true;
-	});
+	const allBlogPosts = await getPublishedPosts();
 
 	const countMap: { [key: string]: number } = {};
 	allBlogPosts.forEach((post: { data: { tags: string[] } }) => {
@@ -125,9 +129,7 @@ export type Category = {
 };
 
 export async function getCategoryList(): Promise<Category[]> {
-	const allBlogPosts = await getCollection<"posts">("posts", ({ data }) => {
-		return import.meta.env.PROD ? data.draft !== true : true;
-	});
+	const allBlogPosts = await getPublishedPosts();
 	const count: { [key: string]: number } = {};
 	allBlogPosts.forEach((post: { data: { category: string | null } }) => {
 		if (!post.data.category) {

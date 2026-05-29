@@ -86,6 +86,23 @@ const search = async (keyword: string, isDesktop: boolean): Promise<void> => {
 	}
 };
 
+// Coalesce rapid keystrokes: only the last one within the window fires a
+// query, avoiding redundant work and out-of-order results while typing.
+function debounce<A extends unknown[]>(
+	fn: (...args: A) => void,
+	delay: number,
+) {
+	let timer: ReturnType<typeof setTimeout> | undefined;
+	return (...args: A) => {
+		clearTimeout(timer);
+		timer = setTimeout(() => fn(...args), delay);
+	};
+}
+
+const debouncedSearch = debounce((keyword: string, isDesktop: boolean) => {
+	search(keyword, isDesktop);
+}, 200);
+
 onMount(() => {
 	const initializeSearch = () => {
 		initialized = true;
@@ -126,15 +143,11 @@ onMount(() => {
 });
 
 $: if (initialized && keywordDesktop) {
-	(async () => {
-		await search(keywordDesktop, true);
-	})();
+	debouncedSearch(keywordDesktop, true);
 }
 
 $: if (initialized && keywordMobile) {
-	(async () => {
-		await search(keywordMobile, false);
-	})();
+	debouncedSearch(keywordMobile, false);
 }
 </script>
 
