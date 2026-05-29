@@ -72,11 +72,13 @@ const className = Astro.props.class;
 			window.scrollTo({ top: 0, behavior: 'smooth' });
 		});
 
+		// `btn` is guaranteed non-null by the early return above, but TS does not
+		// carry that narrowing into this nested closure, so assert it here.
 		function toggle() {
 			if (window.scrollY > 300) {
-				btn.classList.add('show');
+				btn!.classList.add('show');
 			} else {
-				btn.classList.remove('show');
+				btn!.classList.remove('show');
 			}
 		}
 

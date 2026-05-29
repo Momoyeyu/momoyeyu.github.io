@@ -35,15 +35,12 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      # Non-blocking visibility into type errors. Not a hard gate yet: the
-      # inherited theme code still carries pre-existing `astro check` errors.
-      # Once those are cleaned up, drop `continue-on-error` to make it a gate.
+      # Blocking gate: fails the deploy on any type error (`astro check`).
       - name: Type check
         run: pnpm run check
-        continue-on-error: true
 
-      # The real correctness gate: `astro build` runs content-collection schema
-      # validation (see src/content/config.ts), so a post that violates the
+      # Second gate: `astro build` runs content-collection schema validation
+      # (see src/content/config.ts), so a post that violates the
       # ordered/unordered category invariant fails the build right here.
       - name: Build Astro site
         run: pnpm run build

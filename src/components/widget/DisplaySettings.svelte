@@ -50,14 +50,26 @@ const huePresets = [
 	{ name: "枫叶红", hue: 24, accent: 0.16, surface: 0.026 },
 	{ name: "朱砂", hue: 18, accent: 0.17, surface: 0.024 },
 	{ name: "琥珀", hue: 56, accent: 0.15, surface: 0.022 },
-	{ name: "松石", hue: 178, accent: 0.12, surface: 0.020 },
-	{ name: "靛蓝", hue: 254, accent: 0.13, surface: 0.020 },
+	{ name: "松石", hue: 178, accent: 0.12, surface: 0.02 },
+	{ name: "靛蓝", hue: 254, accent: 0.13, surface: 0.02 },
 ];
 
-const schemeOptions: { label: string; value: COLOR_SCHEME; description: string }[] = [
-	{ label: "玻璃", value: "glass", description: "更接近 DLog，卡片会受主题色染色" },
+const schemeOptions: {
+	label: string;
+	value: COLOR_SCHEME;
+	description: string;
+}[] = [
+	{
+		label: "玻璃",
+		value: "glass",
+		description: "更接近 DLog，卡片会受主题色染色",
+	},
 	{ label: "染色", value: "tinted", description: "强化页面和卡片的色彩统一" },
-	{ label: "克制", value: "minimal", description: "降低卡片染色，只保留重点色" },
+	{
+		label: "克制",
+		value: "minimal",
+		description: "降低卡片染色，只保留重点色",
+	},
 ];
 
 const wallpaperOptions: { label: string; value: WALLPAPER_MODE }[] = [

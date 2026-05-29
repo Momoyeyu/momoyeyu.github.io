@@ -35,9 +35,7 @@ function assignSeriesMetadata(sorted: CollectionEntry<"posts">[]) {
 	for (const cat of Object.keys(byCategory)) {
 		const arr = byCategory[cat]
 			.slice()
-			.sort(
-				(a, b) => (a.data.episode as number) - (b.data.episode as number),
-			);
+			.sort((a, b) => (a.data.episode as number) - (b.data.episode as number));
 		const total = arr.length;
 		for (let i = 0; i < total; i++) {
 			// EP is 0-indexed (programmer-style): first episode is EP.0.

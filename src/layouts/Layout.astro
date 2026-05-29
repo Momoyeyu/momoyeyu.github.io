@@ -31,7 +31,10 @@ interface Props {
 let { title, banner, description, lang, setOGTypeArticle } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
-const ogImage = (banner && typeof banner === "string" && banner.trim() !== "") ? banner : siteConfig.banner.src;
+const ogImage =
+	banner && typeof banner === "string" && banner.trim() !== ""
+		? banner
+		: siteConfig.banner.src;
 
 // apply a class to the body element to decide the height of the banner, only used for initial page load
 // Swup can update the body for each page visit, but it's after the page transition, causing a delay for banner height change
@@ -43,10 +46,13 @@ const isHomePage = pathsEqual(Astro.url.pathname, url("/"));
 const configHue = siteConfig.themeColor.hue;
 const defaultColorScheme = siteConfig.themeColor.defaultScheme ?? "glass";
 const defaultAccentChroma = siteConfig.themeColor.defaultAccentChroma ?? 0.16;
-const defaultSurfaceChroma = siteConfig.themeColor.defaultSurfaceChroma ?? 0.026;
+const defaultSurfaceChroma =
+	siteConfig.themeColor.defaultSurfaceChroma ?? 0.026;
 const defaultWallpaperMode = siteConfig.wallpaper.defaultMode;
 const defaultPostLayout = siteConfig.display.defaultPostLayout;
-const defaultBannerTitle = siteConfig.display.defaultBannerTitle ? "show" : "hide";
+const defaultBannerTitle = siteConfig.display.defaultBannerTitle
+	? "show"
+	: "hide";
 const styleSettingsVersion = "maple-red-v1";
 if (!banner || typeof banner !== "string" || banner.trim() === "") {
 	banner = siteConfig.banner.src;
@@ -190,7 +196,7 @@ const bannerOffset =
 
 		<script>
 			async function initMermaid() {
-				const diagrams = document.querySelectorAll('.mermaid:not([data-processed])');
+				const diagrams = document.querySelectorAll<HTMLElement>('.mermaid:not([data-processed])');
 				if (diagrams.length === 0) return;
 				const mermaid = (await import('mermaid')).default;
 				const isDark = document.documentElement.getAttribute('data-theme') === 'dark'

@@ -9,20 +9,31 @@ import ImageWrapper from "./misc/ImageWrapper.astro";
 import PostMetadata from "./PostMeta.astro";
 
 interface Props {
-    class?: string;
-    entry: CollectionEntry<"posts">;
-    title: string;
-    url: string;
-    published: Date;
-    updated?: Date;
-    tags: string[];
-    category: string | null;
-    image: string;
-    description: string;
-    draft: boolean;
-    style: string;
+	class?: string;
+	entry: CollectionEntry<"posts">;
+	title: string;
+	url: string;
+	published: Date;
+	updated?: Date;
+	tags: string[];
+	category: string | null;
+	image: string;
+	description: string;
+	draft: boolean;
+	style: string;
 }
-const { entry, title, url, published, updated, tags, category, image, description, style } = Astro.props;
+const {
+	entry,
+	title,
+	url,
+	published,
+	updated,
+	tags,
+	category,
+	image,
+	description,
+	style,
+} = Astro.props;
 const className = Astro.props.class;
 const coverSrc = getCover(entry.id, image || undefined);
 const hasCover = coverSrc !== "";

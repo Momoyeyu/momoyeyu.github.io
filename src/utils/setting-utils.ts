@@ -90,7 +90,10 @@ export function getSurfaceChroma(): number {
 
 export function setSurfaceChroma(chroma: number): void {
 	localStorage.setItem("surfaceChroma", String(chroma));
-	document.documentElement.style.setProperty("--surface-chroma", String(chroma));
+	document.documentElement.style.setProperty(
+		"--surface-chroma",
+		String(chroma),
+	);
 }
 
 export function getDefaultWallpaperMode(): WALLPAPER_MODE {

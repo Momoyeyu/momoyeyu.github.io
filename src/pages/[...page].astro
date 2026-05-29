@@ -19,18 +19,21 @@ export const getStaticPaths = (async ({ paginate }) => {
 
 const { page, pinned } = Astro.props;
 
-const homeJsonLd = page.currentPage === 1 ? {
-	"@context": "https://schema.org",
-	"@type": "WebSite",
-	name: siteConfig.title,
-	description: siteConfig.subtitle,
-	url: Astro.site,
-	author: {
-		"@type": "Person",
-		name: profileConfig.name,
-	},
-	inLanguage: siteConfig.lang.replace("_", "-"),
-} : null;
+const homeJsonLd =
+	page.currentPage === 1
+		? {
+				"@context": "https://schema.org",
+				"@type": "WebSite",
+				name: siteConfig.title,
+				description: siteConfig.subtitle,
+				url: Astro.site,
+				author: {
+					"@type": "Person",
+					name: profileConfig.name,
+				},
+				inLanguage: siteConfig.lang.replace("_", "-"),
+			}
+		: null;
 
 const len = page.data.length;
 ---

@@ -19,12 +19,19 @@ const className = Astro.props.class;
 
 const isPostPage = !!category;
 
-let seriesPosts: { title: string; url: string; slug: string; position: number }[] = [];
+let seriesPosts: {
+	title: string;
+	url: string;
+	slug: string;
+	position: number;
+}[] = [];
 
 if (category) {
 	const allPosts = await getSortedPosts();
 	const filtered = allPosts
-		.filter((p) => p.data.category === category && typeof p.data.episode === "number")
+		.filter(
+			(p) => p.data.category === category && typeof p.data.episode === "number",
+		)
 		.slice()
 		.sort((a, b) => (a.data.episode as number) - (b.data.episode as number));
 

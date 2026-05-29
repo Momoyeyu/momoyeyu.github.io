@@ -6,8 +6,10 @@ import I18nKey from "../i18n/i18nKey";
 import { i18n } from "../i18n/translation";
 import { getPostUrlBySlug } from "../utils/url-utils";
 
-export let tags: string[];
-export let categories: string[];
+// Defaulted because the real values are read from URL params in onMount;
+// callers (archive.astro) intentionally don't pass tags/categories.
+export let tags: string[] = [];
+export let categories: string[] = [];
 export let sortedPosts: Post[] = [];
 // Names of categories that are ordered series (see src/constants/categories.ts).
 export let orderedCategories: string[] = [];
@@ -22,7 +24,7 @@ interface Post {
 	data: {
 		title: string;
 		tags: string[];
-		category?: string;
+		category?: string | null;
 		episode?: number;
 		seriesPosition?: number;
 		published: Date;
@@ -67,8 +69,7 @@ function rebuildGroups() {
 	if (sortMode === "episode-desc" || sortMode === "episode-asc") {
 		const direction = sortMode === "episode-desc" ? -1 : 1;
 		const ordered = [...seriesPosts].sort(
-			(a, b) =>
-				direction * ((a.data.episode ?? 0) - (b.data.episode ?? 0)),
+			(a, b) => direction * ((a.data.episode ?? 0) - (b.data.episode ?? 0)),
 		);
 		groups = [
 			{
@@ -84,8 +85,7 @@ function rebuildGroups() {
 	const dateMul = sortMode === "date-desc" ? -1 : 1;
 	const datePosts = [...filteredPosts].sort(
 		(a, b) =>
-			dateMul *
-			(a.data.published.getTime() - b.data.published.getTime()),
+			dateMul * (a.data.published.getTime() - b.data.published.getTime()),
 	);
 
 	const grouped = datePosts.reduce(
@@ -151,8 +151,7 @@ onMount(() => {
 
 	if (categories.length > 0) {
 		pool = pool.filter(
-			(post) =>
-				post.data.category && categories.includes(post.data.category),
+			(post) => post.data.category && categories.includes(post.data.category),
 		);
 	}
 
@@ -161,9 +160,7 @@ onMount(() => {
 	}
 
 	filteredPosts = pool;
-	seriesPosts = filteredPosts.filter(
-		(p) => typeof p.data.episode === "number",
-	);
+	seriesPosts = filteredPosts.filter((p) => typeof p.data.episode === "number");
 
 	const singleCategory =
 		categories.length === 1 && tags.length === 0 && !uncategorized;
