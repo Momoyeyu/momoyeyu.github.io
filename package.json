@@ -7,6 +7,10 @@
     "start": "astro dev",
     "build": "astro build && mv dist/sitemap-index.xml dist/sitemap.xml && pagefind --site dist",
     "preview": "astro preview",
+    "check": "astro check",
+    "lint": "biome check src",
+    "lint:fix": "biome check --write src",
+    "format": "biome format --write src",
     "new-post": "node scripts/new-post.js"
   },
   "dependencies": {

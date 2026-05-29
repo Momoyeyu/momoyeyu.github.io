@@ -49,11 +49,40 @@ export default defineConfig({
 			globalInstance: true,
 		}),
 		icon({
+			// Only bundle the icons actually referenced in the codebase, instead of
+			// pulling in entire icon sets with ["*"]. When adding a new icon, grep the
+			// repo for its `set:name` string and keep these lists in sync.
 			include: {
-				"preprocess: vitePreprocess(),": ["*"],
-				"fa6-brands": ["*"],
-				"fa6-regular": ["*"],
-				"fa6-solid": ["*"],
+				"fa6-brands": ["bilibili", "creative-commons", "github"],
+				"fa6-regular": ["address-card"],
+				"fa6-solid": [
+					"arrow-rotate-left",
+					"arrow-up-right-from-square",
+					"chevron-right",
+					"envelope",
+					"thumbtack",
+				],
+				"material-symbols": [
+					"book-2-outline-rounded",
+					"calendar-today-outline-rounded",
+					"chevron-left-rounded",
+					"chevron-right-rounded",
+					"copyright-outline-rounded",
+					"dark-mode-outline-rounded",
+					"edit-calendar-outline-rounded",
+					"expand-less-rounded",
+					"home-outline-rounded",
+					"keyboard-arrow-up-rounded",
+					"menu-rounded",
+					"more-horiz",
+					"notes-rounded",
+					"palette-outline",
+					"radio-button-partial-outline",
+					"schedule-outline-rounded",
+					"search",
+					"tag-rounded",
+					"wb-sunny-outline-rounded",
+				],
 			},
 		}),
 		expressiveCode({
