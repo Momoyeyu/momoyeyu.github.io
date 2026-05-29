@@ -9,6 +9,8 @@ import { getPostUrlBySlug } from "../utils/url-utils";
 export let tags: string[];
 export let categories: string[];
 export let sortedPosts: Post[] = [];
+// Names of categories that are ordered series (see src/constants/categories.ts).
+export let orderedCategories: string[] = [];
 
 const params = new URLSearchParams(window.location.search);
 tags = params.has("tag") ? params.getAll("tag") : [];
@@ -165,10 +167,11 @@ onMount(() => {
 
 	const singleCategory =
 		categories.length === 1 && tags.length === 0 && !uncategorized;
-	// Show EP sort whenever the category has a series of >=2 episodes, even if
-	// some standalone posts in the same category don't have an episode field.
-	// Series mode shows only the episode posts; date mode shows everything.
-	canUseSeries = singleCategory && seriesPosts.length >= 2;
+	// EP sort is offered only for categories explicitly registered as ordered
+	// series. Series mode shows the episode posts; date mode shows everything.
+	const isOrderedCategory =
+		singleCategory && orderedCategories.includes(categories[0]);
+	canUseSeries = isOrderedCategory && seriesPosts.length >= 1;
 
 	sortMode = canUseSeries ? "episode-desc" : "date-desc";
 	rebuildGroups();
