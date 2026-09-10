@@ -172,29 +172,29 @@ setup_git_config() {
 
   if [[ -n "$cur_name" && -n "$cur_email" ]]; then
     ok "Existing git identity: $cur_name <$cur_email>"
-    name="$cur_name"
-    email="$cur_email"
-    # Blank input keeps the current value; without a tty both are left as-is.
-    if read_tty "  user.name  [$cur_name]: " "$cur_name"; then name="$REPLY_TTY"; fi
-    if read_tty "  user.email [$cur_email]: " "$cur_email"; then email="$REPLY_TTY"; fi
+    info "Press Enter to keep it, or type a new value."
   else
     info "git needs a commit identity (it will be the author of your commits)."
-    name=""
-    while :; do
-      if ! read_tty "  user.name : " "${USER:-}"; then break; fi
-      name="$REPLY_TTY"
-      if [[ -n "$name" ]]; then break; fi
-      warn "user.name cannot be empty."
-    done
-    email=""
-    while :; do
-      if ! read_tty "  user.email: " ""; then break; fi
-      email="$REPLY_TTY"
-      if [[ -z "$email" ]]; then continue; fi
-      if is_email "$email"; then break; fi
-      warn "That doesn't look like an email address, try again."
-    done
   fi
+
+  # Defaults always come from whatever is already configured, so pressing Enter
+  # never clobbers an existing value — re-running the script is a no-op.
+  name="${cur_name:-${USER:-}}"
+  while :; do
+    if ! read_tty "  user.name  [${name}]: " "$name"; then break; fi
+    name="$REPLY_TTY"
+    if [[ -n "$name" ]]; then break; fi
+    warn "user.name cannot be empty."
+  done
+
+  email="$cur_email"
+  while :; do
+    if ! read_tty "  user.email [${email}]: " "$email"; then break; fi
+    email="$REPLY_TTY"
+    if [[ -z "$email" ]]; then continue; fi
+    if is_email "$email"; then break; fi
+    warn "That doesn't look like an email address, try again."
+  done
 
   if [[ -n "$name" && -n "$email" ]] && is_email "$email"; then
     git config --global user.name "$name"
