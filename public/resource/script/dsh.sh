@@ -14,11 +14,26 @@ corepack prepare pnpm@latest --activate
 pnpm config set dangerouslyAllowAllBuilds true
 pnpm install -g @deepseek-ai/dsh @deepseek-harness-tui/dsh-tui
 
-grep -q 'Library/pnpm/bin' ~/.zshrc 2>/dev/null || echo 'export PATH="$PATH:$HOME/Library/pnpm/bin"' >> ~/.zshrc
+# pnpm's global bin dir is OS-dependent, so don't hardcode one platform's path:
+#   $PNPM_HOME/bin when PNPM_HOME is set, otherwise
+#   macOS: ~/Library/pnpm/bin    Linux: ~/.local/share/pnpm/bin
+# (verified to match `pnpm bin -g` in both configurations)
+if [ -z "${PNPM_HOME:-}" ]; then
+  case "$(uname -s)" in
+    Darwin) PNPM_HOME="$HOME/Library/pnpm" ;;
+    *)      PNPM_HOME="$HOME/.local/share/pnpm" ;;
+  esac
+fi
+PNPM_BIN="$PNPM_HOME/bin"
+
 case ":$PATH:" in
-  *":$HOME/Library/pnpm/bin:"*) ;;
-  *) export PATH="$PATH:$HOME/Library/pnpm/bin" ;;
+  *":$PNPM_BIN:"*) ;;
+  *) export PATH="$PATH:$PNPM_BIN" ;;
 esac
+
+ZSHRC="$HOME/.zshrc"
+touch "$ZSHRC"
+grep -qF "$PNPM_BIN" "$ZSHRC" 2>/dev/null || printf 'export PATH="$PATH:%s"\n' "$PNPM_BIN" >> "$ZSHRC"
 
 ENV_FILE="$HOME/.dsh/.env"
 mkdir -p "$HOME/.dsh"
@@ -46,4 +61,11 @@ else
 fi
 
 hash -r
-which dsh-tui && dsh-tui --version
+if command -v dsh-tui >/dev/null 2>&1; then
+  echo "dsh-tui version: $(dsh-tui --version 2>/dev/null || echo unknown)"
+else
+  echo "dsh-tui was installed but is not on PATH yet." >&2
+  echo "It lives in $PNPM_BIN - open a new terminal, or run:" >&2
+  echo "  export PATH=\"\$PATH:$PNPM_BIN\"" >&2
+  exit 1
+fi

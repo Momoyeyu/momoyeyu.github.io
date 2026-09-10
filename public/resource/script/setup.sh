@@ -6,6 +6,22 @@ ok()   { printf '\033[1;32m[ OK ]\033[0m %s\n' "$*"; }
 warn() { printf '\033[1;33m[WARN]\033[0m %s\n' "$*"; }
 die()  { printf '\033[1;31m[FAIL]\033[0m %s\n' "$*" >&2; exit 1; }
 
+# This script is normally piped (`curl -fsSL ... | bash`), so stdin IS the script
+# itself — a plain `read` would swallow the rest of it. Always prompt via /dev/tty.
+# Usage: read_tty "<prompt>" ["<default>"]  ->  sets REPLY_TTY, non-zero if no tty.
+REPLY_TTY=""
+read_tty() {
+  local prompt="$1" default="${2:-}"
+  REPLY_TTY=""
+  if ! { printf '%s' "$prompt" >/dev/tty && IFS= read -r REPLY_TTY < /dev/tty; } 2>/dev/null; then
+    return 1
+  fi
+  [[ -n "$REPLY_TTY" ]] || REPLY_TTY="$default"
+  return 0
+}
+
+is_email() { [[ "$1" == *"@"*"."* && "$1" != *[[:space:]]* ]]; }
+
 : "${USER:=$(id -un)}"
 case "$(uname -s)" in
   Darwin) OS_TYPE=macos ;;
@@ -150,15 +166,53 @@ EOF
 add_zsh_aliases
 
 setup_git_config() {
-  git config --global user.name "momoyeyu"
-  git config --global user.email "momoyeyu@outlook.com"
+  local cur_name cur_email name email
+  cur_name="$(git config --global --get user.name 2>/dev/null || true)"
+  cur_email="$(git config --global --get user.email 2>/dev/null || true)"
+
+  if [[ -n "$cur_name" && -n "$cur_email" ]]; then
+    ok "Existing git identity: $cur_name <$cur_email>"
+    name="$cur_name"
+    email="$cur_email"
+    # Blank input keeps the current value; without a tty both are left as-is.
+    if read_tty "  user.name  [$cur_name]: " "$cur_name"; then name="$REPLY_TTY"; fi
+    if read_tty "  user.email [$cur_email]: " "$cur_email"; then email="$REPLY_TTY"; fi
+  else
+    info "git needs a commit identity (it will be the author of your commits)."
+    name=""
+    while :; do
+      if ! read_tty "  user.name : " "${USER:-}"; then break; fi
+      name="$REPLY_TTY"
+      if [[ -n "$name" ]]; then break; fi
+      warn "user.name cannot be empty."
+    done
+    email=""
+    while :; do
+      if ! read_tty "  user.email: " ""; then break; fi
+      email="$REPLY_TTY"
+      if [[ -z "$email" ]]; then continue; fi
+      if is_email "$email"; then break; fi
+      warn "That doesn't look like an email address, try again."
+    done
+  fi
+
+  if [[ -n "$name" && -n "$email" ]] && is_email "$email"; then
+    git config --global user.name "$name"
+    git config --global user.email "$email"
+    ok "Configured git identity: $name <$email>"
+  else
+    warn "git identity not set (no usable terminal?). Set it later with:"
+    warn "  git config --global user.name  \"Your Name\""
+    warn "  git config --global user.email \"you@example.com\""
+  fi
+
   git config --global alias.st status
   git config --global alias.ci commit
   git config --global alias.co checkout
   git config --global alias.br branch
   git config --global alias.df diff
   git config --global alias.lg log
-  ok "Configured git user & aliases in ~/.gitconfig"
+  ok "Configured git aliases in ~/.gitconfig"
 }
 setup_git_config
 

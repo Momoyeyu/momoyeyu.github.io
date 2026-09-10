@@ -57,10 +57,10 @@ export const RESOURCE_CATEGORIES: ResourceCategory[] = [
 					"Homebrew（macOS）/ apt（Linux）",
 					"build-essential、curl、git、zsh",
 					"oh-my-zsh + fast-syntax-highlighting + zsh-autosuggestions",
-					"git 用户信息与常用 alias",
+					"git 用户名 / 邮箱（运行时会提示你输入）+ 常用 alias",
 					"zsh 别名、PROMPT，并把默认 shell 切成 zsh",
 				],
-				note: "macOS 上如果弹出 Xcode CLT 安装窗口，装完后重新跑一次即可。",
+				note: "macOS 上如果弹出 Xcode CLT 安装窗口，装完后重新跑一次即可；中途会提示输入 git 用户名和邮箱（已配置过则直接回车沿用）。",
 			},
 			{
 				name: "dsh.sh",
