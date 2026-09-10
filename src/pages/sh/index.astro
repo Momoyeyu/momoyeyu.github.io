@@ -1,0 +1,120 @@
+---
+import { Icon } from "astro-icon/components";
+import MainGridLayout from "../../layouts/MainGridLayout.astro";
+
+interface ScriptItem {
+	name: string;
+	title: string;
+	desc: string;
+	includes: string[];
+	note?: string;
+}
+
+const site = "https://momoyeyu.github.io";
+
+const scripts: ScriptItem[] = [
+	{
+		name: "setup.sh",
+		title: "BASIC · 环境初始化",
+		desc: "把一台新机器的基础开发环境一次性配好（macOS / Linux 通用）。",
+		includes: [
+			"Homebrew（macOS）/ apt（Linux）",
+			"build-essential、curl、git、zsh",
+			"oh-my-zsh + fast-syntax-highlighting + zsh-autosuggestions",
+			"git 用户信息与常用 alias",
+			"zsh 别名、PROMPT，并把默认 shell 切成 zsh",
+		],
+		note: "macOS 上如果弹出 Xcode CLT 安装窗口，装完后重新跑一次即可。",
+	},
+	{
+		name: "dsh.sh",
+		title: "DSH · 安装",
+		desc: "装好 nvm / Node / pnpm，再全局安装 dsh 与 dsh-tui。",
+		includes: [
+			"nvm + Node 22",
+			"pnpm（通过 corepack 激活）",
+			"@deepseek-ai/dsh、@deepseek-harness-tui/dsh-tui",
+			"把 DEEPSEEK_API_KEY 写入 ~/.dsh/.env",
+		],
+		note: "运行过程中会提示输入 DEEPSEEK_API_KEY；已配置过则自动跳过。",
+	},
+];
+---
+
+<MainGridLayout title="脚本" description="通过 curl 一键使用的环境初始化与 DSH 安装脚本">
+    <div class="flex flex-col gap-4 w-full">
+        <div class="card-base px-9 py-6 w-full">
+            <div class="flex items-center gap-2 text-[var(--primary)] font-bold text-2xl">
+                <Icon name="material-symbols:terminal-rounded" class="text-[1.75rem]" />
+                脚本
+            </div>
+            <p class="mt-3 text-black/60 dark:text-white/60">
+                下面的脚本可以直接用 <code class="px-1.5 py-0.5 rounded bg-[var(--btn-regular-bg)] text-[var(--inline-code-color)]">curl</code>
+                管道执行，适合在新机器上快速初始化环境。执行前建议先看一眼脚本内容，确认没问题再跑。
+            </p>
+        </div>
+
+        {scripts.map((s) => {
+            const command = `curl -fsSL ${site}/sh/${s.name} | bash`;
+            return (
+                <div class="card-base px-9 py-6 w-full">
+                    <div class="font-bold text-xl">{s.title}</div>
+                    <div class="mt-1 text-sm text-black/50 dark:text-white/50 font-mono">/sh/{s.name}</div>
+                    <p class="mt-3 text-black/70 dark:text-white/70">{s.desc}</p>
+
+                    <ul class="mt-3 list-disc pl-5 text-sm text-black/60 dark:text-white/60 space-y-1">
+                        {s.includes.map((i) => <li>{i}</li>)}
+                    </ul>
+
+                    <div class="mt-4 group relative">
+                        <pre
+                            class="rounded-lg bg-[var(--btn-regular-bg)] px-4 py-3 pr-14 overflow-x-auto text-sm font-mono"><code
+                                >{command}</code></pre>
+                        <button
+                            type="button"
+                            aria-label="复制命令"
+                            class="copy-btn absolute right-2 top-2 rounded-lg px-2 py-1 text-xs btn-plain scale-animation active:scale-95"
+                            data-command={command}
+                        >
+                            复制
+                        </button>
+                    </div>
+
+                    {s.note && (
+                        <p class="mt-3 text-sm text-black/50 dark:text-white/50 flex gap-1.5">
+                            <Icon name="material-symbols:info-outline-rounded" class="text-[1.1rem] shrink-0 mt-0.5" />
+                            <span>{s.note}</span>
+                        </p>
+                    )}
+
+                    <p class="mt-3 text-sm">
+                        <a
+                            href={`/sh/${s.name}`}
+                            class="text-[var(--primary)] hover:underline"
+                            target="_blank"
+                            rel="noopener"
+                        >
+                            查看脚本源码 ↗
+                        </a>
+                    </p>
+                </div>
+            );
+        })}
+    </div>
+
+    <script>
+        document.addEventListener("click", (e) => {
+            const btn = (e.target as HTMLElement)?.closest?.(".copy-btn") as HTMLButtonElement | null;
+            if (!btn) return;
+            const text = btn.dataset.command ?? "";
+            const done = () => {
+                const old = btn.textContent;
+                btn.textContent = "已复制";
+                setTimeout(() => {
+                    btn.textContent = old;
+                }, 1500);
+            };
+            navigator.clipboard?.writeText(text).then(done, () => {});
+        });
+    </script>
+</MainGridLayout>
