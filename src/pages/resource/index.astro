@@ -1,0 +1,39 @@
+---
+import { Icon } from "astro-icon/components";
+import { RESOURCE_CATEGORIES } from "../../constants/resources";
+import MainGridLayout from "../../layouts/MainGridLayout.astro";
+---
+
+<MainGridLayout title="资源" description="可以直接下载使用的东西：脚本、配置等等">
+    <div class="flex flex-col gap-4 w-full text-neutral-900 dark:text-neutral-100">
+        <div class="card-base px-9 py-6 w-full">
+            <div class="flex items-center gap-2 font-bold text-2xl text-neutral-900 dark:text-neutral-100">
+                <Icon name="material-symbols:inventory-2-rounded" class="text-[1.75rem] text-[var(--primary)]" />
+                资源
+            </div>
+            <p class="mt-3 text-black/60 dark:text-white/60">
+                这里放可以直接拿走就用的东西。目前按类型分开，每一类下面是具体条目。
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {RESOURCE_CATEGORIES.map((c) => (
+                <a
+                    href={`/resource/${c.slug}/`}
+                    class="card-base px-7 py-6 w-full block group hover:bg-[var(--btn-card-bg-hover)] active:bg-[var(--btn-card-bg-active)] transition"
+                >
+                    <div class="flex items-center gap-3">
+                        <Icon name={c.icon} class="text-[1.75rem] text-[var(--primary)] shrink-0" />
+                        <div class="font-bold text-xl text-neutral-900 dark:text-neutral-100 group-hover:text-[var(--primary)] transition">
+                            {c.name}
+                        </div>
+                        <span class="ml-auto text-sm text-black/60 dark:text-white/60 shrink-0">
+                            {c.items.length} 项
+                        </span>
+                    </div>
+                    <p class="mt-3 text-sm text-black/60 dark:text-white/60">{c.desc}</p>
+                </a>
+            ))}
+        </div>
+    </div>
+</MainGridLayout>

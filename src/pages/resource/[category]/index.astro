@@ -1,0 +1,125 @@
+---
+import type { GetStaticPaths } from "astro";
+import { Icon } from "astro-icon/components";
+import {
+	RESOURCE_CATEGORIES,
+	type ResourceCategory,
+} from "../../../constants/resources";
+import MainGridLayout from "../../../layouts/MainGridLayout.astro";
+
+export const getStaticPaths = (() =>
+	RESOURCE_CATEGORIES.map((category) => ({
+		params: { category: category.slug },
+		props: { category },
+	}))) satisfies GetStaticPaths;
+
+interface Props {
+	category: ResourceCategory;
+}
+
+const { category } = Astro.props;
+
+const origin = Astro.site ?? new URL("https://momoyeyu.github.io");
+
+function fileUrl(name: string) {
+	return new URL(`/resource/${category.slug}/${name}`, origin).href;
+}
+
+function commandFor(name: string) {
+	return category.commandTemplate?.replace("{url}", fileUrl(name));
+}
+---
+
+<MainGridLayout title={category.name} description={category.desc}>
+    <div class="flex flex-col gap-4 w-full text-neutral-900 dark:text-neutral-100">
+        <div class="card-base px-9 py-6 w-full">
+            <nav class="text-sm text-black/60 dark:text-white/60 flex items-center gap-1.5">
+                <a href="/resource/" class="hover:text-[var(--primary)] transition">资源</a>
+                <Icon name="material-symbols:chevron-right-rounded" class="text-[1rem]" />
+                <span>{category.name}</span>
+            </nav>
+
+            <div class="mt-2 flex items-center gap-2 font-bold text-2xl text-neutral-900 dark:text-neutral-100">
+                <Icon name={category.icon} class="text-[1.75rem] text-[var(--primary)]" />
+                {category.name}
+            </div>
+
+            {category.intro && <p class="mt-3 text-black/60 dark:text-white/60">{category.intro}</p>}
+        </div>
+
+        {category.items.map((item) => {
+            const command = commandFor(item.name);
+            return (
+                <div class="card-base px-9 py-6 w-full">
+                    <div class="font-bold text-xl text-neutral-900 dark:text-neutral-100">{item.title}</div>
+                    <div class="mt-1 text-sm text-black/60 dark:text-white/60 font-mono">
+                        /resource/{category.slug}/{item.name}
+                    </div>
+                    <p class="mt-3 text-black/70 dark:text-white/70">{item.desc}</p>
+
+                    <ul class="mt-3 list-disc pl-5 text-sm text-black/60 dark:text-white/60 space-y-1">
+                        {item.details.map((d) => <li>{d}</li>)}
+                    </ul>
+
+                    {command && (
+                        <div class="mt-4 relative">
+                            <pre
+                                class="rounded-lg bg-[var(--btn-regular-bg)] text-neutral-900 dark:text-neutral-100 px-4 py-3 pr-16 overflow-x-auto text-sm m-0"><code
+                                    class="bg-transparent p-0 text-inherit font-mono">{command}</code></pre>
+                            <button
+                                type="button"
+                                aria-label="复制命令"
+                                class="copy-btn absolute right-2 top-2 rounded-lg px-2 py-1 text-xs btn-plain scale-animation active:scale-95"
+                                data-command={command}
+                            >
+                                复制
+                            </button>
+                        </div>
+                    )}
+
+                    {item.note && (
+                        <p class="mt-3 text-sm text-black/60 dark:text-white/60 flex gap-1.5">
+                            <Icon name="material-symbols:info-outline-rounded" class="text-[1.1rem] shrink-0 mt-0.5" />
+                            <span>{item.note}</span>
+                        </p>
+                    )}
+
+                    <p class="mt-3 text-sm">
+                        <a
+                            href={`/resource/${category.slug}/${item.name}`}
+                            class="text-[var(--primary)] underline decoration-dashed decoration-1 underline-offset-4 hover:decoration-transparent transition"
+                            target="_blank"
+                            rel="noopener"
+                        >
+                            查看脚本源码 ↗
+                        </a>
+                    </p>
+                </div>
+            );
+        })}
+    </div>
+
+    <script>
+        // Delegated on `document` and guarded by a global flag, so it survives
+        // swup navigation (which swaps <main>) without stacking listeners.
+        const w = window as unknown as { __copyBtnBound?: boolean };
+        if (!w.__copyBtnBound) {
+            w.__copyBtnBound = true;
+            document.addEventListener("click", (e) => {
+                const btn = (e.target as HTMLElement | null)?.closest?.(".copy-btn") as HTMLButtonElement | null;
+                if (!btn) return;
+                const text = btn.dataset.command ?? "";
+                navigator.clipboard?.writeText(text).then(
+                    () => {
+                        const prev = btn.textContent;
+                        btn.textContent = "已复制";
+                        setTimeout(() => {
+                            btn.textContent = prev;
+                        }, 1500);
+                    },
+                    () => {},
+                );
+            });
+        }
+    </script>
+</MainGridLayout>

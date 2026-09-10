@@ -102,6 +102,7 @@ export default defineConfig({
 					"expand-less-rounded",
 					"home-outline-rounded",
 					"info-outline-rounded",
+					"inventory-2-rounded",
 					"keyboard-arrow-up-rounded",
 					"menu-rounded",
 					"more-horiz",
