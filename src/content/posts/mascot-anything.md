@@ -1,9 +1,10 @@
 ---
 title: Mascot Anything
-published: 2026-05-13
+date: 2026-05-13
 description: '开源网页桌宠工具：用 AI 生成角色立绘，一行 script 嵌入任意网页。'
 tags: [深度学习, 开源]
 category: 项目
+episode: 1
 draft: false
 pinned: true
 image: '/img/posts/mascot-anything/cover.webp'

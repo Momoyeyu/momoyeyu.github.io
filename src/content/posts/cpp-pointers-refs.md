@@ -1,6 +1,6 @@
 ---
 title: C++ 指针与引用
-published: 2023-03-05
+date: 2023-03-05
 description: '指针是 C++ 最核心的概念——内存地址、解引用与引用的本质。'
 tags: [C++, 内存]
 category: C++ 入门

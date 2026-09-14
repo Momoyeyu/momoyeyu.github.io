@@ -1,6 +1,6 @@
 ---
 title: 初识 AI Infra
-published: 2026-05-15
+date: 2026-05-15
 description: '对 AI Infra 这个方向的初步认识：核心命题、和传统应用开发的差异、为什么选它，以及现实风险。'
 tags: [AI Infra, LLM, CUDA]
 category: AI Infra

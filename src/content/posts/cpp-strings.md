@@ -1,6 +1,6 @@
 ---
 title: C++ 字符串
-published: 2023-04-02
+date: 2023-04-02
 description: 'C 风格字符串的内存布局、std::string 的堆分配，以及零拷贝的 string_view。'
 tags: [C++, STL]
 category: C++ 入门
@@ -192,8 +192,8 @@ std::cout << s4 << "\n";
 
 // 多行原始字符串
 const char* json = R"({
-    "name": "llama3",
-    "size": "8B"
+    "name": "example-model",
+    "size": "small"
 })";
 ```
 
@@ -306,15 +306,15 @@ int main() {
 
 ---
 
-## AI Infra 场景里的字符串
+## 实际工程中的字符串
 
-在 AI 基础设施代码里，字符串操作无处不在：
+在实际工程代码里，字符串操作无处不在：
 
 **配置文件解析**：读取模型名称、路径、超参数。`string_view` 可以在不拷贝的情况下切分和查找配置项。
 
 **日志格式化**：每秒可能输出几千条日志。用 `std::ostringstream` 或预先 `reserve()` 的 `std::string` 避免频繁堆分配。
 
-**模型名称 key 查找**：在 `std::unordered_map<std::string, ...>` 里用 `string_view` 查找，C++26 之前需要一些技巧，但 C++20 的 heterogeneous lookup 可以帮到你。
+**字符串 key 查找**：C++20 的异构查找允许用 `string_view` 查询 `std::unordered_map<std::string, ...>`，前提是提供透明的哈希函数和相等比较器。
 
 **Tokenizer**：把原始文本切分成 token，大量用到 `substr`。高性能 tokenizer 会用 `string_view` 而不是 `std::string` 来表示 token，避免为每个 token 分配内存。
 

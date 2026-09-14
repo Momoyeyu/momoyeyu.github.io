@@ -12,8 +12,7 @@
     "test:watch": "vitest",
     "lint": "biome check src",
     "lint:fix": "biome check --write src",
-    "format": "biome format --write src",
-    "new-post": "node scripts/new-post.js"
+    "format": "biome format --write src"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.6",

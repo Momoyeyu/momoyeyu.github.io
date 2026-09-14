@@ -1,6 +1,6 @@
 ---
 title: C++ constexpr 与编译期计算
-published: 2024-02-03
+date: 2024-02-03
 description: 'const vs constexpr、编译期计算的零开销、if constexpr 的模板应用。'
 tags: [C++, 性能]
 category: C++ 进阶
@@ -359,9 +359,9 @@ constexpr int BLOCK_SIZE = checked_block_size(128);  // OK
 
 ---
 
-## AI Infra 实战场景
+## 高性能计算实战场景
 
-把以上概念串起来，看看在 CUDA/AI Infra 代码里怎么用。
+把以上概念串起来，看看在 CUDA 代码里怎么用。
 
 ### 场景一：编译期确定的 kernel 参数
 
@@ -453,4 +453,4 @@ void launch_kernel(int M, int N) {
 
 从宏到 `constexpr` 的迁移，本质上是把"魔法数字"从预处理器的领域提升到 C++ 类型系统里——有类型检查、有作用域、可以参与重载决议，调试器能看到名字和值，但运行时开销依然是零。
 
-对于 AI Infra 和 CUDA 开发者来说，`constexpr` + `if constexpr` 的组合几乎是必须掌握的工具：它让你写出既支持多种数据类型、又没有运行时类型判断开销的高性能 kernel——而这正是 GPU 代码最需要的性质。
+对于高性能计算和 CUDA 开发者来说，`constexpr` + `if constexpr` 的组合几乎是必须掌握的工具：它让你写出既支持多种数据类型、又没有运行时类型判断开销的高性能 kernel——而这正是 GPU 代码最需要的性质。

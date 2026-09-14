@@ -1,6 +1,6 @@
 ---
 title: Python ML 入门
-published: 2023-07-03
+date: 2023-07-03
 description: '面向机器学习的 Python 快速入门：基础语法、数据结构、NumPy 与文件读写。'
 tags: [Python, 深度学习]
 category: Python 入门
@@ -333,7 +333,7 @@ ML/DL 项目依赖通常比较多，环境管理不清楚很容易出现“在�
 2. `venv`：Python 内置虚拟环境工具，可以为每个项目创建独立环境。
 3. `conda`：常用于数据科学项目，适合管理 Python 版本、CUDA 相关依赖和科学计算库。
 4. `requirements.txt`：记录项目依赖，常用 `pip freeze > requirements.txt` 生成，用 `pip install -r requirements.txt` 安装。
-5. 版本约束：例如 `numpy==1.26.4` 表示固定版本，`torch>=2.0.0` 表示最低版本。
+5. 版本约束：例如 `numpy==1.24.3` 表示固定版本，`torch>=2.0.0` 表示最低版本。
 
 一个简单流程：
 

@@ -1,6 +1,6 @@
 ---
 title: C++ 预编译头
-published: 2023-12-10
+date: 2023-12-10
 description: '用预编译头文件（PCH）大幅减少大型 C++ 项目的编译时间。'
 tags: [C++, 编译, 工具链]
 category: C++ 进阶

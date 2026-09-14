@@ -1,6 +1,6 @@
 ---
 title: C++ 静态链接与动态链接
-published: 2023-05-08
+date: 2023-05-08
 description: '静态库（.a）与动态库（.so/.dylib）的区别、CMake 中的链接方式，以及 CUDA 库的链接实践。'
 tags: [C++, 编译, 工具链]
 category: C++ 入门
@@ -11,7 +11,7 @@ lang: 'zh_CN'
 
 如果你学过一点 C++，大概率遇到过这种情况：照着教程把代码抄下来，头文件也 include 了，结果编译报了一堆 `undefined reference`，然后不知道哪里出问题。
 
-这篇文章就是来解决这个问题的。我们来彻底搞清楚库是什么、静态库和动态库有什么区别、CMake 里怎么链接，以及 AI Infra 里天天打交道的 CUDA 库是怎么回事。
+这篇文章就是来解决这个问题的。我们来彻底搞清楚库是什么、静态库和动态库有什么区别、CMake 里怎么链接，以及高性能计算里天天打交道的 CUDA 库是怎么回事。
 
 ---
 
@@ -153,7 +153,7 @@ include(FetchContent)
 FetchContent_Declare(
     fmt
     GIT_REPOSITORY https://github.com/fmtlib/fmt.git
-    GIT_TAG        10.2.1
+    GIT_TAG        9.1.0
 )
 FetchContent_MakeAvailable(fmt)
 
@@ -203,9 +203,9 @@ CLion 用的就是 CMake，所以配置方式和上面完全一样。如果 `fin
 
 ---
 
-## AI Infra 视角：CUDA 库
+## 高性能计算视角：CUDA 库
 
-做 AI Infra 绕不开 CUDA 生态，这里的库都是动态库。
+使用 CUDA 时，需要了解它提供的库；这些库通常提供动态链接版本。
 
 ### 常用 CUDA 库
 

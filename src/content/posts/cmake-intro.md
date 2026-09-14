@@ -1,6 +1,6 @@
 ---
 title: C++ CMake 入门
-published: 2023-01-22
+date: 2023-01-22
 description: 'CMake 是什么、CMakeLists.txt 怎么写、target 机制，以及多文件项目的构建配置。'
 tags: [C++, 工具链]
 category: C++ 入门
@@ -40,7 +40,7 @@ int main() {
 不用 CMake 时，可以直接调用编译器：
 
 ```bash
-clang++ -std=c++23 -Wall -Wextra -o hello main.cpp
+clang++ -std=c++17 -Wall -Wextra -o hello main.cpp
 ./hello
 ```
 
@@ -75,7 +75,7 @@ int main() {
 cmake_minimum_required(VERSION 3.20)
 project(hello_cmake CXX)
 
-set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_executable(hello main.cpp)
@@ -104,11 +104,11 @@ project(hello_cmake CXX)
 接下来两行：
 
 ```cmake
-set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 ```
 
-要求使用 C++23，并且这个要求是必须满足的。如果编译器不支持 C++23，CMake 会在配置阶段报错。
+要求使用 C++17，并且这个要求是必须满足的。如果编译器不支持 C++17，CMake 会在配置阶段报错。
 
 最后一行：
 
@@ -187,7 +187,7 @@ CMake 可以生成 Makefile，但 CMake 本身不是 Makefile。
 
 ```makefile
 CXX = clang++
-CXXFLAGS = -std=c++23 -Wall -Wextra
+CXXFLAGS = -std=c++17 -Wall -Wextra
 TARGET = hello
 SRC = main.cpp
 
@@ -283,7 +283,7 @@ int main() {
 cmake_minimum_required(VERSION 3.20)
 project(hello_cmake CXX)
 
-set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_executable(hello
@@ -348,7 +348,7 @@ int main() {
 cmake_minimum_required(VERSION 3.20)
 project(hello_cmake CXX)
 
-set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_library(greeting src/greeting.cpp)

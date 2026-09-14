@@ -1,9 +1,10 @@
 ---
 title: Always Day One
-published: 2025-12-31
+date: 2025-12-31
 description: '在字节跳动实习六个月的记录。'
 tags: [随笔, 职业]
 category: 随笔
+episode: 1
 draft: false
 pinned: true
 lang: 'zh_CN'

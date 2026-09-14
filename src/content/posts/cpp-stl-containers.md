@@ -1,6 +1,6 @@
 ---
 title: C++ STL 容器与迭代器
-published: 2023-09-28
+date: 2023-09-28
 description: '红黑树 vs 哈希表的选择、迭代器的本质，以及 STL 算法库的高效用法。'
 tags: [C++, STL]
 category: C++ 进阶
@@ -11,7 +11,7 @@ lang: 'zh_CN'
 
 ## 为什么要深入容器？
 
-用过 `std::vector` 之后，大多数人会自然地接触到 `std::map` 和 `std::unordered_map`。表面上看，两者都是键值映射，用法几乎一样。但底层实现天差地别，选错了在 AI Infra 这种对性能敏感的场景里会踩很多坑。
+用过 `std::vector` 之后，大多数人会自然地接触到 `std::map` 和 `std::unordered_map`。表面上看，两者都是键值映射，用法几乎一样。但底层实现天差地别，选错了在高性能计算这种对性能敏感的场景里会踩很多坑。
 
 本文按照"底层实现 → 使用场景 → 常见陷阱"的顺序讲，重点不是 API，而是**为什么**。
 
@@ -107,7 +107,7 @@ point_map[{1, 2}] = "origin area";
 int main() {
     std::unordered_map<std::string, int> op_registry;
 
-    // 注册算子（AI Infra 中的典型用法）
+    // 注册算子（高性能计算中的典型用法）
     op_registry["conv2d"]     = 0;
     op_registry["relu"]       = 1;
     op_registry["batch_norm"] = 2;
@@ -184,7 +184,7 @@ grid[{0, 0}] = "origin";
 
 **一个反直觉的结论**：`unordered_map` 的常数因子相当大（哈希计算、bucket 寻址、可能的链表遍历），元素很少时它不一定比 `map` 快。真正需要的时候，profile 说了算。
 
-### AI Infra 中的实际应用
+### 高性能计算中的实际应用
 
 算子注册表（op registry）是 `unordered_map` 的教科书级用法。PyTorch 的 dispatcher 和 TensorFlow 的 op kernel 注册，底层都用类似的结构：
 
@@ -391,7 +391,7 @@ int main() {
 }
 ```
 
-在 AI Infra 场景中，`std::unordered_set` 常用于记录已访问的节点（图遍历、计算图 topo sort），或者存储已注册的 op 名字集合。
+在高性能计算场景中，`std::unordered_set` 常用于记录已访问的节点（图遍历、计算图 topo sort），或者存储已注册的 op 名字集合。
 
 ---
 

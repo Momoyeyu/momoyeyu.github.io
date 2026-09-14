@@ -1,6 +1,6 @@
 ---
 title: C++ Lambda 与函数指针
-published: 2023-08-08
+date: 2023-08-08
 description: '函数指针、std::function、lambda 的本质，以及捕获列表的内存语义。'
 tags: [C++]
 category: C++ 进阶
@@ -9,7 +9,7 @@ draft: false
 lang: 'zh_CN'
 ---
 
-在写 AI Infra 代码时，你会大量遇到这样的模式：把一段逻辑"传递"给另一个函数执行——无论是 CPU 端的数据预处理管道，还是 `thrust::transform` 里的元素级变换。理解 C++ 里函数指针、`std::function`、lambda 三者的本质和权衡，是写出高效、可维护代码的前提。
+在写高性能计算代码时，你会大量遇到这样的模式：把一段逻辑"传递"给另一个函数执行——无论是 CPU 端的数据预处理管道，还是 `thrust::transform` 里的元素级变换。理解 C++ 里函数指针、`std::function`、lambda 三者的本质和权衡，是写出高效、可维护代码的前提。
 
 ---
 
@@ -276,4 +276,4 @@ thrust::transform(d_input.begin(), d_input.end(), d_output.begin(),
 
 Lambda 不是什么神秘的函数式魔法，它就是编译器替你生成的一个结构体——捕获的变量是成员，函数体是 `operator()`。理解了这一点，捕获列表的所有行为（值捕获拷贝、引用捕获悬垂、mutable、无捕获转函数指针）都有了合理的解释。
 
-`std::function` 的类型擦除让它非常灵活，但灵活是有代价的——性能敏感的路径上，模板 + lambda 才是正道。这在 AI Infra 开发里尤为重要：CPU 端的数据管道用模板组合 lambda，CUDA 端用 `__device__` functor 驱动 kernel，两端的设计思路是一致的。
+`std::function` 的类型擦除让它非常灵活，但灵活是有代价的——性能敏感的路径上，模板 + lambda 才是正道。这在高性能计算开发里尤为重要：CPU 端的数据管道用模板组合 lambda，CUDA 端用 `__device__` functor 驱动 kernel，两端的设计思路是一致的。

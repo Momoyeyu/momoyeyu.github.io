@@ -1,6 +1,6 @@
 ---
 title: C++ 开发环境配置
-published: 2023-01-15
+date: 2023-01-15
 description: '在 macOS 上配置 C++ 开发环境：Xcode CLI Tools、Homebrew、CMake 与 CLion 工具链。'
 tags: [C++, macOS, 工具链]
 category: C++ 入门
@@ -55,7 +55,7 @@ brew install cmake
 cmake --version
 ```
 
-CMake 怎么用、`CMakeLists.txt` 怎么写，我另写了一篇 [CMake 入门](/posts/cmake-intro/) 专门讲，这里就不展开了。
+CMake 怎么用、`CMakeLists.txt` 怎么写，后续再专门整理，这里先演示最小的构建流程。
 
 ## CLion 的工具链
 
@@ -95,7 +95,7 @@ export PATH="/opt/homebrew/opt/llvm/bin:$PATH"
 到这一步可以验证下整套东西通不通。最快的方法是单文件：
 
 ```bash
-clang++ -std=c++23 -Wall -o hello hello.cpp
+clang++ -std=c++17 -Wall -o hello hello.cpp
 ./hello
 ```
 
@@ -110,7 +110,7 @@ my_project/
 ```cmake
 cmake_minimum_required(VERSION 3.20)
 project(my_project CXX)
-set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD 17)
 add_executable(my_project main.cpp)
 ```
 

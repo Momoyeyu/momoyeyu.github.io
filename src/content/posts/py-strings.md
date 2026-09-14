@@ -1,6 +1,6 @@
 ---
 title: Python 字符串
-published: 2023-01-19
+date: 2023-01-19
 description: 'Python 字符串的大小写转换、查找替换、格式化输出与常用判断函数。'
 tags: [Python]
 category: Python 入门

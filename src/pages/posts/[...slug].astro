@@ -39,7 +39,7 @@ const jsonLd = {
 		name: profileConfig.name,
 		url: Astro.site,
 	},
-	datePublished: formatDateToYYYYMMDD(entry.data.published),
+	datePublished: formatDateToYYYYMMDD(entry.data.date),
 	...(entry.data.updated && {
 		dateModified: formatDateToYYYYMMDD(entry.data.updated),
 	}),
@@ -93,7 +93,7 @@ const jsonLd = {
             <div class="onload-animation">
                 <PostMetadata
                         class="mb-5"
-                        published={entry.data.published}
+                        date={entry.data.date}
                         updated={entry.data.updated}
                         tags={entry.data.tags}
                         category={entry.data.category}
@@ -107,7 +107,7 @@ const jsonLd = {
                 <Content />
             </Markdown>
 
-            {licenseConfig.enable && <License title={entry.data.title} slug={entry.slug} pubDate={entry.data.published} class="mb-6 rounded-xl license-container onload-animation"></License>}
+            {licenseConfig.enable && <License title={entry.data.title} slug={entry.slug} pubDate={entry.data.date} class="mb-6 rounded-xl license-container onload-animation"></License>}
 
         </div>
     </div>

@@ -1,6 +1,6 @@
 ---
 title: C++ vector 与 array
-published: 2023-04-26
+date: 2023-04-26
 description: 'std::vector 的性能优化技巧，以及 std::array 与裸数组的对比。'
 tags: [C++, STL]
 category: C++ 入门

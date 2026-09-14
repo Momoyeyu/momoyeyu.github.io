@@ -1,6 +1,6 @@
 ---
 title: C++ 单例模式
-published: 2024-03-15
+date: 2024-03-15
 description: '用 C++ 实现线程安全的单例、local static 的单例写法，以及单例的滥用问题。'
 tags: [C++, OOP]
 category: C++ 进阶
@@ -238,9 +238,9 @@ engine.Run();
 
 ---
 
-## AI Infra 中的单例场景
+## 资源管理中的单例场景
 
-在 AI 基础设施代码里，有几个地方单例是合理的：
+在资源管理代码里，有几个地方单例是合理的：
 
 **CUDA Context**：`cudaSetDevice()` 绑定到当前线程，多设备管理器通常是单例。
 

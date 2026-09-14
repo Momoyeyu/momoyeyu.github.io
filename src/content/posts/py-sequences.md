@@ -1,6 +1,6 @@
 ---
 title: Python 序列
-published: 2023-01-20
+date: 2023-01-20
 description: 'Python 序列的通用运算、is 与 == 的区别、id() 函数与迭代器基础。'
 tags: [Python]
 category: Python 入门

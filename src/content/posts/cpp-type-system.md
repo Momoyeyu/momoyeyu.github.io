@@ -1,6 +1,6 @@
 ---
 title: C++ cast 与 union
-published: 2023-11-22
+date: 2023-11-22
 description: 'C++ 四种 cast 的语义差异、reinterpret_cast 的内存重解释，以及 union 在类型转换中的应用。'
 tags: [C++, 类型系统]
 category: C++ 进阶
@@ -9,7 +9,7 @@ draft: false
 lang: 'zh_CN'
 ---
 
-C++ 有四种 cast 运算符，很多人只会用 `(int)x` 这种 C 风格的暴力转换，或者干脆所有情况都用 `static_cast`。但这四种 cast 背后的语义差异非常大——有些在编译期检查，有些在运行期检查，有些根本什么都不做只是骗骗编译器。搞清楚这些差异，对写出正确的底层代码（尤其是 AI Infra 里大量涉及的数值精度转换）至关重要。
+C++ 有四种 cast 运算符，很多人只会用 `(int)x` 这种 C 风格的暴力转换，或者干脆所有情况都用 `static_cast`。但这四种 cast 背后的语义差异非常大——有些在编译期检查，有些在运行期检查，有些根本什么都不做只是骗骗编译器。搞清楚这些差异，对写出正确的底层代码（尤其是高性能计算里大量涉及的数值精度转换）至关重要。
 
 ---
 
@@ -249,9 +249,9 @@ struct DynamicValue {
 
 ---
 
-## AI Infra 场景：fp16/bf16/fp32 的精度转换
+## 高性能计算场景：fp16/bf16/fp32 的精度转换
 
-这些 cast 技巧在 AI Infra 里几乎无处不在。深度学习模型里大量使用混合精度：
+这些 cast 技巧在高性能计算里几乎无处不在。深度学习模型里大量使用混合精度：
 
 - 权重可能是 fp16 或 bf16
 - 激活值可能是 fp32
@@ -284,7 +284,7 @@ uint32_t back = static_cast<uint32_t>(bf16_bits) << 16;
 float fp32_back = std::bit_cast<float>(back);
 ```
 
-这就是为什么搞 AI Infra 的人必须对 type punning 和 union 了然于胸——这些东西每天都在用，不理解的话很容易写出在某些优化级别下行为异常的代码。
+这就是为什么搞高性能计算的人必须对 type punning 和 union 了然于胸——这些东西每天都在用，不理解的话很容易写出在某些优化级别下行为异常的代码。
 
 另一个场景是**向量化加载**。CUDA 里经常用 `float4`/`int4` 这样的宽类型来一次加载 128 位，然后用 `reinterpret_cast` 把它解读成四个 fp32：
 

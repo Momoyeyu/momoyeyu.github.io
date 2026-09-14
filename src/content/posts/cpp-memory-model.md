@@ -1,6 +1,6 @@
 ---
 title: C++ 内存模型
-published: 2023-05-15
+date: 2023-05-15
 description: '深入理解栈和堆的底层机制、内存对齐的规则，以及追踪内存分配的技巧。'
 tags: [C++, 内存, 性能]
 category: C++ 进阶
@@ -9,7 +9,7 @@ draft: false
 lang: 'zh_CN'
 ---
 
-写 AI Infra 或者 CUDA kernel 的时候，内存管理是绕不开的话题。GPU 显存贵、CPU 内存带宽有限，一个不对齐的访问就能让性能掉一半。这篇文章从 CPU 侧的内存模型出发，搞清楚栈和堆在底层到底是怎么运作的，再聊聊内存对齐为什么重要，最后演示如何在 C++ 里追踪每一笔内存分配。
+编写高性能计算程序或 CUDA kernel 的时候，内存管理是绕不开的话题。GPU 显存贵、CPU 内存带宽有限，一个不对齐的访问就能让性能掉一半。这篇文章从 CPU 侧的内存模型出发，搞清楚栈和堆在底层到底是怎么运作的，再聊聊内存对齐为什么重要，最后演示如何在 C++ 里追踪每一笔内存分配。
 
 ## 程序的内存全貌
 
@@ -369,7 +369,7 @@ int main() {
 > [!TIP]
 > 生产环境里推荐用 Valgrind（Linux）、AddressSanitizer（`-fsanitize=address`）或者 Heaptrack，功能更完整，无需修改代码。
 
-## CUDA / GPU 侧的内存对齐（AI Infra 视角）
+## CUDA / GPU 侧的内存对齐
 
 GPU 的内存体系和 CPU 类似，但对齐的重要性更上一个量级。
 

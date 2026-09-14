@@ -1,9 +1,10 @@
 ---
 title: Finding My Way
-published: 2025-03-31
+date: 2025-03-31
 description: '在科研与工程之间反复摇摆后，想清楚自己真正想走哪条路的心路历程。'
 tags: [随笔, 生活]
 category: 随笔
+episode: 0
 draft: false
 lang: 'zh_CN'
 ---

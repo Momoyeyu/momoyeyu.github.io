@@ -1,6 +1,6 @@
 ---
 title: C++ optional、variant 与 any
-published: 2023-10-15
+date: 2023-10-15
 description: '用 optional 替代 nullptr、variant 实现类型安全的 union，以及 any 存储任意类型。'
 tags: [C++, STL]
 category: C++ 进阶
@@ -209,7 +209,7 @@ std::visit(overloaded{
 
 ### 实际场景：张量数据类型
 
-在 AI Infra 里，张量的数据类型是运行时决定的，但类型集合是编译期已知的。`variant` 非常适合这个场景：
+在高性能计算里，张量的数据类型是运行时决定的，但类型集合是编译期已知的。`variant` 非常适合这个场景：
 
 ```cpp
 #include <variant>

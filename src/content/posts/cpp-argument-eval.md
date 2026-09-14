@@ -1,6 +1,6 @@
 ---
 title: C++ 求值顺序与 UB
-published: 2024-04-20
+date: 2024-04-20
 description: 'C++ 函数参数的求值顺序未指定，以及哪些表达式会触发未定义行为。'
 tags: [C++]
 category: C++ 进阶

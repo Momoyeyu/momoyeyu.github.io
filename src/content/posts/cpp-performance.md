@@ -1,15 +1,15 @@
 ---
 title: C++ 性能优化
-published: 2024-10-22
+date: 2024-10-22
 description: 'std::chrono 计时、Benchmarking 方法论、内存分配追踪，以及 CLion Profiler 的使用。'
-tags: [C++, 性能, AI Infra]
+tags: [C++, 性能]
 category: C++ 进阶
 episode: 21
 draft: false
 lang: 'zh_CN'
 ---
 
-AI Infra 工程师的日常，有很大一部分是在和"为什么这段代码这么慢"较劲。GPU 利用率上不去？先看看 CPU 端的数据预处理是不是瓶颈。模型推理延迟高？先量一量各个阶段的耗时。性能意识不是锦上添花，是这个领域的核心素养。
+性能优化有很大一部分是在和"为什么这段代码这么慢"较劲。GPU 利用率上不去？先看看 CPU 端的数据预处理是不是瓶颈。模型推理延迟高？先量一量各个阶段的耗时。性能意识不是锦上添花，是编写高性能程序的基本功。
 
 这篇文章覆盖 C++ 性能分析的常用工具和方法论：从最基础的 `std::chrono` 计时，到 Benchmarking 的坑，再到内存分配追踪和 CLion Profiler 的使用。
 
@@ -77,7 +77,7 @@ void preprocess_batch(const std::vector<float>& data) {
 }
 ```
 
-在 AI Infra 场景下，这个 Timer 特别适合快速定位 CPU 端 pipeline 中的热点。比如你发现 GPU 利用率只有 60%，大概率是 CPU 端的数据加载、tokenization 或者 tensor 构建在拖后腿，在各个阶段加 Timer 是第一步。
+在数据处理场景下，这个 Timer 特别适合快速定位 CPU 端 pipeline 中的热点。比如你发现 GPU 利用率只有 60%，大概率是 CPU 端的数据加载、tokenization 或者 tensor 构建在拖后腿，在各个阶段加 Timer 是第一步。
 
 ---
 
@@ -212,7 +212,7 @@ void benchmark(const std::string& name, Func f,
 
 ## 3. 内存分配追踪
 
-频繁的堆内存分配（`malloc`/`free`，`new`/`delete`）是性能杀手。每次分配都可能涉及锁竞争（多线程场景）、系统调用，以及 TLB/cache 污染。在 AI Infra 的热路径（hot path）上——比如每处理一个 token 就 `new` 一个对象——很容易把吞吐量打下去。
+频繁的堆内存分配（`malloc`/`free`，`new`/`delete`）是性能杀手。每次分配都可能涉及锁竞争（多线程场景）、系统调用，以及 TLB/cache 污染。在程序的热路径（hot path）上——比如每处理一个 token 就 `new` 一个对象——很容易把吞吐量打下去。
 
 ### 重载全局 `operator new` 追踪分配
 
@@ -300,7 +300,7 @@ int main() {
 }
 ```
 
-**对 AI Infra 的实际意义**：如果你在处理 tokenization 时大量创建短字符串（比如词表里的 token 大多是几个字符），SSO 会自动帮你避免堆分配开销。但一旦某些 token 超过阈值，就会触发分配。如果量大，考虑用 `std::string_view`（零拷贝视图）替代。
+**对文本处理的实际意义**：如果你在处理 tokenization 时大量创建短字符串（比如词表里的 token 大多是几个字符），SSO 会自动帮你避免堆分配开销。但一旦某些 token 超过阈值，就会触发分配。如果量大，考虑用 `std::string_view`（零拷贝视图）替代。
 
 ---
 
@@ -329,7 +329,7 @@ Memory Profiler 追踪堆分配，展示：
 
 启动方式：Run → Profile with Memory Profiler。分析完成后，"Allocations" 视图按分配次数和大小排序，可以直接跳转到分配发生的源代码位置。
 
-### AI Infra 扩展工具链
+### CUDA 性能分析工具
 
 CLion Profiler 适合分析纯 CPU 端的代码。如果你需要分析 CPU-GPU 交互（比如 CUDA kernel 的启动延迟、数据搬运开销、CPU 等待 GPU 同步的时间），需要用 NVIDIA 的工具：
 
@@ -402,7 +402,7 @@ struct ParticlesSoA {
 };
 ```
 
-在 AI Infra 的数据预处理场景（比如批量归一化一个 feature 列），SoA 的 cache 命中率明显更高。
+在数据预处理场景（比如批量归一化一个 feature 列），SoA 的 cache 命中率明显更高。
 
 ### 减少虚函数调用
 
@@ -436,7 +436,7 @@ std::vector<float> make_data() {
 
 性能优化的正确顺序是：**先量，再优化，再验证**。不要凭感觉猜热点，先用 Timer / Profiler 找到真正的瓶颈，再针对性地优化，最后用量化数据确认优化有效。
 
-对于 AI Infra 工程师，CPU 端的优化往往不是终点，而是为了让 GPU 不空转——让数据预处理跟上 GPU 的消费速度，才是真正提升端到端吞吐的关键。
+在 CPU 与 GPU 协同计算时，CPU 端的优化往往不是终点，而是为了让 GPU 不空转——让数据预处理跟上 GPU 的消费速度，才是真正提升端到端吞吐的关键。
 
 工具总结：
 | 场景 | 工具 |

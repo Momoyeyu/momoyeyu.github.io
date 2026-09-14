@@ -1,15 +1,15 @@
 ---
 title: C++ 数据布局 AoS vs SoA
-published: 2023-09-12
+date: 2023-09-12
 description: 'Array of Structs 与 Struct of Arrays 的内存访问模式差异，以及对 SIMD 和 CUDA 性能的影响。'
-tags: [C++, 性能, AI Infra]
+tags: [C++, 性能]
 category: C++ 进阶
 episode: 9
 draft: false
 lang: 'zh_CN'
 ---
 
-在 AI Infra 和 CUDA 开发里，数据布局（data layout）是一个高频考点，也是真正决定性能上限的底层问题。面试时问你"AoS 和 SoA 有什么区别"，不是考你背定义，而是考你有没有真正理解内存访问模式。
+在 C++ 和 CUDA 开发里，数据布局（data layout）是影响性能的底层问题。理解 AoS 和 SoA 的区别，需要从内存访问模式入手。
 
 这篇文章从 CPU 缓存原理讲起，一路聊到 GPU warp coalescing，争取让你彻底搞清楚这件事。
 
@@ -301,4 +301,4 @@ ParticleTile tiles[N / 8];
 - **CUDA warp coalescing 的数学**：32 thread × 4 byte = 128 byte，正好等于 GPU 最小内存事务单元；SoA 一次搞定，AoS strided 需要多次，慢 20~32 倍
 - **AoSoA** 是折中方案，在 SIMD 宽度（8/16）的粒度上做 SoA，兼顾逻辑分组和访问效率
 
-在 AI Infra 工作里，模型训练和推理的 kernel 绝大多数是批量处理同一字段（权重、激活值），所以 SoA 或 AoSoA 是默认的正确选择。理解这一层，是从"会写 CUDA"到"能写高性能 CUDA"的必经之路。
+在数值计算中，许多 kernel 会批量处理同一字段，所以 SoA 或 AoSoA 是默认的正确选择。理解这一层，是从"会写 CUDA"到"能写高性能 CUDA"的必经之路。

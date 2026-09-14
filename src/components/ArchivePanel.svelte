@@ -11,8 +11,6 @@ import { getPostUrlBySlug } from "../utils/url-utils";
 export let tags: string[] = [];
 export let categories: string[] = [];
 export let sortedPosts: Post[] = [];
-// Names of categories that are ordered series (see src/constants/categories.ts).
-export let orderedCategories: string[] = [];
 
 const params = new URLSearchParams(window.location.search);
 tags = params.has("tag") ? params.getAll("tag") : [];
@@ -27,7 +25,7 @@ interface Post {
 		category?: string | null;
 		episode?: number;
 		seriesPosition?: number;
-		published: Date;
+		date: Date;
 	};
 }
 
@@ -84,13 +82,12 @@ function rebuildGroups() {
 
 	const dateMul = sortMode === "date-desc" ? -1 : 1;
 	const datePosts = [...filteredPosts].sort(
-		(a, b) =>
-			dateMul * (a.data.published.getTime() - b.data.published.getTime()),
+		(a, b) => dateMul * (a.data.date.getTime() - b.data.date.getTime()),
 	);
 
 	const grouped = datePosts.reduce(
 		(acc, post) => {
-			const year = post.data.published.getFullYear();
+			const year = post.data.date.getFullYear();
 			if (!acc[year]) acc[year] = [];
 			acc[year].push(post);
 			return acc;
@@ -164,11 +161,10 @@ onMount(() => {
 
 	const singleCategory =
 		categories.length === 1 && tags.length === 0 && !uncategorized;
-	// EP sort is offered only for categories explicitly registered as ordered
-	// series. Series mode shows the episode posts; date mode shows everything.
-	const isOrderedCategory =
-		singleCategory && orderedCategories.includes(categories[0]);
-	canUseSeries = isOrderedCategory && seriesPosts.length >= 1;
+	// Every category is a series, so the EP sort is offered as soon as the list is
+	// narrowed down to a single category. Series mode shows the episode posts;
+	// date mode shows everything.
+	canUseSeries = singleCategory && seriesPosts.length >= 1;
 
 	sortMode = canUseSeries ? "episode-desc" : "date-desc";
 	rebuildGroups();
@@ -288,7 +284,7 @@ onMount(() => {
                             {#if group.isSeries && typeof post.data.seriesPosition === "number" && post.data.seriesPosition >= 0}
                                 EP.{post.data.seriesPosition}
                             {:else}
-                                {formatDate(post.data.published)}
+                                {formatDate(post.data.date)}
                             {/if}
                         </div>
 

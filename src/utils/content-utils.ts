@@ -1,5 +1,4 @@
 import { type CollectionEntry, getCollection } from "astro:content";
-import { isOrderedCategory } from "@constants/categories.ts";
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 import { getCategoryUrl } from "@utils/url-utils.ts";
@@ -16,27 +15,26 @@ async function getRawSortedPosts() {
 	const allBlogPosts = await getPublishedPosts();
 
 	const sorted = allBlogPosts.sort((a, b) => {
-		const dateA = new Date(a.data.published);
-		const dateB = new Date(b.data.published);
+		const dateA = new Date(a.data.date);
+		const dateB = new Date(b.data.date);
 		return dateA > dateB ? -1 : 1;
 	});
 	return sorted;
 }
 
 // Assigns series metadata (position, total, prev/next) to each post in a series.
-// A "series" = group of posts under a category registered as an ordered series
-// (see src/constants/categories.ts). The displayed EP number is the auto-numbered
-// position (1..N) within the series; the raw `episode` value is only used as a
-// sort key, so inserting a new article with episode: 2.5 cleanly slots in without
-// renumbering siblings.
+// Every category is a series: posts are grouped by `category` and ordered by their
+// `episode` value. The displayed EP number is the auto-numbered position (0..N-1)
+// within the series; the raw `episode` value is only used as a sort key, so
+// inserting a new article with episode: 2.5 cleanly slots in without renumbering.
 export function assignSeriesMetadata(sorted: CollectionEntry<"posts">[]) {
 	const byCategory: Record<string, CollectionEntry<"posts">[]> = {};
 	for (const post of sorted) {
 		const cat = post.data.category;
-		if (!isOrderedCategory(cat)) continue;
+		if (!cat) continue;
 		if (typeof post.data.episode !== "number") continue;
-		if (!byCategory[cat as string]) byCategory[cat as string] = [];
-		byCategory[cat as string].push(post);
+		if (!byCategory[cat]) byCategory[cat] = [];
+		byCategory[cat].push(post);
 	}
 	for (const cat of Object.keys(byCategory)) {
 		const arr = byCategory[cat]

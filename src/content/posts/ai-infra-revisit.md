@@ -1,6 +1,6 @@
 ---
 title: 再谈 AI Infra
-published: 2026-05-26
+date: 2026-05-26
 description: '一位来自工业界，一位来自学术界。两场对话之后，我对 AI Infra 的理解变了不少。'
 tags: [AI Infra, 职业]
 category: AI Infra

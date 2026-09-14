@@ -1,15 +1,15 @@
 ---
 title: C++ 并发与原子操作
-published: 2023-11-05
+date: 2023-11-05
 description: 'std::thread 的使用、数据竞争与互斥锁、原子操作的内存序，以及和 CUDA stream 的关系。'
-tags: [C++, 并发, AI Infra]
+tags: [C++, 并发]
 category: C++ 进阶
 episode: 12
 draft: false
 lang: 'zh_CN'
 ---
 
-AI Infra 开发离不开并发。CPU 端要多线程准备 batch 数据，GPU 端要管理多个 CUDA stream，两者之间还要同步。没有扎实的并发基础，调 bug 会让你怀疑人生——程序偶尔崩溃、结果随机错误，而且只在生产环境复现。
+高性能计算开发离不开并发。CPU 端要多线程准备 batch 数据，GPU 端要管理多个 CUDA stream，两者之间还要同步。没有扎实的并发基础，调 bug 会让你怀疑人生——程序偶尔崩溃、结果随机错误，而且只在生产环境复现。
 
 这篇文章从 `std::thread` 出发，讲清楚数据竞争、互斥锁、原子操作和内存序，最后把这些概念和 CUDA 的异步模型对应起来。
 
@@ -414,7 +414,7 @@ for (int i = 0; i < 100; i++) {
 
 ## 7. 和 CUDA 的对应关系
 
-搞 AI Infra 的同学，理解这些 CPU 并发概念后，可以直接对应到 CUDA：
+理解这些 CPU 并发概念后，可以直接对应到 CUDA：
 
 | CPU 概念 | CUDA 对应 |
 |----------|-----------|
@@ -424,7 +424,7 @@ for (int i = 0; i < 100; i++) {
 | `std::atomic<int>` | `atomicAdd`、`atomicCAS` 等内置函数 |
 | 线程池 | CUDA stream pool（复用 stream 避免创建销毁开销） |
 
-### 典型 AI Infra 场景
+### 典型高性能计算场景
 
 ```
 CPU 线程 1 ──── 准备 batch 数据 ──── cudaMemcpyAsync ────┐
@@ -455,4 +455,4 @@ GPU 同样有 Cache 一致性问题，`atomicAdd` 在 GPU 端对应 `std::atomic
 
 并发代码的最大敌人是隐式假设——"这个操作肯定是原子的""这个值肯定已经更新了"。养成习惯：有共享数据就想保护机制，有顺序依赖就想内存序。
 
-下一篇会讲 `std::condition_variable` 和更复杂的同步模式，以及 AI Infra 里常见的生产者-消费者队列实现。
+下一篇会讲 `std::condition_variable` 和更复杂的同步模式，以及高性能计算里常见的生产者-消费者队列实现。

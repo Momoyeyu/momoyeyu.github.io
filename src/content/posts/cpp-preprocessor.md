@@ -1,6 +1,6 @@
 ---
 title: C++ 预处理器与宏
-published: 2024-01-08
+date: 2024-01-08
 description: '#define、条件编译、宏的局限性，以及 CUDA 代码中的预处理器用法。'
 tags: [C++, 编译]
 category: C++ 进阶
@@ -227,7 +227,7 @@ CMake 里也可以把检测到的平台通过 `target_compile_definitions` 传�
 | `__FILE__` | 当前源文件路径（字符串） |
 | `__LINE__` | 当前行号（整数） |
 | `__func__` | 当前函数名（字符串，C99/C++11） |
-| `__DATE__` | 编译日期（字符串，如 `"May 14 2026"`） |
+| `__DATE__` | 编译日期（字符串，如 `"Jan  8 2024"`） |
 | `__TIME__` | 编译时间（字符串） |
 
 实际应用——带位置信息的日志宏：
@@ -247,7 +247,7 @@ LOG_INFO("Loading model from %s", model_path);
 // 输出：[INFO] trainer.cpp:42 (load_model): Loading model from /data/model.bin
 ```
 
-这类日志宏在 AI Infra 代码里极其常见，因为 C++ 没有原生的反射，获取调用位置信息只有靠预处理器。
+这类日志宏在 C++ 工程代码里极其常见，因为 C++ 没有原生的反射，获取调用位置信息只有靠预处理器。
 
 ---
 
@@ -444,7 +444,7 @@ else
 #pragma GCC target("avx2")
 ```
 
-对某个文件或函数开启特定优化，常见于竞赛代码，也有时用于 AI Infra 里针对特定热点文件单独调整编译选项。这比修改 CMakeLists 更局部，但也更不透明——谨慎使用。
+对某个文件或函数开启特定优化，常见于竞赛代码，也有时用于针对特定热点文件单独调整编译选项。这比修改 CMakeLists 更局部，但也更不透明——谨慎使用。
 
 ### `#pragma pack`
 

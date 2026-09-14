@@ -1,6 +1,6 @@
 ---
 title: C++ 对象生命周期
-published: 2023-04-20
+date: 2023-04-20
 description: '栈上 vs 堆上创建对象、new/delete 的本质、复制构造函数与 RAII 模式。'
 tags: [C++, 内存]
 category: C++ 入门

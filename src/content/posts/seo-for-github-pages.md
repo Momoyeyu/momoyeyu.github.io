@@ -1,9 +1,10 @@
 ---
 title: 刷 SEO
-published: 2026-05-15
+date: 2026-05-15
 description: '给 GitHub Pages 博客配置 Google Search Console 和 Bing Webmaster Tools 的完整流程。'
 tags: [随笔]
 category: 随笔
+episode: 3
 draft: false
 lang: 'zh_CN'
 ---

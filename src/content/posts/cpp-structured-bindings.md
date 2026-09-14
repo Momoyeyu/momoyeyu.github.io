@@ -1,6 +1,6 @@
 ---
 title: C++ 结构化绑定
-published: 2023-06-03
+date: 2023-06-03
 description: 'tuple、pair、结构化绑定（C++17）以及返回多个值的各种方式对比。'
 tags: [C++]
 category: C++ 进阶
@@ -134,7 +134,7 @@ struct 相比 tuple 的优势：
 - IDE 的自动补全友好。
 - 返回值优化（RVO/NRVO）对 struct 一样有效，没有额外开销。
 
-**在 AI Infra 场景里，这几乎是唯一合理的选择。** 推理结果、统计信息、性能指标——这些都有明确的语义，不应该靠 `get<0>`、`get<1>` 来访问。
+**对于有明确字段含义的数据，struct 往往更清晰。** 推理结果、统计信息、性能指标——这些都有明确的语义，不应该靠 `get<0>`、`get<1>` 来访问。
 
 ---
 
@@ -229,7 +229,7 @@ for (const auto& [name, value] : hyperparams) {
 
 可读性提升非常明显。`const auto&` 保证不拷贝、不修改。
 
-再看一个 AI Infra 场景：遍历 batch 的推理结果。
+再看一个高性能计算场景：遍历 batch 的推理结果。
 
 ```cpp
 std::vector<InferenceResult> results = RunBatchInference(batch);
@@ -345,4 +345,4 @@ int main() {
 - **三个以上**，或者值有明确语义，定义一个 struct，字段有名字，维护性好得多。
 - **结构化绑定**是语法糖，底层就是编译器帮你生成 `auto& x = tmp.field` 这样的代码。用 `auto&` 绑定引用，用 `const auto&` 只读绑定。
 - **范围 for + 结构化绑定**是现代 C++ 里遍历 map 的标准写法，`const auto& [key, value]` 比 `kv.first` / `kv.second` 清晰多了。
-- **AI Infra 场景**里，推理结果、统计指标这类多字段数据天然适合 struct + 结构化绑定，既保留了字段语义，又能用解包语法写出简洁的调用代码。
+- **高性能计算场景**里，推理结果、统计指标这类多字段数据天然适合 struct + 结构化绑定，既保留了字段语义，又能用解包语法写出简洁的调用代码。
