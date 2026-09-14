@@ -1,6 +1,6 @@
 ---
 title: C++ 性能优化
-published: 2024-10-22
+date: 2024-10-22
 description: 'std::chrono 计时、Benchmarking 方法论、内存分配追踪，以及 CLion Profiler 的使用。'
 tags: [C++, 性能, AI Infra]
 category: C++ 进阶

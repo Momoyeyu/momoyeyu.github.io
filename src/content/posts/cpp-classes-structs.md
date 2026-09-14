@@ -1,6 +1,6 @@
 ---
 title: C++ 类与结构体
-published: 2023-03-15
+date: 2023-03-15
 description: 'class 与 struct 的区别、成员函数背后的 this 指针、以及对象在内存中的布局。'
 tags: [C++, OOP]
 category: C++ 入门

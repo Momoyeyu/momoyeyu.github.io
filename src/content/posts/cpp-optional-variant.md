@@ -1,6 +1,6 @@
 ---
 title: C++ optional、variant 与 any
-published: 2023-10-15
+date: 2023-10-15
 description: '用 optional 替代 nullptr、variant 实现类型安全的 union，以及 any 存储任意类型。'
 tags: [C++, STL]
 category: C++ 进阶

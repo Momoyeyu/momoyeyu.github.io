@@ -1,6 +1,6 @@
 ---
 title: C++ cast 与 union
-published: 2023-11-22
+date: 2023-11-22
 description: 'C++ 四种 cast 的语义差异、reinterpret_cast 的内存重解释，以及 union 在类型转换中的应用。'
 tags: [C++, 类型系统]
 category: C++ 进阶

@@ -69,20 +69,29 @@ describe("assignSeriesMetadata", () => {
 		expect(data.last.seriesPosition).toBe(2);
 	});
 
-	it("ignores posts whose category is not a registered ordered series", () => {
-		const posts = [makePost("x", "随笔", 1), makePost("y", "随笔", 2)];
+	it("numbers every category as a series", () => {
+		const posts = [
+			makePost("later", "随笔", 1),
+			makePost("earlier", "随笔", 0),
+		];
+
+		assignSeriesMetadata(posts);
+		const data = bySlug(posts);
+
+		expect(data.earlier.seriesPosition).toBe(0);
+		expect(data.later.seriesPosition).toBe(1);
+		expect(data.earlier.seriesTotal).toBe(2);
+	});
+
+	it("ignores posts without an episode or without a category", () => {
+		const posts = [
+			makePost("noep", "AI Infra", undefined),
+			makePost("nocat", null, 0),
+		];
 
 		assignSeriesMetadata(posts);
 
 		expect(posts[0].data.seriesPosition).toBe(-1);
 		expect(posts[1].data.seriesPosition).toBe(-1);
-	});
-
-	it("ignores ordered-category posts that have no episode", () => {
-		const posts = [makePost("noep", "AI Infra", undefined)];
-
-		assignSeriesMetadata(posts);
-
-		expect(posts[0].data.seriesPosition).toBe(-1);
 	});
 });

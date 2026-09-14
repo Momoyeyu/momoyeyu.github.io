@@ -1,6 +1,6 @@
 ---
 title: Awesome AI Infra
-published: 2026-05-09
+date: 2026-05-09
 description: '搜集的 AI Infra 相关 GitHub 资源，持续更新中。'
 tags: [AI Infra, LLM, CUDA]
 category: AI Infra

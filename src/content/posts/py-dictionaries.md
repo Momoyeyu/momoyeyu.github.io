@@ -1,6 +1,6 @@
 ---
 title: Python 字典
-published: 2023-01-22
+date: 2023-01-22
 description: 'Python 字典的声明方式、增删改查操作，以及映射关系在实际问题中的应用。'
 tags: [Python]
 category: Python 入门

@@ -1,6 +1,6 @@
 ---
 title: C++ 命名空间
-published: 2023-07-02
+date: 2023-07-02
 description: '用命名空间避免名称冲突、嵌套命名空间，以及 using 的正确用法。'
 tags: [C++]
 category: C++ 进阶

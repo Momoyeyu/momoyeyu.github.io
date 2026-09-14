@@ -1,6 +1,6 @@
 ---
 title: C++ 变量、函数与头文件
-published: 2023-02-12
+date: 2023-02-12
 description: '基本数据类型的内存大小、函数的声明与定义、头文件的工程意义。'
 tags: [C++]
 category: C++ 入门

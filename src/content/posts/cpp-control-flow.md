@@ -1,6 +1,6 @@
 ---
 title: C++ 控制流
-published: 2023-02-19
+date: 2023-02-19
 description: '条件判断、循环和 switch 背后的机制，以及 break/continue/return 的用法。'
 tags: [C++]
 category: C++ 入门

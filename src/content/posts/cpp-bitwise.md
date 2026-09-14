@@ -1,6 +1,6 @@
 ---
 title: C++ 位运算
-published: 2024-08-15
+date: 2024-08-15
 description: '二进制基础、AND/OR/XOR/NOT/移位运算，以及位运算在 GPU 编程中的应用。'
 tags: [C++, AI Infra]
 category: C++ 进阶

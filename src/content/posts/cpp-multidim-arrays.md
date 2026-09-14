@@ -1,6 +1,6 @@
 ---
 title: C++ 多维数组
-published: 2023-07-20
+date: 2023-07-20
 description: '二维数组的内存模型、行主序 vs 列主序，以及 GEMM 的内存访问模式。'
 tags: [C++, 内存, AI Infra]
 category: C++ 进阶

@@ -1,9 +1,10 @@
 ---
 title: ECS 架构
-published: 2026-05-14
+date: 2026-05-14
 description: '从游戏引擎到 AI Infra，理解 ECS 背后的数据导向设计思想。'
 tags: [C++, 性能, AI Infra]
 category: 随笔
+episode: 2
 draft: false
 lang: 'zh_CN'
 ---

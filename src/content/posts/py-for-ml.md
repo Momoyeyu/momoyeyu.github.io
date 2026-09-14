@@ -1,6 +1,6 @@
 ---
 title: Python ML 入门
-published: 2023-07-03
+date: 2023-07-03
 description: '面向机器学习的 Python 快速入门：基础语法、数据结构、NumPy 与文件读写。'
 tags: [Python, 深度学习]
 category: Python 入门

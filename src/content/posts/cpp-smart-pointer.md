@@ -1,6 +1,6 @@
 ---
 title: C++ 智能指针与 RAII
-published: 2023-04-21
+date: 2023-04-21
 description: 'unique_ptr、shared_ptr、weak_ptr 的用法与区别，以及 RAII 自动内存管理机制。'
 tags: [C++, 内存]
 category: C++ 进阶

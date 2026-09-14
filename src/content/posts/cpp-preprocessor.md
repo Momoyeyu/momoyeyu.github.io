@@ -1,6 +1,6 @@
 ---
 title: C++ 预处理器与宏
-published: 2024-01-08
+date: 2024-01-08
 description: '#define、条件编译、宏的局限性，以及 CUDA 代码中的预处理器用法。'
 tags: [C++, 编译]
 category: C++ 进阶

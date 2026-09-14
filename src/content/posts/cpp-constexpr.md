@@ -1,6 +1,6 @@
 ---
 title: C++ constexpr 与编译期计算
-published: 2024-02-03
+date: 2024-02-03
 description: 'const vs constexpr、编译期计算的零开销、if constexpr 的模板应用。'
 tags: [C++, 性能]
 category: C++ 进阶

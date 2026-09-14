@@ -1,6 +1,6 @@
 ---
 title: C++ 静态链接与动态链接
-published: 2023-05-08
+date: 2023-05-08
 description: '静态库（.a）与动态库（.so/.dylib）的区别、CMake 中的链接方式，以及 CUDA 库的链接实践。'
 tags: [C++, 编译, 工具链]
 category: C++ 入门

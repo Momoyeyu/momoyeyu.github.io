@@ -1,6 +1,6 @@
 ---
 title: C++ 模板
-published: 2023-06-18
+date: 2023-06-18
 description: '函数模板、类模板、模板特化，以及模板如何实现零开销抽象。'
 tags: [C++, 模板]
 category: C++ 进阶

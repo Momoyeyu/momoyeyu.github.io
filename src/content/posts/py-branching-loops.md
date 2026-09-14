@@ -1,6 +1,6 @@
 ---
 title: Python 分支与循环
-published: 2023-01-20
+date: 2023-01-20
 description: 'Python 中 if/elif/else 分支结构与 while/for 循环的基本语法与用法。'
 tags: [Python]
 category: Python 入门

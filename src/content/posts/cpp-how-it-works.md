@@ -1,6 +1,6 @@
 ---
 title: C++ 编译与链接
-published: 2023-02-05
+date: 2023-02-05
 description: '从源文件到可执行文件，理解编译器和链接器分别在干什么。'
 tags: [C++, 编译]
 category: C++ 入门

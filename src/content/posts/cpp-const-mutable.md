@@ -1,6 +1,6 @@
 ---
 title: C++ const、mutable 与 explicit
-published: 2023-04-09
+date: 2023-04-09
 description: 'const 的多种用法、mutable 关键字的语义，以及隐式转换与 explicit 的控制。'
 tags: [C++, 类型系统]
 category: C++ 入门

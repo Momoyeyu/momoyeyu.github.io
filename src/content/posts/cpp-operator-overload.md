@@ -1,6 +1,6 @@
 ---
 title: C++ 运算符重载
-published: 2023-04-15
+date: 2023-04-15
 description: '为自定义类型重载 +、<<、== 等运算符，让代码像内置类型一样自然。'
 tags: [C++, OOP]
 category: C++ 入门

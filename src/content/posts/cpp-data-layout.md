@@ -1,6 +1,6 @@
 ---
 title: C++ 数据布局 AoS vs SoA
-published: 2023-09-12
+date: 2023-09-12
 description: 'Array of Structs 与 Struct of Arrays 的内存访问模式差异，以及对 SIMD 和 CUDA 性能的影响。'
 tags: [C++, 性能, AI Infra]
 category: C++ 进阶

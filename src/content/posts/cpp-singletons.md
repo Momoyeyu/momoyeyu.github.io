@@ -1,6 +1,6 @@
 ---
 title: C++ 单例模式
-published: 2024-03-15
+date: 2024-03-15
 description: '用 C++ 实现线程安全的单例、local static 的单例写法，以及单例的滥用问题。'
 tags: [C++, OOP]
 category: C++ 进阶

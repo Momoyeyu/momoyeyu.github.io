@@ -1,6 +1,6 @@
 ---
 title: C++ 手写 vector
-published: 2024-06-08
+date: 2024-06-08
 description: '手写动态数组深入理解 std::vector 的内存管理、扩容策略与移动语义。'
 tags: [C++, STL, 内存]
 category: C++ 进阶

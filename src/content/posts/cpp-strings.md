@@ -1,6 +1,6 @@
 ---
 title: C++ 字符串
-published: 2023-04-02
+date: 2023-04-02
 description: 'C 风格字符串的内存布局、std::string 的堆分配，以及零拷贝的 string_view。'
 tags: [C++, STL]
 category: C++ 入门

@@ -1,6 +1,6 @@
 ---
 title: C++ 并发与原子操作
-published: 2023-11-05
+date: 2023-11-05
 description: 'std::thread 的使用、数据竞争与互斥锁、原子操作的内存序，以及和 CUDA stream 的关系。'
 tags: [C++, 并发, AI Infra]
 category: C++ 进阶

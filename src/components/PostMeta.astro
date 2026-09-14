@@ -7,7 +7,7 @@ import { getCategoryUrl, getTagUrl } from "../utils/url-utils";
 
 interface Props {
 	class: string;
-	published: Date;
+	date: Date;
 	updated?: Date;
 	tags: string[];
 	category: string | null;
@@ -16,7 +16,7 @@ interface Props {
 	hideCategory?: boolean;
 }
 const {
-	published,
+	date,
 	updated,
 	tags,
 	category,
@@ -34,11 +34,11 @@ const className = Astro.props.class;
         >
             <Icon name="material-symbols:calendar-today-outline-rounded" class="text-xl"></Icon>
         </div>
-        <span class="text-50 text-sm font-medium">{formatDateToYYYYMMDD(published)}</span>
+        <span class="text-50 text-sm font-medium">{formatDateToYYYYMMDD(date)}</span>
     </div>
 
     <!-- update date -->
-    {!hideUpdateDate && updated && updated.getTime() !== published.getTime() && (
+    {!hideUpdateDate && updated && updated.getTime() !== date.getTime() && (
         <div class="flex items-center">
             <div class="meta-icon"
             >

@@ -1,6 +1,6 @@
 ---
 title: C++ 移动语义
-published: 2023-08-25
+date: 2023-08-25
 description: '左值与右值的区别、移动构造函数的实现，以及 std::move 如何实现零拷贝传输。'
 tags: [C++, 性能]
 category: C++ 进阶

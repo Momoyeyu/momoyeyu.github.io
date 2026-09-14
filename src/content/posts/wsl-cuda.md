@@ -1,15 +1,15 @@
 ---
-title: Mac 连接 WSL 使用 CUDA
-published: 2026-05-22
+title: 通过 WSL 使用 CUDA
+date: 2026-05-22
 updated: 2026-05-22
-description: 'Mac SSH 直连 WSL2：mirrored 网络、sshd 配置、防火墙与 PyTorch GPU 验证。'
-tags: [macOS, WSL, CUDA]
+description: '本文使用 Mac 通过 SSH 直连 WSL2：mirrored 网络、sshd 配置、防火墙与 PyTorch GPU 验证。'
+tags: [WSL, CUDA]
 category: 环境搭建
+episode: 2
 draft: false
 lang: 'zh_CN'
 ---
-
-这篇记录用 Mac 通过 SSH 直连 Windows 上的 WSL2，在原生 Linux 环境里调 GPU 进行 CUDA 开发的完整配置过程。
+这篇记录如何通过 SSH 直连 Windows 上的 WSL2，在原生 Linux 环境里调 GPU 进行 CUDA 开发的完整配置过程。本文以 Mac 作为主机为例，将 Windows 当作服务器。
 
 方案的核心思路：**在 WSL2 内部装 sshd，配合 mirrored 网络模式，让 WSL 直接共享 Windows 的网络栈**。Mac 连 `<windows-ip>:22` 就是在连 WSL 里的 Linux，不需要经过 Windows OpenSSH，不需要 `.bat` 跳板脚本，不需要端口转发。SSH 和 SFTP 走的都是同一个原生 Linux sshd，PyCharm、VS Code Remote-SSH 直接就能用。
 

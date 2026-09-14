@@ -1,9 +1,10 @@
 ---
 title: OpenClaw Deployment
-published: 2026-03-03
+date: 2026-03-03
 description: '从零部署 OpenClaw AI Agent 并接入飞书机器人的完整流程与踩坑记录。'
 tags: [Agent, Linux, 开源]
 category: 项目
+episode: 0
 draft: false
 image: '/img/posts/openclaw-deployment/cover.webp'
 lang: 'zh_CN'

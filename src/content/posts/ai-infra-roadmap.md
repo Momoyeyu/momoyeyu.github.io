@@ -1,6 +1,6 @@
 ---
 title: AI Infra Roadmap
-published: 2026-05-09
+date: 2026-05-09
 description: 'AI Infra 自学路线图：从工程基础到 GPU 算子、推理引擎与分布式训练，共六个阶段。'
 tags: [AI Infra, LLM, CUDA]
 category: AI Infra

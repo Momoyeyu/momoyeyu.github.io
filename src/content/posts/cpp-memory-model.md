@@ -1,6 +1,6 @@
 ---
 title: C++ 内存模型
-published: 2023-05-15
+date: 2023-05-15
 description: '深入理解栈和堆的底层机制、内存对齐的规则，以及追踪内存分配的技巧。'
 tags: [C++, 内存, 性能]
 category: C++ 进阶

@@ -27,7 +27,7 @@ import { pluginCustomCopyButton } from "./src/plugins/expressive-code/custom-cop
 import { remarkMermaid } from "./src/plugins/remark-mermaid.mjs";
 
 // Map each post's URL path (`/posts/<slug>/`) to its real last-modified date,
-// read from frontmatter `updated` (falling back to `published`). Used by the
+// read from frontmatter `updated` (falling back to `date`). Used by the
 // sitemap so a post's <lastmod> reflects when it actually changed, instead of
 // the build time — which would otherwise mark every page as "just updated".
 function getPostLastmodByPath() {
@@ -44,7 +44,7 @@ function getPostLastmodByPath() {
 				.match(new RegExp(`^${key}:\\s*(.+)$`, "m"))?.[1]
 				?.trim()
 				.replace(/^['"]|['"]$/g, "");
-		const date = read("updated") || read("published");
+		const date = read("updated") || read("date");
 		if (date && !Number.isNaN(new Date(date).getTime())) {
 			map[`/posts/${slug}/`] = new Date(date);
 		}

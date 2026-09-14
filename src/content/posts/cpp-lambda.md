@@ -1,6 +1,6 @@
 ---
 title: C++ Lambda 与函数指针
-published: 2023-08-08
+date: 2023-08-08
 description: '函数指针、std::function、lambda 的本质，以及捕获列表的内存语义。'
 tags: [C++]
 category: C++ 进阶

@@ -1,6 +1,6 @@
 ---
 title: C++ 继承与多态
-published: 2023-03-26
+date: 2023-03-26
 description: '虚函数、vtable 机制、纯虚函数（接口）以及多态的底层实现。'
 tags: [C++, OOP]
 category: C++ 入门
