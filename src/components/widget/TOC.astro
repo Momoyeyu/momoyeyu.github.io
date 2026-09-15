@@ -32,7 +32,7 @@ let heading1Count = 1;
 const maxLevel = siteConfig.toc.depth;
 ---
 {isPostsRoute &&
-<table-of-contents class:list={[className, "group"]} role="navigation" aria-label="目录">
+<table-of-contents class:list={[className, "group block relative"]} role="navigation" aria-label="目录">
     {headings.filter((heading) => heading.depth < minDepth + maxLevel).map((heading) =>
             <a href={`#${heading.slug}`} class="px-2 flex gap-2 relative transition w-full min-h-9 rounded-xl
         hover:bg-[var(--toc-btn-hover)] active:bg-[var(--toc-btn-active)] py-2
@@ -115,10 +115,14 @@ class TableOfContents extends HTMLElement {
         if (min > max) {
             this.activeIndicator?.setAttribute("style", `opacity: 0`);
         } else {
-            let parentOffset = this.tocEl?.getBoundingClientRect().top || 0;
-            let scrollOffset = this.tocEl?.scrollTop || 0;
-            let top = this.tocEntries[min].getBoundingClientRect().top - parentOffset + scrollOffset;
-            let bottom = this.tocEntries[max].getBoundingClientRect().bottom - parentOffset + scrollOffset;
+            // The indicator is an absolutely positioned child of <table-of-contents>,
+            // and it scrolls together with the entries inside #toc-inner-wrapper, so
+            // measure both against that host. Measuring against the scroll container
+            // added its padding and then drifted by exactly scrollTop, which is why
+            // the dashed box wandered off as the list auto-scrolled.
+            const hostTop = this.getBoundingClientRect().top;
+            const top = this.tocEntries[min].getBoundingClientRect().top - hostTop;
+            const bottom = this.tocEntries[max].getBoundingClientRect().bottom - hostTop;
             this.activeIndicator?.setAttribute("style", `top: ${top}px; height: ${bottom - top}px`);
         }
     };
@@ -213,9 +217,9 @@ class TableOfContents extends HTMLElement {
     };
 
     init() {
-        this.tocEl = document.getElementById(
-            "toc-inner-wrapper"
-        );
+        // Scope every lookup to this TOC instance: the layout swaps the right
+        // sidebar on navigation, so global ids can resolve to a stale copy.
+        this.tocEl = this.closest("#toc-inner-wrapper");
 
         if (!this.tocEl) return;
 
@@ -223,10 +227,10 @@ class TableOfContents extends HTMLElement {
             capture: true,
         });
 
-        this.activeIndicator = document.getElementById("active-indicator");
+        this.activeIndicator = this.querySelector("#active-indicator");
 
         this.tocEntries = Array.from(
-            document.querySelectorAll<HTMLAnchorElement>("#toc a[href^='#']")
+            this.querySelectorAll<HTMLAnchorElement>("a[href^='#']")
         );
 
         if (this.tocEntries.length === 0) return;
