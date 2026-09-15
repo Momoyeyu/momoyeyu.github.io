@@ -237,6 +237,17 @@
     @apply cursor-zoom-in
 }
 
+/* Standalone images in a post body are centred by default, so no markdown has
+ * to opt in. Images that are part of a layout (badge rows in a flex container,
+ * inline icons next to text) are left alone. */
+.custom-md p > img:only-child,
+.custom-md li > img:only-child,
+.custom-md figure img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 ::selection {
     background-color: var(--selection-bg)
 }
