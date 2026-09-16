@@ -5,7 +5,7 @@ description: '从 Transformer 开始的深度学习之旅'
 tags: [深度学习, Transformer]
 category: 深度学习
 episode: 0
-draft: true
+draft: false
 lang: 'zh_CN'
 ---
 
@@ -97,6 +97,23 @@ $$
 
 最终我们得到的就是经过注意力分数加权计算的注意力加权和。
 
+```python
+def attention(
+    query: torch.Tensor,             # [batch, n, d_k]
+    key: torch.Tensor,               # [batch, n, d_k]
+    value: torch.Tensor,             # [batch, n, d_v]
+    mask: torch.Tensor | None = None # [n, n] or [batch, n, n]
+) -> torch.Tensor:
+    d_k = query.size(-1)
+    scores = query @ key.transpose(-2, -1) / math.sqrt(d_k) # [batch, n, n]
+    if mask is not None:
+        scores = scores + mask.to(scores.dtype)
+    weights = F.softmax(scores, dim=-1)
+    return weights @ value # [batch, n, d_v]
+```
+
+此处的 `mask` 参数会在 [Masked Attention](#masked-attention) 一节中详细解释，在此之前可以忽略。
+
 #### Multi-Head
 
 “多头”指的是在计算 $Q$、$K$、$V$ 矩阵时，使用多组独立的 $W_q$、$W_k$、$W_v$ 矩阵对输入进行计算，每一组就是一个头，其基本思想是希望每个头负责提取不同类型的特征。
@@ -127,6 +144,25 @@ $$
 
 原始论文设 $d_v = d_{\text{model}} / h = d_k$，这主要是出于和 $d_k$ 一样的原因，不过这不是强制的，因为最后一层的线性变换依然可以保证输出为 $d_{\text{model}}$。
 
+```python
+class MHA(nn.Module):
+    def __init__(self, d_model: int, num_heads: int) -> None:
+        super().__init__()
+        assert d_model % num_heads == 0
+        self.d_model = d_model
+        self.num_heads = num_heads
+        self.d_k = self.d_model // self.num_heads
+        self.d_v = self.d_model // self.num_heads # d_v could be simplified as d_k here, but I want to keep it clear
+        self.w_q = nn.ModuleList([nn.Linear(self.d_model, self.d_k, bias=False) for _ in range(self.num_heads)])
+        self.w_k = nn.ModuleList([nn.Linear(self.d_model, self.d_k, bias=False) for _ in range(self.num_heads)])
+        self.w_v = nn.ModuleList([nn.Linear(self.d_model, self.d_v, bias=False) for _ in range(self.num_heads)])
+        self.w_o = nn.Linear(self.d_v * self.num_heads, self.d_model, bias=False)
+
+    def forward(self, query: torch.Tensor, key: torch.Tensor, value: torch.Tensor, mask: torch.Tensor | None = None) -> torch.Tensor:
+        heads = [attention(self.w_q[i](query), self.w_k[i](key), self.w_v[i](value), mask) for i in range(self.num_heads)]
+        return self.w_o(torch.cat(heads, dim=-1))
+```
+
 ### FFN
 
 ![ModalNet-23.png](https://s3.bmp.ovh/2026/09/14/aZdYW61H.png)
@@ -143,6 +179,22 @@ $$
 
 其中 $W_1 \in \mathbb{R}^{d_{\text{model}} \times d_{ff}}$，$W_2 \in \mathbb{R}^{d_{ff} \times d_{\text{model}}}$，
 原始论文中取 $d_{ff} = 4 d_{\text{model}}$，即先升维再降维。
+
+```python
+class FFN(nn.Module):
+    def __init__(self, d_model: int, d_ff: int) -> None:
+        super().__init__()
+        self.d_model = d_model
+        self.d_ff = d_ff
+        self.mlp = nn.Sequential(
+            nn.Linear(d_model, d_ff),
+            nn.ReLU(),
+            nn.Linear(d_ff, d_model),
+        )
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return self.mlp(x)
+```
 
 ## Decoder
 
@@ -179,6 +231,26 @@ $$
 $$
 \text{MaskedAttention}(Q, K, V) = \text{softmax}(A + M) V
 $$
+
+```python
+_NEG_INF = float("-inf")
+
+def causal_mask(size: int) -> torch.Tensor:
+    i = torch.arange(size).unsqueeze(1)      # [n, 1]
+    j = torch.arange(size).unsqueeze(0)      # [1, n]
+    return torch.where(j > i, _NEG_INF, 0.0) # [n, n]
+```
+
+`causal_mask` 就是用于生成掩码矩阵 $M$ 的函数，这也解释了前文代码中出现的 `mask` 参数。
+
+不过在实际训练中，一个 batch 里的序列长度往往不同，短的序列会用 padding token 补齐，这些 padding 位置同样不应参与注意力计算。因此除了 causal mask，还需要一个 padding mask：
+
+```python
+def padding_mask(pad: torch.Tensor) -> torch.Tensor:
+    return torch.where(pad.bool(), _NEG_INF, 0.0).unsqueeze(1) # [batch, 1, n]
+```
+
+`padding_mask` 返回的形状为 `[batch, 1, n]`，加到 `[batch, n, n]` 的 scores 上时会广播到所有 Query 位置，这样 pad 位置的 Key 就不会被任何 Query 注意到。
 
 ### Cross Attention
 
@@ -231,7 +303,17 @@ $p \in \mathbb{R}^{n \times V}$，每一行对应一个位置上所有 token 的
 训练时，取 $p$ 中对应目标 token 的概率计算交叉熵损失。
 推理时，原始论文使用 beam search，beam size 取 4，即同时保留概率最高的 4 条候选序列，最终选择整体概率最高的一条作为输出。
 
-通过公式不难发现，在词表 $V$ 非常大时，$W_{\text{out}}$ 的参数量会十分庞大，而这个问题其实是有办法缓解的。
+```python
+class LinearClassifier(nn.Module):
+    def __init__(self, d_model: int, vocab_size: int) -> None:
+        super().__init__()
+        self.classifier = nn.Linear(d_model, vocab_size, bias=False)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return self.classifier(x) # [batch, n, d_model] -> [batch, n, vocab_size]
+```
+
+不难发现，在词表 $V$ 非常大时，$W_{\text{out}}$ 的参数量会十分庞大，而这个问题其实是有办法缓解的。
 
 第一种方式是通过加一层线性变换，先将 Decoder 最后一层的输出特征维度压缩，得到一个更小的向量，然后再进行最终的线性变换。这种方式的优点是实现简单，不过压缩会带来一定的性能损失，实际应用中较少使用。
 
@@ -272,13 +354,186 @@ $$
 
 ![position encoding.png](https://s3.bmp.ovh/2026/09/14/h0yOLxJn.png)
 
+```python
+class PositionEncoding(nn.Module):
+    def __init__(self, d_model: int, max_len: int = 5000) -> None:
+        super().__init__()
+        assert d_model % 2 == 0
+        self.d_model = d_model
+        self.max_len = max_len # cache length
+        self.register_buffer("cache", self.encode(0, self.max_len), persistent=False)
+
+    def encode(self, start: int, end: int) -> torch.Tensor:
+        n = end - start
+        pos = torch.arange(start, end, dtype=torch.float32).unsqueeze(-1) # [n, 1]
+        i = torch.arange(0, self.d_model, 2, dtype=torch.float32).unsqueeze(0)  # [1, d_model / 2]
+        div = torch.exp(-math.log(10000) * i / self.d_model) # [1, d_model / 2]
+        position_encoding = torch.zeros(n, self.d_model) # [n, d_model]
+        position_encoding[:, 0::2] = torch.sin(pos * div)
+        position_encoding[:, 1::2] = torch.cos(pos * div)
+        return position_encoding
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        n = x.size(-2)
+        if n <= self.max_len:
+            return x + self.cache[:n].to(x.dtype)
+        pos_encoding = torch.zeros_like(x)
+        pos_encoding[:, :self.max_len] = self.cache.to(x.dtype)
+        pos_encoding[:, self.max_len:] = self.encode(self.max_len, n).to(x.dtype)
+        return x + pos_encoding
+```
+
+其中位置编码的 `cache` 设置了参数 `persistent=False`，这是为了避免保存 checkpoint 的时候把位置编码的缓存也保存起来，节省空间。
+
+# 完整代码实现
+
+接下来，我们将基于前文已有的代码实现完整的 Transformer。
+
+## Encoder
+
+```python
+class EncoderBlock(nn.Module):
+    def __init__(self, d_model: int, num_heads: int, d_ff: int, dropout: float = 0.1) -> None:
+        super().__init__()
+        self.mha = MHA(d_model, num_heads)
+        self.ln1 = nn.LayerNorm(d_model)
+        self.ffn = FFN(d_model, d_ff)
+        self.ln2 = nn.LayerNorm(d_model)
+        self.dropout = nn.Dropout(dropout)
+
+    def forward(self, x: torch.Tensor, mask: torch.Tensor | None = None) -> torch.Tensor:
+        residual = x
+        x = self.mha(x, x, x, mask)
+        x = self.dropout(x)
+        x = self.ln1(x + residual)
+        residual = x
+        x = self.ffn(x)
+        x = self.dropout(x)
+        x = self.ln2(x + residual)
+        return x
+
+
+class Encoder(nn.Module):
+    def __init__(self, num_layers: int, d_model: int, num_heads: int, d_ff: int, dropout: float = 0.1):
+        super().__init__()
+        self.blocks = nn.ModuleList([
+            EncoderBlock(d_model, num_heads, d_ff, dropout) for _ in range(num_layers)
+        ])
+
+    def forward(self, x: torch.Tensor, mask: torch.Tensor | None = None) -> torch.Tensor:
+        for block in self.blocks:
+            x = block(x, mask)
+        return x
+```
+
+## Decoder
+
+```python
+class DecoderBlock(nn.Module):
+    def __init__(self, d_model: int, num_heads: int, d_ff: int, dropout: float = 0.1) -> None:
+        super().__init__()
+        self.masked_mha = MHA(d_model, num_heads)
+        self.ln1 = nn.LayerNorm(d_model)
+        self.cross_mha = MHA(d_model, num_heads)
+        self.ln2 = nn.LayerNorm(d_model)
+        self.ffn = FFN(d_model, d_ff)
+        self.ln3 = nn.LayerNorm(d_model)
+        self.dropout = nn.Dropout(dropout)
+
+    def forward(self, y: torch.Tensor, h: torch.Tensor, self_mask: torch.Tensor | None = None, cross_mask: torch.Tensor | None = None) -> torch.Tensor:
+        residual = y
+        y = self.masked_mha(y, y, y, self_mask)
+        y = self.dropout(y)
+        y = self.ln1(y + residual)
+        residual = y
+        y = self.cross_mha(y, h, h, cross_mask)
+        y = self.dropout(y)
+        y = self.ln2(y + residual)
+        residual = y
+        y = self.ffn(y)
+        y = self.dropout(y)
+        y = self.ln3(y + residual)
+        return y
+
+
+class Decoder(nn.Module):
+    def __init__(self, num_layers: int, d_model: int, num_heads: int, d_ff: int, dropout: float = 0.1):
+        super().__init__()
+        self.blocks = nn.ModuleList([
+            DecoderBlock(d_model, num_heads, d_ff, dropout) for _ in range(num_layers)
+        ])
+
+    def forward(self, y: torch.Tensor, h: torch.Tensor, self_mask: torch.Tensor | None = None, cross_mask: torch.Tensor | None = None) -> torch.Tensor:
+        for block in self.blocks:
+            y = block(y, h, self_mask, cross_mask)
+        return y
+```
+
+## Transformer
+
+```python
+class Transformer(nn.Module):
+    def __init__(
+            self,
+            d_model: int,
+            max_len: int,
+            num_layers: int,
+            num_heads: int,
+            d_ff: int,
+            vocab_size: int,
+            dropout: float = 0.1
+    ) -> None:
+        super().__init__()
+        self.pos_encoder = PositionEncoding(d_model, max_len)
+        self.encoder = Encoder(num_layers, d_model, num_heads, d_ff, dropout)
+        self.decoder = Decoder(num_layers, d_model, num_heads, d_ff, dropout)
+        self.classifier = LinearClassifier(d_model, vocab_size)
+
+    def forward(
+        self,
+        src: torch.Tensor,                    # [batch, src_len, d_model]
+        tgt: torch.Tensor,                    # [batch, tgt_len, d_model]
+        src_pad: torch.Tensor | None = None,  # [batch, src_len], 1 表示 padding
+        tgt_pad: torch.Tensor | None = None,  # [batch, tgt_len], 1 表示 padding
+    ) -> torch.Tensor:
+        src = self.pos_encoder(src)
+        tgt = self.pos_encoder(tgt)
+
+        src_mask = padding_mask(src_pad) if src_pad is not None else None
+
+        causal = causal_mask(tgt.size(1)).to(tgt.device)
+        if tgt_pad is not None:
+            tgt_mask = causal + padding_mask(tgt_pad)  # [batch, tgt_len, tgt_len]
+        else:
+            tgt_mask = causal
+
+        h = self.encoder(src, src_mask)                 # [batch, src_len, d_model]
+        z = self.decoder(tgt, h, tgt_mask, src_mask)    # [batch, tgt_len, d_model]
+        return self.classifier(z)                       # logits: [batch, tgt_len, vocab_size]
+```
+
+最终的输出是 logits，而根据公式来说是要经过 $\text{softmax}$ 的，这里为什么没有呢？
+
+其实是因为工程实现上，模型通常只输出 logits，不主动做 $\text{softmax}$，这样训练和推理阶段都能各自选择最合适的处理方式。
+
+训练阶段通常使用 `nn.CrossEntropyLoss` 作为损失函数，其内部等价于 `log_softmax` 后再计算负对数似然，因此模型可以直接输出 logits。
+
+推理阶段则可以根据 next_token 的选择策略灵活决定何时、对哪些部分做 $\text{softmax}$。比如：
+- 只选概率最大的 token 时可以直接用 `argmax`；
+- 要做带 temperature 的采样时，可以先对 logits 除以 $T$ 再做 $\text{softmax}$；
+- 要做 top-k 或 top-p 采样时，可以先选出候选集，再在候选集上做 $\text{softmax}$；
+- 或者要做 beam search，每一步也只需要 logits 的相对大小来选 top-k 候选。
+
+这样设计的好处是，模型不必在输出时立即对整个 logits 做 $\text{softmax}$，把这一步留给真正需要它的地方。
+
 # 结语
 
-本文以 [Attention Is All You Need](https://arxiv.org/abs/1706.03762) 这篇文章作为核心，讨论了 Transformer 中各个位置的计算细节，尽量用准确的数学语言描述了模型的算法。
+本文以 [Attention Is All You Need](https://arxiv.org/abs/1706.03762) 这篇文章作为核心，讨论了 Transformer 中各个位置的计算细节，
+尽量用准确的数学语言描述了模型的算法，并给出了相应的代码实现。
 
-除了数学表示，本文还希望通过代码让读者对计算过程有更加直观的理解，这部分暂时还在写作当中，尽情期待。
+此外，本文还在文中提到了如 Dense FFN 和 MoE 等概念，这些内容我会在后续的文章中进一步展开。
 
-此外，本文还在文中提到了如 Dense FFN 和 MoE 等概念，这些是我在后续的文章中希望进一步介绍的，希望本文对你理解 Transformer 有所帮助。
+希望本文对你理解 Transformer 有所帮助。
 
 # 参考资料
 
