@@ -71,12 +71,14 @@ class TableOfContents extends HTMLElement {
     tocEntries: HTMLAnchorElement[] = [];
     active: boolean[] = [];
     activeIndicator: HTMLElement | null = null;
+    fadeObserver: ResizeObserver;
 
     constructor() {
         super();
         this.observer = new IntersectionObserver(
             this.markVisibleSection, { threshold: 0 }
         );
+        this.fadeObserver = new ResizeObserver(() => this.updateFade());
     };
 
     markVisibleSection = (entries: IntersectionObserverEntry[]) => {
@@ -93,6 +95,7 @@ class TableOfContents extends HTMLElement {
         if (!this.active.includes(true))
             this.fallback();
         this.update();
+        this.updateFade();
     };
 
     toggleActiveHeading = () => {
@@ -153,6 +156,19 @@ class TableOfContents extends HTMLElement {
             left: 0,
             behavior: "smooth",
         });
+    };
+
+    // Fade an edge of the list only while that edge really has entries scrolled out
+    // of view: the first and last row must stay fully readable whenever they are on
+    // screen. The styling lives in #toc-inner-wrapper (src/styles/main.css).
+    updateFade = () => {
+        const el = this.tocEl;
+        if (!el) return;
+
+        const overflow = el.scrollHeight - el.clientHeight;
+        const scrollable = overflow > 1;
+        el.classList.toggle("toc-fade-top", scrollable && el.scrollTop > 1);
+        el.classList.toggle("toc-fade-bottom", scrollable && el.scrollTop < overflow - 1);
     };
 
     update = () => {
@@ -226,6 +242,11 @@ class TableOfContents extends HTMLElement {
         this.tocEl.addEventListener("click", this.handleAnchorClick, {
             capture: true,
         });
+        this.tocEl.addEventListener("scroll", this.updateFade, { passive: true });
+        // Both the container's height and the entries' height change (window
+        // resize, web fonts, swup swap) and either can start or stop the overflow.
+        this.fadeObserver.observe(this.tocEl);
+        this.fadeObserver.observe(this);
 
         this.activeIndicator = this.querySelector("#active-indicator");
 
@@ -255,6 +276,7 @@ class TableOfContents extends HTMLElement {
 
         this.fallback();
         this.update();
+        this.updateFade();
     };
 
     disconnectedCallback() {
@@ -263,6 +285,8 @@ class TableOfContents extends HTMLElement {
         );
         this.observer.disconnect();
         this.tocEl?.removeEventListener("click", this.handleAnchorClick);
+        this.tocEl?.removeEventListener("scroll", this.updateFade);
+        this.fadeObserver.disconnect();
     };
 }
 

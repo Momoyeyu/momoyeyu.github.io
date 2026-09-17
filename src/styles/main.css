@@ -84,10 +84,6 @@
         @apply opacity-0 pointer-events-none
     }
 
-    #toc-inner-wrapper {
-        mask-image: linear-gradient(to bottom, transparent 0%, black 2rem, black calc(100% - 2rem), transparent 100%);
-    }
-
     .hide-scrollbar {
         scrollbar-width: none;
         -ms-overflow-style: none;
@@ -225,6 +221,39 @@
     :root[data-post-layout="list"] .post-feed .grid-post-card > div:last-child {
         padding: 1.25rem 1.5rem;
     }
+}
+
+/* The TOC list (#toc-inner-wrapper) fades an edge to hint at entries scrolled out
+ * of view. The mask used to be unconditional and 2rem tall, which washed out the
+ * first and last row even when the list did not scroll at all — so each edge now
+ * fades only while that edge really hides content. The classes are toggled by
+ * updateFade() in src/components/widget/TOC.astro; --toc-fade-size tunes how far
+ * the fade reaches in from the edge. */
+#toc-inner-wrapper {
+    --toc-fade-size: 1.25rem;
+    --toc-fade-top: 0rem;
+    --toc-fade-bottom: 0rem;
+    --toc-mask: none;
+    mask-image: var(--toc-mask);
+}
+
+#toc-inner-wrapper.toc-fade-top,
+#toc-inner-wrapper.toc-fade-bottom {
+    --toc-mask: linear-gradient(
+        to bottom,
+        transparent 0,
+        black var(--toc-fade-top),
+        black calc(100% - var(--toc-fade-bottom)),
+        transparent 100%
+    );
+}
+
+#toc-inner-wrapper.toc-fade-top {
+    --toc-fade-top: var(--toc-fade-size);
+}
+
+#toc-inner-wrapper.toc-fade-bottom {
+    --toc-fade-bottom: var(--toc-fade-size);
 }
 
 #banner-tint {
