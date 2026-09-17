@@ -29,7 +29,7 @@ Transformer 以更低的训练成本和更高的性能在当时成为了翻译�
 
 Transformer 使用了 **[Encoder-Decoder](https://arxiv.org/abs/1406.1078)** 架构，这是当时解决 seq2seq 问题的经典架构。
 
-接下来我们将分为 Encoder 和 Decoder 进行介绍。其中 Decoder 有许多基本计算模块和 Encoder 是相同的，因此不重复介绍相同的部分。
+接下来我们将分为 Encoder 和 Decoder 进行介绍，然后再补充输入侧和输出侧的细节。其中 Decoder 有许多基本计算模块和 Encoder 是相同的，因此不重复介绍相同的部分。
 
 ## Encoder
 
@@ -235,10 +235,10 @@ $$
 ```python
 _NEG_INF = float("-inf")
 
-def causal_mask(size: int) -> torch.Tensor:
-    i = torch.arange(size).unsqueeze(1)      # [n, 1]
-    j = torch.arange(size).unsqueeze(0)      # [1, n]
-    return torch.where(j > i, _NEG_INF, 0.0) # [n, n]
+def causal_mask(size: int, device: torch.device | None = None) -> torch.Tensor:
+    i = torch.arange(size, device=device).unsqueeze(1)      # [n, 1]
+    j = torch.arange(size, device=device).unsqueeze(0)      # [1, n]
+    return torch.where(j > i, _NEG_INF, 0.0)                # [n, n]
 ```
 
 `causal_mask` 就是用于生成掩码矩阵 $M$ 的函数，这也解释了前文代码中出现的 `mask` 参数。
@@ -303,22 +303,53 @@ $p \in \mathbb{R}^{n \times V}$，每一行对应一个位置上所有 token 的
 训练时，取 $p$ 中对应目标 token 的概率计算交叉熵损失。
 推理时，原始论文使用 beam search，beam size 取 4，即同时保留概率最高的 4 条候选序列，最终选择整体概率最高的一条作为输出。
 
-```python
-class LinearClassifier(nn.Module):
-    def __init__(self, d_model: int, vocab_size: int) -> None:
-        super().__init__()
-        self.classifier = nn.Linear(d_model, vocab_size, bias=False)
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        return self.classifier(x) # [batch, n, d_model] -> [batch, n, vocab_size]
-```
-
 不难发现，在词表 $V$ 非常大时，$W_{\text{out}}$ 的参数量会十分庞大，而这个问题其实是有办法缓解的。
 
 第一种方式是通过加一层线性变换，先将 Decoder 最后一层的输出特征维度压缩，得到一个更小的向量，然后再进行最终的线性变换。这种方式的优点是实现简单，不过压缩会带来一定的性能损失，实际应用中较少使用。
 
 另一种方式是使用 weight tying，即权重绑定，即让 $W_{\text{out}}$ 与输入的 embedding 层的权重矩阵共享参数：$W_{\text{out}} = E^T$，其中 $E \in \mathbb{R}^{V \times d_{\text{model}}}$ 是 embedding 矩阵。
-这样可以省去对线性分类头参数的独立学习，减少模型参数量。这种方式对模型性能几乎没有影响，在输入输出词表一致的任务中已成为标准做法。
+这样可以省去对线性分类头参数的独立学习，减少模型参数量。这种方式对模型性能几乎没有影响，在输入输出词表一致的任务中已成为标准做法，原始论文也采用了这种方式。
+
+```python
+class LinearClassifier(nn.Module):
+    def __init__(self, d_model: int, vocab_size: int, weight: torch.Tensor | None = None) -> None:
+        super().__init__()
+        self.classifier = nn.Linear(d_model, vocab_size, bias=False)
+        if weight is not None:
+            self.classifier.weight = weight
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return self.classifier(x) # [batch, n, d_model] -> [batch, n, vocab_size]
+```
+
+在 PyTorch 中，`nn.Linear` 和 `nn.Embedding` 的权重形状都是 `[V, d_model]`，因此代码里可以直接共享同一个参数，无需显式转置。
+
+## Embedding
+
+token 本身是离散的，通常用整数 id 表示，这些 id 之间没有数值上的语义关系。而模型需要的是连续的、具有语义的输入，为此需要通过 embedding 层将离散的输入变换为连续向量。
+
+具体做法是维护一个可学习的嵌入矩阵 $W_e \in \mathbb{R}^{V \times d_{\text{model}}}$，其中 $V$ 是词表大小。对输入的 token id 做 one-hot 编码后，与 $W_e$ 相乘，并乘以 $\sqrt{d_{\text{model}}}$ 以平衡嵌入和位置编码的量级：
+
+$$
+E = \sqrt{d_{\text{model}}} \cdot \text{one\_hot}(\text{token\_ids}) W_e
+$$
+
+由于 one-hot 向量只有一位为 1，这个矩阵乘法实际上等价于按 id 查表，因此工程实现中直接用 `nn.Embedding` 完成：
+
+```python
+class Embedding(nn.Module):
+    def __init__(self, vocab_size: int, d_model: int) -> None:
+        super().__init__()
+        self.d_model = d_model
+        self.w_e = nn.Embedding(vocab_size, d_model)
+        nn.init.normal_(self.w_e.weight, mean=0.0, std=d_model ** -0.5)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return self.w_e(x) * math.sqrt(self.d_model)
+```
+
+这里显式把嵌入矩阵初始化为 $N(0, 1/\sqrt{d_{\text{model}}})$，是因为权重绑定后，嵌入矩阵同时承担嵌入和输出投影两个角色，
+需要控制其初始化尺度，否则初始 logits 的量级会过大，导致训练初期 loss 异常。
 
 ## 位置编码
 
@@ -334,7 +365,8 @@ $$
 PE_{(pos, 2i+1)} = \cos\left(\frac{pos}{10000^{2i / d_{\text{model}}}}\right)
 $$
 
-其中 $pos$ 是 token 在序列中的位置，从 0 开始计数；$i$ 是维度索引，取值范围为 $i \in \{0, 1, \dots, d_{\text{model}}/2 - 1\}$，$2i$ 和 $2i+1$ 分别对应偶数维度和奇数维度；$d_{\text{model}}$ 是词嵌入维度。最终，我们将位置编码直接与输入嵌入相加，作为 Encoder 和 Decoder 的输入。
+其中 $pos$ 是 token 在序列中的位置，从 0 开始计数；$i$ 是维度索引，取值范围为 $i \in \{0, 1, \dots, d_{\text{model}}/2 - 1\}$，
+$2i$ 和 $2i+1$ 分别对应偶数维度和奇数维度；$d_{\text{model}}$ 是词嵌入维度。
 
 这种编码方式的一个重要性质是：它使得模型能够更容易地捕捉相对位置信息。考虑两个位置 $t$ 和 $t + \Delta t$，它们在某个维度上的编码可以看作一个二维向量 $(\sin(w_i t), \cos(w_i t))$ 和 $(\sin(w_i (t + \Delta t)), \cos(w_i (t + \Delta t)))$，其中 $w_i = 10000^{-2i / d_{\text{model}}}$。对这两个向量做点积：
 
@@ -363,12 +395,12 @@ class PositionEncoding(nn.Module):
         self.max_len = max_len # cache length
         self.register_buffer("cache", self.encode(0, self.max_len), persistent=False)
 
-    def encode(self, start: int, end: int) -> torch.Tensor:
+    def encode(self, start: int, end: int, device: torch.device | None = None) -> torch.Tensor:
         n = end - start
-        pos = torch.arange(start, end, dtype=torch.float32).unsqueeze(-1) # [n, 1]
-        i = torch.arange(0, self.d_model, 2, dtype=torch.float32).unsqueeze(0)  # [1, d_model / 2]
+        pos = torch.arange(start, end, dtype=torch.float32, device=device).unsqueeze(-1) # [n, 1]
+        i = torch.arange(0, self.d_model, 2, dtype=torch.float32, device=device).unsqueeze(0)  # [1, d_model / 2]
         div = torch.exp(-math.log(10000) * i / self.d_model) # [1, d_model / 2]
-        position_encoding = torch.zeros(n, self.d_model) # [n, d_model]
+        position_encoding = torch.zeros(n, self.d_model, device=device) # [n, d_model]
         position_encoding[:, 0::2] = torch.sin(pos * div)
         position_encoding[:, 1::2] = torch.cos(pos * div)
         return position_encoding
@@ -379,7 +411,7 @@ class PositionEncoding(nn.Module):
             return x + self.cache[:n].to(x.dtype)
         pos_encoding = torch.zeros_like(x)
         pos_encoding[:, :self.max_len] = self.cache.to(x.dtype)
-        pos_encoding[:, self.max_len:] = self.encode(self.max_len, n).to(x.dtype)
+        pos_encoding[:, self.max_len:] = self.encode(self.max_len, n, device=x.device).to(x.dtype)
         return x + pos_encoding
 ```
 
@@ -484,24 +516,26 @@ class Transformer(nn.Module):
             dropout: float = 0.1
     ) -> None:
         super().__init__()
+        self.embedding = Embedding(vocab_size, d_model)
         self.pos_encoder = PositionEncoding(d_model, max_len)
+        self.dropout = nn.Dropout(dropout)
         self.encoder = Encoder(num_layers, d_model, num_heads, d_ff, dropout)
         self.decoder = Decoder(num_layers, d_model, num_heads, d_ff, dropout)
-        self.classifier = LinearClassifier(d_model, vocab_size)
+        self.classifier = LinearClassifier(d_model, vocab_size, self.embedding.w_e.weight)
 
     def forward(
         self,
-        src: torch.Tensor,                    # [batch, src_len, d_model]
-        tgt: torch.Tensor,                    # [batch, tgt_len, d_model]
+        src: torch.Tensor,                    # [batch, src_len]
+        tgt: torch.Tensor,                    # [batch, tgt_len]
         src_pad: torch.Tensor | None = None,  # [batch, src_len], 1 表示 padding
         tgt_pad: torch.Tensor | None = None,  # [batch, tgt_len], 1 表示 padding
     ) -> torch.Tensor:
-        src = self.pos_encoder(src)
-        tgt = self.pos_encoder(tgt)
+        src = self.dropout(self.pos_encoder(self.embedding(src)))
+        tgt = self.dropout(self.pos_encoder(self.embedding(tgt)))
 
         src_mask = padding_mask(src_pad) if src_pad is not None else None
 
-        causal = causal_mask(tgt.size(1)).to(tgt.device)
+        causal = causal_mask(tgt.size(1), device=tgt.device)
         if tgt_pad is not None:
             tgt_mask = causal + padding_mask(tgt_pad)  # [batch, tgt_len, tgt_len]
         else:
