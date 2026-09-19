@@ -1,17 +1,18 @@
 ---
 title: Transformer 的数学表示与代码实现
 date: 2026-09-14
-description: '从 Transformer 开始的深度学习之旅'
+description: '从 Transformer 开始的 LLM 之旅'
 tags: [深度学习, Transformer]
-category: 深度学习
+category: LLM
 episode: 0
 draft: false
+pinned: true
 lang: 'zh_CN'
 ---
 
 # 前言
 
-本文是本站【深度学习】系列的第一篇文章，我们将直接从 Transformer 开始介绍，带你快速了解目前几乎所有大模型、智能体的底层核心模型是如何实现的。
+本文是本站 [LLM 系列](/archive/?category=LLM)的第一篇文章，我们将直接从 Transformer 开始介绍，带你快速了解目前几乎所有 LLM、Agent 的底层核心模型是如何实现的。
 
 Transformer 最初由 Google Brain 与 Google Research 团队在论文 [Attention Is All You Need](https://arxiv.org/abs/1706.03762) 提出，起初用于解决翻译问题。
 Transformer 以更低的训练成本和更高的性能在当时成为了翻译领域的 SOTA，随后又被用于解决 NLP 领域的各种问题，且都具有极佳的表现。

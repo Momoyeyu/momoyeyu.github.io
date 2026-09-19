@@ -4,7 +4,7 @@
  *
  * Everything it needs is derived from the posts that already exist:
  *   - the category menu and the next `episode` per category
- *   - a filename prefix per category (e.g. C++ -> "cpp", 深度学习 -> "dl")
+ *   - a filename prefix per category (e.g. C++ -> "cpp", LLM -> "llm")
  * There is no category registry: a category exists as soon as a post uses it. */
 
 import fs from "node:fs";
@@ -249,7 +249,7 @@ while (category === "") {
 const known = categories.find((item) => item.name === category);
 let prefix = known ? suggestPrefix(known.slugs) : "";
 if (!known) {
-	prefix = await ask("文件名前缀（可留空，例如 dl）", "");
+	prefix = await ask("文件名前缀（可留空，例如 llm）", "");
 }
 
 const titleSlug = slugify(title);
