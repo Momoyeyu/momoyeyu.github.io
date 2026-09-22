@@ -36,6 +36,11 @@ else SUDO=""; warn "No root/sudo; system installs may fail."
 fi
 run_priv() { if [[ -n "$SUDO" ]]; then "$SUDO" "$@"; else "$@"; fi; }
 
+if [[ $EUID -eq 0 && -n "${SUDO_USER:-}" && "$SUDO_USER" != "root" ]]; then
+  warn "Running as root via sudo: files go to root's home and the login shell"
+  warn "change applies to root — not to $SUDO_USER. Re-run without sudo instead."
+fi
+
 if [[ "$OS_TYPE" == linux ]]; then
   command -v apt-get >/dev/null 2>&1 || die "Linux requires apt-get"
 fi
@@ -73,17 +78,77 @@ fi
 
 command -v git >/dev/null 2>&1 || die "git not found. On macOS finish Xcode CLT and re-run."
 
-if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
-  info "Installing oh-my-zsh ..."
-  RUNZSH=no CHSH=no KEEP_ZSHRC=yes sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" || warn "oh-my-zsh installer returned non-zero, continue."
-  ok "oh-my-zsh installed."
-else
-  ok "oh-my-zsh already installed."
-fi
-
 export ZSH="${ZSH:-$HOME/.oh-my-zsh}"
 export ZSH_CUSTOM="${ZSH_CUSTOM:-$ZSH/custom}"
+
+# The directory existing is NOT proof of a working install, and `oh-my-zsh.sh` is
+# what actually matters. A half-finished attempt — or just this script's own
+# `mkdir -p $ZSH_CUSTOM/plugins` — leaves $ZSH behind; the upstream installer
+# then refuses to touch a non-empty $ZSH, so checking the directory would report
+# "already installed" forever and every later step would silently do nothing.
+install_omz() {
+  if [[ -f "$ZSH/oh-my-zsh.sh" ]]; then ok "oh-my-zsh already installed."; return; fi
+  local stash=""
+  if [[ -d "$ZSH" ]]; then
+    warn "$ZSH exists but has no oh-my-zsh.sh (incomplete install); reinstalling."
+    if [[ -d "$ZSH/custom" ]]; then
+      stash=$(mktemp -d)
+      cp -a "$ZSH/custom/." "$stash/" 2>/dev/null || true
+    fi
+    rm -rf "$ZSH"
+  fi
+  info "Installing oh-my-zsh ..."
+  # </dev/null: this script is usually itself piped into bash, so the installer
+  # must never be able to read (and swallow) the rest of it from stdin.
+  RUNZSH=no CHSH=no KEEP_ZSHRC=yes sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" </dev/null || warn "oh-my-zsh installer returned non-zero, continue."
+  if [[ -n "$stash" ]]; then
+    mkdir -p "$ZSH/custom"
+    cp -a "$stash/." "$ZSH/custom/" 2>/dev/null || true
+    rm -rf "$stash"
+  fi
+  if [[ -f "$ZSH/oh-my-zsh.sh" ]]; then ok "oh-my-zsh installed."
+  else warn "oh-my-zsh install did not produce $ZSH/oh-my-zsh.sh; re-run this script once network works."; fi
+}
+install_omz
+
 mkdir -p "$ZSH_CUSTOM/plugins"
+
+# KEEP_ZSHRC=yes means the installer never touches an existing ~/.zshrc — so a
+# .zshrc that predates oh-my-zsh may never gain the `source oh-my-zsh.sh` line,
+# which silently breaks everything below (plugins, colors, PROMPT). Prepend a
+# minimal bootstrap when that line is missing.
+ensure_omz_sourced() {
+  local zshrc="$HOME/.zshrc"
+  if [[ ! -f "$ZSH/oh-my-zsh.sh" ]]; then
+    warn "oh-my-zsh.sh missing; cannot wire ~/.zshrc to oh-my-zsh."
+    return
+  fi
+  [[ -f "$zshrc" ]] || touch "$zshrc"
+  if grep -q 'oh-my-zsh\.sh' "$zshrc"; then
+    ok "~/.zshrc already sources oh-my-zsh."
+    return
+  fi
+  info "~/.zshrc does not load oh-my-zsh; prepending bootstrap ..."
+  local tmp
+  tmp=$(mktemp)
+  # plugins must be defined BEFORE oh-my-zsh.sh is sourced; the merge step below
+  # folds any plugins=(...) block later in the file up into this one.
+  if {
+    printf 'export ZSH="%s"\n' "$ZSH"
+    echo 'ZSH_THEME="robbyrussell"'
+    echo 'plugins=(git)'
+    echo 'source $ZSH/oh-my-zsh.sh'
+    echo
+    cat "$zshrc"
+  } > "$tmp"; then
+    mv "$tmp" "$zshrc"
+    ok "Prepended oh-my-zsh bootstrap to ~/.zshrc"
+  else
+    rm -f "$tmp"
+    warn "Failed to prepend oh-my-zsh bootstrap to $zshrc"
+  fi
+}
+ensure_omz_sourced
 
 install_zsh_plugin() {
   local name="$1" url="$2"
@@ -112,9 +177,8 @@ update_zshrc_plugins() {
       END { gsub(/[ \t\n]+/," ",out); sub(/^ +/,"",out); sub(/ +$/,"",out); print out }
     ' "$zshrc")
   fi
-  local merged="$existing"
-  local r
-  for r in $required; do
+  local merged="" r
+  for r in $existing $required; do
     case " $merged " in *" $r "*) ;; *) merged="$merged $r" ;; esac
   done
   merged="${merged# }"
@@ -219,12 +283,29 @@ setup_git_config
 setup_zsh_prompt() {
   local zshrc="$HOME/.zshrc"
   [[ -f "$zshrc" ]] || touch "$zshrc"
-  local marker=">>> setup.sh prompt >>>"
-  if grep -qF "$marker" "$zshrc"; then ok "zsh PROMPT already configured."; return; fi
+  # Rewrite the block rather than skipping it: a machine that ran an older
+  # version of this script already has the marker, and skipping would leave its
+  # stale (possibly broken) PROMPT in place forever.
+  if grep -qF ">>> setup.sh prompt >>>" "$zshrc"; then
+    local tmp
+    tmp=$(mktemp)
+    if sed '/# >>> setup.sh prompt >>>/,/# <<< setup.sh prompt <<</d' "$zshrc" > "$tmp"; then
+      # Drop the blank lines the removal leaves at EOF so re-runs don't pile up.
+      printf '%s\n' "$(cat "$tmp")" > "$zshrc"
+    fi
+    rm -f "$tmp"
+  fi
+  # Two variants: the oh-my-zsh one relies on $fg_bold/git_prompt_info which only
+  # exist when oh-my-zsh is actually sourced; the fallback uses native %F escapes
+  # so the prompt is still correct if oh-my-zsh is missing or not loaded.
   cat >> "$zshrc" <<'EOF'
 
 # >>> setup.sh prompt >>>
-PROMPT='%{$fg_bold[magenta]%}%n@%m%{$reset_color%} %(?:%{$fg_bold[green]%}➜ :%{$fg_bold[red]%}➜ ) %{$fg[cyan]%}%c%{$reset_color%} $(git_prompt_info)'
+if (( $+functions[git_prompt_info] )); then
+  PROMPT='%{$fg_bold[magenta]%}%n@%m%{$reset_color%} %(?:%{$fg_bold[green]%}➜ :%{$fg_bold[red]%}➜ ) %{$fg[cyan]%}%c%{$reset_color%} $(git_prompt_info)'
+else
+  PROMPT='%F{magenta}%n@%m%f %(?.%F{green}.%F{red})➜ %F{cyan}%c%f '
+fi
 # <<< setup.sh prompt <<<
 EOF
   ok "Configured zsh PROMPT in ~/.zshrc"
@@ -253,7 +334,19 @@ set_default_shell() {
   current_shell="$(get_login_shell || true)"
   if [[ "$current_shell" == "$zsh_path" ]]; then ok "Default login shell is already zsh ($zsh_path)."; return; fi
   info "Changing default login shell to $zsh_path ..."
-  local rc=0
+  local rc=1
+  if [[ "$OS_TYPE" == linux ]] && command -v usermod >/dev/null 2>&1 &&
+     { [[ $EUID -eq 0 ]] || [[ -n "$SUDO" ]]; }; then
+    # usermod edits /etc/passwd directly and never needs the *user's* password —
+    # unlike chsh, whose PAM auth fails on passwordless/locked accounts and
+    # whenever no tty is available to answer its prompt.
+    if run_priv usermod -s "$zsh_path" "$USER"; then
+      ok "Default login shell is now zsh (via usermod). New terminal sessions will use it."
+      return
+    fi
+    warn "usermod failed; falling back to chsh ..."
+  fi
+  rc=0
   if [[ -r /dev/tty ]]; then chsh -s "$zsh_path" </dev/tty || rc=$?
   else chsh -s "$zsh_path" </dev/null || rc=$?; fi
   if [[ $rc -ne 0 && "$OS_TYPE" == linux && -n "$SUDO" ]]; then
