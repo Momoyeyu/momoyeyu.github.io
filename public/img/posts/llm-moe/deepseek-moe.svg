@@ -1,0 +1,138 @@
+<svg viewBox="0 0 720 760" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="DeepSeekMoE architecture: input hidden state goes to a Router and a Shared Expert; the Router selects the top-K Routed Experts whose outputs are multiplied by routing weights and summed with the Shared Expert output to produce the output hidden state">
+	<style>
+		:root {
+			--fg: #2b2b2b;
+			--line: #3d3d3d;
+			--expert-fill: #dce9f7;
+			--expert-stroke: #7b9cc4;
+			--shared-fill: #ddeac8;
+			--shared-stroke: #8aa860;
+			--router-fill: #f5e9c9;
+			--router-stroke: #b8912f;
+			--gate-fill: #ffffff;
+			--accent: #e0a800;
+			--legend-stroke: #6b6b6b;
+			--bar: #f2c94c;
+		}
+		@media (prefers-color-scheme: dark) {
+			:root {
+				--fg: #d8d8d8;
+				--line: #b8b8b8;
+				--expert-fill: #26364d;
+				--expert-stroke: #6c8ebf;
+				--shared-fill: #32422a;
+				--shared-stroke: #8fae6b;
+				--router-fill: #4a3d1e;
+				--router-stroke: #c9a53f;
+				--gate-fill: #1e1e1e;
+				--accent: #e8c547;
+				--legend-stroke: #9a9a9a;
+				--bar: #d9a800;
+			}
+		}
+		text { fill: var(--fg); }
+		.lbl { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 16px; }
+		.math { font-family: "Times New Roman", Times, serif; font-style: italic; }
+		.edge { stroke: var(--line); stroke-width: 1.6; fill: none; }
+		.weight { stroke: var(--accent); stroke-width: 1.6; stroke-dasharray: 6 5; fill: none; }
+		.box { stroke-width: 1.6; rx: 9; }
+	</style>
+	<defs>
+		<marker id="arw" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+			<path d="M0,0 L10,5 L0,10 z" fill="var(--line)"/>
+		</marker>
+		<marker id="arwA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+			<path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/>
+		</marker>
+	</defs>
+
+	<!-- legend -->
+	<rect x="430" y="20" width="270" height="95" rx="10" fill="none" stroke="var(--legend-stroke)" stroke-width="1.6" stroke-dasharray="7 6"/>
+	<rect x="452" y="38" width="30" height="22" rx="5" fill="var(--expert-fill)" stroke="var(--expert-stroke)" stroke-width="1.4"/>
+	<text x="492" y="55" class="lbl">Routed Expert</text>
+	<rect x="452" y="74" width="30" height="22" rx="5" fill="var(--shared-fill)" stroke="var(--shared-stroke)" stroke-width="1.4"/>
+	<text x="492" y="91" class="lbl">Shared Expert</text>
+
+	<!-- output -->
+	<text x="140" y="196" class="lbl">Output Hidden</text>
+	<rect x="275" y="165" width="120" height="46" class="box" fill="none" stroke="var(--line)"/>
+	<circle cx="315" cy="188" r="10" fill="none" stroke="var(--line)" stroke-width="1.6"/>
+	<circle cx="355" cy="188" r="10" fill="none" stroke="var(--line)" stroke-width="1.6"/>
+
+	<!-- sum -->
+	<circle cx="335" cy="250" r="12" fill="var(--gate-fill)" stroke="var(--line)" stroke-width="1.6"/>
+	<path d="M335,243 v14 M328,250 h14" stroke="var(--line)" stroke-width="1.6"/>
+	<path d="M335,238 L335,211" class="edge" marker-end="url(#arw)"/>
+
+	<!-- gates (multiply) -->
+	<g>
+		<circle cx="324" cy="315" r="10" fill="var(--gate-fill)" stroke="var(--line)" stroke-width="1.6"/>
+		<path d="M319.5,310.5 l9,9 M328.5,310.5 l-9,9" stroke="var(--line)" stroke-width="1.5"/>
+		<circle cx="430" cy="302" r="10" fill="var(--gate-fill)" stroke="var(--line)" stroke-width="1.6"/>
+		<path d="M425.5,297.5 l9,9 M434.5,297.5 l-9,9" stroke="var(--line)" stroke-width="1.5"/>
+		<circle cx="610" cy="315" r="10" fill="var(--gate-fill)" stroke="var(--line)" stroke-width="1.6"/>
+		<path d="M605.5,310.5 l9,9 M614.5,310.5 l-9,9" stroke="var(--line)" stroke-width="1.5"/>
+	</g>
+
+	<!-- gates to sum -->
+	<path d="M326,305 Q330,284 333,263" class="edge" marker-end="url(#arw)"/>
+	<path d="M421,297 C400,275 365,262 347,256" class="edge" marker-end="url(#arw)"/>
+	<path d="M600,313 C540,285 400,258 349,254" class="edge" marker-end="url(#arw)"/>
+
+	<!-- expert row -->
+	<g class="math">
+		<rect x="40" y="365" width="64" height="56" class="box" fill="var(--shared-fill)" stroke="var(--shared-stroke)"/>
+		<text x="72" y="400" font-size="21" text-anchor="middle">1</text>
+		<rect x="124" y="365" width="64" height="56" class="box" fill="var(--expert-fill)" stroke="var(--expert-stroke)"/>
+		<text x="156" y="400" font-size="21" text-anchor="middle">2</text>
+		<rect x="208" y="365" width="64" height="56" class="box" fill="var(--expert-fill)" stroke="var(--expert-stroke)"/>
+		<text x="240" y="400" font-size="21" text-anchor="middle">3</text>
+		<rect x="292" y="365" width="64" height="56" class="box" fill="var(--expert-fill)" stroke="var(--expert-stroke)"/>
+		<text x="324" y="400" font-size="21" text-anchor="middle">4</text>
+		<text x="430" y="398" font-size="28" text-anchor="middle">···</text>
+		<rect x="478" y="365" width="76" height="56" class="box" fill="var(--expert-fill)" stroke="var(--expert-stroke)"/>
+		<text x="516" y="399" font-size="17" text-anchor="middle">2N−1</text>
+		<rect x="578" y="365" width="64" height="56" class="box" fill="var(--expert-fill)" stroke="var(--expert-stroke)"/>
+		<text x="610" y="399" font-size="19" text-anchor="middle">2N</text>
+	</g>
+
+	<!-- expert outputs -->
+	<path d="M72,365 C58,285 210,255 322,252" class="edge" marker-end="url(#arw)"/>
+	<path d="M324,365 L324,326" class="edge" marker-end="url(#arw)"/>
+	<path d="M430,384 L430,314" class="edge" marker-end="url(#arw)"/>
+	<path d="M610,365 L610,326" class="edge" marker-end="url(#arw)"/>
+
+	<!-- router -->
+	<rect x="280" y="575" width="110" height="52" class="box" fill="var(--router-fill)" stroke="var(--router-stroke)"/>
+	<text x="335" y="606" class="lbl" text-anchor="middle">Router</text>
+
+	<!-- bar chart -->
+	<g stroke="var(--router-stroke)" stroke-width="1.1" fill="var(--bar)">
+		<rect x="425" y="606" width="10" height="14"/>
+		<rect x="438" y="592" width="10" height="28"/>
+		<rect x="451" y="600" width="10" height="20"/>
+		<rect x="464" y="578" width="10" height="42"/>
+		<rect x="477" y="596" width="10" height="24"/>
+		<rect x="490" y="586" width="10" height="34"/>
+	</g>
+	<line x1="421" y1="620" x2="504" y2="620" stroke="var(--line)" stroke-width="1.4"/>
+	<text x="514" y="604" class="math" font-size="18">K = 3</text>
+
+	<!-- routing weights (dashed): from the top-K tallest bars to each gate -->
+	<path d="M443,592 C395,515 335,390 328,326" class="weight" marker-end="url(#arwA)"/>
+	<path d="M469,578 C455,495 435,375 431,314" class="weight" marker-end="url(#arwA)"/>
+	<path d="M495,586 C565,505 608,390 605,326" class="weight" marker-end="url(#arwA)"/>
+
+	<!-- input dispatch -->
+	<path d="M355,575 C400,545 340,480 325,423" class="edge" marker-end="url(#arw)"/>
+	<path d="M368,575 C470,540 442,462 431,398" class="edge" marker-end="url(#arw)"/>
+	<path d="M375,575 C560,545 615,480 609,423" class="edge" marker-end="url(#arw)"/>
+
+	<!-- input -->
+	<path d="M335,675 L335,629" class="edge" marker-end="url(#arw)"/>
+	<path d="M295,675 C170,652 62,545 71,423" class="edge" marker-end="url(#arw)"/>
+	<text x="140" y="706" class="lbl">Input Hidden</text>
+	<rect x="275" y="675" width="120" height="46" class="box" fill="none" stroke="var(--line)"/>
+	<circle cx="315" cy="698" r="10" fill="none" stroke="var(--line)" stroke-width="1.6"/>
+	<circle cx="355" cy="698" r="10" fill="none" stroke="var(--line)" stroke-width="1.6"/>
+</svg>

@@ -109,7 +109,7 @@ const groups: FriendGroup[] = [
 								alt={link.name}
 								class="w-12 h-12 rounded-full object-cover shrink-0 ring-2 ring-black/5 dark:ring-white/10 group-hover:ring-[var(--primary)] transition"
 								loading="lazy"
-								onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔗</text></svg>'"
+								onerror="this.setAttribute('src','data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔗</text></svg>')"
 							/>
 							<div class="overflow-hidden">
 								<div class="font-semibold text-neutral-900 dark:text-neutral-100 group-hover:text-[var(--primary)] transition truncate">
