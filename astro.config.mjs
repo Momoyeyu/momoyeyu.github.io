@@ -121,7 +121,7 @@ export default defineConfig({
 			themes: [expressiveCodeConfig.theme, expressiveCodeConfig.theme],
 			shiki: {
 				langs: [
-					{
+					async () => ({
 						...JSON.parse(
 							fs.readFileSync(
 								"./src/plugins/expressive-code/langs/cuda-cpp.tmLanguage.json",
@@ -130,7 +130,7 @@ export default defineConfig({
 						),
 						name: "cuda",
 						displayName: "CUDA",
-					},
+					}),
 				],
 			},
 			plugins: [
@@ -242,6 +242,11 @@ export default defineConfig({
 		],
 	},
 	vite: {
+		server: {
+			warmup: {
+				ssrFiles: ["./src/pages/[...page].astro"],
+			},
+		},
 		build: {
 			rollupOptions: {
 				onwarn(warning, warn) {
