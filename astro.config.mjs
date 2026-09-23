@@ -119,6 +119,20 @@ export default defineConfig({
 		}),
 		expressiveCode({
 			themes: [expressiveCodeConfig.theme, expressiveCodeConfig.theme],
+			shiki: {
+				langs: [
+					{
+						...JSON.parse(
+							fs.readFileSync(
+								"./src/plugins/expressive-code/langs/cuda-cpp.tmLanguage.json",
+								"utf-8",
+							),
+						),
+						name: "cuda",
+						displayName: "CUDA",
+					},
+				],
+			},
 			plugins: [
 				pluginCollapsibleSections(),
 				pluginLineNumbers(),

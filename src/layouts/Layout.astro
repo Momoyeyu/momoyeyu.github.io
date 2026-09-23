@@ -209,7 +209,7 @@ const bannerOffset =
 				await mermaid.run({ nodes: diagrams });
 			}
 			document.addEventListener('DOMContentLoaded', initMermaid);
-			document.addEventListener('swup:page:mount', initMermaid);
+			document.addEventListener('swup:page:view', initMermaid);
 		</script>
 	</head>
 	<body class=" min-h-screen transition " class:list={[{"lg:is-home": isHomePage, "enable-banner": enableBanner}]}
