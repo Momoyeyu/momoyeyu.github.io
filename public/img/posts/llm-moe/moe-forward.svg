@@ -1,0 +1,100 @@
+<svg viewBox="0 0 560 740" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="MoE Layer forward pipeline: input token x goes through Router, Softmax, Top-K selection, normalization, token dispatch to the selected expert FFNs, and a weighted sum producing output y">
+	<style>
+		:root {
+			--fg: #2b2b2b;
+			--line: #3d3d3d;
+			--expert-fill: #dce9f7;
+			--expert-stroke: #7b9cc4;
+			--router-fill: #f5e9c9;
+			--router-stroke: #b8912f;
+			--step-fill: #eef1f4;
+			--step-stroke: #9aa5b1;
+			--gate-fill: #ffffff;
+			--accent: #e0a800;
+		}
+		@media (prefers-color-scheme: dark) {
+			:root {
+				--fg: #d8d8d8;
+				--line: #b8b8b8;
+				--expert-fill: #26364d;
+				--expert-stroke: #6c8ebf;
+				--router-fill: #4a3d1e;
+				--router-stroke: #c9a53f;
+				--step-fill: #2a2f36;
+				--step-stroke: #6b7684;
+				--gate-fill: #1e1e1e;
+				--accent: #e8c547;
+			}
+		}
+		text { fill: var(--fg); }
+		.lbl { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 15px; }
+		.math { font-family: "Times New Roman", Times, serif; font-style: italic; }
+		.edge { stroke: var(--line); stroke-width: 1.6; fill: none; }
+		.box { stroke-width: 1.6; rx: 9; }
+	</style>
+	<defs>
+		<marker id="arw" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+			<path d="M0,0 L10,5 L0,10 z" fill="var(--line)"/>
+		</marker>
+	</defs>
+
+	<!-- input -->
+	<rect x="170" y="24" width="220" height="46" class="box" fill="none" stroke="var(--line)"/>
+	<text x="280" y="53" class="lbl" text-anchor="middle">输入 <tspan class="math">x</tspan></text>
+	<path d="M280,70 L280,104" class="edge" marker-end="url(#arw)"/>
+
+	<!-- router -->
+	<rect x="170" y="104" width="220" height="46" class="box" fill="var(--router-fill)" stroke="var(--router-stroke)"/>
+	<text x="280" y="124" class="lbl" text-anchor="middle">Router</text>
+	<text x="280" y="141" class="math" font-size="13" text-anchor="middle">s = x·W<tspan baseline-shift="sub" font-size="9">r</tspan></text>
+	<path d="M280,150 L280,184" class="edge" marker-end="url(#arw)"/>
+
+	<!-- softmax -->
+	<rect x="170" y="184" width="220" height="46" class="box" fill="var(--router-fill)" stroke="var(--router-stroke)"/>
+	<text x="280" y="204" class="lbl" text-anchor="middle">Softmax</text>
+	<text x="280" y="221" class="math" font-size="13" text-anchor="middle">p = softmax(s)</text>
+	<path d="M280,230 L280,264" class="edge" marker-end="url(#arw)"/>
+
+	<!-- top-k -->
+	<rect x="170" y="264" width="220" height="46" class="box" fill="var(--router-fill)" stroke="var(--router-stroke)"/>
+	<text x="280" y="284" class="lbl" text-anchor="middle">Top-K</text>
+	<text x="280" y="301" class="math" font-size="13" text-anchor="middle">I = TopK(p, K)</text>
+	<path d="M280,310 L280,344" class="edge" marker-end="url(#arw)"/>
+
+	<!-- normalize -->
+	<rect x="170" y="344" width="220" height="46" class="box" fill="var(--router-fill)" stroke="var(--router-stroke)"/>
+	<text x="280" y="364" class="lbl" text-anchor="middle">归一化</text>
+	<text x="280" y="381" class="math" font-size="13" text-anchor="middle">w<tspan baseline-shift="sub" font-size="9">i</tspan> = p<tspan baseline-shift="sub" font-size="9">i</tspan> / Σ<tspan baseline-shift="sub" font-size="9">j∈I</tspan> p<tspan baseline-shift="sub" font-size="9">j</tspan></text>
+	<path d="M280,390 L280,424" class="edge" marker-end="url(#arw)"/>
+
+	<!-- dispatch -->
+	<rect x="170" y="424" width="220" height="46" class="box" fill="var(--step-fill)" stroke="var(--step-stroke)"/>
+	<text x="280" y="452" class="lbl" text-anchor="middle">Token Dispatch</text>
+	<path d="M280,470 L120,504" class="edge" marker-end="url(#arw)"/>
+	<path d="M280,470 L280,504" class="edge" marker-end="url(#arw)"/>
+	<path d="M280,470 L440,504" class="edge" marker-end="url(#arw)"/>
+
+	<!-- experts -->
+	<rect x="55" y="504" width="130" height="46" class="box" fill="var(--expert-fill)" stroke="var(--expert-stroke)"/>
+	<text x="120" y="524" class="lbl" text-anchor="middle">Expert 1</text>
+	<text x="120" y="540" class="math" font-size="12" text-anchor="middle">FFN</text>
+	<rect x="215" y="504" width="130" height="46" class="box" fill="var(--expert-fill)" stroke="var(--expert-stroke)"/>
+	<text x="280" y="524" class="lbl" text-anchor="middle">Expert 2</text>
+	<text x="280" y="540" class="math" font-size="12" text-anchor="middle">FFN</text>
+	<rect x="375" y="504" width="130" height="46" class="box" fill="var(--expert-fill)" stroke="var(--expert-stroke)"/>
+	<text x="440" y="524" class="lbl" text-anchor="middle">Expert K</text>
+	<text x="440" y="540" class="math" font-size="12" text-anchor="middle">FFN</text>
+	<path d="M120,550 L200,584" class="edge" marker-end="url(#arw)"/>
+	<path d="M280,550 L280,584" class="edge" marker-end="url(#arw)"/>
+	<path d="M440,550 L360,584" class="edge" marker-end="url(#arw)"/>
+
+	<!-- weighted sum -->
+	<rect x="170" y="584" width="220" height="46" class="box" fill="var(--step-fill)" stroke="var(--step-stroke)"/>
+	<text x="280" y="604" class="lbl" text-anchor="middle">加权求和</text>
+	<text x="280" y="621" class="math" font-size="13" text-anchor="middle">y = Σ<tspan baseline-shift="sub" font-size="9">i∈I</tspan> w<tspan baseline-shift="sub" font-size="9">i</tspan>·E<tspan baseline-shift="sub" font-size="9">i</tspan>(x)</text>
+	<path d="M280,630 L280,664" class="edge" marker-end="url(#arw)"/>
+
+	<!-- output -->
+	<rect x="170" y="664" width="220" height="46" class="box" fill="none" stroke="var(--line)"/>
+	<text x="280" y="693" class="lbl" text-anchor="middle">输出 <tspan class="math">y</tspan></text>
+</svg>
