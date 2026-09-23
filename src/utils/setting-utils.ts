@@ -19,18 +19,29 @@ const DEFAULT_BANNER_TITLE: BANNER_TITLE_MODE = "show";
 const DEFAULT_ACCENT_CHROMA = 0.16;
 const DEFAULT_SURFACE_CHROMA = 0.026;
 
+// SSR guard: these functions run during server rendering when components
+// are rendered with client:load, where document/localStorage don't exist.
+const browser =
+	typeof document !== "undefined" && typeof localStorage !== "undefined";
+
 export function getDefaultHue(): number {
 	const fallback = "250";
+	if (!browser) {
+		return Number.parseInt(fallback, 10);
+	}
 	const configCarrier = document.getElementById("config-carrier");
 	return Number.parseInt(configCarrier?.dataset.hue || fallback, 10);
 }
 
 export function getHue(): number {
-	const stored = localStorage.getItem("hue");
+	const stored = browser ? localStorage.getItem("hue") : null;
 	return stored ? Number.parseInt(stored, 10) : getDefaultHue();
 }
 
 export function setHue(hue: number): void {
+	if (!browser) {
+		return;
+	}
 	localStorage.setItem("hue", String(hue));
 	const r = document.querySelector(":root") as HTMLElement;
 	if (!r) {
@@ -40,7 +51,9 @@ export function setHue(hue: number): void {
 }
 
 export function getDefaultColorScheme(): COLOR_SCHEME {
-	const configCarrier = document.getElementById("config-carrier");
+	const configCarrier = browser
+		? document.getElementById("config-carrier")
+		: null;
 	return (
 		(configCarrier?.dataset.colorScheme as COLOR_SCHEME | undefined) ||
 		DEFAULT_COLOR_SCHEME
@@ -49,46 +62,60 @@ export function getDefaultColorScheme(): COLOR_SCHEME {
 
 export function getColorScheme(): COLOR_SCHEME {
 	return (
-		(localStorage.getItem("colorScheme") as COLOR_SCHEME | null) ||
-		getDefaultColorScheme()
+		(browser
+			? (localStorage.getItem("colorScheme") as COLOR_SCHEME | null)
+			: null) || getDefaultColorScheme()
 	);
 }
 
 export function setColorScheme(scheme: COLOR_SCHEME): void {
+	if (!browser) {
+		return;
+	}
 	localStorage.setItem("colorScheme", scheme);
 	document.documentElement.dataset.colorScheme = scheme;
 }
 
 export function getDefaultAccentChroma(): number {
-	const configCarrier = document.getElementById("config-carrier");
+	const configCarrier = browser
+		? document.getElementById("config-carrier")
+		: null;
 	return Number.parseFloat(
 		configCarrier?.dataset.accentChroma || String(DEFAULT_ACCENT_CHROMA),
 	);
 }
 
 export function getAccentChroma(): number {
-	const stored = localStorage.getItem("accentChroma");
+	const stored = browser ? localStorage.getItem("accentChroma") : null;
 	return stored ? Number.parseFloat(stored) : getDefaultAccentChroma();
 }
 
 export function setAccentChroma(chroma: number): void {
+	if (!browser) {
+		return;
+	}
 	localStorage.setItem("accentChroma", String(chroma));
 	document.documentElement.style.setProperty("--accent-chroma", String(chroma));
 }
 
 export function getDefaultSurfaceChroma(): number {
-	const configCarrier = document.getElementById("config-carrier");
+	const configCarrier = browser
+		? document.getElementById("config-carrier")
+		: null;
 	return Number.parseFloat(
 		configCarrier?.dataset.surfaceChroma || String(DEFAULT_SURFACE_CHROMA),
 	);
 }
 
 export function getSurfaceChroma(): number {
-	const stored = localStorage.getItem("surfaceChroma");
+	const stored = browser ? localStorage.getItem("surfaceChroma") : null;
 	return stored ? Number.parseFloat(stored) : getDefaultSurfaceChroma();
 }
 
 export function setSurfaceChroma(chroma: number): void {
+	if (!browser) {
+		return;
+	}
 	localStorage.setItem("surfaceChroma", String(chroma));
 	document.documentElement.style.setProperty(
 		"--surface-chroma",
@@ -97,7 +124,9 @@ export function setSurfaceChroma(chroma: number): void {
 }
 
 export function getDefaultWallpaperMode(): WALLPAPER_MODE {
-	const configCarrier = document.getElementById("config-carrier");
+	const configCarrier = browser
+		? document.getElementById("config-carrier")
+		: null;
 	return (
 		(configCarrier?.dataset.wallpaperMode as WALLPAPER_MODE | undefined) ||
 		DEFAULT_WALLPAPER_MODE
@@ -106,18 +135,24 @@ export function getDefaultWallpaperMode(): WALLPAPER_MODE {
 
 export function getWallpaperMode(): WALLPAPER_MODE {
 	return (
-		(localStorage.getItem("wallpaperMode") as WALLPAPER_MODE | null) ||
-		getDefaultWallpaperMode()
+		(browser
+			? (localStorage.getItem("wallpaperMode") as WALLPAPER_MODE | null)
+			: null) || getDefaultWallpaperMode()
 	);
 }
 
 export function setWallpaperMode(mode: WALLPAPER_MODE): void {
+	if (!browser) {
+		return;
+	}
 	localStorage.setItem("wallpaperMode", mode);
 	document.documentElement.dataset.wallpaperMode = mode;
 }
 
 export function getDefaultPostLayout(): POST_LAYOUT {
-	const configCarrier = document.getElementById("config-carrier");
+	const configCarrier = browser
+		? document.getElementById("config-carrier")
+		: null;
 	return (
 		(configCarrier?.dataset.postLayout as POST_LAYOUT | undefined) ||
 		DEFAULT_POST_LAYOUT
@@ -126,18 +161,24 @@ export function getDefaultPostLayout(): POST_LAYOUT {
 
 export function getPostLayout(): POST_LAYOUT {
 	return (
-		(localStorage.getItem("postLayout") as POST_LAYOUT | null) ||
-		getDefaultPostLayout()
+		(browser
+			? (localStorage.getItem("postLayout") as POST_LAYOUT | null)
+			: null) || getDefaultPostLayout()
 	);
 }
 
 export function setPostLayout(layout: POST_LAYOUT): void {
+	if (!browser) {
+		return;
+	}
 	localStorage.setItem("postLayout", layout);
 	document.documentElement.dataset.postLayout = layout;
 }
 
 export function getDefaultBannerTitle(): BANNER_TITLE_MODE {
-	const configCarrier = document.getElementById("config-carrier");
+	const configCarrier = browser
+		? document.getElementById("config-carrier")
+		: null;
 	return (
 		(configCarrier?.dataset.bannerTitle as BANNER_TITLE_MODE | undefined) ||
 		DEFAULT_BANNER_TITLE
@@ -146,17 +187,24 @@ export function getDefaultBannerTitle(): BANNER_TITLE_MODE {
 
 export function getBannerTitle(): BANNER_TITLE_MODE {
 	return (
-		(localStorage.getItem("bannerTitle") as BANNER_TITLE_MODE | null) ||
-		getDefaultBannerTitle()
+		(browser
+			? (localStorage.getItem("bannerTitle") as BANNER_TITLE_MODE | null)
+			: null) || getDefaultBannerTitle()
 	);
 }
 
 export function setBannerTitle(mode: BANNER_TITLE_MODE): void {
+	if (!browser) {
+		return;
+	}
 	localStorage.setItem("bannerTitle", mode);
 	document.documentElement.dataset.bannerTitle = mode;
 }
 
 export function applyThemeToDocument(theme: LIGHT_DARK_MODE) {
+	if (!browser) {
+		return;
+	}
 	switch (theme) {
 		case LIGHT_MODE:
 			document.documentElement.classList.remove("dark");
@@ -181,10 +229,16 @@ export function applyThemeToDocument(theme: LIGHT_DARK_MODE) {
 }
 
 export function setTheme(theme: LIGHT_DARK_MODE): void {
+	if (!browser) {
+		return;
+	}
 	localStorage.setItem("theme", theme);
 	applyThemeToDocument(theme);
 }
 
 export function getStoredTheme(): LIGHT_DARK_MODE {
-	return (localStorage.getItem("theme") as LIGHT_DARK_MODE) || DEFAULT_THEME;
+	return (
+		(browser ? (localStorage.getItem("theme") as LIGHT_DARK_MODE) : null) ||
+		DEFAULT_THEME
+	);
 }
