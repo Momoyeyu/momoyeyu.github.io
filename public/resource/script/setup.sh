@@ -51,12 +51,62 @@ install_pkgs() {
   else run_priv apt-get install -y "$@"; fi
 }
 
+# ---- network helpers --------------------------------------------------------
+# raw.githubusercontent.com (and sometimes github.com) hangs instead of failing
+# on networks where it is blocked, so a bare curl/git stalls the script
+# forever. Route every download through these helpers: try each source in
+# order with a bounded wait; the first success wins.
+fetch_url() {
+  local url
+  for url in "$@"; do
+    if curl -fsSL --connect-timeout 8 --max-time 90 "$url" 2>/dev/null; then
+      return 0
+    fi
+    warn "fetch failed, trying next source: $url" >&2
+  done
+  return 1
+}
+
+# git_clone <dest> <url> [<mirror-url> ...]
+# CLONE_BRANCH=<ref> adds --branch. git's lowSpeed* knobs bound each attempt
+# (portable — macOS has no `timeout` command).
+git_clone() {
+  local dest="$1"; shift
+  local -a args=(--depth 1)
+  [[ -n "${CLONE_BRANCH:-}" ]] && args+=(--branch "$CLONE_BRANCH")
+  local url
+  for url in "$@"; do
+    rm -rf "$dest"
+    git -c http.lowSpeedLimit=1000 -c http.lowSpeedTime=30 clone "${args[@]}" "$url" "$dest" && return 0
+    warn "clone failed, trying next source: $url" >&2
+  done
+  return 1
+}
+
+OMZ_INSTALL_URLS=(
+  https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh
+  https://cdn.jsdelivr.net/gh/ohmyzsh/ohmyzsh@master/tools/install.sh
+  https://fastly.jsdelivr.net/gh/ohmyzsh/ohmyzsh@master/tools/install.sh
+  https://gitee.com/mirrors/oh-my-zsh/raw/master/tools/install.sh
+)
+OMZ_CLONE_URLS=(
+  https://github.com/ohmyzsh/ohmyzsh.git
+  https://gitee.com/mirrors/oh-my-zsh.git
+)
+BREW_INSTALL_URLS=(
+  https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh
+  https://cdn.jsdelivr.net/gh/Homebrew/install@HEAD/install.sh
+  https://fastly.jsdelivr.net/gh/Homebrew/install@HEAD/install.sh
+)
+
 if [[ "$OS_TYPE" == macos ]]; then
   export PATH="/usr/local/bin:/opt/homebrew/bin:$PATH"
   hash -r 2>/dev/null || true
   if ! command -v brew >/dev/null 2>&1; then
     info "Installing Homebrew ..."
-    NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" || die "Homebrew installation failed."
+    local brew_installer
+    brew_installer="$(fetch_url "${BREW_INSTALL_URLS[@]}")" || die "Homebrew installer unreachable on all sources."
+    NONINTERACTIVE=1 /bin/bash -c "$brew_installer" || die "Homebrew installation failed."
   fi
   for brew_bin in /opt/homebrew/bin/brew /usr/local/bin/brew; do
     if [[ -x "$brew_bin" ]]; then eval "$("$brew_bin" shellenv)"; break; fi
@@ -98,9 +148,20 @@ install_omz() {
     rm -rf "$ZSH"
   fi
   info "Installing oh-my-zsh ..."
+  # The upstream installer git-clones github.com internally, so even a mirrored
+  # install.sh can fail partway through — fall back to our own clone whenever
+  # $ZSH/oh-my-zsh.sh is missing afterwards.
   # </dev/null: this script is usually itself piped into bash, so the installer
   # must never be able to read (and swallow) the rest of it from stdin.
-  RUNZSH=no CHSH=no KEEP_ZSHRC=yes sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" </dev/null || warn "oh-my-zsh installer returned non-zero, continue."
+  local installer
+  installer="$(fetch_url "${OMZ_INSTALL_URLS[@]}")" || installer=""
+  if [[ -n "$installer" ]]; then
+    RUNZSH=no CHSH=no KEEP_ZSHRC=yes sh -c "$installer" </dev/null || warn "oh-my-zsh installer returned non-zero."
+  fi
+  if [[ ! -f "$ZSH/oh-my-zsh.sh" ]]; then
+    warn "install.sh unavailable or failed; cloning oh-my-zsh directly."
+    git_clone "$ZSH" "${OMZ_CLONE_URLS[@]}" || warn "oh-my-zsh clone failed."
+  fi
   if [[ -n "$stash" ]]; then
     mkdir -p "$ZSH/custom"
     cp -a "$stash/." "$ZSH/custom/" 2>/dev/null || true
@@ -151,14 +212,36 @@ ensure_omz_sourced() {
 ensure_omz_sourced
 
 install_zsh_plugin() {
-  local name="$1" url="$2"
+  local name="$1"; shift
   local dest="$ZSH_CUSTOM/plugins/$name"
-  if [[ -d "$dest" ]]; then ok "Plugin already installed: $name"
-  else info "Installing zsh plugin: $name"; git clone --depth 1 "$url" "$dest"; ok "Plugin installed: $name"; fi
+  if [[ -d "$dest" ]]; then ok "Plugin already installed: $name"; return; fi
+  info "Installing zsh plugin: $name"
+  if git_clone "$dest" "$@"; then ok "Plugin installed: $name"
+  else warn "Plugin clone failed on all sources: $name"; fi
 }
 
-install_zsh_plugin fast-syntax-highlighting https://github.com/zdharma-continuum/fast-syntax-highlighting.git
-install_zsh_plugin zsh-autosuggestions https://github.com/zsh-users/zsh-autosuggestions.git
+install_zsh_plugin fast-syntax-highlighting \
+  https://github.com/zdharma-continuum/fast-syntax-highlighting.git \
+  https://ghfast.top/https://github.com/zdharma-continuum/fast-syntax-highlighting.git
+install_zsh_plugin zsh-autosuggestions \
+  https://github.com/zsh-users/zsh-autosuggestions.git \
+  https://ghfast.top/https://github.com/zsh-users/zsh-autosuggestions.git
+
+# fast-syntax-highlighting blocks every interactive zsh login while it curls
+# its secondary theme from raw.githubusercontent.com when this cache file is
+# missing — pre-seed it so a blocked source never hangs the prompt.
+seed_fsh_theme() {
+  local theme="$HOME/.cache/fsh/secondary_theme.zsh"
+  [[ -s "$theme" || ! -d "$ZSH_CUSTOM/plugins/fast-syntax-highlighting" ]] && return 0
+  local content
+  content="$(fetch_url \
+    https://raw.githubusercontent.com/zdharma-continuum/fast-syntax-highlighting/master/share/free_theme.zsh \
+    https://cdn.jsdelivr.net/gh/zdharma-continuum/fast-syntax-highlighting@master/share/free_theme.zsh \
+    https://fastly.jsdelivr.net/gh/zdharma-continuum/fast-syntax-highlighting@master/share/free_theme.zsh)" || return 0
+  mkdir -p "$(dirname "$theme")"
+  printf '%s\n' "$content" > "$theme"
+}
+seed_fsh_theme
 
 update_zshrc_plugins() {
   local zshrc="$HOME/.zshrc"
@@ -212,8 +295,17 @@ update_zshrc_plugins
 add_zsh_aliases() {
   local zshrc="$HOME/.zshrc"
   [[ -f "$zshrc" ]] || touch "$zshrc"
-  local marker=">>> setup.sh aliases >>>"
-  if grep -qF "$marker" "$zshrc"; then ok "zsh aliases already present."; return; fi
+  # Rewrite the marker block rather than skipping it (same rationale as the
+  # prompt block): re-runs pick up newly added aliases instead of leaving a
+  # stale snapshot in place.
+  if grep -qF ">>> setup.sh aliases >>>" "$zshrc"; then
+    local tmp
+    tmp=$(mktemp)
+    if sed '/# >>> setup.sh aliases >>>/,/# <<< setup.sh aliases <<</d' "$zshrc" > "$tmp"; then
+      printf '%s\n' "$(cat "$tmp")" > "$zshrc"
+    fi
+    rm -f "$tmp"
+  fi
   cat >> "$zshrc" <<'EOF'
 
 # >>> setup.sh aliases >>>
@@ -223,6 +315,8 @@ alias la='ls -a'
 alias zshcfg='vim ~/.zshrc'
 alias zshsrc='source ~/.zshrc'
 alias hostcfg='sudo vim /etc/hosts'
+alias gitcfg='vim ~/.gitconfig'
+alias sshcfg='vim ~/.ssh/config'
 # <<< setup.sh aliases <<<
 EOF
   ok "Added zsh aliases to ~/.zshrc"

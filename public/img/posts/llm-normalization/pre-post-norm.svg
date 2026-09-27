@@ -1,0 +1,95 @@
+<svg viewBox="0 0 560 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Post-Norm vs Pre-Norm wiring of a Transformer sublayer: Post-Norm applies Norm after the residual add so the residual stream is cut every layer, while Pre-Norm applies Norm inside the branch and keeps a clean residual highway">
+	<style>
+		:root {
+			--fg: #2b2b2b;
+			--line: #3d3d3d;
+			--expert-fill: #dce9f7;
+			--expert-stroke: #7b9cc4;
+			--router-fill: #f5e9c9;
+			--router-stroke: #b8912f;
+			--step-fill: #eef1f4;
+			--step-stroke: #9aa5b1;
+			--gate-fill: #ffffff;
+			--accent: #e0a800;
+		}
+		@media (prefers-color-scheme: dark) {
+			:root {
+				--fg: #d8d8d8;
+				--line: #b8b8b8;
+				--expert-fill: #26364d;
+				--expert-stroke: #6c8ebf;
+				--router-fill: #4a3d1e;
+				--router-stroke: #c9a53f;
+				--step-fill: #2a2f36;
+				--step-stroke: #6b7684;
+				--gate-fill: #1e1e1e;
+				--accent: #e8c547;
+			}
+		}
+		text { fill: var(--fg); }
+		.lbl { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 15px; }
+		.math { font-family: "Times New Roman", Times, serif; font-style: italic; }
+		.edge { stroke: var(--line); stroke-width: 1.6; fill: none; }
+		.box { stroke-width: 1.6; rx: 9; }
+	</style>
+	<defs><marker id="arw" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--line)"/></marker></defs>
+
+	<!-- column titles -->
+	<text x="140" y="24" class="lbl" style="font-size:16px" font-weight="600" text-anchor="middle">Post-Norm</text>
+	<text x="420" y="24" class="lbl" style="font-size:16px" font-weight="600" text-anchor="middle">Pre-Norm</text>
+
+	<!-- semantics -->
+	<text x="140" y="44" class="lbl" style="font-size:12.5px" text-anchor="middle"><tspan class="math">x</tspan> ← Norm(<tspan class="math">x</tspan> + <tspan class="math">F</tspan>(<tspan class="math">x</tspan>))</text>
+	<text x="420" y="44" class="lbl" style="font-size:12.5px" text-anchor="middle"><tspan class="math">x</tspan> ← <tspan class="math">x</tspan> + <tspan class="math">F</tspan>(Norm(<tspan class="math">x</tspan>))</text>
+
+	<!-- separator -->
+	<path d="M280,56 L280,374" stroke="var(--step-stroke)" stroke-width="1.2" stroke-dasharray="3 6" fill="none"/>
+
+	<!-- outputs -->
+	<rect x="85" y="58" width="110" height="38" class="box" fill="none" stroke="var(--line)"/>
+	<text x="140" y="82" class="lbl" text-anchor="middle">输出 <tspan class="math">x′</tspan></text>
+	<rect x="365" y="58" width="110" height="38" class="box" fill="none" stroke="var(--line)"/>
+	<text x="420" y="82" class="lbl" text-anchor="middle">输出 <tspan class="math">x′</tspan></text>
+
+	<!-- left column: Norm after the residual add -->
+	<rect x="100" y="112" width="80" height="34" class="box" fill="var(--router-fill)" stroke="var(--router-stroke)"/>
+	<text x="140" y="134" class="lbl" text-anchor="middle">Norm</text>
+	<path d="M140,112 L140,96" class="edge" marker-end="url(#arw)"/>
+	<path d="M140,172 L140,146" class="edge" marker-end="url(#arw)"/>
+	<circle cx="140" cy="188" r="16" fill="var(--gate-fill)" stroke="var(--line)" stroke-width="1.6"/>
+	<path d="M140,180 L140,196 M132,188 L148,188" stroke="var(--line)" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+
+	<!-- right column: add feeds the output directly -->
+	<circle cx="420" cy="188" r="16" fill="var(--gate-fill)" stroke="var(--line)" stroke-width="1.6"/>
+	<path d="M420,180 L420,196 M412,188 L428,188" stroke="var(--line)" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+	<path d="M420,172 L420,96" class="edge" marker-end="url(#arw)"/>
+
+	<!-- sublayer F -->
+	<rect x="95" y="226" width="90" height="38" class="box" fill="var(--expert-fill)" stroke="var(--expert-stroke)"/>
+	<text x="140" y="250" class="lbl" text-anchor="middle"><tspan class="math">F</tspan>(<tspan class="math">x</tspan>)</text>
+	<path d="M140,226 L140,204" class="edge" marker-end="url(#arw)"/>
+	<rect x="375" y="226" width="90" height="38" class="box" fill="var(--expert-fill)" stroke="var(--expert-stroke)"/>
+	<text x="420" y="250" class="lbl" text-anchor="middle"><tspan class="math">F</tspan>(<tspan class="math">x</tspan>)</text>
+	<path d="M420,226 L420,204" class="edge" marker-end="url(#arw)"/>
+
+	<!-- right column: Norm before F -->
+	<rect x="380" y="282" width="80" height="34" class="box" fill="var(--router-fill)" stroke="var(--router-stroke)"/>
+	<text x="420" y="304" class="lbl" text-anchor="middle">Norm</text>
+	<path d="M420,282 L420,264" class="edge" marker-end="url(#arw)"/>
+	<path d="M420,332 L420,316" class="edge" marker-end="url(#arw)"/>
+
+	<!-- inputs -->
+	<rect x="95" y="332" width="90" height="38" class="box" fill="none" stroke="var(--line)"/>
+	<text x="140" y="356" class="lbl" text-anchor="middle">输入 <tspan class="math">x</tspan></text>
+	<path d="M140,332 L140,264" class="edge" marker-end="url(#arw)"/>
+	<rect x="375" y="332" width="90" height="38" class="box" fill="none" stroke="var(--line)"/>
+	<text x="420" y="356" class="lbl" text-anchor="middle">输入 <tspan class="math">x</tspan></text>
+
+	<!-- residual bypasses -->
+	<path d="M172,332 C224,332 234,308 234,280 L234,204 Q234,188 218,188 L156,188" class="edge" marker-end="url(#arw)"/>
+	<path d="M452,332 C504,332 514,308 514,280 L514,204 Q514,188 498,188 L436,188" class="edge" marker-end="url(#arw)"/>
+
+	<!-- annotations -->
+	<text x="130" y="162" class="lbl" style="font-size:12.5px;fill:var(--step-stroke)" text-anchor="end">残差流被 Norm 打断</text>
+	<text x="506" y="212" class="lbl" style="font-size:12.5px;fill:var(--step-stroke)" text-anchor="end">残差高速路</text>
+</svg>

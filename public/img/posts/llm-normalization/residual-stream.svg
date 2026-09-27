@@ -1,0 +1,75 @@
+<svg viewBox="0 0 560 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="残差流 std 随层数变化曲线：无归一化时 std 按 sqrt 规律从 1 增长到约 1.28，Pre-Norm 下稳定在 1 附近；灰色虚线为 sqrt(1+0.01n) 理论参照">
+	<style>
+		:root {
+			--fg: #2b2b2b;
+			--line: #3d3d3d;
+			--expert-fill: #dce9f7;
+			--expert-stroke: #7b9cc4;
+			--router-fill: #f5e9c9;
+			--router-stroke: #b8912f;
+			--step-fill: #eef1f4;
+			--step-stroke: #9aa5b1;
+			--gate-fill: #ffffff;
+			--accent: #e0a800;
+		}
+		@media (prefers-color-scheme: dark) {
+			:root {
+				--fg: #d8d8d8;
+				--line: #b8b8b8;
+				--expert-fill: #26364d;
+				--expert-stroke: #6c8ebf;
+				--router-fill: #4a3d1e;
+				--router-stroke: #c9a53f;
+				--step-fill: #2a2f36;
+				--step-stroke: #6b7684;
+				--gate-fill: #1e1e1e;
+				--accent: #e8c547;
+			}
+		}
+		text { fill: var(--fg); }
+		.lbl { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 15px; }
+		.math { font-family: "Times New Roman", Times, serif; font-style: italic; }
+		.edge { stroke: var(--line); stroke-width: 1.6; fill: none; }
+		.box { stroke-width: 1.6; rx: 9; }
+	</style>
+	<defs>
+		<marker id="arw" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+			<path d="M0,0 L10,5 L0,10 z" fill="var(--line)"/>
+		</marker>
+	</defs>
+
+	<!-- arrow axes -->
+	<path d="M76,262 L520,262" class="edge" marker-end="url(#arw)"/>
+	<path d="M76,262 L76,36" class="edge" marker-end="url(#arw)"/>
+
+	<!-- x ticks: 0 / 32 / 64 -->
+	<path d="M76,257 L76,262 M298.0,257 L298.0,262 M520,257 L520,262" stroke="var(--line)" stroke-width="1.2" fill="none"/>
+	<text x="76" y="281" class="math" font-size="14" text-anchor="middle">0</text>
+	<text x="298.0" y="281" class="math" font-size="14" text-anchor="middle">32</text>
+	<text x="520" y="281" class="math" font-size="14" text-anchor="middle">64</text>
+
+	<!-- y ticks: 1.0 / 1.3 -->
+	<path d="M71,224.3 L76,224.3 M71,111.3 L76,111.3" stroke="var(--line)" stroke-width="1.2" fill="none"/>
+	<text x="66" y="229.3" class="math" font-size="14" text-anchor="end">1.0</text>
+	<text x="66" y="116.3" class="math" font-size="14" text-anchor="end">1.3</text>
+
+	<!-- axis titles -->
+	<text x="298.0" y="306" class="lbl" text-anchor="middle">层数</text>
+	<text x="30" y="149.0" class="lbl" text-anchor="middle" transform="rotate(-90 30 149.0)">残差流 std</text>
+
+	<!-- theoretical sqrt(1 + 0.01n) reference -->
+	<path d="M76.0,224.3 L82.9,222.5 L89.9,220.6 L96.8,218.7 L103.8,216.9 L110.7,215.0 L117.6,213.2 L124.6,211.4 L131.5,209.6 L138.4,207.7 L145.4,205.9 L152.3,204.2 L159.2,202.4 L166.2,200.6 L173.1,198.8 L180.1,197.1 L187.0,195.3 L193.9,193.6 L200.9,191.8 L207.8,190.1 L214.8,188.4 L221.7,186.7 L228.6,185.0 L235.6,183.3 L242.5,181.6 L249.4,179.9 L256.4,178.2 L263.3,176.5 L270.2,174.9 L277.2,173.2 L284.1,171.5 L291.1,169.9 L298.0,168.2 L304.9,166.6 L311.9,165.0 L318.8,163.4 L325.8,161.7 L332.7,160.1 L339.6,158.5 L346.6,156.9 L353.5,155.3 L360.4,153.7 L367.4,152.1 L374.3,150.6 L381.2,149.0 L388.2,147.4 L395.1,145.9 L402.1,144.3 L409.0,142.8 L415.9,141.2 L422.9,139.7 L429.8,138.1 L436.8,136.6 L443.7,135.1 L450.6,133.6 L457.6,132.1 L464.5,130.5 L471.4,129.0 L478.4,127.5 L485.3,126.0 L492.2,124.6 L499.2,123.1 L506.1,121.6 L513.1,120.1 L520.0,118.6" stroke="var(--step-stroke)" stroke-width="1.6" stroke-dasharray="6 5" fill="none"/>
+
+	<!-- simulated curves -->
+	<path d="M76.0,224.3 L82.9,222.4 L89.9,220.5 L96.8,218.7 L103.8,216.9 L110.7,214.9 L117.6,213.1 L124.6,211.2 L131.5,209.4 L138.4,207.7 L145.4,205.9 L152.3,204.1 L159.2,202.3 L166.2,200.6 L173.1,198.8 L180.1,197.0 L187.0,195.2 L193.9,193.5 L200.9,191.8 L207.8,190.1 L214.8,188.3 L221.7,186.6 L228.6,184.9 L235.6,183.2 L242.5,181.6 L249.4,180.0 L256.4,178.3 L263.3,176.6 L270.2,175.1 L277.2,173.4 L284.1,171.7 L291.1,170.1 L298.0,168.5 L304.9,166.8 L311.9,165.1 L318.8,163.5 L325.8,161.9 L332.7,160.3 L339.6,158.6 L346.6,157.1 L353.5,155.5 L360.4,154.0 L367.4,152.3 L374.3,150.7 L381.2,149.0 L388.2,147.4 L395.1,145.9 L402.1,144.4 L409.0,142.7 L415.9,141.0 L422.9,139.5 L429.8,138.0 L436.8,136.4 L443.7,134.9 L450.6,133.4 L457.6,131.9 L464.5,130.3 L471.4,128.8 L478.4,127.4 L485.3,125.9 L492.2,124.4 L499.2,122.9 L506.1,121.3 L513.1,119.8 L520.0,118.4" stroke="var(--expert-stroke)" stroke-width="2.2" fill="none"/>
+	<path d="M76.0,223.8 L82.9,222.4 L89.9,222.4 L96.8,222.5 L103.8,222.5 L110.7,222.4 L117.6,222.4 L124.6,222.5 L131.5,222.6 L138.4,222.4 L145.4,222.5 L152.3,222.5 L159.2,222.5 L166.2,222.4 L173.1,222.4 L180.1,222.4 L187.0,222.4 L193.9,222.5 L200.9,222.4 L207.8,222.4 L214.8,222.4 L221.7,222.4 L228.6,222.5 L235.6,222.5 L242.5,222.5 L249.4,222.5 L256.4,222.4 L263.3,222.4 L270.2,222.5 L277.2,222.5 L284.1,222.5 L291.1,222.5 L298.0,222.5 L304.9,222.4 L311.9,222.4 L318.8,222.5 L325.8,222.3 L332.7,222.5 L339.6,222.4 L346.6,222.4 L353.5,222.4 L360.4,222.5 L367.4,222.4 L374.3,222.5 L381.2,222.4 L388.2,222.6 L395.1,222.5 L402.1,222.5 L409.0,222.5 L415.9,222.4 L422.9,222.4 L429.8,222.5 L436.8,222.4 L443.7,222.5 L450.6,222.5 L457.6,222.4 L464.5,222.5 L471.4,222.5 L478.4,222.5 L485.3,222.3 L492.2,222.5 L499.2,222.5 L506.1,222.4 L513.1,222.4 L520.0,222.4" stroke="var(--accent)" stroke-width="2.2" fill="none"/>
+
+	<!-- legend -->
+	<rect x="360" y="22" width="164" height="84" class="box" fill="var(--gate-fill)" stroke="var(--line)"/>
+	<path d="M374,39 L402,39" stroke="var(--expert-stroke)" stroke-width="2.2" fill="none"/>
+	<text x="460" y="44" class="lbl" text-anchor="middle">无归一化</text>
+	<path d="M374,63 L402,63" stroke="var(--accent)" stroke-width="2.2" fill="none"/>
+	<text x="460" y="68" class="lbl" text-anchor="middle">Pre-Norm</text>
+	<path d="M374,87 L402,87" stroke="var(--step-stroke)" stroke-width="1.6" stroke-dasharray="6 5" fill="none"/>
+	<text x="460" y="92" class="lbl" text-anchor="middle">sqrt 增长</text>
+</svg>

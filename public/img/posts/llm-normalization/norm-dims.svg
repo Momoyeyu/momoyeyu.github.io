@@ -1,0 +1,108 @@
+<svg viewBox="0 0 560 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Four isometric N x L x C tensor cubes comparing statistical dimensions of normalization methods: BatchNorm aggregates over N and L at a fixed channel, LayerNorm over C at a fixed position of a fixed sample, InstanceNorm over L at a fixed channel of a fixed sample, GroupNorm over L and a channel group of a fixed sample">
+	<style>
+		:root {
+			--fg: #2b2b2b;
+			--line: #3d3d3d;
+			--expert-fill: #dce9f7;
+			--expert-stroke: #7b9cc4;
+			--router-fill: #f5e9c9;
+			--router-stroke: #b8912f;
+			--step-fill: #eef1f4;
+			--step-stroke: #9aa5b1;
+			--gate-fill: #ffffff;
+			--accent: #e0a800;
+		}
+		@media (prefers-color-scheme: dark) {
+			:root {
+				--fg: #d8d8d8;
+				--line: #b8b8b8;
+				--expert-fill: #26364d;
+				--expert-stroke: #6c8ebf;
+				--router-fill: #4a3d1e;
+				--router-stroke: #c9a53f;
+				--step-fill: #2a2f36;
+				--step-stroke: #6b7684;
+				--gate-fill: #1e1e1e;
+				--accent: #e8c547;
+			}
+		}
+		text { fill: var(--fg); }
+		.lbl { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 15px; }
+		.math { font-family: "Times New Roman", Times, serif; font-style: italic; }
+		.edge { stroke: var(--line); stroke-width: 1.6; fill: none; }
+		.box { stroke-width: 1.6; rx: 9; }
+	</style>
+	<defs>
+		<marker id="arw" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+			<path d="M0,0 L10,5 L0,10 z" fill="var(--line)"/>
+		</marker>
+	</defs>
+
+	<!-- tensor shape -->
+	<text x="280" y="42" class="math" font-size="17" text-anchor="middle">X ∈ R<tspan baseline-shift="super" font-size="11">N×L×C</tspan></text>
+
+	<!-- BatchNorm -->
+	<g fill="var(--expert-fill)" stroke="var(--expert-stroke)" stroke-width="1.6" stroke-linejoin="round">
+		<polygon points="30,96 110,96 110,188 30,188"/>
+		<polygon points="30,96 110,96 134,80 54,80"/>
+		<polygon points="110,96 134,80 134,172 110,188"/>
+	</g>
+	<g fill="var(--router-fill)" stroke="var(--router-stroke)" stroke-width="1.5" fill-opacity="0.6" stroke-linejoin="round">
+		<polygon points="76,96 88,96 88,188 76,188"/>
+		<polygon points="76,96 88,96 112,80 100,80"/>
+		<polygon points="88,96 112,80 112,172 88,188"/>
+	</g>
+
+	<!-- LayerNorm -->
+	<g fill="var(--expert-fill)" stroke="var(--expert-stroke)" stroke-width="1.6" stroke-linejoin="round">
+		<polygon points="162,96 242,96 242,188 162,188"/>
+		<polygon points="162,96 242,96 266,80 186,80"/>
+		<polygon points="242,96 266,80 266,172 242,188"/>
+	</g>
+	<g fill="var(--router-fill)" stroke="var(--router-stroke)" stroke-width="1.5" fill-opacity="0.6" stroke-linejoin="round">
+		<polygon points="170.4,130.4 250.4,130.4 250.4,138.4 170.4,138.4"/>
+		<polygon points="170.4,130.4 250.4,130.4 257.6,125.6 177.6,125.6"/>
+		<polygon points="250.4,130.4 257.6,125.6 257.6,133.6 250.4,138.4"/>
+	</g>
+
+	<!-- InstanceNorm -->
+	<g fill="var(--expert-fill)" stroke="var(--expert-stroke)" stroke-width="1.6" stroke-linejoin="round">
+		<polygon points="294,96 374,96 374,188 294,188"/>
+		<polygon points="294,96 374,96 398,80 318,80"/>
+		<polygon points="374,96 398,80 398,172 374,188"/>
+	</g>
+	<g fill="var(--router-fill)" stroke="var(--router-stroke)" stroke-width="1.5" fill-opacity="0.6" stroke-linejoin="round">
+		<polygon points="336.4,90.4 344.4,90.4 344.4,182.4 336.4,182.4"/>
+		<polygon points="336.4,90.4 344.4,90.4 351.6,85.6 343.6,85.6"/>
+		<polygon points="344.4,90.4 351.6,85.6 351.6,177.6 344.4,182.4"/>
+	</g>
+
+	<!-- GroupNorm -->
+	<g fill="var(--expert-fill)" stroke="var(--expert-stroke)" stroke-width="1.6" stroke-linejoin="round">
+		<polygon points="426,96 506,96 506,188 426,188"/>
+		<polygon points="426,96 506,96 530,80 450,80"/>
+		<polygon points="506,96 530,80 530,172 506,188"/>
+	</g>
+	<g fill="var(--router-fill)" stroke="var(--router-stroke)" stroke-width="1.5" fill-opacity="0.6" stroke-linejoin="round">
+		<polygon points="434.4,90.4 474.4,90.4 474.4,182.4 434.4,182.4"/>
+		<polygon points="434.4,90.4 474.4,90.4 481.6,85.6 441.6,85.6"/>
+		<polygon points="474.4,90.4 481.6,85.6 481.6,177.6 474.4,182.4"/>
+	</g>
+
+	<!-- axis hints on the first cube -->
+	<path d="M21,184 L21,104" class="edge" marker-end="url(#arw)"/>
+	<path d="M36,199 L100,199" class="edge" marker-end="url(#arw)"/>
+	<path d="M112,197 L133,183" class="edge" marker-end="url(#arw)"/>
+	<text x="13" y="146" class="math" font-size="15" text-anchor="middle">L</text>
+	<text x="68" y="215" class="math" font-size="15" text-anchor="middle">C</text>
+	<text x="141" y="185" class="math" font-size="15" text-anchor="middle">N</text>
+
+	<!-- method labels -->
+	<text x="82" y="233" class="lbl" text-anchor="middle">BatchNorm</text>
+	<text x="214" y="233" class="lbl" text-anchor="middle">LayerNorm</text>
+	<text x="346" y="233" class="lbl" text-anchor="middle">InstanceNorm</text>
+	<text x="478" y="233" class="lbl" text-anchor="middle">GroupNorm</text>
+
+	<!-- caption -->
+	<text x="280" y="272" class="lbl" style="font-size:13px" text-anchor="middle">高亮区域 = 参与均值与方差统计的元素</text>
+</svg>

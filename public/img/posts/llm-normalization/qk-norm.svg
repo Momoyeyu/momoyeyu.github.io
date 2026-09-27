@@ -1,0 +1,78 @@
+<svg viewBox="0 0 560 290" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="QK-Norm inside attention: the Q and K projections each pass through RMSNorm after the linear projection and before RoPE, then meet in the attention score matmul">
+	<style>
+		:root {
+			--fg: #2b2b2b;
+			--line: #3d3d3d;
+			--expert-fill: #dce9f7;
+			--expert-stroke: #7b9cc4;
+			--router-fill: #f5e9c9;
+			--router-stroke: #b8912f;
+			--step-fill: #eef1f4;
+			--step-stroke: #9aa5b1;
+			--gate-fill: #ffffff;
+			--accent: #e0a800;
+		}
+		@media (prefers-color-scheme: dark) {
+			:root {
+				--fg: #d8d8d8;
+				--line: #b8b8b8;
+				--expert-fill: #26364d;
+				--expert-stroke: #6c8ebf;
+				--router-fill: #4a3d1e;
+				--router-stroke: #c9a53f;
+				--step-fill: #2a2f36;
+				--step-stroke: #6b7684;
+				--gate-fill: #1e1e1e;
+				--accent: #e8c547;
+			}
+		}
+		text { fill: var(--fg); }
+		.lbl { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 15px; }
+		.math { font-family: "Times New Roman", Times, serif; font-style: italic; }
+		.edge { stroke: var(--line); stroke-width: 1.6; fill: none; }
+		.box { stroke-width: 1.6; rx: 9; }
+	</style>
+	<defs><marker id="arw" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--line)"/></marker></defs>
+
+	<!-- attention output -->
+	<rect x="215" y="8" width="130" height="32" class="box" fill="var(--expert-fill)" stroke="var(--expert-stroke)"/>
+	<text x="280" y="29" class="lbl" text-anchor="middle">softmax → <tspan class="math">V</tspan></text>
+	<path d="M280,56 L280,40" class="edge" marker-end="url(#arw)"/>
+
+	<!-- score matmul: q enters upper-left, k enters upper-right -->
+	<circle cx="280" cy="72" r="16" fill="var(--gate-fill)" stroke="var(--line)" stroke-width="1.6"/>
+	<path d="M274,66 L286,78 M286,66 L274,78" stroke="var(--line)" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+	<path d="M180,108 C186,62 232,44 268.7,60.7" class="edge" marker-end="url(#arw)"/>
+	<path d="M380,108 C374,62 328,44 291.3,60.7" class="edge" marker-end="url(#arw)"/>
+	<text x="205" y="48" class="math" font-size="14" text-anchor="middle">q</text>
+	<text x="355" y="48" class="math" font-size="14" text-anchor="middle">k</text>
+
+	<!-- RoPE -->
+	<rect x="142" y="108" width="76" height="30" class="box" fill="var(--step-fill)" stroke="var(--step-stroke)"/>
+	<text x="180" y="128" class="lbl" text-anchor="middle">RoPE</text>
+	<rect x="342" y="108" width="76" height="30" class="box" fill="var(--step-fill)" stroke="var(--step-stroke)"/>
+	<text x="380" y="128" class="lbl" text-anchor="middle">RoPE</text>
+	<path d="M180,156 L180,138" class="edge" marker-end="url(#arw)"/>
+	<path d="M380,156 L380,138" class="edge" marker-end="url(#arw)"/>
+
+	<!-- norm after projection, before RoPE -->
+	<rect x="134" y="156" width="92" height="32" class="box" fill="var(--router-fill)" stroke="var(--router-stroke)"/>
+	<text x="180" y="177" class="lbl" text-anchor="middle">RMSNorm</text>
+	<rect x="334" y="156" width="92" height="32" class="box" fill="var(--router-fill)" stroke="var(--router-stroke)"/>
+	<text x="380" y="177" class="lbl" text-anchor="middle">RMSNorm</text>
+	<text x="280" y="177" class="lbl" style="font-size:12px;fill:var(--accent)" text-anchor="middle">norm before RoPE</text>
+	<path d="M180,206 L180,188" class="edge" marker-end="url(#arw)"/>
+	<path d="M380,206 L380,188" class="edge" marker-end="url(#arw)"/>
+
+	<!-- projections -->
+	<rect x="142" y="206" width="76" height="30" class="box" fill="var(--expert-fill)" stroke="var(--expert-stroke)"/>
+	<text x="180" y="226" class="lbl" text-anchor="middle"><tspan class="math">W</tspan><tspan class="math" baseline-shift="sub" font-size="10">q</tspan></text>
+	<rect x="342" y="206" width="76" height="30" class="box" fill="var(--expert-fill)" stroke="var(--expert-stroke)"/>
+	<text x="380" y="226" class="lbl" text-anchor="middle"><tspan class="math">W</tspan><tspan class="math" baseline-shift="sub" font-size="10">k</tspan></text>
+
+	<!-- input -->
+	<rect x="240" y="252" width="80" height="32" class="box" fill="none" stroke="var(--line)"/>
+	<text x="280" y="273" class="lbl" text-anchor="middle">输入 <tspan class="math">x</tspan></text>
+	<path d="M262,252 L182,236" class="edge" marker-end="url(#arw)"/>
+	<path d="M298,252 L378,236" class="edge" marker-end="url(#arw)"/>
+</svg>
