@@ -1,0 +1,70 @@
+<svg viewBox="0 0 660 290" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="SSH topology: any ssh client connects to windows-ip:2222, where netsh portproxy on Windows forwards the connection to sshd on port 22 inside the NATed WSL2 instance">
+	<style>
+		:root {
+			--fg: #2b2b2b;
+			--line: #3d3d3d;
+			--expert-fill: #dce9f7;
+			--expert-stroke: #7b9cc4;
+			--router-fill: #f5e9c9;
+			--router-stroke: #b8912f;
+			--step-fill: #eef1f4;
+			--step-stroke: #9aa5b1;
+			--gate-fill: #ffffff;
+			--accent: #e0a800;
+		}
+		@media (prefers-color-scheme: dark) {
+			:root {
+				--fg: #d8d8d8;
+				--line: #b8b8b8;
+				--expert-fill: #26364d;
+				--expert-stroke: #6c8ebf;
+				--router-fill: #4a3d1e;
+				--router-stroke: #c9a53f;
+				--step-fill: #2a2f36;
+				--step-stroke: #6b7684;
+				--gate-fill: #1e1e1e;
+				--accent: #e8c547;
+			}
+		}
+		text { fill: var(--fg); }
+		.lbl { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 15px; }
+		.math { font-family: "Times New Roman", Times, serif; font-style: italic; }
+		.edge { stroke: var(--line); stroke-width: 1.6; fill: none; }
+		.box { stroke-width: 1.6; rx: 9; }
+		.dim { fill: var(--step-stroke); }
+	</style>
+	<defs><marker id="arw" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--line)"/></marker></defs>
+
+	<!-- client -->
+	<rect x="30" y="122" width="140" height="64" class="box" fill="var(--gate-fill)" stroke="var(--line)"/>
+	<text x="100" y="150" class="lbl" style="font-size:16px" font-weight="600" text-anchor="middle">客户端</text>
+	<text x="100" y="170" class="lbl dim" style="font-size:11px" text-anchor="middle">任何能 ssh 的机器</text>
+
+	<!-- windows host -->
+	<rect x="235" y="42" width="395" height="200" class="box" fill="none" stroke="var(--line)"/>
+	<text x="432" y="68" class="lbl" style="font-size:16px" font-weight="600" text-anchor="middle">Windows</text>
+
+	<!-- portproxy on the host -->
+	<rect x="270" y="132" width="140" height="44" class="box" fill="var(--router-fill)" stroke="var(--router-stroke)"/>
+	<text x="340" y="150" class="lbl" style="font-size:13px" text-anchor="middle">portproxy</text>
+	<text x="340" y="168" class="lbl" style="font-size:12px" text-anchor="middle">:2222 → :22</text>
+	<text x="340" y="196" class="lbl dim" style="font-size:10.5px" text-anchor="middle">connectaddress=<tspan class="math">&lt;wsl-ip&gt;</tspan>:22</text>
+
+	<!-- wsl container behind NAT -->
+	<rect x="435" y="88" width="180" height="112" class="box" fill="var(--step-fill)" stroke="var(--step-stroke)"/>
+	<text x="525" y="108" class="lbl" style="font-size:12px" text-anchor="middle">WSL2 · Ubuntu 24.04</text>
+	<rect x="462" y="124" width="126" height="40" class="box" fill="var(--expert-fill)" stroke="var(--expert-stroke)"/>
+	<text x="525" y="149" class="lbl" style="font-size:13px" text-anchor="middle">sshd :22</text>
+	<text x="525" y="188" class="lbl dim" style="font-size:10.5px" text-anchor="middle">zsh · PyTorch · CUDA → GPU 直通</text>
+
+	<!-- hop 1: lan to host -->
+	<path d="M170,154 L270,154" class="edge" marker-end="url(#arw)"/>
+	<text x="220" y="134" class="lbl" style="font-size:12px" text-anchor="middle">ssh laptop</text>
+	<text x="220" y="176" class="lbl" style="font-size:11px" text-anchor="middle"><tspan class="math">&lt;windows-ip&gt;:2222</tspan></text>
+
+	<!-- hop 2: forwarded into wsl -->
+	<path d="M410,154 L462,154" class="edge" marker-end="url(#arw)"/>
+
+	<!-- caption -->
+	<text x="330" y="272" class="lbl" style="font-size:13px" text-anchor="middle">NAT 模式：<tspan class="math">&lt;windows-ip&gt;:2222</tspan> 经 portproxy 转发到 WSL 的 22（mirrored 模式可省去转发，直连 :22）</text>
+</svg>

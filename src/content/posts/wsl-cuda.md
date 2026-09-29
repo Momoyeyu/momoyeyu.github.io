@@ -1,17 +1,26 @@
 ---
 title: 通过 WSL 使用 CUDA
 date: 2026-05-22
-updated: 2026-05-22
-description: '本文使用 Mac 通过 SSH 直连 WSL2：mirrored 网络、sshd 配置、防火墙与 PyTorch GPU 验证。'
+updated: 2026-09-29
+description: 'SSH 直连 WSL2：AI 一键配置，或手动配置 portproxy、sshd 与防火墙，验证 CUDA。'
 tags: [WSL, CUDA]
 category: 环境搭建
 episode: 2
 draft: false
 lang: 'zh_CN'
 ---
-这篇记录如何通过 SSH 直连 Windows 上的 WSL2，在原生 Linux 环境里调 GPU 进行 CUDA 开发的完整配置过程。本文以 Mac 作为主机为例，将 Windows 当作服务器。
+这篇记录如何通过 SSH 直连 Windows 上的 WSL2，在原生 Linux 环境里调 GPU 进行 CUDA 开发。客户端可以是任何能跑 ssh 的机器（本文以 Mac 为例），Windows 当作服务器。
 
-方案的核心思路：**在 WSL2 内部装 sshd，配合 mirrored 网络模式，让 WSL 直接共享 Windows 的网络栈**。Mac 连 `<windows-ip>:22` 就是在连 WSL 里的 Linux，不需要经过 Windows OpenSSH，不需要 `.bat` 跳板脚本，不需要端口转发。SSH 和 SFTP 走的都是同一个原生 Linux sshd，PyCharm、VS Code Remote-SSH 直接就能用。
+方案的核心思路：**在 WSL2 内部装 sshd，再用 `netsh portproxy` 把 Windows 的一个端口（本文用 2222）转发到 WSL 的 22**。客户端连 `<windows-ip>:2222` 就是在连 WSL 里的 Linux——SSH 和 SFTP 走同一个原生 Linux sshd，VS Code Remote-SSH、PyCharm 远程开发直接可用。选 2222 而不是 22，是为了不碰 Windows 自带的 OpenSSH Server，两边互不干扰。
+
+![topology](/img/posts/wsl-cuda/topology.svg)
+
+配置有两条路线：
+
+- **AI 快速配置**：装好 WSL 后跑两个脚本把 shell 环境和 [dsh](https://www.npmjs.com/package/@deepseek-ai/dsh)（DeepSeek 的终端 agent）准备好，服务端配置交给 dsh 执行，客户端配置交给本地 AI。适合有 DeepSeek API key 的读者。
+- **手动配置**：逐步执行等价命令，不需要任何 API，也能看清每一步在做什么。
+
+两条路线殊途同归，最后都在「验证」一节会合。
 
 > [!NOTE]
 > **前提条件**
@@ -19,10 +28,15 @@ lang: 'zh_CN'
 > - Windows 11
 > - NVIDIA GPU + 已装 [GeForce / Studio 驱动](https://www.nvidia.com/Download/index.aspx)（2020 年后的版本均支持 WSL2 CUDA 直通）
 > - Windows 已启用虚拟化（BIOS 中 VT-x / AMD-V + Hyper-V）
-> - Mac 与 Windows 在同一局域网（校园网、家庭网都行）
-> - Mac 已生成 SSH 密钥（没有的话：`ssh-keygen -t ed25519`）
+> - 客户端（Mac / Linux / 另一台 Windows 均可）与 Windows 在同一局域网
+> - 客户端已生成 SSH 密钥（没有的话：`ssh-keygen -t ed25519`）
+> - AI 路线额外需要 [DeepSeek API key](https://platform.deepseek.com/)
 
-## 1. 安装 WSL2 + Ubuntu
+## AI 快速配置
+
+整条路线里手动操作只有三件事：Windows 上装 WSL、在 WSL 里跑两个脚本、把 dsh 输出的管理员命令在 PowerShell 里跑掉。其余全部交给 agent。
+
+### 1. 安装 WSL
 
 PowerShell（管理员）：
 
@@ -30,9 +44,7 @@ PowerShell（管理员）：
 wsl --install -d Ubuntu-24.04
 ```
 
-装完重启 Windows，首次进入 WSL 设置 Linux 用户名和密码。
-
-确认版本：
+装完重启 Windows，首次进入 WSL 设置 Linux 用户名和密码。确认版本：
 
 ```powershell
 wsl -l -v
@@ -44,40 +56,86 @@ wsl -l -v
 wsl --set-version Ubuntu-24.04 2
 ```
 
-> [!TIP]
-> 推荐 Ubuntu 24.04 而不是 20.04——20.04 已经接近 EOL，而且 24.04 对 systemd 的支持更好，后面配 sshd 自启更省事。
+### 2. 配置 shell
 
-## 2. 启用 mirrored 网络模式
-
-这是整个方案的关键。默认情况下 WSL2 用 NAT 网络，有自己的虚拟 IP，外部访问需要端口转发。**mirrored 模式让 WSL 直接共享 Windows 的网络栈**，WSL 里 `0.0.0.0:22` 监听的端口，从局域网 `<windows-ip>:22` 就能直接访问。
-
-在 Windows 上创建或编辑 `C:\Users\<用户>\.wslconfig`：
-
-```ini
-[wsl2]
-networkingMode=mirrored
+```bash
+curl -fsSL https://momoyeyu.github.io/resource/script/setup.sh | bash
 ```
 
-然后在 PowerShell 中重启 WSL：
+这是我公开的初始化脚本（源码见[资源页](https://momoyeyu.github.io/resource/script/)），一次完成：zsh + oh-my-zsh + fast-syntax-highlighting + zsh-autosuggestions、git 身份与别名、PROMPT，并把默认登录 shell 切成 zsh。
 
-```powershell
-wsl --shutdown
+值得说的不是装了什么，而是它怎么对付国内网络：所有下载都带多源回退链（GitHub 直连 → jsdelivr → ghfast.top → gitee），每个源限时等待，不会再出现 curl 卡住把整个脚本挂死的情况。另外它会在 `~/.cache/fsh/` 预置 fast-syntax-highlighting 的主题缓存——没有这个文件时，该插件**每次**启动 zsh 都要去 `raw.githubusercontent.com` 拉主题，在不可达的网络里每个新终端都卡到超时。预置之后实测 `zsh -i -c exit` 约 0.3s。
+
+中途会问 git 的 `user.name` 和 `user.email`（提交作者信息，回车用现有值）。跑完开一个新终端或 `exec zsh -l` 生效。
+
+### 3. 安装 dsh
+
+```bash
+curl -fsSL https://momoyeyu.github.io/resource/script/dsh.sh | bash
 ```
 
-再次进入 WSL，验证网络模式：
+同样来自[资源页](https://momoyeyu.github.io/resource/script/)。它装 nvm → Node 22 → pnpm → `@deepseek-ai/dsh` 和 `dsh-tui`，中途会提示输入 `DEEPSEEK_API_KEY`（写入 `~/.dsh/.env`）。下载链同样带 npmmirror 等回退源。
+
+跑完 `dsh` 和 `dsh-tui` 可用；新装的 PATH 写在 `~/.zshrc`，如果当前 shell 找不到命令，开新终端即可。
+
+### 4. 配置服务端
+
+在 WSL 里启动 `dsh`，把任务一次性交代给它，例如：
+
+> 帮我在这台 WSL 上配置 SSH 服务：安装 openssh-server 并用 systemd 设为开机自启；只保留公钥认证、禁用密码登录；我把客户端的公钥贴给你（`cat ~/.ssh/id_ed25519.pub` 的输出），写进 `~/.ssh/authorized_keys` 并设好权限；用 portproxy 把 Windows 的 2222 端口映射到 WSL 的 22；最后告诉我局域网内用什么 IP 和端口连接，以及还有哪些命令需要我在 Windows 的管理员 PowerShell 里执行（比如防火墙放行）。
+
+dsh 会直接执行它够得着的部分：装包、写 sshd 配置、`systemctl enable --now ssh`、部署公钥、配置端口映射。够不着的部分——Windows 防火墙规则这类需要管理员权限的 PowerShell 命令——它会逐条生成给你，复制到管理员 PowerShell 里跑完即可。
+
+全部完成后问它一句「现在怎么从局域网连进来」，它会给出 IP、端口、用户名。记下来给下一步用。
+
+### 5. 配置客户端
+
+客户端同样不必手写：把上一步拿到的连接信息贴给任意 coding agent，让它写 `~/.ssh/config` 并确认公钥已部署。写出来的配置长这样：
+
+```
+Host laptop
+    HostName <windows-ip>
+    Port 2222
+    User <wsl-user>
+    IdentityFile ~/.ssh/id_ed25519
+    ServerAliveInterval 60
+    ServerAliveCountMax 10
+```
+
+之后 `ssh laptop` 一条命令直连 WSL。AI 路线的读者可以直接跳到「验证」；下面是不可替代场景下的手动全流程。
+
+## 手动配置
+
+以下每一步都等价于 dsh 自动做的事，逐条执行即可。
+
+### 1. 端口映射
+
+这是整个方案的关键。默认的 WSL2 用 NAT 网络：WSL 有自己的虚拟 IP（172.x 段），局域网里的机器看不到它，只能从 Windows 本机访问。所以要让 sshd 对外可达，就得在 Windows 上把某个端口转发进 WSL——这就是 `netsh portproxy` 干的事。
+
+先拿 WSL 的 NAT IP，在 WSL 里：
 
 ```bash
 hostname -I
 ```
 
+记下输出的第一个地址（形如 `172.x.x.x`）。然后在 PowerShell（管理员）里加转发规则，把 Windows 的 2222 转到这个 IP 的 22：
+
+```powershell
+netsh interface portproxy add v4tov4 listenport=2222 listenaddress=0.0.0.0 connectport=22 connectaddress=<wsl-ip>
+```
+
+验证规则已生效：
+
+```powershell
+netsh interface portproxy show v4tov4
+```
+
 > [!IMPORTANT]
-> mirrored 模式下，`hostname -I` 显示的 IP 和 Windows 的局域网 IP 相同——这是正常的，说明网络栈已经共享。不需要做任何端口转发。
->
-> 如果启用 mirrored 后遇到 `0x8007054f` 之类的错误，说明 WSL 版本太旧不支持。可以用 `wsl --update` 升级，或者回退到 NAT + `netsh portproxy` 方案（见文末附录）。
+> WSL 的 NAT IP 在重启后可能变化，变了就要删掉旧规则重建（`netsh interface portproxy delete v4tov4 listenport=2222 listenaddress=0.0.0.0` 再 `add`）。如果嫌麻烦，新版本 WSL 支持 mirrored 网络模式——在 `C:\Users\<用户>\.wslconfig` 写 `[wsl2]` + `networkingMode=mirrored` 让 WSL 共享 Windows 网络栈，ssh 直接打 22 端口，不需要 portproxy。本文走 portproxy 路线是因为它对所有 WSL 版本都适用，而且 2222 端口天然避开 Windows OpenSSH 占用的 22。
 
-## 3. 修复 DNS
+### 2. 网络准备
 
-部分 WSL 安装后 `/etc/resolv.conf` 缺失或 DNS 不可用，网都连不上，后面什么都装不了。先修这个。
+部分 WSL 装好后 `/etc/resolv.conf` 缺失或 DNS 不可用，先把网修通，再换国内源加速装包。
 
 关闭 WSL 自动生成 resolv.conf：
 
@@ -97,34 +155,33 @@ nameserver 119.29.29.29
 EOF'
 ```
 
-验证：
+换清华源。Ubuntu 24.04 的源已改为 deb822 格式，存放在 `/etc/apt/sources.list.d/ubuntu.sources`（旧的 `sources.list` 只剩注释）：
+
+```bash
+sudo cp /etc/apt/sources.list.d/ubuntu.sources /etc/apt/sources.list.d/ubuntu.sources.bak
+sudo sed -i 's|http://archive.ubuntu.com|https://mirrors.tuna.tsinghua.edu.cn|g; s|http://security.ubuntu.com|https://mirrors.tuna.tsinghua.edu.cn|g' /etc/apt/sources.list.d/ubuntu.sources
+sudo apt update
+```
+
+> [!NOTE]
+> 旧版本 Ubuntu（20.04 及更早）的源在 `/etc/apt/sources.list`，对那个文件做同样的域名替换即可。
+
+验证连通性：
 
 ```bash
 ping -c 2 223.5.5.5
 ping -c 2 mirrors.tuna.tsinghua.edu.cn
 ```
 
-两个都通就 OK。不通的话在 PowerShell 里 `wsl --shutdown` 再重新进。
+两个都通就继续，不通在 PowerShell 里 `wsl --shutdown` 重进。
 
-## 4. 换清华源
-
-国内用户建议换源，后面装包快很多。
-
-```bash
-sudo cp /etc/apt/sources.list /etc/apt/sources.list.bak
-sudo sed -i 's|http://archive.ubuntu.com|https://mirrors.tuna.tsinghua.edu.cn|g; s|http://security.ubuntu.com|https://mirrors.tuna.tsinghua.edu.cn|g' /etc/apt/sources.list
-sudo apt update
-```
-
-## 5. 在 WSL 内安装 sshd
-
-这里直接在 WSL 的 Linux 里装 openssh-server，而不是用 Windows 的 OpenSSH。这样 SSH 和 SFTP 走的都是同一个原生 Linux sshd，IDE 的远程开发功能才能正常工作。
+### 3. SSH 服务
 
 ```bash
 sudo apt install -y openssh-server
 ```
 
-写一份自定义配置：
+写一份自定义配置，只留公钥认证：
 
 ```bash
 sudo bash -c 'cat > /etc/ssh/sshd_config.d/custom.conf <<EOF
@@ -134,65 +191,40 @@ PubkeyAuthentication yes
 EOF'
 ```
 
-## 6. 配置密钥认证
+### 4. 密钥认证
 
-Mac 上查看公钥：
+客户端上查看公钥：
 
 ```bash
 cat ~/.ssh/id_ed25519.pub
 ```
 
-在 WSL 里把公钥加到 `authorized_keys`：
+在 WSL 里写入 `authorized_keys`：
 
 ```bash
 mkdir -p ~/.ssh
 chmod 700 ~/.ssh
-# 把 Mac 上的公钥内容粘贴进去
+# 把客户端的公钥内容粘贴进去
 vim ~/.ssh/authorized_keys
 chmod 600 ~/.ssh/authorized_keys
 ```
 
 > [!CAUTION]
-> 权限必须严格：`~/.ssh` 是 700，`authorized_keys` 是 600。sshd 对权限很挑剔，多一个 bit 都会拒绝认证，而且不给明显报错。
+> 权限必须严格：`~/.ssh` 是 700，`authorized_keys` 是 600。sshd 对权限很挑剔，多一个 bit 都拒绝认证，而且不给明显报错。
 
-## 7. 启动 sshd 并验证
+### 5. 防火墙
 
-```bash
-sudo service ssh start
-sudo ss -tlnp | grep :22
-```
-
-应该看到 sshd 在 `0.0.0.0:22` 监听。
-
-## 8. 禁用 Windows OpenSSH
-
-WSL 的 sshd 已经占了 22 端口，Windows 自带的 OpenSSH Server 如果也在跑会冲突。而且我们不需要它了——直接关掉。
-
-PowerShell（管理员）：
-
-```powershell
-Stop-Service sshd -ErrorAction SilentlyContinue
-Set-Service -Name sshd -StartupType Disabled -ErrorAction SilentlyContinue
-```
-
-> [!WARNING]
-> **千万不要在 mirrored 模式下用 `netsh portproxy` 把 22 端口转发到 Windows 自己的 IP**。这会造成自环——端口 22 的流量转发到自己的端口 22，系统会在几秒内产生数千个 ESTABLISHED 连接，直到资源耗尽，只能重启才能恢复。
-
-## 9. 配置 Windows 防火墙
-
-让局域网能访问 WSL 的 22 端口。
-
-PowerShell（管理员）：
+让局域网能访问 Windows 的 2222 端口（即 portproxy 的监听口）。PowerShell（管理员）：
 
 ```powershell
 New-NetFirewallRule -Name sshd-public-lan `
   -DisplayName 'SSH (LAN only)' `
   -Enabled True -Direction Inbound -Protocol TCP -Action Allow `
-  -LocalPort 22 -Profile Public `
+  -LocalPort 2222 -Profile Public `
   -RemoteAddress 10.0.0.0/8
 ```
 
-**`-RemoteAddress` 不可省略**，否则等于对整个 Public 网络开放 22 端口——在校园网上这约等于裸奔。网段替换为实际值。
+**`-RemoteAddress` 不可省略**，否则等于对整个 Public 网络开放 22 端口——在校园网上约等于裸奔。网段替换为实际值。
 
 验证：
 
@@ -200,82 +232,84 @@ New-NetFirewallRule -Name sshd-public-lan `
 Get-NetFirewallRule -Name sshd-public-lan | Get-NetFirewallAddressFilter
 ```
 
-`RemoteAddress` 应该显示你设定的网段，不能是 `Any`。
+`RemoteAddress` 应显示设定的网段，不能是 `Any`。
 
-## 10. 设置 sshd 开机自启
+### 6. 开机自启
 
-WSL 默认没有 systemd（Ubuntu 24.04 可以手动开启），sshd 不会随 Windows 开机自动启动。用 Windows 计划任务解决：
+Ubuntu 24.04 可以直接启用 systemd——WSL 里最干净的自启方式。在 WSL 内：
 
-PowerShell（管理员）：
+```bash
+sudo bash -c 'cat >> /etc/wsl.conf <<EOF
 
-```powershell
-$action = New-ScheduledTaskAction -Execute "wsl.exe" `
-  -Argument "-d Ubuntu-24.04 -u root -- service ssh start"
-$trigger = New-ScheduledTaskTrigger -AtLogOn
-$principal = New-ScheduledTaskPrincipal -UserId "$env:USERNAME" -RunLevel Highest
-Register-ScheduledTask -TaskName "Start WSL SSHD" `
-  -Action $action -Trigger $trigger -Principal $principal -Force
+[boot]
+systemd=true
+EOF'
 ```
 
-这样每次 Windows 登录后，WSL 的 sshd 就会自动拉起。
+PowerShell 里 `wsl --shutdown` 后重新进入，然后：
+
+```bash
+sudo systemctl enable --now ssh
+ss -tln | grep ':22 '
+```
+
+看到 `0.0.0.0:22` 监听即可。以后每次 Windows 启动 WSL，sshd 都由 systemd 拉起。
 
 > [!TIP]
-> 如果你用的是 Ubuntu 24.04，可以在 `/etc/wsl.conf` 里加 `[boot]` + `systemd=true`，然后 `sudo systemctl enable ssh` 就行，不需要计划任务。但这个选项在 20.04 上不可用。
+> 没有 systemd 的旧版本（如 Ubuntu 20.04）用 Windows 计划任务兜底：`wsl.exe -d <发行版> -u root -- service ssh start` 挂在 AtLogOn 触发器上。
 
-## 11. Mac 端 SSH 配置
+portproxy 监听的是 2222，Windows 自带 OpenSSH Server 就算在跑也只占 22，两者互不冲突，不需要动它。
 
-编辑 `~/.ssh/config`：
+### 7. 客户端
+
+在客户端机器上编辑 `~/.ssh/config`：
 
 ```
-Host gpu
+Host laptop
     HostName <windows-ip>
-    Port 22
+    Port 2222
     User <wsl-user>
     IdentityFile ~/.ssh/id_ed25519
-    UseKeychain yes
-    AddKeysToAgent yes
     ServerAliveInterval 60
     ServerAliveCountMax 10
 ```
 
-之后 `ssh gpu` 一条命令就能连进 WSL。
+之后 `ssh laptop` 直连。公钥还没部署的话可以 `ssh-copy-id laptop`（需要临时允许密码登录一次，或沿用第 4 步的手动粘贴）。
 
-## 12. 验证 SSH 和 SFTP
+## 验证
 
-SSH 能通不等于 IDE 能用。**一定要同时验证 SFTP**，否则 PyCharm 和 VS Code 的远程文件同步会挂。
+### SSH 与 SFTP
+
+SSH 能通不等于 IDE 能用——**一定要同时验证 SFTP**，否则远程文件同步会挂：
 
 ```bash
-# 验证 SSH
-ssh gpu "pwd && hostname && uname -a"
+ssh laptop "pwd && hostname && uname -a"
 # 期望：/home/<user>、WSL 主机名、Linux ... GNU/Linux
 
-# 验证 SFTP
-sftp gpu
+sftp laptop
 sftp> pwd
 # 期望：Remote working directory: /home/<user>
-# 如果显示的是 C:\Users\... 说明连到了 Windows OpenSSH，检查是不是没禁用
 ```
 
-两个都返回 Linux 路径就 OK。VS Code Remote-SSH 和 PyCharm Professional 的远程开发功能可以直接用 `gpu` 这个 Host 名。
+两个都返回 Linux 路径，VS Code Remote-SSH 和 PyCharm 就能直接用 `laptop` 这个 Host。2222 端口只通向 WSL，不存在误连 Windows OpenSSH 的可能——这正是选 2222 的好处。
 
-## 13. 验证 CUDA + PyTorch
+### CUDA 与 PyTorch
 
-GPU 直通是 WSL2 自带的，不需要在 WSL 内装 NVIDIA 驱动。先确认直通正常：
+GPU 直通是 WSL 自带的，WSL 内不需要装 NVIDIA 驱动：
 
 ```bash
 nvidia-smi
 ```
 
-看到 GPU 信息就行。然后装 [uv](https://docs.astral.sh/uv/) 管理 Python 环境：
+> [!NOTE]
+> `nvidia-smi` 不在 PATH 的话，它在 `/usr/lib/wsl/lib/nvidia-smi`——WSL 把 Windows 驱动注入到这个目录。把 `/usr/lib/wsl/lib` 加进 `~/.zshrc` 的 PATH 即可。
+
+看到 GPU 信息后，用 [uv](https://docs.astral.sh/uv/) 建环境验证 PyTorch：
 
 ```bash
 curl -LsSf https://astral.sh/uv/install.sh | sh
 export PATH="$HOME/.local/bin:$PATH"
-```
 
-创建一个测试项目验证 PyTorch CUDA：
-
-```bash
 mkdir ~/projects/test-cuda && cd ~/projects/test-cuda
 uv venv --python 3.12
 source .venv/bin/activate
@@ -291,50 +325,37 @@ True
 NVIDIA GeForce RTX xxxx
 ```
 
-输出 `True` 就 OK。
+### Shell 启动
 
-## 14. Shell 美化（可选）
-
-如果习惯 zsh：
+如果装了 setup.sh，顺便确认启动没有被插件拖慢：
 
 ```bash
-sudo apt install -y zsh
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
-git clone https://github.com/zsh-users/zsh-syntax-highlighting ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+time zsh -i -c exit
 ```
 
-编辑 `~/.zshrc`，把 `plugins=(git)` 改成 `plugins=(git zsh-autosuggestions zsh-syntax-highlighting)`，`source ~/.zshrc` 生效。
+0.3s 量级为正常；如果慢到数秒，多半是某个插件在启动时联网拉资源被卡住，检查它是否走了回退源或本地缓存。
 
 ## 避坑要点
 
-1. **mirrored 模式下 `hostname -I` 等于 Windows IP**——这不是 bug，是 feature。说明网络栈已共享，不需要端口转发。
-2. **不要用 `netsh portproxy` 转发到 Windows 自身 IP**。mirrored 模式下这会造成 22→22 自环，系统在几秒内产生数千个连接，只能重启恢复。
-3. **验证 SFTP，不只是 SSH**。`ssh gpu "pwd"` 能通不代表 IDE 能用——一定要测 `sftp gpu` 看路径是不是 Linux 的 `/home/...`。如果是 `C:\Users\...`，说明连到了 Windows OpenSSH，没禁干净。
-4. **WSL 的 sshd 不会自动启动**。Ubuntu 20.04 没有 systemd，必须用 Windows 计划任务拉起。24.04 可以开启 systemd 后用 `systemctl enable`。
-5. **防火墙规则必须带 `-RemoteAddress`**。不带等于对整个 Public 网络开放端口。
-6. **用 ed25519 密钥，不要 RSA**。更短、更快、更安全。
-7. **WSL 内不要装 NVIDIA 驱动**。CUDA 通过 Windows 驱动直通，WSL 只需要装 PyTorch wheel。需要 `nvcc` 编译的话装 CUDA Toolkit 即可。
-8. **PyTorch 自带 CUDA runtime**。`nvidia-smi` 显示的 CUDA 版本是驱动支持的上限，跟 PyTorch wheel 自带的版本不需要完全一致。
-9. **项目和数据放 `~/`，别放 `/mnt/c/`**。跨文件系统 I/O 慢 10 倍以上。
-10. **长时间训练用 tmux**。`tmux new -s train` → 开始训练 → `Ctrl+B D` 脱离 → 关掉 SSH 也不影响 → `tmux attach -t train` 重连。
+1. **portproxy 的 `connectaddress` 填 WSL 的 NAT IP**（`hostname -I` 拿到的 172.x），重启后可能变，变了就删规则重建。
+2. **如果哪天改用 mirrored 模式，一定删掉 portproxy 规则**——mirrored 下把 22 转发到 Windows 自身 IP 会造成 22→22 自环，系统几秒内产生数千个 ESTABLISHED 连接直到资源耗尽，只能重启恢复。
+3. **验证 SFTP，不只是 SSH**。`sftp laptop` 应返回 `/home/<user>` 这样的 Linux 路径。
+4. **`~/.ssh` 权限是 700，`authorized_keys` 是 600**——多一个 bit 都拒绝认证。
+5. **防火墙规则必带 `-RemoteAddress`**，不带等于对整个 Public 网络开放端口。
+6. **WSL 内不要装 NVIDIA 驱动**。CUDA 由 Windows 驱动直通，`nvidia-smi` 显示的版本是驱动上限，与 PyTorch wheel 自带的 runtime 不需要一致。
+7. **项目和数据放 `~/`，别放 `/mnt/c/`**——跨文件系统 I/O 慢一个数量级。
+8. **长时间训练用 tmux**：`tmux new -s train` → `Ctrl+B D` 脱离 → `tmux attach -t train` 重连，关 SSH 不影响任务。
 
-## 附录：mirrored 模式不可用时的备选方案
+## 结语
 
-如果你的 WSL 版本太旧不支持 mirrored 网络模式，可以用 NAT + `netsh portproxy` 作为替代：
+这套方案的本质很简单：portproxy 把 WSL 里的 Linux sshd 映射到局域网，客户端连过去就是一台标准的 Linux 服务器。这次重配的变化是把环境初始化固化成了两个公开脚本（[setup.sh](https://momoyeyu.github.io/resource/script/setup.sh) / [dsh.sh](https://momoyeyu.github.io/resource/script/dsh.sh)，全部见[资源页](https://momoyeyu.github.io/resource/script/)），再让 agent 接手剩下的配置——说清楚要什么，比记住每一步怎么做重要。
 
-```powershell
-# 获取 WSL 的 NAT IP
-wsl -d Ubuntu-24.04 -- hostname -I
+## 参考资料
 
-# 添加端口转发（WSL IP 每次重启可能变）
-netsh interface portproxy add v4tov4 listenport=22 listenaddress=0.0.0.0 connectport=22 connectaddress=<wsl-ip>
-```
-
-注意 NAT 模式下 WSL 的 IP 每次重启可能变，需要写脚本自动更新 portproxy 规则。这比 mirrored 模式麻烦得多，建议优先升级 WSL 版本。
-
-## 写在最后
-
-这套方案的本质很简单：WSL2 mirrored 网络让 Linux sshd 直接暴露在局域网上，Mac 连过去就是一个标准的 Linux 远程开发环境，SSH 和 SFTP 都走原生 Linux，IDE 远程开发开箱即用。
-
-之前走 Windows OpenSSH + `.bat` 跳板的弯路，根源在于没意识到 mirrored 模式能让 WSL 直接上网。绕了一圈发现，最简单的架构往往也是最可靠的。
+- <https://momoyeyu.github.io/resource/script/>
+- <https://learn.microsoft.com/windows/wsl/wsl-config>
+- <https://learn.microsoft.com/windows/wsl/networking>
+- <https://platform.deepseek.com/>
+- <https://docs.astral.sh/uv/>
+- <https://pytorch.org/get-started/locally/>
+- <https://mirrors.tuna.tsinghua.edu.cn/help/ubuntu/>
