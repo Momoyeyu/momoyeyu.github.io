@@ -6,7 +6,6 @@ tags: [随笔, 职业]
 category: 随笔
 episode: 1
 draft: false
-pinned: true
 lang: 'zh_CN'
 ---
 

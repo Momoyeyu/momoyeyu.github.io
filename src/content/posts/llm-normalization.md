@@ -34,7 +34,7 @@ $$
 这意味着每一层的输出都会在原有表示上不断累加。如果各子层输出的尺度不受控制，那么残差流（residual stream）的方差会随着层数近似线性地增长。一个简单的实验就能观察到这个现象：
 
 ```python
-x = torch.randn(8, 128, 512)
+x = torch.randn(8, 128, 512)               # [N, L, C]
 stds = [x.std().item()]
 for _ in range(64):
     x = x + torch.randn(8, 128, 512) * 0.1   # 模拟各子层的输出
@@ -140,8 +140,8 @@ class BatchNorm(nn.Module):
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         # x: [N, L, C]
         if self.training:
-            mean = x.mean(dim=(0, 1))
-            var = x.var(dim=(0, 1), unbiased=False)
+            mean = x.mean(dim=(0, 1))                    # [C]
+            var = x.var(dim=(0, 1), unbiased=False)      # [C]
             with torch.no_grad():
                 self.running_mean.mul_(1 - self.momentum).add_(self.momentum * mean)
                 # PyTorch 惯例：running_var 用无偏估计
@@ -156,11 +156,11 @@ class BatchNorm(nn.Module):
 而 padding 污染的问题可以直接观察到：给序列补零之后，统计量会明显偏移。
 
 ```python
-x = torch.randn(4, 16, 8)
-x_padded = torch.cat([x, torch.zeros(4, 16, 8)], dim=1)  # 补长一倍
+x = torch.randn(4, 16, 8) + 2      # [N, L, C]
+x_padded = torch.cat([x, torch.zeros(4, 16, 8)], dim=1)  # [N, 2L, C]，补长一倍
 
-x.mean(dim=(0, 1))          # ≈ 0
-x_padded.mean(dim=(0, 1))   # 被 padding 拉向 0，方差也被压小一半
+x.mean(dim=(0, 1))          # ≈ 2
+x_padded.mean(dim=(0, 1))   # ≈ 1，均值被拉走，方差也从 ≈1 变成 ≈1.5
 ```
 
 batch 内容一变，统计量就变——这正是 BatchNorm 不适合语言模型的根本原因。
@@ -214,15 +214,16 @@ class LayerNorm(nn.Module):
         self.bias = nn.Parameter(torch.zeros(d_model))
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        mean = x.mean(dim=-1, keepdim=True)
-        var = x.var(dim=-1, unbiased=False, keepdim=True)
+        # x: [N, L, C]
+        mean = x.mean(dim=-1, keepdim=True)                       # [N, L, 1]
+        var = x.var(dim=-1, unbiased=False, keepdim=True)         # [N, L, 1]
         return (x - mean) / torch.sqrt(var + self.eps) * self.weight + self.bias
 ```
 
 与 `nn.LayerNorm` 数值对拍（默认参数、零初始化 bias，输出应在浮点误差内一致）：
 
 ```python
-x = torch.randn(4, 16, 768)
+x = torch.randn(4, 16, 768)  # [N, L, C]
 assert torch.allclose(LayerNorm(768)(x), nn.LayerNorm(768)(x), atol=1e-6)
 ```
 
@@ -232,7 +233,7 @@ LayerNorm 把统计范围缩到了单个 token，但它仍然包含去中心化�
 
 > **LayerNorm 里哪些成分真正起作用？**
 
-[Understanding and Improving Layer Normalization](https://arxiv.org/abs/1911.07013) 通过消融实验给出了答案：LayerNorm 的收益主要来自 **re-scaling 不变性**（除以标准差），而 re-centering（减均值）的贡献很小。[RMSNorm](https://arxiv.org/abs/1910.07467) 据此把均值与 $\beta$ 一起去掉，只保留均方根缩放：
+[RMSNorm](https://arxiv.org/abs/1910.07467) 的作者给出的假设是：LayerNorm 的收益主要来自 **re-scaling 不变性**（除以标准差），re-centering（减均值）则是可有可无的；[Understanding and Improving Layer Normalization](https://arxiv.org/abs/1911.07013) 的消融实验也表明，可学习的 $\gamma$、$\beta$ 在多数任务中并不带来收益。RMSNorm 据此把均值与 $\beta$ 一起去掉，只保留均方根缩放：
 
 $$
 \text{RMSNorm}(\mathbf{x})
@@ -262,16 +263,17 @@ class RMSNorm(nn.Module):
         self.weight = nn.Parameter(torch.ones(d_model))
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
+        # x: [N, L, C]
         dtype = x.dtype
         x = x.float()                                        # 统计量用 fp32
-        rms = torch.sqrt(x.pow(2).mean(dim=-1, keepdim=True) + self.eps)
-        return (x / rms * self.weight).to(dtype)
+        x = x * torch.rsqrt(x.pow(2).mean(dim=-1, keepdim=True) + self.eps)  # [N,L,C] × [N,L,1]
+        return self.weight * x.to(dtype)                     # 转回原精度再乘权重（LLaMA 顺序）
 ```
 
 与 `nn.RMSNorm` 对拍时注意把 `eps` 显式对齐（两者的默认值不同）：
 
 ```python
-x = torch.randn(4, 16, 768)
+x = torch.randn(4, 16, 768)  # [N, L, C]
 assert torch.allclose(
     RMSNorm(768, eps=1e-6)(x),
     nn.RMSNorm(768, eps=1e-6)(x),
@@ -334,6 +336,7 @@ class PostNormBlock(nn.Module):
         self.norm = nn.RMSNorm(d_model)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
+        # x: [N, L, C]
         return self.norm(x + self.sublayer(x))   # 残差之后归一化
 
 
@@ -344,6 +347,7 @@ class PreNormBlock(nn.Module):
         self.norm = nn.RMSNorm(d_model)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
+        # x: [N, L, C]
         return x + self.sublayer(self.norm(x))   # 归一化后进子层
 ```
 
@@ -387,8 +391,9 @@ self.q_norm = RMSNorm(head_dim)
 self.k_norm = RMSNorm(head_dim)
 
 def forward(self, x):
-    q = self.q_norm(self.q_proj(x).view(B, L, H, D))
-    k = self.k_norm(self.k_proj(x).view(B, L, H, D))
+    # x: [B, L, d_model]
+    q = self.q_norm(self.q_proj(x).view(B, L, H, D))  # [B,L,H·D] -> [B,L,H,D]
+    k = self.k_norm(self.k_proj(x).view(B, L, H, D))  # [B,L,H,D]
     q = apply_rope(q, cos, sin)   # norm 在 RoPE 之前
     k = apply_rope(k, cos, sin)   # apply_rope 见 EP.3
     ...
