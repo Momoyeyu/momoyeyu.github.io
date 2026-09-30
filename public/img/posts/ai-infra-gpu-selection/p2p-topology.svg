@@ -1,0 +1,72 @@
+<svg viewBox="0 0 660 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="双 GPU 互联的三种通路：NVLink 直连桥、破解驱动走 BAR1 P2P 直连、GeForce 默认绕行主机内存">
+	<style>
+		:root {
+			--fg: #2b2b2b;
+			--line: #3d3d3d;
+			--gpu-fill: #dce9f7;
+			--gpu-stroke: #7b9cc4;
+			--host-fill: #eef1f4;
+			--host-stroke: #9aa5b1;
+			--nv: #4e9a51;
+			--p2p: #b8912f;
+			--slow: #b06a6a;
+		}
+		@media (prefers-color-scheme: dark) {
+			:root {
+				--fg: #d8d8d8;
+				--line: #b8b8b8;
+				--gpu-fill: #26364d;
+				--gpu-stroke: #6c8ebf;
+				--host-fill: #2a2f36;
+				--host-stroke: #6b7684;
+				--nv: #7fc47f;
+				--p2p: #d4b05a;
+				--slow: #cf8f8f;
+			}
+		}
+		text { fill: var(--fg); }
+		.title { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 14px; font-weight: 600; }
+		.lbl { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 12px; }
+		.sub { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 11.5px; opacity: 0.75; }
+		.gpu { fill: var(--gpu-fill); stroke: var(--gpu-stroke); stroke-width: 1.5; rx: 7; }
+		.host { fill: var(--host-fill); stroke: var(--host-stroke); stroke-width: 1.4; rx: 7; }
+		.link-nv { stroke: var(--nv); stroke-width: 4; }
+		.link-p2p { stroke: var(--p2p); stroke-width: 2.4; fill: none; marker-end: url(#ah-p2p); }
+		.link-slow { stroke: var(--slow); stroke-width: 2.4; fill: none; marker-end: url(#ah-slow); }
+	</style>
+	<defs>
+		<marker id="ah-p2p" markerWidth="8" markerHeight="8" refX="6.5" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="var(--p2p)"/></marker>
+		<marker id="ah-slow" markerWidth="8" markerHeight="8" refX="6.5" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="var(--slow)"/></marker>
+	</defs>
+
+	<!-- ===== panel a: NVLink ===== -->
+	<text x="120" y="30" class="title" text-anchor="middle">NVLink 桥</text>
+	<rect x="40" y="86" width="60" height="34" class="gpu"/><text x="70" y="108" class="lbl" text-anchor="middle">GPU0</text>
+	<rect x="140" y="86" width="60" height="34" class="gpu"/><text x="170" y="108" class="lbl" text-anchor="middle">GPU1</text>
+	<line x1="100" y1="103" x2="140" y2="103" class="link-nv"/>
+	<text x="120" y="92" class="sub" text-anchor="middle">直连</text>
+	<text x="120" y="160" class="lbl" text-anchor="middle" fill="var(--nv)">112.5 GB/s</text>
+	<text x="120" y="180" class="sub" text-anchor="middle">RTX 3090 · 官方支持</text>
+
+	<!-- ===== panel b: BAR1 P2P ===== -->
+	<text x="330" y="30" class="title" text-anchor="middle">BAR1 P2P</text>
+	<rect x="250" y="86" width="60" height="34" class="gpu"/><text x="280" y="108" class="lbl" text-anchor="middle">GPU0</text>
+	<rect x="350" y="86" width="60" height="34" class="gpu"/><text x="380" y="108" class="lbl" text-anchor="middle">GPU1</text>
+	<rect x="295" y="150" width="70" height="26" class="host"/><text x="330" y="168" class="lbl" text-anchor="middle">PCIe RC</text>
+	<path d="M290,120 L290,140 L295,152" class="link-p2p"/>
+	<path d="M370,120 L370,140 L365,152" class="link-p2p"/>
+	<line x1="310" y1="137" x2="350" y2="137" class="link-p2p"/>
+	<text x="330" y="60" class="sub" text-anchor="middle">DMA 直读对端显存 · 不碰主存</text>
+	<text x="330" y="200" class="lbl" text-anchor="middle" fill="var(--p2p)">~50 GB/s 量级</text>
+	<text x="330" y="220" class="sub" text-anchor="middle">40/50 系 · 需社区驱动补丁</text>
+
+	<!-- ===== panel c: host bounce ===== -->
+	<text x="540" y="30" class="title" text-anchor="middle">主存中转</text>
+	<rect x="505" y="46" width="70" height="24" class="host"/><text x="540" y="63" class="lbl" text-anchor="middle">主机内存</text>
+	<rect x="450" y="86" width="60" height="34" class="gpu"/><text x="480" y="108" class="lbl" text-anchor="middle">GPU0</text>
+	<rect x="570" y="86" width="60" height="34" class="gpu"/><text x="600" y="108" class="lbl" text-anchor="middle">GPU1</text>
+	<path d="M500,86 L515,70" class="link-slow"/>
+	<path d="M575,70 L580,86" class="link-slow"/>
+	<text x="540" y="160" class="lbl" text-anchor="middle" fill="var(--slow)">~20 GB/s 量级</text>
+	<text x="540" y="180" class="sub" text-anchor="middle">40/50 系默认 · 显存先拷进内存</text>
+</svg>

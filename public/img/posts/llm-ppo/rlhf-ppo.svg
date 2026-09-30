@@ -1,0 +1,95 @@
+<svg viewBox="0 0 640 290" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="基于 PPO 的 RLHF 数据流：Actor 根据 prompt 生成回答 y；冻结的 Reference 与 Reward Model 分别给出参考 log prob 与序列分数，Critic 给出逐 token 价值；三者汇入奖励塑形与 GAE，再通过 PPO 更新 Actor 与 Critic">
+	<style>
+		:root {
+			--fg: #2b2b2b;
+			--line: #3d3d3d;
+			--expert-fill: #dce9f7;
+			--expert-stroke: #7b9cc4;
+			--router-fill: #f5e9c9;
+			--router-stroke: #b8912f;
+			--step-fill: #eef1f4;
+			--step-stroke: #9aa5b1;
+			--gate-fill: #ffffff;
+			--accent: #e0a800;
+		}
+		@media (prefers-color-scheme: dark) {
+			:root {
+				--fg: #d8d8d8;
+				--line: #b8b8b8;
+				--expert-fill: #26364d;
+				--expert-stroke: #6c8ebf;
+				--router-fill: #4a3d1e;
+				--router-stroke: #c9a53f;
+				--step-fill: #2a2f36;
+				--step-stroke: #6b7684;
+				--gate-fill: #1e1e1e;
+				--accent: #e8c547;
+			}
+		}
+		text { fill: var(--fg); }
+		.lbl { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 15px; }
+		.math { font-family: "Times New Roman", Times, serif; font-style: italic; }
+		.edge { stroke: var(--line); stroke-width: 1.6; fill: none; }
+		.upd { stroke: var(--accent); stroke-width: 1.8; fill: none; }
+		.box { stroke-width: 1.6; rx: 9; }
+	</style>
+	<defs>
+		<marker id="arw" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+			<path d="M0,0 L10,5 L0,10 z" fill="var(--line)"/>
+		</marker>
+		<marker id="arwA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+			<path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/>
+		</marker>
+	</defs>
+
+	<!-- prompt -> actor -->
+	<text x="90" y="64" class="lbl" text-anchor="middle">prompt <tspan class="math" font-size="17">x</tspan></text>
+	<path d="M90,74 L90,108" class="edge" marker-end="url(#arw)"/>
+
+	<!-- actor -->
+	<rect x="30" y="110" width="120" height="60" class="box" fill="var(--expert-fill)" stroke="var(--expert-stroke)"/>
+	<text x="90" y="135" class="lbl" text-anchor="middle">Actor</text>
+	<text x="90" y="158" class="math" font-size="16" text-anchor="middle">π<tspan baseline-shift="sub" font-size="11">θ</tspan></text>
+
+	<!-- actor -> three models -->
+	<path d="M150,140 L185,140" class="edge"/>
+	<path d="M185,65 L185,215" class="edge"/>
+	<path d="M185,65 L218,65" class="edge" marker-end="url(#arw)"/>
+	<path d="M185,140 L218,140" class="edge" marker-end="url(#arw)"/>
+	<path d="M185,215 L218,215" class="edge" marker-end="url(#arw)"/>
+	<text x="167" y="132" class="math" font-size="17" text-anchor="middle">y</text>
+
+	<!-- reference (frozen) -->
+	<rect x="220" y="40" width="160" height="50" class="box" fill="var(--step-fill)" stroke="var(--step-stroke)"/>
+	<text x="300" y="61" class="lbl" text-anchor="middle">Reference</text>
+	<text x="300" y="81" class="math" font-size="15" text-anchor="middle">log π<tspan baseline-shift="super" font-size="10" font-style="normal">ref</tspan>(y<tspan baseline-shift="sub" font-size="10">t</tspan> | s<tspan baseline-shift="sub" font-size="10">t</tspan>)</text>
+
+	<!-- reward model (frozen) -->
+	<rect x="220" y="115" width="160" height="50" class="box" fill="var(--step-fill)" stroke="var(--step-stroke)"/>
+	<text x="300" y="136" class="lbl" text-anchor="middle">Reward Model</text>
+	<text x="300" y="156" class="math" font-size="15" text-anchor="middle">r<tspan baseline-shift="sub" font-size="10">ψ</tspan>(x, y)</text>
+
+	<!-- critic -->
+	<rect x="220" y="190" width="160" height="50" class="box" fill="var(--expert-fill)" stroke="var(--expert-stroke)"/>
+	<text x="300" y="211" class="lbl" text-anchor="middle">Critic</text>
+	<text x="300" y="231" class="math" font-size="15" text-anchor="middle">V<tspan baseline-shift="sub" font-size="10">φ</tspan>(s<tspan baseline-shift="sub" font-size="10">t</tspan>)</text>
+
+	<!-- three models -> reward shaping + GAE -->
+	<path d="M380,65 L415,65 L415,215 L380,215" class="edge"/>
+	<path d="M380,140 L448,140" class="edge" marker-end="url(#arw)"/>
+
+	<rect x="450" y="110" width="160" height="60" class="box" fill="var(--router-fill)" stroke="var(--router-stroke)"/>
+	<text x="530" y="135" class="lbl" text-anchor="middle">逐 token 奖励</text>
+	<text x="530" y="157" class="lbl" text-anchor="middle">+ GAE</text>
+
+	<!-- PPO update back to actor and critic -->
+	<path d="M530,170 L530,268 L90,268 L90,172" class="upd" marker-end="url(#arwA)"/>
+	<path d="M300,268 L300,242" class="upd" marker-end="url(#arwA)"/>
+	<text x="420" y="260" class="lbl" text-anchor="middle">PPO 更新</text>
+
+	<!-- legend -->
+	<rect x="470" y="30" width="16" height="12" rx="3" fill="var(--expert-fill)" stroke="var(--expert-stroke)" stroke-width="1.4"/>
+	<text x="494" y="41" class="lbl" font-size="13">训练</text>
+	<rect x="540" y="30" width="16" height="12" rx="3" fill="var(--step-fill)" stroke="var(--step-stroke)" stroke-width="1.4"/>
+	<text x="564" y="41" class="lbl" font-size="13">冻结</text>
+</svg>

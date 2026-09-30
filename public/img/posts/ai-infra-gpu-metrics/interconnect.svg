@@ -1,0 +1,77 @@
+<svg viewBox="0 0 660 330" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="互联带宽对数坐标对比：PCIe、InfiniBand、各代 NVLink">
+	<style>
+		:root {
+			--fg: #2b2b2b;
+			--line: #3d3d3d;
+			--pcie-fill: #eef1f4;
+			--pcie-stroke: #9aa5b1;
+			--ib-fill: #f5e9c9;
+			--ib-stroke: #b8912f;
+			--nv-fill: #d8ecd8;
+			--nv-stroke: #6aa86a;
+			--grid: #d0d5da;
+		}
+		@media (prefers-color-scheme: dark) {
+			:root {
+				--fg: #d8d8d8;
+				--line: #b8b8b8;
+				--pcie-fill: #2a2f36;
+				--pcie-stroke: #6b7684;
+				--ib-fill: #4a3d1e;
+				--ib-stroke: #c9a53f;
+				--nv-fill: #24392b;
+				--nv-stroke: #7fb37f;
+				--grid: #3a4148;
+			}
+		}
+		text { fill: var(--fg); }
+		.name { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 13px; }
+		.val { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 12px; opacity: 0.85; }
+		.tick { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 11px; opacity: 0.7; }
+		.grp { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 11.5px; font-style: italic; opacity: 0.75; }
+		.grid { stroke: var(--grid); stroke-width: 1; }
+		.pcie { fill: var(--pcie-fill); stroke: var(--pcie-stroke); stroke-width: 1.4; }
+		.ib { fill: var(--ib-fill); stroke: var(--ib-stroke); stroke-width: 1.4; }
+		.nv { fill: var(--nv-fill); stroke: var(--nv-stroke); stroke-width: 1.4; }
+	</style>
+
+	<!-- log gridlines: x = 150 + (log10(v)-1)*200 -->
+	<line x1="150" y1="44" x2="150" y2="272" class="grid"/>
+	<line x1="350" y1="44" x2="350" y2="272" class="grid"/>
+	<line x1="550" y1="44" x2="550" y2="272" class="grid"/>
+
+	<!-- group annotations -->
+	<text x="630" y="36" class="grp" text-anchor="end">灰 = 主板互联 · 黄 = 机间网络 · 绿 = NVLink（双向合计）</text>
+
+	<!-- bars -->
+	<rect x="150" y="50" width="101" height="22" class="pcie"/>
+	<rect x="150" y="82" width="140" height="22" class="ib"/>
+	<rect x="150" y="114" width="161" height="22" class="pcie"/>
+	<rect x="150" y="146" width="210" height="22" class="nv"/>
+	<rect x="150" y="178" width="356" height="22" class="nv"/>
+	<rect x="150" y="210" width="391" height="22" class="nv"/>
+	<rect x="150" y="242" width="451" height="22" class="nv"/>
+
+	<!-- labels -->
+	<text x="140" y="66" class="name" text-anchor="end">PCIe 4.0 x16</text>
+	<text x="140" y="98" class="name" text-anchor="end">IB NDR（机间）</text>
+	<text x="140" y="130" class="name" text-anchor="end">PCIe 5.0 x16</text>
+	<text x="140" y="162" class="name" text-anchor="end">NVLink（3090）</text>
+	<text x="140" y="194" class="name" text-anchor="end">NVLink 3（A100）</text>
+	<text x="140" y="226" class="name" text-anchor="end">NVLink 4（H100）</text>
+	<text x="140" y="258" class="name" text-anchor="end">NVLink 5（B200）</text>
+
+	<text x="259" y="66" class="val">32 GB/s</text>
+	<text x="298" y="98" class="val">~50 GB/s</text>
+	<text x="319" y="130" class="val">64 GB/s</text>
+	<text x="368" y="162" class="val">112.5 GB/s</text>
+	<text x="514" y="194" class="val">600 GB/s</text>
+	<text x="549" y="226" class="val">900 GB/s</text>
+	<text x="595" y="258" class="val" text-anchor="end">1800 GB/s</text>
+
+	<!-- axis -->
+	<text x="150" y="292" class="tick" text-anchor="middle">10</text>
+	<text x="350" y="292" class="tick" text-anchor="middle">100</text>
+	<text x="550" y="292" class="tick" text-anchor="middle">1000</text>
+	<text x="390" y="318" class="tick" text-anchor="middle">带宽（GB/s，对数轴）</text>
+</svg>

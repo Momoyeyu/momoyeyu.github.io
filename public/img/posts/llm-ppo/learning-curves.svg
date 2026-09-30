@@ -1,0 +1,73 @@
+<svg viewBox="0 0 560 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="CartPole 学习曲线（3 个随机种子平均，横轴为环境交互步数）：PPO 约 4 万步回报接近 500；带基线的 REINFORCE 约需 30 万步；不带基线的 REINFORCE 1000 个回合后仍在 100 到 200 之间波动">
+	<style>
+		:root {
+			--fg: #2b2b2b;
+			--line: #3d3d3d;
+			--expert-fill: #dce9f7;
+			--expert-stroke: #7b9cc4;
+			--router-fill: #f5e9c9;
+			--router-stroke: #b8912f;
+			--step-fill: #eef1f4;
+			--step-stroke: #9aa5b1;
+			--gate-fill: #ffffff;
+			--accent: #e0a800;
+		}
+		@media (prefers-color-scheme: dark) {
+			:root {
+				--fg: #d8d8d8;
+				--line: #b8b8b8;
+				--expert-fill: #26364d;
+				--expert-stroke: #6c8ebf;
+				--router-fill: #4a3d1e;
+				--router-stroke: #c9a53f;
+				--step-fill: #2a2f36;
+				--step-stroke: #6b7684;
+				--gate-fill: #1e1e1e;
+				--accent: #e8c547;
+			}
+		}
+		text { fill: var(--fg); }
+		.lbl { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 15px; }
+		.math { font-family: "Times New Roman", Times, serif; font-style: italic; }
+		.edge { stroke: var(--line); stroke-width: 1.6; fill: none; }
+		.box { stroke-width: 1.6; rx: 9; }
+	</style>
+	<defs>
+		<marker id="arw" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+			<path d="M0,0 L10,5 L0,10 z" fill="var(--line)"/>
+		</marker>
+	</defs>
+
+	<!-- axes -->
+	<path d="M76,252 L532,252" class="edge" marker-end="url(#arw)"/>
+	<path d="M76,252 L76,36" class="edge" marker-end="url(#arw)"/>
+	<path d="M76.0,247 L76.0,252 M202.9,247 L202.9,252 M329.7,247 L329.7,252 M456.6,247 L456.6,252 M71,252.0 L76,252.0 M71,152.0 L76,152.0 M71,52.0 L76,52.0 " stroke="var(--line)" stroke-width="1.2" fill="none"/>
+	<text x="76.0" y="271" class="math" font-size="14" text-anchor="middle">0</text>
+	<text x="202.9" y="271" class="math" font-size="14" text-anchor="middle">100k</text>
+	<text x="329.7" y="271" class="math" font-size="14" text-anchor="middle">200k</text>
+	<text x="456.6" y="271" class="math" font-size="14" text-anchor="middle">300k</text>
+	<text x="66" y="257.0" class="math" font-size="14" text-anchor="end">0</text>
+	<text x="66" y="157.0" class="math" font-size="14" text-anchor="end">250</text>
+	<text x="66" y="57.0" class="math" font-size="14" text-anchor="end">500</text>
+
+	<!-- max return -->
+	<path d="M76,52.0 L520,52.0" stroke="var(--step-stroke)" stroke-width="1.2" stroke-dasharray="5 4" fill="none"/>
+
+	<!-- axis titles -->
+	<text x="298" y="306" class="lbl" text-anchor="middle">环境交互步数</text>
+	<text x="26" y="152" class="lbl" text-anchor="middle" transform="rotate(-90 26 152)">回合回报</text>
+
+	<!-- curves -->
+	<path d="M79.2,239.8 L82.3,237.4 L85.5,236.1 L88.7,234.2 L91.9,229.3 L95.0,224.1 L98.2,214.7 L101.4,212.1 L104.5,206.0 L107.7,197.0 L110.9,184.9 L114.1,149.6 L117.2,130.0 L120.4,140.6 L123.6,150.6 L126.7,158.1 L129.9,163.3 L133.1,161.5 L136.3,160.4 L139.4,160.2 L142.6,161.7 L145.8,160.3 L148.9,160.7 L152.1,177.6 L155.3,179.8 L158.5,178.8 L161.6,173.3 L164.8,153.9 L168.0,141.3 L171.1,134.8 L174.3,138.2 L177.5,139.6 L180.7,126.2 L183.8,114.8 L187.0,110.0 L190.2,113.8 L193.3,117.4 L196.5,125.4 L199.7,130.7 L202.9,137.7 L206.0,144.5 L209.2,144.5 L212.4,142.7 L215.5,135.3 L218.7,123.2 L221.9,128.3 L225.1,138.2 L228.2,154.5 L231.4,163.5 L234.6,165.7 L237.7,163.1 L240.9,152.9 L244.1,146.6 L247.3,143.6 L250.4,143.8 L253.6,149.0" stroke="var(--step-stroke)" stroke-width="2" fill="none"/>
+	<path d="M79.2,238.9 L82.3,235.0 L85.5,229.9 L88.7,225.1 L91.9,202.1 L95.0,177.6 L98.2,175.5 L101.4,177.1 L104.5,171.0 L107.7,175.9 L110.9,170.0 L114.1,159.6 L117.2,156.9 L120.4,145.0 L123.6,141.1 L126.7,148.5 L129.9,146.3 L133.1,133.3 L136.3,122.8 L139.4,111.4 L142.6,97.9 L145.8,102.3 L148.9,102.6 L152.1,116.0 L155.3,134.0 L158.5,142.9 L161.6,149.7 L164.8,152.1 L168.0,151.9 L171.1,146.1 L174.3,136.7 L177.5,122.5 L180.7,103.0 L183.8,88.2 L187.0,86.0 L190.2,82.5 L193.3,100.9 L196.5,112.0 L199.7,114.5 L202.9,114.9 L206.0,111.8 L209.2,109.0 L212.4,104.4 L215.5,101.5 L218.7,97.7 L221.9,104.9 L225.1,113.2 L228.2,111.8 L231.4,105.8 L234.6,95.5 L237.7,84.9 L240.9,69.7 L244.1,59.5 L247.3,54.8 L250.4,52.3 L253.6,52.7 L256.8,52.7 L259.9,52.4 L263.1,52.4 L266.3,52.0 L269.5,52.0 L272.6,52.0 L275.8,52.0 L279.0,52.0 L282.1,52.0 L285.3,52.3 L288.5,56.3 L291.7,57.1 L294.8,57.9 L298.0,61.9 L301.2,64.6 L304.3,69.2 L307.5,72.1 L310.7,75.9 L313.9,74.6 L317.0,71.6 L320.2,71.0 L323.4,67.0 L326.5,68.3 L329.7,74.5 L332.9,73.1 L336.1,70.9 L339.2,70.0 L342.4,62.2 L345.6,62.8 L348.7,63.7 L351.9,58.3 L355.1,64.0 L358.3,62.4 L361.4,61.7 L364.6,66.4 L367.8,59.4 L370.9,60.0 L374.1,59.0 L377.3,60.9 L380.5,66.0 L383.6,67.1 L386.8,67.0 L390.0,60.9 L393.1,54.5 L396.3,52.0 L399.5,52.0 L402.7,52.0 L405.8,53.2 L409.0,55.7 L412.2,59.0 L415.3,59.0 L418.5,57.9 L421.7,55.6 L424.9,52.0 L428.0,52.8 L431.2,54.0 L434.4,55.7 L437.5,56.4 L440.7,59.1 L443.9,58.6 L447.1,59.2 L450.2,60.5 L453.4,57.5 L456.6,56.8 L459.7,54.8 L462.9,52.7 L466.1,53.6 L469.3,54.1 L472.4,54.1 L475.6,54.1 L478.8,52.5 L481.9,52.0 L485.1,52.0 L488.3,52.0" stroke="var(--expert-stroke)" stroke-width="2" fill="none"/>
+	<path d="M79.2,242.9 L82.3,241.5 L85.5,239.6 L88.7,237.3 L91.9,229.6 L95.0,216.1 L98.2,194.3 L101.4,171.1 L104.5,147.2 L107.7,122.8 L110.9,98.6 L114.1,78.7 L117.2,71.8 L120.4,69.9 L123.6,69.7 L126.7,66.8 L129.9,60.5 L133.1,59.1 L136.3,59.0 L139.4,59.8 L142.6,60.1 L145.8,59.4 L148.9,57.8 L152.1,59.2 L155.3,59.4 L158.5,60.6 L161.6,60.0 L164.8,60.0 L168.0,61.1 L171.1,61.6 L174.3,59.5 L177.5,57.1 L180.7,59.4 L183.8,56.8 L187.0,56.8 L190.2,56.1 L193.3,52.0 L196.5,54.9 L199.7,58.4" stroke="var(--accent)" stroke-width="2.2" fill="none"/>
+
+	<!-- legend -->
+	<rect x="310" y="150" width="204" height="84" class="box" fill="var(--gate-fill)" stroke="var(--line)"/>
+	<path d="M324,168 L352,168" stroke="var(--accent)" stroke-width="2.2" fill="none"/>
+	<text x="364" y="173" class="lbl">PPO</text>
+	<path d="M324,192 L352,192" stroke="var(--expert-stroke)" stroke-width="2" fill="none"/>
+	<text x="364" y="197" class="lbl">REINFORCE + 基线</text>
+	<path d="M324,216 L352,216" stroke="var(--step-stroke)" stroke-width="2" fill="none"/>
+	<text x="364" y="221" class="lbl">REINFORCE</text>
+</svg>

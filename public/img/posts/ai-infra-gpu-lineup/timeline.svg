@@ -1,0 +1,86 @@
+<svg viewBox="0 0 640 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="NVIDIA GPU 架构代际时间线：消费级与数据中心两条线的 Ampere、Ada、Hopper、Blackwell 演进">
+	<style>
+		:root {
+			--fg: #2b2b2b;
+			--line: #3d3d3d;
+			--geforce-fill: #dce9f7;
+			--geforce-stroke: #7b9cc4;
+			--dc-fill: #d8ecd8;
+			--dc-stroke: #6aa86a;
+			--warn: #c0392b;
+			--grid: #d0d5da;
+		}
+		@media (prefers-color-scheme: dark) {
+			:root {
+				--fg: #d8d8d8;
+				--line: #b8b8b8;
+				--geforce-fill: #26364d;
+				--geforce-stroke: #6c8ebf;
+				--dc-fill: #24392b;
+				--dc-stroke: #7fb37f;
+				--warn: #e07b6f;
+				--grid: #3a4148;
+			}
+		}
+		text { fill: var(--fg); }
+		.lbl { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 14px; }
+		.lane { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 14px; font-weight: 600; }
+		.sub { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 11.5px; opacity: 0.75; }
+		.year { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 12px; opacity: 0.7; }
+		.edge { stroke: var(--line); stroke-width: 1.6; fill: none; }
+		.grid { stroke: var(--grid); stroke-width: 1; stroke-dasharray: 4 4; }
+		.box { stroke-width: 1.6; rx: 8; }
+		.warn { fill: var(--warn); font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 11.5px; }
+	</style>
+
+	<!-- year gridlines -->
+	<line x1="80" y1="46" x2="80" y2="238" class="grid"/>
+	<line x1="240" y1="46" x2="240" y2="238" class="grid"/>
+	<line x1="400" y1="46" x2="400" y2="238" class="grid"/>
+	<line x1="560" y1="46" x2="560" y2="238" class="grid"/>
+
+	<!-- consumer lane -->
+	<text x="80" y="38" class="lane">GeForce 消费级</text>
+	<rect x="80" y="56" width="122" height="58" class="box" fill="var(--geforce-fill)" stroke="var(--geforce-stroke)"/>
+	<text x="141" y="80" class="lbl" text-anchor="middle">Ampere · 30 系</text>
+	<text x="141" y="100" class="sub" text-anchor="middle">GDDR6X·TC3·NVLink</text>
+
+	<rect x="240" y="56" width="122" height="58" class="box" fill="var(--geforce-fill)" stroke="var(--geforce-stroke)"/>
+	<text x="301" y="80" class="lbl" text-anchor="middle">Ada · 40 系</text>
+	<text x="301" y="100" class="sub" text-anchor="middle">TC4 · FP8 · NVLink ✕</text>
+
+	<rect x="480" y="56" width="122" height="58" class="box" fill="var(--geforce-fill)" stroke="var(--geforce-stroke)"/>
+	<text x="541" y="80" class="lbl" text-anchor="middle">Blackwell · 50 系</text>
+	<text x="541" y="100" class="sub" text-anchor="middle">GDDR7 · TC5 · FP4</text>
+
+	<text x="301" y="130" class="warn" text-anchor="middle">▲ NVLink 在 40 系被移除</text>
+
+	<!-- datacenter lane -->
+	<text x="80" y="148" class="lane">数据中心</text>
+	<rect x="80" y="156" width="122" height="58" class="box" fill="var(--dc-fill)" stroke="var(--dc-stroke)"/>
+	<text x="141" y="180" class="lbl" text-anchor="middle">Ampere · A100</text>
+	<text x="141" y="200" class="sub" text-anchor="middle">HBM2e · NVLink 3</text>
+
+	<rect x="240" y="156" width="122" height="58" class="box" fill="var(--dc-fill)" stroke="var(--dc-stroke)"/>
+	<text x="301" y="180" class="lbl" text-anchor="middle">Hopper · H100</text>
+	<text x="301" y="200" class="sub" text-anchor="middle">HBM3 · NVLink 4 · FP8</text>
+
+	<rect x="400" y="156" width="122" height="58" class="box" fill="var(--dc-fill)" stroke="var(--dc-stroke)"/>
+	<text x="461" y="180" class="lbl" text-anchor="middle">Blackwell · B200</text>
+	<text x="461" y="200" class="sub" text-anchor="middle">HBM3e · NVLink 5 · FP4</text>
+
+	<rect x="536" y="156" width="88" height="58" class="box" fill="var(--dc-fill)" stroke="var(--dc-stroke)" stroke-dasharray="5 3"/>
+	<text x="580" y="180" class="lbl" text-anchor="middle" font-size="12.5">GB300</text>
+	<text x="580" y="200" class="sub" text-anchor="middle">Ultra</text>
+
+	<!-- axis -->
+	<line x1="70" y1="244" x2="630" y2="244" class="edge"/>
+	<text x="80" y="266" class="year" text-anchor="middle">2020</text>
+	<text x="240" y="266" class="year" text-anchor="middle">2022</text>
+	<text x="400" y="266" class="year" text-anchor="middle">2024</text>
+	<text x="560" y="266" class="year" text-anchor="middle">2025</text>
+	<circle cx="560" cy="244" r="3" fill="var(--fg)"/>
+	<circle cx="80" cy="244" r="3" fill="var(--fg)"/>
+	<circle cx="240" cy="244" r="3" fill="var(--fg)"/>
+	<circle cx="400" cy="244" r="3" fill="var(--fg)"/>
+</svg>

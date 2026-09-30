@@ -1,0 +1,99 @@
+<svg viewBox="0 0 560 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="RoPE length extrapolation: top row shows rotation angle pos times theta_i growing linearly with position and crossing the trained pi range beyond length L; bottom row shows positional interpolation dividing position by s so the angle curve stays inside the trained range">
+	<style>
+		:root {
+			--fg: #2b2b2b;
+			--line: #3d3d3d;
+			--expert-fill: #dce9f7;
+			--expert-stroke: #7b9cc4;
+			--router-fill: #f5e9c9;
+			--router-stroke: #b8912f;
+			--step-fill: #eef1f4;
+			--step-stroke: #9aa5b1;
+			--gate-fill: #ffffff;
+			--accent: #e0a800;
+		}
+		@media (prefers-color-scheme: dark) {
+			:root {
+				--fg: #d8d8d8;
+				--line: #b8b8b8;
+				--expert-fill: #26364d;
+				--expert-stroke: #6c8ebf;
+				--router-fill: #4a3d1e;
+				--router-stroke: #c9a53f;
+				--step-fill: #2a2f36;
+				--step-stroke: #6b7684;
+				--gate-fill: #1e1e1e;
+				--accent: #e8c547;
+			}
+		}
+		text { fill: var(--fg); }
+		.lbl { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 15px; }
+		.math { font-family: "Times New Roman", Times, serif; font-style: italic; }
+		.edge { stroke: var(--line); stroke-width: 1.6; fill: none; }
+		.box { stroke-width: 1.6; rx: 9; }
+	</style>
+	<defs>
+		<marker id="arw" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+			<path d="M0,0 L10,5 L0,10 z" fill="var(--line)"/>
+		</marker>
+		<marker id="arwE" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+			<path d="M0,0 L10,5 L0,10 z" fill="var(--expert-stroke)"/>
+		</marker>
+	</defs>
+
+	<!-- ===== row 1: extrapolation failure ===== -->
+	<text x="38" y="112" class="lbl" text-anchor="middle">外推失败</text>
+
+	<!-- trained position range shading -->
+	<rect x="90" y="58" width="210" height="102" fill="var(--step-fill)"/>
+	<path d="M300,58 L300,160" stroke="var(--step-stroke)" stroke-width="1.3" stroke-dasharray="5 4" fill="none"/>
+
+	<!-- trained angle ceiling (pi) -->
+	<path d="M90,92 L520,92" stroke="var(--router-stroke)" stroke-width="1.4" stroke-dasharray="6 5" fill="none"/>
+	<text x="526" y="97" class="math" font-size="16">π</text>
+
+	<!-- position axis -->
+	<path d="M90,160 L517.8,160" class="edge" marker-end="url(#arw)"/>
+	<path d="M160,155 L160,160 M230,155 L230,160 M370,155 L370,160 M440,155 L440,160" stroke="var(--line)" stroke-width="1.2" fill="none"/>
+
+	<!-- angle curve: pos·θ_i, linear in pos, crosses pi just beyond L -->
+	<path d="M90,160 L517.9,30.6" stroke="var(--expert-stroke)" stroke-width="2.2" fill="none" marker-end="url(#arwE)"/>
+	<text x="357" y="69" class="math" font-size="17" text-anchor="middle" transform="rotate(-16.8 357 69)">pos · θ<tspan baseline-shift="sub" font-size="11">i</tspan></text>
+
+	<!-- annotations -->
+	<text x="140" y="110" class="lbl" text-anchor="middle">训练范围</text>
+	<text x="455" y="30" class="lbl" text-anchor="middle">超出训练分布</text>
+	<path d="M470,37 L485.9,39.4" class="edge" marker-end="url(#arw)"/>
+	<text x="88" y="178" class="math" font-size="14" text-anchor="middle">0</text>
+	<text x="300" y="178" class="math" font-size="16" text-anchor="middle">L</text>
+	<text x="528" y="165" class="math" font-size="16">pos</text>
+
+	<!-- compression between rows -->
+	<path d="M38,168 L38,195.8" class="edge" marker-end="url(#arw)"/>
+	<text x="54" y="187" class="math" font-size="16">÷ s</text>
+
+	<!-- ===== row 2: positional interpolation ===== -->
+	<text x="38" y="232" class="lbl" text-anchor="middle">PI</text>
+
+	<!-- trained position range shading -->
+	<rect x="90" y="205" width="210" height="50" fill="var(--step-fill)"/>
+	<path d="M300,205 L300,255" stroke="var(--step-stroke)" stroke-width="1.3" stroke-dasharray="5 4" fill="none"/>
+
+	<!-- trained angle ceiling (pi) -->
+	<path d="M90,187 L520,187" stroke="var(--router-stroke)" stroke-width="1.4" stroke-dasharray="6 5" fill="none"/>
+	<text x="526" y="192" class="math" font-size="16">π</text>
+
+	<!-- position axis -->
+	<path d="M90,255 L517.8,255" class="edge" marker-end="url(#arw)"/>
+	<path d="M160,250 L160,255 M230,250 L230,255 M370,250 L370,255 M440,250 L440,255" stroke="var(--line)" stroke-width="1.2" fill="none"/>
+
+	<!-- compressed angle curve: (pos/s)·θ_i, stays under pi at inference length -->
+	<path d="M90,255 L517.8,191.8" stroke="var(--expert-stroke)" stroke-width="2.2" fill="none" marker-end="url(#arwE)"/>
+	<text x="382" y="224" class="math" font-size="17" text-anchor="middle" transform="rotate(-8.4 382 224)">(pos / s) · θ<tspan baseline-shift="sub" font-size="11">i</tspan></text>
+
+	<!-- annotations -->
+	<text x="195" y="220" class="lbl" text-anchor="middle">训练范围</text>
+	<text x="88" y="273" class="math" font-size="14" text-anchor="middle">0</text>
+	<text x="300" y="273" class="math" font-size="16" text-anchor="middle">L</text>
+	<text x="528" y="260" class="math" font-size="16">pos</text>
+</svg>

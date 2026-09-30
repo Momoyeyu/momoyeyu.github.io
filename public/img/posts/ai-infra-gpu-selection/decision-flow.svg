@@ -1,0 +1,88 @@
+<svg viewBox="0 0 560 430" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="GPU 选型决策流程：场景、显存门槛、带宽体验、互联预算、落地路径五步">
+	<style>
+		:root {
+			--fg: #2b2b2b;
+			--line: #3d3d3d;
+			--step-fill: #eef1f4;
+			--step-stroke: #9aa5b1;
+			--res-fill: #d8ecd8;
+			--res-stroke: #6aa86a;
+			--note: #7a7a7a;
+			--accent: #b06a6a;
+		}
+		@media (prefers-color-scheme: dark) {
+			:root {
+				--fg: #d8d8d8;
+				--line: #b8b8b8;
+				--step-fill: #2a2f36;
+				--step-stroke: #6b7684;
+				--res-fill: #24392b;
+				--res-stroke: #7fb37f;
+				--note: #9a9a9a;
+				--accent: #cf8f8f;
+			}
+		}
+		text { fill: var(--fg); }
+		.lbl { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 14px; }
+		.sub { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 12px; opacity: 0.75; }
+		.note { fill: var(--note); font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 12px; }
+		.acc { fill: var(--accent); font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 12px; }
+		.box { fill: var(--step-fill); stroke: var(--step-stroke); stroke-width: 1.6; rx: 9; }
+		.res { fill: var(--res-fill); stroke: var(--res-stroke); stroke-width: 1.6; rx: 9; }
+		.arr { stroke: var(--line); stroke-width: 1.6; fill: none; marker-end: url(#ah); }
+		.glue { stroke: var(--note); stroke-width: 1; stroke-dasharray: 3 3; }
+	</style>
+	<defs>
+		<marker id="ah" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="var(--line)"/></marker>
+	</defs>
+
+	<!-- step 1 -->
+	<rect x="60" y="16" width="230" height="48" class="box"/>
+	<text x="175" y="38" class="lbl" text-anchor="middle">① 场景</text>
+	<text x="175" y="56" class="sub" text-anchor="middle">推理 · 微调训练 · 生产部署</text>
+	<line x1="290" y1="40" x2="318" y2="40" class="glue"/>
+	<text x="324" y="44" class="note">决定后面每一步的权重</text>
+
+	<path d="M175,64 L175,88" class="arr"/>
+
+	<!-- step 2 -->
+	<rect x="60" y="92" width="230" height="48" class="box"/>
+	<text x="175" y="114" class="lbl" text-anchor="middle">② 显存门槛</text>
+	<text x="175" y="132" class="sub" text-anchor="middle">模型 × 精度装得下吗</text>
+	<line x1="290" y1="116" x2="318" y2="116" class="glue"/>
+	<text x="324" y="112" class="note">定最低档位：装不下</text>
+	<text x="324" y="130" class="note">就谈不上其他指标</text>
+
+	<path d="M175,140 L175,164" class="arr"/>
+
+	<!-- step 3 -->
+	<rect x="60" y="168" width="230" height="48" class="box"/>
+	<text x="175" y="190" class="lbl" text-anchor="middle">③ 带宽体验</text>
+	<text x="175" y="208" class="sub" text-anchor="middle">decode 吞吐够吗</text>
+	<line x1="290" y1="192" x2="318" y2="192" class="glue"/>
+	<text x="324" y="188" class="note">单人交互 ≥15–20 t/s；</text>
+	<text x="324" y="206" class="note">批量吞吐看整卡效率</text>
+
+	<path d="M175,216 L175,240" class="arr"/>
+
+	<!-- step 4 -->
+	<rect x="60" y="244" width="230" height="48" class="box"/>
+	<text x="175" y="266" class="lbl" text-anchor="middle">④ 互联与预算</text>
+	<text x="175" y="284" class="sub" text-anchor="middle">一张大显存 vs 多张小卡</text>
+	<line x1="290" y1="268" x2="318" y2="268" class="glue"/>
+	<text x="324" y="264" class="note">PCIe 够用时不必追</text>
+	<text x="324" y="282" class="note">NVLink；训练另说</text>
+
+	<path d="M175,292 L175,316" class="arr"/>
+
+	<!-- step 5 -->
+	<rect x="60" y="320" width="230" height="52" class="res"/>
+	<text x="175" y="342" class="lbl" text-anchor="middle">⑤ 落地路径</text>
+	<text x="175" y="360" class="sub" text-anchor="middle">自购 · 魔改 · 云租赁</text>
+	<line x1="290" y1="346" x2="318" y2="346" class="glue"/>
+	<text x="324" y="342" class="acc">非常规方案会改写</text>
+	<text x="324" y="360" class="acc">前几步的价值锚点</text>
+
+	<!-- footer note -->
+	<text x="175" y="412" class="sub" text-anchor="middle">每一步都在缩小候选集，最后落到预算内最优解</text>
+</svg>
