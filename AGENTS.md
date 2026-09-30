@@ -31,5 +31,6 @@
 
 ## 约定
 
+- 仓库日常操作一律走 Make：新建文章用 `make new`（不要手写 frontmatter），完整指令列表见 `README.md` 与 `Makefile`。
 - 改完自检 `make check`（`astro check` + `vitest run`）。
 - 不顺手重构历史代码与历史文章：只做被明确要求的改动。

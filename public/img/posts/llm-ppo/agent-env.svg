@@ -1,0 +1,62 @@
+<svg viewBox="0 0 560 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="智能体与环境的交互循环：智能体根据状态 s_t 按策略 pi 选择动作 a_t，环境按转移概率 P 返回奖励 r_t 与下一个状态 s_t+1">
+	<style>
+		:root {
+			--fg: #2b2b2b;
+			--line: #3d3d3d;
+			--expert-fill: #dce9f7;
+			--expert-stroke: #7b9cc4;
+			--router-fill: #f5e9c9;
+			--router-stroke: #b8912f;
+			--step-fill: #eef1f4;
+			--step-stroke: #9aa5b1;
+			--gate-fill: #ffffff;
+			--accent: #e0a800;
+		}
+		@media (prefers-color-scheme: dark) {
+			:root {
+				--fg: #d8d8d8;
+				--line: #b8b8b8;
+				--expert-fill: #26364d;
+				--expert-stroke: #6c8ebf;
+				--router-fill: #4a3d1e;
+				--router-stroke: #c9a53f;
+				--step-fill: #2a2f36;
+				--step-stroke: #6b7684;
+				--gate-fill: #1e1e1e;
+				--accent: #e8c547;
+			}
+		}
+		text { fill: var(--fg); }
+		.lbl { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 15px; }
+		.math { font-family: "Times New Roman", Times, serif; font-style: italic; }
+		.edge { stroke: var(--line); stroke-width: 1.6; fill: none; }
+		.box { stroke-width: 1.6; rx: 9; }
+	</style>
+	<defs>
+		<marker id="arw" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+			<path d="M0,0 L10,5 L0,10 z" fill="var(--line)"/>
+		</marker>
+	</defs>
+
+	<!-- agent -->
+	<rect x="40" y="70" width="160" height="90" class="box" fill="var(--expert-fill)" stroke="var(--expert-stroke)"/>
+	<text x="120" y="106" class="lbl" text-anchor="middle">智能体</text>
+	<text x="120" y="134" class="math" font-size="17" text-anchor="middle">π(a | s)</text>
+
+	<!-- environment -->
+	<rect x="360" y="70" width="160" height="90" class="box" fill="var(--router-fill)" stroke="var(--router-stroke)"/>
+	<text x="440" y="106" class="lbl" text-anchor="middle">环境</text>
+	<text x="440" y="134" class="math" font-size="17" text-anchor="middle">P(s′ | s, a)</text>
+
+	<!-- action: agent top -> env top -->
+	<path d="M120,70 L120,34 L440,34 L440,68" class="edge" marker-end="url(#arw)"/>
+	<text x="280" y="26" class="lbl" text-anchor="middle">动作 <tspan class="math" font-size="17">a<tspan baseline-shift="sub" font-size="11">t</tspan></tspan></text>
+
+	<!-- reward -->
+	<path d="M400,160 L400,194 L160,194 L160,162" class="edge" marker-end="url(#arw)"/>
+	<text x="280" y="185" class="lbl" text-anchor="middle">奖励 <tspan class="math" font-size="17">r<tspan baseline-shift="sub" font-size="11">t</tspan></tspan></text>
+
+	<!-- next state -->
+	<path d="M480,160 L480,234 L80,234 L80,162" class="edge" marker-end="url(#arw)"/>
+	<text x="280" y="225" class="lbl" text-anchor="middle">下一个状态 <tspan class="math" font-size="17">s<tspan baseline-shift="sub" font-size="11">t+1</tspan></tspan></text>
+</svg>

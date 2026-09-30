@@ -1,0 +1,83 @@
+<svg viewBox="0 0 560 420" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Two ways to inject position information into a Transformer: absolute position encoding adds PE(pos) to the token embedding before the Transformer, while relative position encoding such as RoPE leaves the token unchanged and hides position inside the attention score computation">
+	<style>
+		:root {
+			--fg: #2b2b2b;
+			--line: #3d3d3d;
+			--expert-fill: #dce9f7;
+			--expert-stroke: #7b9cc4;
+			--router-fill: #f5e9c9;
+			--router-stroke: #b8912f;
+			--step-fill: #eef1f4;
+			--step-stroke: #9aa5b1;
+			--gate-fill: #ffffff;
+			--accent: #e0a800;
+		}
+		@media (prefers-color-scheme: dark) {
+			:root {
+				--fg: #d8d8d8;
+				--line: #b8b8b8;
+				--expert-fill: #26364d;
+				--expert-stroke: #6c8ebf;
+				--router-fill: #4a3d1e;
+				--router-stroke: #c9a53f;
+				--step-fill: #2a2f36;
+				--step-stroke: #6b7684;
+				--gate-fill: #1e1e1e;
+				--accent: #e8c547;
+			}
+		}
+		text { fill: var(--fg); }
+		.lbl { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 15px; }
+		.math { font-family: "Times New Roman", Times, serif; font-style: italic; }
+		.edge { stroke: var(--line); stroke-width: 1.6; fill: none; }
+		.box { stroke-width: 1.6; rx: 9; }
+	</style>
+	<defs>
+		<marker id="arw" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+			<path d="M0,0 L10,5 L0,10 z" fill="var(--line)"/>
+		</marker>
+	</defs>
+
+	<!-- column titles -->
+	<text x="140" y="32" class="lbl" style="font-size:16px" font-weight="600" text-anchor="middle">绝对位置编码</text>
+	<text x="420" y="32" class="lbl" style="font-size:16px" font-weight="600" text-anchor="middle">相对位置编码 / RoPE</text>
+
+	<!-- separator -->
+	<path d="M280,52 L280,368" stroke="var(--step-stroke)" stroke-width="1.2" stroke-dasharray="3 6" fill="none"/>
+
+	<!-- left column: token + PE merged by ⊕ -->
+	<rect x="25" y="60" width="110" height="40" class="box" fill="none" stroke="var(--line)"/>
+	<text x="80" y="86" class="lbl" text-anchor="middle">token <tspan class="math">x</tspan><tspan class="math" baseline-shift="sub" font-size="10">t</tspan></text>
+	<rect x="145" y="60" width="110" height="40" class="box" fill="var(--router-fill)" stroke="var(--router-stroke)"/>
+	<text x="200" y="86" class="lbl" text-anchor="middle">PE(<tspan class="math">pos</tspan>)</text>
+	<path d="M80,100 L127.1,147.1" class="edge" marker-end="url(#arw)"/>
+	<path d="M200,100 L152.9,147.1" class="edge" marker-end="url(#arw)"/>
+
+	<!-- add node -->
+	<circle cx="140" cy="160" r="16" fill="var(--gate-fill)" stroke="var(--line)" stroke-width="1.6"/>
+	<path d="M140,152 L140,168 M132,160 L148,160" stroke="var(--line)" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+	<path d="M140,176 L140,211.8" class="edge" marker-end="url(#arw)"/>
+
+	<!-- left transformer -->
+	<rect x="60" y="214" width="160" height="52" class="box" fill="var(--expert-fill)" stroke="var(--expert-stroke)"/>
+	<text x="140" y="246" class="lbl" text-anchor="middle">Transformer</text>
+	<path d="M140,266 L140,297.8" class="edge" marker-end="url(#arw)"/>
+
+	<!-- right column: token flows unchanged into transformer -->
+	<rect x="355" y="60" width="130" height="40" class="box" fill="none" stroke="var(--line)"/>
+	<text x="420" y="86" class="lbl" text-anchor="middle">token <tspan class="math">x</tspan><tspan class="math" baseline-shift="sub" font-size="10">t</tspan></text>
+	<path d="M420,100 L420,203.8" class="edge" marker-end="url(#arw)"/>
+	<rect x="315" y="206" width="210" height="68" class="box" fill="var(--expert-fill)" stroke="var(--expert-stroke)"/>
+	<text x="420" y="230" class="lbl" text-anchor="middle">Attention: <tspan class="math">QK</tspan><tspan class="math" baseline-shift="super" font-size="10">T</tspan><tspan class="math"> + bias</tspan></text>
+	<text x="420" y="255" class="lbl" style="font-size:12.5px" text-anchor="middle">或 RoPE 旋转 <tspan class="math">Q/K</tspan></text>
+	<path d="M420,274 L420,297.8" class="edge" marker-end="url(#arw)"/>
+
+	<!-- outputs -->
+	<rect x="75" y="300" width="130" height="44" class="box" fill="none" stroke="var(--line)"/>
+	<text x="140" y="328" class="lbl" text-anchor="middle">输出 <tspan class="math">y</tspan></text>
+	<rect x="355" y="300" width="130" height="44" class="box" fill="none" stroke="var(--line)"/>
+	<text x="420" y="328" class="lbl" text-anchor="middle">输出 <tspan class="math">y</tspan></text>
+
+	<!-- caption -->
+	<text x="280" y="394" class="lbl" style="font-size:13px" text-anchor="middle">位置从「加在 <tspan class="math">token</tspan> 上」到「藏在 <tspan class="math">score</tspan> 里」</text>
+</svg>

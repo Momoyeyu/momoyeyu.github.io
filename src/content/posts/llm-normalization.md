@@ -120,8 +120,6 @@ $$
 4. **自回归解码没有 batch 统计可言**。逐 token 生成时，每一步只有一个新 token，“沿 batch 统计”这个前提本身就不成立；
 5. **分布式训练需要跨卡同步统计量**，带来额外的通信开销。
 
-归根结底，BatchNorm 的统计依赖于 batch 与序列维度，而语言模型的 batch 构成和序列长度都在不断变化。因此，Transformer 需要一种**只依赖单个 token 自身特征**的归一化方法——这正是 LayerNorm。
-
 ## 代码实现
 
 先实现一个标准的 BatchNorm（对 `[N, L, C]` 的输入沿 `(N, L)` 统计），并复现 running mean/var 的更新逻辑：
@@ -153,6 +151,8 @@ class BatchNorm(nn.Module):
         return (x - mean) / torch.sqrt(var + self.eps) * self.weight + self.bias
 ```
 
+注意两处方差的口径不一样。归一化当前 batch 用**有偏方差**，分母是 $NL$，这样归一化后的方差恰好约为 1；如果错用无偏估计，分母变成 $NL - 1$，归一化后方差就只剩 $\frac{NL - 1}{NL}$。更新 `running_var` 时则反过来用**无偏方差**：它是推理阶段对总体方差的长期估计，样本量小时有偏估计会系统性偏低，这也是 PyTorch `BatchNorm` 的做法。另外 $NL = 1$ 时无偏估计会除零，得到 NaN。
+
 而 padding 污染的问题可以直接观察到：给序列补零之后，统计量会明显偏移。
 
 ```python
@@ -163,11 +163,11 @@ x.mean(dim=(0, 1))          # ≈ 2
 x_padded.mean(dim=(0, 1))   # ≈ 1，均值被拉走，方差也从 ≈1 变成 ≈1.5
 ```
 
-batch 内容一变，统计量就变——这正是 BatchNorm 不适合语言模型的根本原因。
+batch 内容一变，统计量就变。归根结底，BatchNorm 的统计依赖于 batch 与序列维度，而语言模型的 batch 构成和序列长度都在不断变化——Transformer 需要一种**只依赖单个 token 自身特征**的归一化方法，这正是 LayerNorm。
 
 # LayerNorm
 
-[Layer Normalization](https://arxiv.org/abs/1607.06450) 的思路非常直接：既然依赖 batch 会出问题，那就只在单个 token 内部做统计。对每个 token 的隐藏状态 $\mathbf{x} \in \mathbb{R}^{d_{\text{model}}}$：
+[Layer Normalization](https://arxiv.org/abs/1607.06450) 的思路非常直接：对每个 token 的隐藏状态 $\mathbf{x} \in \mathbb{R}^{d_{\text{model}}}$ 做统计：
 
 $$
 \mu
@@ -381,6 +381,8 @@ $$
 
 1. **归一化与 RoPE 的先后顺序**。实际模型（Gemma 2/3、Qwen3、OLMo 2 等）通常先对线性投影得到的 Q、K 做 RMSNorm，再应用 RoPE；
 2. **Norm 的选择**。ViT-22B 用的是 LayerNorm，而 LLM 中普遍使用 RMSNorm，且 Q、K 各有一组独立的归一化参数。
+
+这里出现的 RoPE 是作用在 Q、K 上的一种旋转式位置编码，也是下一篇文章的主角。暂时不熟悉它的读者，可以先把它看成一个给 Q、K 注入位置信息的操作；至于归一化为什么要放在 RoPE 之前而不是之后，则与 RoPE 的数学形式有关，答案留到下一篇揭晓。
 
 ## 代码实现
 

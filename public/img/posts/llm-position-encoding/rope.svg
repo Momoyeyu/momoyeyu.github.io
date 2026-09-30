@@ -1,0 +1,82 @@
+<svg viewBox="0 0 560 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="RoPE rotation: on the unit circle of one dimension pair, query vector q_m is rotated by angle m theta and key vector k_n by n theta; their inner product depends only on the relative position m minus n">
+	<style>
+		:root {
+			--fg: #2b2b2b;
+			--line: #3d3d3d;
+			--expert-fill: #dce9f7;
+			--expert-stroke: #7b9cc4;
+			--router-fill: #f5e9c9;
+			--router-stroke: #b8912f;
+			--step-fill: #eef1f4;
+			--step-stroke: #9aa5b1;
+			--gate-fill: #ffffff;
+			--accent: #e0a800;
+		}
+		@media (prefers-color-scheme: dark) {
+			:root {
+				--fg: #d8d8d8;
+				--line: #b8b8b8;
+				--expert-fill: #26364d;
+				--expert-stroke: #6c8ebf;
+				--router-fill: #4a3d1e;
+				--router-stroke: #c9a53f;
+				--step-fill: #2a2f36;
+				--step-stroke: #6b7684;
+				--gate-fill: #1e1e1e;
+				--accent: #e8c547;
+			}
+		}
+		text { fill: var(--fg); }
+		.lbl { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 15px; }
+		.math { font-family: "Times New Roman", Times, serif; font-style: italic; }
+		.edge { stroke: var(--line); stroke-width: 1.6; fill: none; }
+		.box { stroke-width: 1.6; rx: 9; }
+	</style>
+	<defs>
+		<marker id="arw" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+			<path d="M0,0 L10,5 L0,10 z" fill="var(--line)"/>
+		</marker>
+		<marker id="arwE" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+			<path d="M0,0 L10,5 L0,10 z" fill="var(--expert-stroke)"/>
+		</marker>
+		<marker id="arwR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+			<path d="M0,0 L10,5 L0,10 z" fill="var(--router-stroke)"/>
+		</marker>
+		<marker id="arwA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+			<path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/>
+		</marker>
+	</defs>
+
+	<!-- unit circle of one dimension pair -->
+	<circle cx="160" cy="175" r="110" fill="var(--step-fill)" stroke="var(--step-stroke)" stroke-width="1.6" stroke-dasharray="6 5"/>
+
+	<!-- zero-angle reference along +x axis, tip lands on circle boundary -->
+	<path d="M160,175 L267.8,175" class="edge" marker-end="url(#arw)"/>
+
+	<!-- relative angle (m-n)θ_i between the two vectors, faint dashed -->
+	<path d="M187.8,163.8 A30,30 0 0 0 174.1,148.5" stroke="var(--line)" stroke-width="1.4" fill="none" opacity="0.55" stroke-dasharray="4 4"/>
+
+	<!-- rotation angle arcs from +x axis, accent colored -->
+	<path d="M204,175 A44,44 0 0 0 201.6,160.6" stroke="var(--accent)" stroke-width="1.8" fill="none" marker-end="url(#arwA)"/>
+	<path d="M226,175 A66,66 0 0 0 192.9,117.8" stroke="var(--accent)" stroke-width="1.8" fill="none" marker-end="url(#arwA)"/>
+
+	<!-- vectors: q_m rotated by mθ_i, k_n rotated by nθ_i -->
+	<path d="M160,175 L200.3,99.2" stroke="var(--expert-stroke)" stroke-width="2.2" fill="none" marker-end="url(#arwE)"/>
+	<path d="M160,175 L239.6,142.8" stroke="var(--router-stroke)" stroke-width="2.2" fill="none" marker-end="url(#arwR)"/>
+	<circle cx="160" cy="175" r="2.5" fill="var(--line)"/>
+
+	<!-- vector labels -->
+	<text x="206" y="90" class="math" font-size="19" text-anchor="middle">q<tspan baseline-shift="sub" font-size="13">m</tspan></text>
+	<text x="265" y="142" class="math" font-size="19">k<tspan baseline-shift="sub" font-size="13">n</tspan></text>
+
+	<!-- angle labels -->
+	<text x="230" y="136" class="math" font-size="18">mθ<tspan baseline-shift="sub" font-size="12">i</tspan></text>
+	<text x="228" y="166" class="math" font-size="18">nθ<tspan baseline-shift="sub" font-size="12">i</tspan></text>
+
+	<!-- conclusion -->
+	<text x="415" y="148" class="math" font-size="19" text-anchor="middle">⟨q<tspan baseline-shift="sub" font-size="13">m</tspan><tspan>, k</tspan><tspan baseline-shift="sub" font-size="13">n</tspan><tspan>⟩ = q</tspan><tspan baseline-shift="super" font-size="13">T</tspan><tspan> R</tspan><tspan baseline-shift="sub" font-size="13">(n−m)θ</tspan><tspan baseline-shift="sub" font-size="10">i</tspan><tspan> k</tspan></text>
+	<text x="415" y="182" class="lbl" text-anchor="middle">只依赖相对位置 <tspan class="math">m − n</tspan></text>
+
+	<!-- caption -->
+	<text x="160" y="312" class="lbl" text-anchor="middle">维度对 <tspan class="math">i</tspan> 的复平面</text>
+</svg>

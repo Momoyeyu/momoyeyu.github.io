@@ -1,0 +1,83 @@
+<svg viewBox="0 0 660 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="各档 GPU 显存容量与常见模型权重体积对照：竖线为不同规模模型在不同精度下的权重占用">
+	<style>
+		:root {
+			--fg: #2b2b2b;
+			--line: #3d3d3d;
+			--bar-fill: #dce9f7;
+			--bar-stroke: #7b9cc4;
+			--model: #b06a6a;
+			--grid: #d0d5da;
+		}
+		@media (prefers-color-scheme: dark) {
+			:root {
+				--fg: #d8d8d8;
+				--line: #b8b8b8;
+				--bar-fill: #26364d;
+				--bar-stroke: #6c8ebf;
+				--model: #cf8f8f;
+				--grid: #3a4148;
+			}
+		}
+		text { fill: var(--fg); }
+		.name { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 13px; }
+		.val { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 12px; opacity: 0.8; }
+		.mrk { fill: var(--model); font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 11.5px; }
+		.tick { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 11px; opacity: 0.7; }
+		.bar { fill: var(--bar-fill); stroke: var(--bar-stroke); stroke-width: 1.4; }
+		.model { stroke: var(--model); stroke-width: 1.4; stroke-dasharray: 5 4; }
+		.grid { stroke: var(--grid); stroke-width: 1; }
+	</style>
+
+	<!-- model weight markers: x = 150 + GB*2.421 -->
+	<line x1="183.9" y1="46" x2="183.9" y2="318" class="model"/>
+	<line x1="198.4" y1="46" x2="198.4" y2="318" class="model"/>
+	<line x1="251.7" y1="46" x2="251.7" y2="318" class="model"/>
+	<line x1="319.5" y1="46" x2="319.5" y2="318" class="model"/>
+	<line x1="488.9" y1="46" x2="488.9" y2="318" class="model"/>
+	<text x="180" y="20" class="mrk" text-anchor="end">7B·FP16 ≈14G</text>
+	<text x="198.4" y="40" class="mrk" text-anchor="middle">32B·Q4 ≈20G</text>
+	<text x="258" y="20" class="mrk" text-anchor="start">70B·Q4 ≈42G</text>
+	<text x="319.5" y="40" class="mrk" text-anchor="middle">70B·FP8 ≈70G</text>
+	<text x="488.9" y="20" class="mrk" text-anchor="middle">70B·FP16 ≈140G</text>
+
+	<!-- vertical gb gridlines -->
+	<line x1="271" y1="46" x2="271" y2="318" class="grid"/>
+	<line x1="392" y1="46" x2="392" y2="318" class="grid"/>
+	<line x1="513" y1="46" x2="513" y2="318" class="grid"/>
+
+	<!-- bars -->
+	<rect x="150" y="56" width="38.7" height="24" class="bar"/>
+	<rect x="150" y="90" width="58.1" height="24" class="bar"/>
+	<rect x="150" y="124" width="77.5" height="24" class="bar"/>
+	<rect x="150" y="158" width="116.2" height="24" class="bar"/>
+	<rect x="150" y="192" width="193.7" height="24" class="bar"/>
+	<rect x="150" y="226" width="232.4" height="24" class="bar"/>
+	<rect x="150" y="260" width="341.4" height="24" class="bar"/>
+	<rect x="150" y="294" width="435.8" height="24" class="bar"/>
+
+	<!-- labels -->
+	<text x="140" y="72" class="name" text-anchor="end">4060 Ti</text>
+	<text x="140" y="106" class="name" text-anchor="end">3090 / 4090</text>
+	<text x="140" y="140" class="name" text-anchor="end">5090</text>
+	<text x="140" y="174" class="name" text-anchor="end">RTX 6000 Ada</text>
+	<text x="140" y="208" class="name" text-anchor="end">A100 / H100</text>
+	<text x="140" y="242" class="name" text-anchor="end">RTX PRO 6000</text>
+	<text x="140" y="276" class="name" text-anchor="end">H200</text>
+	<text x="140" y="310" class="name" text-anchor="end">B200</text>
+
+	<text x="196" y="72" class="val">16G</text>
+	<text x="215" y="106" class="val">24G</text>
+	<text x="235" y="140" class="val">32G</text>
+	<text x="274" y="174" class="val">48G</text>
+	<text x="351" y="208" class="val">80G</text>
+	<text x="390" y="242" class="val">96G</text>
+	<text x="499" y="276" class="val">141G</text>
+	<text x="593" y="310" class="val">180G</text>
+
+	<!-- axis -->
+	<text x="150" y="340" class="tick">0</text>
+	<text x="271" y="340" class="tick" text-anchor="middle">50</text>
+	<text x="392" y="340" class="tick" text-anchor="middle">100</text>
+	<text x="513" y="340" class="tick" text-anchor="middle">150</text>
+	<text x="640" y="340" class="tick" text-anchor="end">190 GB</text>
+</svg>

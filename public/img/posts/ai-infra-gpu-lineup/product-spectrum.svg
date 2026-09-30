@@ -1,0 +1,91 @@
+<svg viewBox="0 0 680 440" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="NVIDIA GPU 显存容量与显存带宽散点图：横轴为带宽对数坐标，纵轴为显存容量，不同颜色区分 GeForce、RTX PRO、数据中心、出口特供与 DGX Spark">
+	<style>
+		:root {
+			--fg: #2b2b2b;
+			--line: #3d3d3d;
+			--grid: #d0d5da;
+			--geforce: #4a7fbf;
+			--pro: #b8912f;
+			--dc: #4e9a51;
+			--exp: #b06a6a;
+			--spc: #8a6fc0;
+		}
+		@media (prefers-color-scheme: dark) {
+			:root {
+				--fg: #d8d8d8;
+				--line: #b8b8b8;
+				--grid: #3a4148;
+				--geforce: #7fa9d9;
+				--pro: #d4b05a;
+				--dc: #7fc47f;
+				--exp: #cf8f8f;
+				--spc: #ad97db;
+			}
+		}
+		text { fill: var(--fg); }
+		.axis { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 13px; }
+		.tick { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 11px; opacity: 0.7; }
+		.pt { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 11px; }
+		.leg { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 12px; }
+		.grid { stroke: var(--grid); stroke-width: 1; }
+		.frame { stroke: var(--line); stroke-width: 1.4; fill: none; }
+	</style>
+
+	<!-- frame + gridlines -->
+	<rect x="90" y="50" width="550" height="330" class="frame"/>
+	<line x1="147" y1="50" x2="147" y2="380" class="grid"/>
+	<line x1="316.4" y1="50" x2="316.4" y2="380" class="grid"/>
+	<line x1="470.8" y1="50" x2="470.8" y2="380" class="grid"/>
+	<line x1="90" y1="297.5" x2="640" y2="297.5" class="grid"/>
+	<line x1="90" y1="215" x2="640" y2="215" class="grid"/>
+	<line x1="90" y1="132.5" x2="640" y2="132.5" class="grid"/>
+
+	<!-- axis labels -->
+	<text x="365" y="428" class="axis" text-anchor="middle">显存带宽（GB/s，对数轴）</text>
+	<text x="36" y="215" class="axis" text-anchor="middle" transform="rotate(-90 36 215)">显存容量（GB）</text>
+	<text x="147" y="396" class="tick" text-anchor="middle">300</text>
+	<text x="316.4" y="396" class="tick" text-anchor="middle">1K</text>
+	<text x="470.8" y="396" class="tick" text-anchor="middle">3K</text>
+	<text x="640" y="396" class="tick" text-anchor="middle">10K</text>
+	<text x="82" y="384" class="tick" text-anchor="end">0</text>
+	<text x="82" y="301" class="tick" text-anchor="end">50</text>
+	<text x="82" y="219" class="tick" text-anchor="end">100</text>
+	<text x="82" y="136" class="tick" text-anchor="end">150</text>
+	<text x="82" y="54" class="tick" text-anchor="end">200</text>
+
+	<!-- legend -->
+	<rect x="104" y="60" width="290" height="76" rx="8" fill="none" stroke="var(--grid)"/>
+	<circle cx="116" cy="76" r="5" fill="var(--geforce)"/><text x="128" y="80" class="leg">GeForce 消费级</text>
+	<circle cx="116" cy="94" r="5" fill="var(--pro)"/><text x="128" y="98" class="leg">RTX PRO 工作站</text>
+	<circle cx="116" cy="112" r="5" fill="var(--dc)"/><text x="128" y="116" class="leg">数据中心</text>
+	<circle cx="252" cy="76" r="5" fill="var(--exp)"/><text x="264" y="80" class="leg">出口特供</text>
+	<circle cx="252" cy="94" r="5" fill="var(--spc)"/><text x="264" y="98" class="leg">DGX Spark</text>
+
+	<!-- GeForce points -->
+	<circle cx="172.7" cy="360.2" r="5" fill="var(--geforce)"/><text x="172.7" y="376" class="pt" text-anchor="middle">3060</text>
+	<circle cx="141.3" cy="353.6" r="5" fill="var(--geforce)"/><text x="120" y="370" class="pt" text-anchor="middle">4060 Ti</text>
+	<circle cx="203.4" cy="353.6" r="5" fill="var(--geforce)"/><text x="215" y="370" class="pt" text-anchor="middle">5060 Ti</text>
+	<circle cx="307.1" cy="340.4" r="5" fill="var(--geforce)"/><text x="299" y="328" class="pt" text-anchor="end">3090</text>
+	<circle cx="317.5" cy="340.4" r="5" fill="var(--geforce)"/><text x="326" y="356" class="pt">4090</text>
+	<circle cx="398.4" cy="327.2" r="5" fill="var(--geforce)"/><text x="398.4" y="314" class="pt" text-anchor="middle">5090</text>
+
+	<!-- datacenter points -->
+	<circle cx="147" cy="340.4" r="5" fill="var(--dc)"/><text x="147" y="328" class="pt" text-anchor="middle">L4</text>
+	<circle cx="244.5" cy="340.4" r="5" fill="var(--dc)"/><text x="244.5" y="328" class="pt" text-anchor="middle">A10</text>
+	<circle cx="295.8" cy="300.8" r="5" fill="var(--dc)"/><text x="288" y="290" class="pt" text-anchor="end">L40S</text>
+	<circle cx="413.8" cy="248" r="5" fill="var(--dc)"/><text x="406" y="236" class="pt" text-anchor="end">A100</text>
+	<circle cx="486.4" cy="248" r="5" fill="var(--dc)"/><text x="494" y="236" class="pt">H100</text>
+	<circle cx="536.9" cy="147.4" r="5" fill="var(--dc)"/><text x="544" y="136" class="pt">H200</text>
+	<circle cx="603.4" cy="83" r="5" fill="var(--dc)"/><text x="596" y="70" class="pt" text-anchor="end">B200</text>
+
+	<!-- RTX PRO points -->
+	<circle cx="310.6" cy="300.8" r="5" fill="var(--pro)"/><text x="322" y="314" class="pt">6000 Ada</text>
+	<circle cx="398.4" cy="221.6" r="5" fill="var(--pro)"/><text x="390" y="210" class="pt" text-anchor="end">PRO 6000</text>
+
+	<!-- export variant -->
+	<circle cx="511.3" cy="221.6" r="5" fill="var(--exp)"/><text x="519" y="214" class="pt">H20</text>
+
+	<!-- DGX Spark -->
+	<circle cx="137.6" cy="168.8" r="5" fill="var(--spc)"/><text x="149" y="165" class="pt">DGX Spark</text>
+	<text x="149" y="179" class="pt" opacity="0.7">统一内存 128G</text>
+</svg>

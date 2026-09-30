@@ -1,0 +1,95 @@
+<svg viewBox="0 0 680 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="PPO 裁剪目标随概率比 rho 的变化：左图优势为正，rho 超过 1+epsilon 后目标变平、梯度为 0；右图优势为负，rho 低于 1-epsilon 后目标变平、梯度为 0；虚线为未裁剪的 rho 乘 A，圆点为 rho=1 的起点">
+	<style>
+		:root {
+			--fg: #2b2b2b;
+			--line: #3d3d3d;
+			--expert-fill: #dce9f7;
+			--expert-stroke: #7b9cc4;
+			--router-fill: #f5e9c9;
+			--router-stroke: #b8912f;
+			--step-fill: #eef1f4;
+			--step-stroke: #9aa5b1;
+			--gate-fill: #ffffff;
+			--accent: #e0a800;
+		}
+		@media (prefers-color-scheme: dark) {
+			:root {
+				--fg: #d8d8d8;
+				--line: #b8b8b8;
+				--expert-fill: #26364d;
+				--expert-stroke: #6c8ebf;
+				--router-fill: #4a3d1e;
+				--router-stroke: #c9a53f;
+				--step-fill: #2a2f36;
+				--step-stroke: #6b7684;
+				--gate-fill: #1e1e1e;
+				--accent: #e8c547;
+			}
+		}
+		text { fill: var(--fg); }
+		.lbl { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 15px; }
+		.math { font-family: "Times New Roman", Times, serif; font-style: italic; }
+		.edge { stroke: var(--line); stroke-width: 1.6; fill: none; }
+		.tick { stroke: var(--line); stroke-width: 1.2; fill: none; }
+		.guide { stroke: var(--step-stroke); stroke-width: 1.2; stroke-dasharray: 4 4; fill: none; }
+		.curve { stroke: var(--expert-stroke); stroke-width: 2.4; fill: none; }
+		.unclip { stroke: var(--step-stroke); stroke-width: 1.8; stroke-dasharray: 6 5; fill: none; }
+	</style>
+	<defs>
+		<marker id="arw" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+			<path d="M0,0 L10,5 L0,10 z" fill="var(--line)"/>
+		</marker>
+	</defs>
+
+	<!-- ===== left: A > 0 ===== -->
+	<text x="185" y="34" class="lbl" text-anchor="middle"><tspan class="math" font-size="17">Â</tspan> &gt; 0</text>
+
+	<!-- clipped region rho > 1+eps -->
+	<rect x="230" y="60" width="90" height="130" fill="var(--step-fill)"/>
+	<text x="275" y="166" class="lbl" font-size="13" text-anchor="middle">梯度为 0</text>
+
+	<!-- axes -->
+	<path d="M50,190 L338,190" class="edge" marker-end="url(#arw)"/>
+	<path d="M50,190 L50,52" class="edge" marker-end="url(#arw)"/>
+	<text x="346" y="195" class="math" font-size="17">ρ</text>
+	<text x="58" y="56" class="math" font-size="15">L<tspan baseline-shift="super" font-size="10" font-style="normal">CLIP</tspan></text>
+
+	<!-- ticks 1-eps / 1 / 1+eps -->
+	<path d="M170,185 L170,190 M200,185 L200,190 M230,185 L230,190" class="tick"/>
+	<text x="170" y="207" class="math" font-size="13" text-anchor="middle">1−ε</text>
+	<text x="200" y="207" class="math" font-size="13" text-anchor="middle">1</text>
+	<text x="230" y="207" class="math" font-size="13" text-anchor="middle">1+ε</text>
+	<path d="M200,190 L200,130" class="guide"/>
+
+	<!-- unclipped rho*A beyond 1+eps -->
+	<path d="M230,118 L320,82" class="unclip"/>
+	<!-- clipped objective -->
+	<path d="M50,190 L230,118 L320,118" class="curve"/>
+	<circle cx="200" cy="130" r="4.5" fill="var(--accent)"/>
+
+	<!-- ===== right: A < 0 ===== -->
+	<text x="505" y="34" class="lbl" text-anchor="middle"><tspan class="math" font-size="17">Â</tspan> &lt; 0</text>
+
+	<!-- clipped region rho < 1-eps -->
+	<rect x="370" y="70" width="120" height="130" fill="var(--step-fill)"/>
+	<text x="430" y="166" class="lbl" font-size="13" text-anchor="middle">梯度为 0</text>
+
+	<!-- axes -->
+	<path d="M370,70 L658,70" class="edge" marker-end="url(#arw)"/>
+	<path d="M370,70 L370,208" class="edge" marker-end="url(#arw)"/>
+	<text x="664" y="75" class="math" font-size="17">ρ</text>
+	<text x="378" y="222" class="math" font-size="15">L<tspan baseline-shift="super" font-size="10" font-style="normal">CLIP</tspan></text>
+
+	<!-- ticks -->
+	<path d="M490,70 L490,75 M520,70 L520,75 M550,70 L550,75" class="tick"/>
+	<text x="490" y="62" class="math" font-size="13" text-anchor="middle">1−ε</text>
+	<text x="520" y="62" class="math" font-size="13" text-anchor="middle">1</text>
+	<text x="550" y="62" class="math" font-size="13" text-anchor="middle">1+ε</text>
+	<path d="M520,70 L520,130" class="guide"/>
+
+	<!-- unclipped rho*A below 1-eps -->
+	<path d="M370,70 L490,118" class="unclip"/>
+	<!-- clipped objective -->
+	<path d="M370,118 L490,118 L640,178" class="curve"/>
+	<circle cx="520" cy="130" r="4.5" fill="var(--accent)"/>
+</svg>

@@ -1,0 +1,85 @@
+<svg viewBox="0 0 640 330" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="NVIDIA GPU 产品线树：GeForce 消费级、RTX PRO 工作站、数据中心、出口特供、特殊形态五条线">
+	<style>
+		:root {
+			--fg: #2b2b2b;
+			--line: #3d3d3d;
+			--geforce-fill: #dce9f7;
+			--geforce-stroke: #7b9cc4;
+			--pro-fill: #f5e9c9;
+			--pro-stroke: #b8912f;
+			--dc-fill: #d8ecd8;
+			--dc-stroke: #6aa86a;
+			--exp-fill: #f2dcdc;
+			--exp-stroke: #b06a6a;
+			--spc-fill: #e6dcf2;
+			--spc-stroke: #8a6fc0;
+			--root-fill: #eef1f4;
+			--root-stroke: #9aa5b1;
+		}
+		@media (prefers-color-scheme: dark) {
+			:root {
+				--fg: #d8d8d8;
+				--line: #b8b8b8;
+				--geforce-fill: #26364d;
+				--geforce-stroke: #6c8ebf;
+				--pro-fill: #4a3d1e;
+				--pro-stroke: #c9a53f;
+				--dc-fill: #24392b;
+				--dc-stroke: #7fb37f;
+				--exp-fill: #472c2c;
+				--exp-stroke: #c07f7f;
+				--spc-fill: #35294d;
+				--spc-stroke: #9a7fd0;
+				--root-fill: #2a2f36;
+				--root-stroke: #6b7684;
+			}
+		}
+		text { fill: var(--fg); }
+		.lbl { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 15px; }
+		.sub { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 12px; opacity: 0.75; }
+		.edge { stroke: var(--line); stroke-width: 1.6; fill: none; }
+		.box { stroke-width: 1.6; rx: 9; }
+	</style>
+
+	<!-- root -->
+	<rect x="20" y="140" width="120" height="52" class="box" fill="var(--root-fill)" stroke="var(--root-stroke)"/>
+	<text x="80" y="162" class="lbl" text-anchor="middle">NVIDIA</text>
+	<text x="80" y="182" class="lbl" text-anchor="middle">GPU</text>
+
+	<!-- connectors -->
+	<path d="M140,166 L195,166 L195,36 L248,36" class="edge"/>
+	<path d="M140,166 L195,166 L195,101 L248,101" class="edge"/>
+	<path d="M140,166 L248,166" class="edge"/>
+	<path d="M140,166 L195,166 L195,231 L248,231" class="edge"/>
+	<path d="M140,166 L195,166 L195,296 L248,296" class="edge"/>
+
+	<!-- GeForce -->
+	<rect x="250" y="10" width="370" height="52" class="box" fill="var(--geforce-fill)" stroke="var(--geforce-stroke)"/>
+	<text x="264" y="31" class="lbl">GeForce 消费级</text>
+	<text x="606" y="31" class="sub" text-anchor="end">8–32 GB GDDR · 无 NVLink · 无 ECC</text>
+	<text x="264" y="51" class="sub">3060 · 4060 Ti · 5060 Ti · 3090 · 4090 · 5090</text>
+
+	<!-- RTX PRO -->
+	<rect x="250" y="75" width="370" height="52" class="box" fill="var(--pro-fill)" stroke="var(--pro-stroke)"/>
+	<text x="264" y="96" class="lbl">RTX PRO 工作站</text>
+	<text x="606" y="96" class="sub" text-anchor="end">48–96 GB GDDR ECC · 认证驱动</text>
+	<text x="264" y="116" class="sub">RTX A6000 · RTX 6000 Ada · RTX PRO 6000</text>
+
+	<!-- datacenter -->
+	<rect x="250" y="140" width="370" height="52" class="box" fill="var(--dc-fill)" stroke="var(--dc-stroke)"/>
+	<text x="264" y="161" class="lbl">数据中心</text>
+	<text x="606" y="161" class="sub" text-anchor="end">40–288 GB HBM · NVLink 域 · MIG</text>
+	<text x="264" y="181" class="sub">L4 · L40S · A100 · H100 · H200 · B200 · GB300</text>
+
+	<!-- export -->
+	<rect x="250" y="205" width="370" height="52" class="box" fill="var(--exp-fill)" stroke="var(--exp-stroke)"/>
+	<text x="264" y="226" class="lbl">出口特供</text>
+	<text x="606" y="226" class="sub" text-anchor="end">按管制规则定向阉割</text>
+	<text x="264" y="246" class="sub">4090D · 5090D(v2) · A800 · H800 · H20</text>
+
+	<!-- special -->
+	<rect x="250" y="270" width="370" height="52" class="box" fill="var(--spc-fill)" stroke="var(--spc-stroke)"/>
+	<text x="264" y="291" class="lbl">特殊形态</text>
+	<text x="606" y="291" class="sub" text-anchor="end">统一内存 / 涡轮散热</text>
+	<text x="264" y="311" class="sub">DGX Spark · 涡轮与服务器改装版</text>
+</svg>

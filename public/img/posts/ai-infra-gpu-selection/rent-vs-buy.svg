@@ -1,0 +1,77 @@
+<svg viewBox="0 0 660 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="租与买的累计成本对比：自购 RTX 4090 的平线与三种利用率下云租赁的线性增长，交叉点即回本周期">
+	<style>
+		:root {
+			--fg: #2b2b2b;
+			--line: #3d3d3d;
+			--buy: #4a7fbf;
+			--r24: #b06a6a;
+			--r8: #b8912f;
+			--r2: #4e9a51;
+			--grid: #d0d5da;
+		}
+		@media (prefers-color-scheme: dark) {
+			:root {
+				--fg: #d8d8d8;
+				--line: #b8b8b8;
+				--buy: #7fa9d9;
+				--r24: #cf8f8f;
+				--r8: #d4b05a;
+				--r2: #7fc47f;
+				--grid: #3a4148;
+			}
+		}
+		text { fill: var(--fg); }
+		.axis { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 13px; }
+		.tick { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 11px; opacity: 0.7; }
+		.leg { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 12px; }
+		.note { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 11.5px; opacity: 0.7; }
+		.grid { stroke: var(--grid); stroke-width: 1; }
+		.frame { stroke: var(--line); stroke-width: 1.4; fill: none; }
+	</style>
+
+	<!-- frame + gridlines: x = 90 + 月*14.72, y = 330 - 成本*0.0108 -->
+	<rect x="90" y="60" width="530" height="270" class="frame"/>
+	<line x1="267" y1="60" x2="267" y2="330" class="grid"/>
+	<line x1="443" y1="60" x2="443" y2="330" class="grid"/>
+	<line x1="90" y1="276" x2="620" y2="276" class="grid"/>
+	<line x1="90" y1="222" x2="620" y2="222" class="grid"/>
+	<line x1="90" y1="168" x2="620" y2="168" class="grid"/>
+	<line x1="90" y1="114" x2="620" y2="114" class="grid"/>
+
+	<!-- buy: flat 15000 -> y=168 -->
+	<line x1="90" y1="168" x2="620" y2="168" stroke="var(--buy)" stroke-width="2.6"/>
+	<!-- rent 24h/d: 1440/月 -> crosses top at ~17.4 月 -->
+	<line x1="90" y1="330" x2="346" y2="60" stroke="var(--r24)" stroke-width="2.2"/>
+	<!-- rent 8h/d: 480/月 -> y(36)=143.4 -->
+	<line x1="90" y1="330" x2="620" y2="143.4" stroke="var(--r8)" stroke-width="2.2"/>
+	<!-- rent 2h/d: 120/月 -> y(36)=283.3 -->
+	<line x1="90" y1="330" x2="620" y2="283.3" stroke="var(--r2)" stroke-width="2.2"/>
+
+	<!-- crossover markers on buy line -->
+	<circle cx="243" cy="168" r="5" fill="var(--r24)"/>
+	<text x="243" y="150" class="leg" text-anchor="middle" fill="var(--r24)">≈10 个月</text>
+	<circle cx="550" cy="168" r="5" fill="var(--r8)"/>
+	<text x="550" y="150" class="leg" text-anchor="middle" fill="var(--r8)">≈31 个月</text>
+
+	<!-- line labels -->
+	<text x="612" y="160" class="leg" text-anchor="end" fill="var(--buy)">自购 4090 ≈1.5 万元</text>
+	<text x="360" y="70" class="leg" fill="var(--r24)">租 · 24h/天</text>
+	<text x="612" y="138" class="leg" text-anchor="end" fill="var(--r8)">租 · 8h/天</text>
+	<text x="612" y="278" class="leg" text-anchor="end" fill="var(--r2)">租 · 2h/天</text>
+
+	<!-- axes -->
+	<text x="355" y="356" class="axis" text-anchor="middle">使用时间（月）</text>
+	<text x="30" y="195" class="axis" text-anchor="middle" transform="rotate(-90 30 195)">累计成本</text>
+	<text x="90" y="346" class="tick" text-anchor="middle">0</text>
+	<text x="267" y="346" class="tick" text-anchor="middle">12</text>
+	<text x="443" y="346" class="tick" text-anchor="middle">24</text>
+	<text x="620" y="346" class="tick" text-anchor="middle">36</text>
+	<text x="82" y="334" class="tick" text-anchor="end">0</text>
+	<text x="82" y="280" class="tick" text-anchor="end">0.5万</text>
+	<text x="82" y="226" class="tick" text-anchor="end">1万</text>
+	<text x="82" y="172" class="tick" text-anchor="end">1.5万</text>
+	<text x="82" y="118" class="tick" text-anchor="end">2万</text>
+	<text x="82" y="64" class="tick" text-anchor="end">2.5万</text>
+
+	<text x="355" y="50" class="note" text-anchor="middle">按 4090 云端约 2 元/小时估算；未计电费、残值与涨价因素</text>
+</svg>

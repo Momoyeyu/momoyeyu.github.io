@@ -2,15 +2,17 @@
 .DEFAULT_GOAL := help
 SHELL := /bin/bash
 
-ASTRO  := ./node_modules/.bin/astro
-VITEST := ./node_modules/.bin/vitest
-NODE   := node
+ASTRO    := ./node_modules/.bin/astro
+VITEST   := ./node_modules/.bin/vitest
+PAGEFIND := ./node_modules/.bin/pagefind
+NODE     := node
 
-.PHONY: help new dev check commit push deploy status
+.PHONY: help new dev preview check commit push deploy status
 
 help:
 	@echo "make new      新建文章"
 	@echo "make dev      本地预览"
+	@echo "make preview  构建并预览（可测试搜索）"
 	@echo "make check    类型检查与单测"
 	@echo "make commit   提交暂存区"
 	@echo "make push     推送到远端"
@@ -22,6 +24,11 @@ new:
 
 dev:
 	@$(ASTRO) dev
+
+# 搜索只在构建产物中生效（Pagefind 索引），所以先构建再预览。
+preview:
+	@$(ASTRO) build && mv dist/sitemap-index.xml dist/sitemap.xml && $(PAGEFIND) --site dist
+	@$(ASTRO) preview
 
 check:
 	@$(ASTRO) check
