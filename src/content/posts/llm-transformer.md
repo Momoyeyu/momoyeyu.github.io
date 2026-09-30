@@ -109,7 +109,7 @@ def attention(
     scores = query @ key.transpose(-2, -1) / math.sqrt(d_k) # [batch, n, n]
     if mask is not None:
         scores = scores + mask.to(scores.dtype)
-    weights = F.softmax(scores, dim=-1)
+    weights = F.softmax(scores, dim=-1)      # [batch, n, n]
     return weights @ value # [batch, n, d_v]
 ```
 
@@ -160,8 +160,9 @@ class MHA(nn.Module):
         self.w_o = nn.Linear(self.d_v * self.num_heads, self.d_model, bias=False)
 
     def forward(self, query: torch.Tensor, key: torch.Tensor, value: torch.Tensor, mask: torch.Tensor | None = None) -> torch.Tensor:
-        heads = [attention(self.w_q[i](query), self.w_k[i](key), self.w_v[i](value), mask) for i in range(self.num_heads)]
-        return self.w_o(torch.cat(heads, dim=-1))
+        # query/key/value: [batch, n, d_model]
+        heads = [attention(self.w_q[i](query), self.w_k[i](key), self.w_v[i](value), mask) for i in range(self.num_heads)]  # h × [batch, n, d_v]
+        return self.w_o(torch.cat(heads, dim=-1))  # cat: [batch, n, h·d_v] -> [batch, n, d_model]
 ```
 
 ### FFN
@@ -194,6 +195,7 @@ class FFN(nn.Module):
         )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
+        # x: [batch, n, d_model]
         return self.mlp(x)
 ```
 
@@ -248,6 +250,7 @@ def causal_mask(size: int, device: torch.device | None = None) -> torch.Tensor:
 
 ```python
 def padding_mask(pad: torch.Tensor) -> torch.Tensor:
+    # pad: [batch, n]，1 表示 padding
     return torch.where(pad.bool(), _NEG_INF, 0.0).unsqueeze(1) # [batch, 1, n]
 ```
 
@@ -346,7 +349,8 @@ class Embedding(nn.Module):
         nn.init.normal_(self.w_e.weight, mean=0.0, std=d_model ** -0.5)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        return self.w_e(x) * math.sqrt(self.d_model)
+        # x: [batch, n]（token id）
+        return self.w_e(x) * math.sqrt(self.d_model)  # [batch, n, d_model]
 ```
 
 这里显式把嵌入矩阵初始化为 $N(0, 1/\sqrt{d_{\text{model}}})$，是因为权重绑定后，嵌入矩阵同时承担嵌入和输出投影两个角色，
@@ -402,17 +406,18 @@ class PositionEncoding(nn.Module):
         i = torch.arange(0, self.d_model, 2, dtype=torch.float32, device=device).unsqueeze(0)  # [1, d_model / 2]
         div = torch.exp(-math.log(10000) * i / self.d_model) # [1, d_model / 2]
         position_encoding = torch.zeros(n, self.d_model, device=device) # [n, d_model]
-        position_encoding[:, 0::2] = torch.sin(pos * div)
-        position_encoding[:, 1::2] = torch.cos(pos * div)
+        position_encoding[:, 0::2] = torch.sin(pos * div)  # [n,1]×[1,d_model/2] -> [n, d_model/2]
+        position_encoding[:, 1::2] = torch.cos(pos * div)  # [n, d_model/2]
         return position_encoding
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
+        # x: [batch, n, d_model]
         n = x.size(-2)
         if n <= self.max_len:
-            return x + self.cache[:n].to(x.dtype)
-        pos_encoding = torch.zeros_like(x)
-        pos_encoding[:, :self.max_len] = self.cache.to(x.dtype)
-        pos_encoding[:, self.max_len:] = self.encode(self.max_len, n, device=x.device).to(x.dtype)
+            return x + self.cache[:n].to(x.dtype)  # cache[:n]: [n, d_model]
+        pos_encoding = torch.zeros_like(x)                                          # [batch, n, d_model]
+        pos_encoding[:, :self.max_len] = self.cache.to(x.dtype)                     # [batch, max_len, d_model]
+        pos_encoding[:, self.max_len:] = self.encode(self.max_len, n, device=x.device).to(x.dtype)  # [batch, n-max_len, d_model]
         return x + pos_encoding
 ```
 
@@ -435,6 +440,7 @@ class EncoderBlock(nn.Module):
         self.dropout = nn.Dropout(dropout)
 
     def forward(self, x: torch.Tensor, mask: torch.Tensor | None = None) -> torch.Tensor:
+        # x: [batch, src_len, d_model]，各子层均保持此形状
         residual = x
         x = self.mha(x, x, x, mask)
         x = self.dropout(x)
@@ -454,6 +460,7 @@ class Encoder(nn.Module):
         ])
 
     def forward(self, x: torch.Tensor, mask: torch.Tensor | None = None) -> torch.Tensor:
+        # x: [batch, src_len, d_model]
         for block in self.blocks:
             x = block(x, mask)
         return x
@@ -474,6 +481,7 @@ class DecoderBlock(nn.Module):
         self.dropout = nn.Dropout(dropout)
 
     def forward(self, y: torch.Tensor, h: torch.Tensor, self_mask: torch.Tensor | None = None, cross_mask: torch.Tensor | None = None) -> torch.Tensor:
+        # y: [batch, tgt_len, d_model], h: [batch, src_len, d_model]
         residual = y
         y = self.masked_mha(y, y, y, self_mask)
         y = self.dropout(y)
@@ -497,6 +505,7 @@ class Decoder(nn.Module):
         ])
 
     def forward(self, y: torch.Tensor, h: torch.Tensor, self_mask: torch.Tensor | None = None, cross_mask: torch.Tensor | None = None) -> torch.Tensor:
+        # y: [batch, tgt_len, d_model], h: [batch, src_len, d_model]
         for block in self.blocks:
             y = block(y, h, self_mask, cross_mask)
         return y
@@ -531,12 +540,12 @@ class Transformer(nn.Module):
         src_pad: torch.Tensor | None = None,  # [batch, src_len], 1 表示 padding
         tgt_pad: torch.Tensor | None = None,  # [batch, tgt_len], 1 表示 padding
     ) -> torch.Tensor:
-        src = self.dropout(self.pos_encoder(self.embedding(src)))
-        tgt = self.dropout(self.pos_encoder(self.embedding(tgt)))
+        src = self.dropout(self.pos_encoder(self.embedding(src)))  # [batch, src_len] -> [batch, src_len, d_model]
+        tgt = self.dropout(self.pos_encoder(self.embedding(tgt)))  # [batch, tgt_len] -> [batch, tgt_len, d_model]
 
-        src_mask = padding_mask(src_pad) if src_pad is not None else None
+        src_mask = padding_mask(src_pad) if src_pad is not None else None  # [batch, 1, src_len]
 
-        causal = causal_mask(tgt.size(1), device=tgt.device)
+        causal = causal_mask(tgt.size(1), device=tgt.device)  # [tgt_len, tgt_len]
         if tgt_pad is not None:
             tgt_mask = causal + padding_mask(tgt_pad)  # [batch, tgt_len, tgt_len]
         else:

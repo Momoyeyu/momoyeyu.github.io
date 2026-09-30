@@ -224,7 +224,7 @@ class Router(nn.Module):
     def forward(self, x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         logits = self.weight(x)                                              # [T, N]
         probs = torch.softmax(logits, dim=-1)                                # [T, N]
-        topk_probs, topk_idx = probs.topk(self.top_k, dim=-1)
+        topk_probs, topk_idx = probs.topk(self.top_k, dim=-1)                # [T, K], [T, K]
         routing_weights = topk_probs / topk_probs.sum(dim=-1, keepdim=True)  # [T, K]
         return probs, topk_idx, routing_weights
 ```
@@ -251,7 +251,7 @@ $$
 2. 其他 Expert 接收到的 token 太少，导致这些参数无法得到充分训练。
 
 因此，MoE 通常会引入额外的 **Load Balancing Loss**，鼓励 Router 将 token 更均衡地分配给不同 Expert。一种经典的方法来自 [Switch Transformer](https://arxiv.org/abs/2101.03961)。
-对于一个 batch，可以定义 Expert $i$ 实际接收到的 token 比例为：
+对于一个 batch，可以定义 Expert $i$ 被 Top-K 选中的 token 比例为：
 
 $$
 f_i
@@ -309,7 +309,7 @@ def load_balancing_loss(
     alpha: float,
 ) -> torch.Tensor:
     N = probs.size(1)
-    dispatch_mask = torch.zeros_like(probs)
+    dispatch_mask = torch.zeros_like(probs)    # [T, N]
     dispatch_mask.scatter_(1, topk_idx, 1.0) # [T, N]
     f = dispatch_mask.mean(dim=0)            # [N]
     P = probs.mean(dim=0)                    # [N]
@@ -325,21 +325,23 @@ def load_balancing_loss(
 $$
 C
 =
-\frac{T}{N}
+\frac{K \cdot T}{N}
 \times
 CF,
 $$
 
-其中 $C$ 是每个 Expert 的容量，$T$ 是 batch 中的 token 数量，$N$ 是 Expert 数量，$CF$ 是 Capacity Factor。Capacity Factor 为 Expert 额外提供了一定的缓冲空间。例如，当 $CF = 1$ 时，每个 Expert 的容量大约等于平均分配情况下的 token 数量；当 $CF > 1$ 时，容量在平均分配量的基础上留出余量，Expert 可以接收超过平均数量的 token，从而减少因容量不足而被丢弃的 token。
+其中 $C$ 是每个 Expert 的容量，$K$ 是每个 token 选择的 Expert 数量，$K\cdot T$ 即 batch 中的全部 dispatch 数，$N$ 是 Expert 数量，$CF$ 是 Capacity Factor。Capacity Factor 为 Expert 额外提供了一定的缓冲空间。例如，当 $CF = 1$ 时，每个 Expert 的容量大约等于均匀分配情况下平均收到的 token 数；当 $CF > 1$ 时，容量在平均分配量的基础上留出余量，Expert 可以接收超过平均数量的 token，从而减少因容量不足而被丢弃的 token。
 
 对应的容量计算：
 
 ```python
-def expert_capacity(T: int, num_experts: int, capacity_factor: float) -> int:
-    return math.ceil(T / num_experts * capacity_factor)
+def expert_capacity(T: int, num_experts: int, top_k: int, capacity_factor: float) -> int:
+    return math.ceil(T * top_k / num_experts * capacity_factor)
 ```
 
 这种被丢弃的情况称为 **token overflow**：如果某个 Expert 接收到的 token 数量超过了它的容量，超出部分的 token 将无法被该 Expert 处理。不同 MoE 实现对于 overflow token 的处理方式有所不同，因此 Expert Capacity 也是实际 MoE 实现中的重要问题。
+
+这一口径与文献和主流框架一致：[GShard](https://arxiv.org/abs/2006.16668)（top-2，即 $\frac{2T}{N}\times CF$）、Megatron-LM 与 Tutel（`capacity = K·T/N×CF`，per-expert 总预算）都把容量定义为**每个 Expert 跨全部槽位共享的总额度**；Switch 的 top-1 则是 $K=1$ 的特例。dispatched token 按槽位顺序先后占用同一额度，只有当一个 token 选中的 Expert 全部溢出时，它才会被完全丢弃、仅经残差连接传到下一层。
 
 到这里，一个基础的 MoE Layer 就包含了几个核心组件：
 
@@ -405,24 +407,26 @@ class MoELayer(nn.Module):
 
     def forward(self, x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
         # x: [T, d_model]
-        probs, topk_idx, routing_weights = self.router(x)
-        capacity = expert_capacity(x.size(0), self.num_experts, self.capacity_factor)
+        probs, topk_idx, routing_weights = self.router(x)  # [T, N], [T, K], [T, K]
+        capacity = expert_capacity(x.size(0), self.num_experts, self.top_k, self.capacity_factor)
 
-        y = torch.zeros_like(x)
+        y = torch.zeros_like(x)                                     # [T, d_model]
+        remaining = torch.full((self.num_experts,), capacity)       # [N]，每个 Expert 跨槽位共享的剩余额度
         for i in range(self.top_k):
             expert_ids = topk_idx[:, i]                              # [T]
             weights = routing_weights[:, i]                          # [T]
             for e in range(self.num_experts):
-                token_ids = (expert_ids == e).nonzero().squeeze(-1)[:capacity]
+                token_ids = (expert_ids == e).nonzero().squeeze(-1)[:remaining[e]]  # [n_e] ≤ remaining[e]
                 if token_ids.numel() > 0:
-                    expert_out = self.experts[e](x[token_ids])
-                    y[token_ids] += weights[token_ids].unsqueeze(-1) * expert_out
+                    expert_out = self.experts[e](x[token_ids])       # [n_e, d_model]
+                    y[token_ids] += weights[token_ids].unsqueeze(-1) * expert_out  # [n_e,1] × [n_e,d_model]
+                    remaining[e] -= token_ids.numel()
 
         aux_loss = load_balancing_loss(probs, topk_idx, self.alpha)
         return y, aux_loss
 ```
 
-每个 Expert 在每个 Top-K 位置最多接收 `capacity` 个 token，超出的 token 会被直接丢弃，即前文所说的 overflow。返回的 `aux_loss` 即负载均衡辅助损失，训练时可加入总的优化目标。
+每个 Expert 的 `capacity` 额度被所有 Top-K 槽位共享，靠前的槽位（token 的 Top-1 选择）优先占用；额度耗尽后，后续槽位中多出的 dispatch 会被丢弃，即前文所说的 overflow。`n_e` 为该槽位中实际被 Expert $e$ 接收的 token 数。返回的 `aux_loss` 即负载均衡辅助损失，训练时可加入总的优化目标。
 
 在实际的大规模 MoE 模型中，还涉及跨设备的 token dispatch 与通信，因此实际实现会比上述过程复杂得多。[Switch Transformer](https://arxiv.org/abs/2101.03961) 的实现就需要显式处理 token dispatch 和 overflow 等问题。
 
@@ -463,7 +467,7 @@ class MoELayer(nn.Module):
 DeepSeekMoE 的代码实现可以在基础 MoE 上继续扩展，核心变化是：
 
 1. 将 Routed Expert 的隐藏维度设置得更小，使 Expert 数量更多、粒度更细；
-2. 增加一个或多个 Shared Expert，并让所有 token 都经过 Shared Expert；
+2. 从同一个专家池中隔离出若干 Shared Expert（与 Routed Expert 同粒度、同尺寸），让所有 token 都经过 Shared Expert；
 3. 将 Routed Expert 的输出与 Shared Expert 的输出相加。
 
 对应的输出可以写为：
@@ -500,7 +504,8 @@ class DeepSeekMoELayer(nn.Module):
 
         self.router = Router(d_model, num_routed_experts, top_k)
 
-        expert_hidden = d_ff // num_routed_experts
+        # Shared Expert 与 Routed Expert 属于同一个专家池，等参拆分时计入总数
+        expert_hidden = d_ff // (num_routed_experts + num_shared_experts)
 
         def make_expert() -> nn.Module:
             return nn.Sequential(
@@ -518,28 +523,30 @@ class DeepSeekMoELayer(nn.Module):
 
     def forward(self, x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
         # x: [T, d_model]
-        probs, topk_idx, routing_weights = self.router(x)
-        capacity = expert_capacity(x.size(0), self.num_routed_experts, self.capacity_factor)
+        probs, topk_idx, routing_weights = self.router(x)  # [T, N], [T, K], [T, K]
+        capacity = expert_capacity(x.size(0), self.num_routed_experts, self.top_k, self.capacity_factor)
 
-        shared_out = torch.zeros_like(x)
+        shared_out = torch.zeros_like(x)                              # [T, d_model]
         for expert in self.shared_experts:
             shared_out += expert(x)
 
-        routed_out = torch.zeros_like(x)
+        routed_out = torch.zeros_like(x)                              # [T, d_model]
+        remaining = torch.full((self.num_routed_experts,), capacity)  # [N]
         for i in range(self.top_k):
             expert_ids = topk_idx[:, i]                              # [T]
             weights = routing_weights[:, i]                          # [T]
             for e in range(self.num_routed_experts):
-                token_ids = (expert_ids == e).nonzero().squeeze(-1)[:capacity]
+                token_ids = (expert_ids == e).nonzero().squeeze(-1)[:remaining[e]]  # [n_e] ≤ remaining[e]
                 if token_ids.numel() > 0:
-                    expert_out = self.routed_experts[e](x[token_ids])
-                    routed_out[token_ids] += weights[token_ids].unsqueeze(-1) * expert_out
+                    expert_out = self.routed_experts[e](x[token_ids])  # [n_e, d_model]
+                    routed_out[token_ids] += weights[token_ids].unsqueeze(-1) * expert_out  # [n_e,1] × [n_e,d_model]
+                    remaining[e] -= token_ids.numel()
 
         aux_loss = load_balancing_loss(probs, topk_idx, self.alpha)
         return shared_out + routed_out, aux_loss
 ```
 
-可以看到，DeepSeekMoE 的 dispatch 流程与基础 MoE 完全一致，差异只在两点：Expert 被切得更小、更多，以及多了一组对所有 token 恒激活的 Shared Expert。实际模型中还会有更精细的配置，例如 DeepSeek-V2 将 gating 改为 sigmoid 打分后对选中项归一化，DeepSeek-V3 又在 Router 中引入 bias 项实现无辅助损失的负载均衡，但核心结构仍然是“细粒度 Routed Expert + Shared Expert”。
+可以看到，DeepSeekMoE 的 dispatch 流程与基础 MoE 完全一致，差异只在两点：Expert 被切得更小、更多，以及多了一组对所有 token 恒激活的 Shared Expert。需要注意两处与论文的差异：其一，论文为保持激活计算量恒定，会将激活的 Routed Expert 数量相应减少 $K_s$（即 $mK-K_s$），这里的实现保持 `top_k` 不变，激活参数量因此略增；其二，实际的 DeepSeekMoE 不使用 token drop，负载均衡损失的定义也与本文沿用的 Switch 形式不同。实际模型中还有更精细的配置，例如 DeepSeek-V2 将 gating 改为 sigmoid 打分后对选中项归一化，DeepSeek-V3 又在 Router 中引入 bias 项实现无辅助损失的负载均衡，但核心结构仍然是“细粒度 Routed Expert + Shared Expert”。
 
 # 结语
 
