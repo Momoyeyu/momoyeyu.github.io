@@ -22,8 +22,24 @@ help:
 new:
 	@$(NODE) scripts/new-post.js
 
+# 多个 astro dev 实例会共享 .astro/data-store.json：互相触发数据缓存失效与
+# full-reload，导致归档/合集偶发空白。所以同一项目只允许一个 dev server。
 dev:
-	@$(ASTRO) dev
+	@conflict=""; \
+	for pid in $$(lsof -nP -c node -iTCP -sTCP:LISTEN -t 2>/dev/null); do \
+		cwd=$$(lsof -a -p $$pid -d cwd -Fn 2>/dev/null | sed -n 's/^n//p' | head -1); \
+		[ "$$cwd" = "$(CURDIR)" ] || continue; \
+		cmd=$$(ps -p $$pid -o command= 2>/dev/null); \
+		echo "$$cmd" | grep -q "astro.* dev" || continue; \
+		port=$$(lsof -a -p $$pid -nP -iTCP -sTCP:LISTEN -Fn 2>/dev/null | sed -n 's/^n.*:\([0-9]*\).*/\1/p' | head -1); \
+		echo "已有 dev server 在跑：http://localhost:$${port:-4321}（pid $$pid）"; \
+		conflict=1; \
+	done; \
+	if [ -n "$$conflict" ]; then \
+		echo "多个 dev 实例会共享 .astro/ 缓存，归档/合集会偶发空白；请直接访问上面的地址，或先 kill 旧进程。"; \
+		exit 1; \
+	fi; \
+	$(ASTRO) dev
 
 # 搜索只在构建产物中生效（Pagefind 索引），所以先构建再预览。
 preview:

@@ -2,7 +2,7 @@
 title: 位置编码技术的演进
 date: 2026-09-30
 description: 本文梳理 Transformer 的位置编码演进：为什么注意力需要位置信息，正弦编码、可学习编码、相对位置编码、ALiBi 与 RoPE 各自的设计取舍与长度外推。
-tags: [LLM]
+tags: [LLM, RoPE]
 category: LLM
 episode: 3
 draft: true
@@ -25,13 +25,14 @@ $$
 \text{softmax}\left(\frac{QK^\top}{\sqrt{d_k}}\right)V.
 $$
 
-这个计算对输入序列的顺序是完全无感的（先不考虑 mask）：如果把输入 token 的顺序打乱，输出的每一行只会跟着重排，内容本身一个字都不会变。也就是说，「我打他」和「他打我」在 Attention 看来是完全一样的输入——这对语言模型显然是不可接受的。可以用一个玩具实验直接验证：
+如果不考虑 mask，这个计算对输入序列的顺序是完全无感的：如果把输入 token 的顺序打乱，输出的每一行只会跟着重排，内容本身一个字都不会变。也就是说，「我打他」和「他打我」在 Attention 看来是完全一样的输入——这对语言模型显然是不可接受的。可以用一个玩具实验直接验证：
 
 ```python
-# mha 为 EP.0 中实现的 MultiHeadAttention
+# mha 为 EP.0 中实现的 MHA
 x = torch.randn(1, L, d_model)                             # [1, L, d_model]
 out = mha(x, x, x)                                         # [1, L, d_model]
-out_shuffled = mha(x.flip(1), x.flip(1), x.flip(1))
+x_flipped = x.flip(1)                                      # [1, L, d_model]
+out_shuffled = mha(x_flipped, x_flipped, x_flipped)
 assert torch.allclose(out_shuffled, out.flip(1), atol=1e-5)  # 只是跟着重排
 ```
 
@@ -66,11 +67,11 @@ $$
 
 其中 $pos$ 是位置，$i$ 是维度下标，$d$ 是 embedding 维度。
 
-直觉上，可以把不同维度理解成频率不同的时钟：低维度的正弦周期短、转得快，高维度的周期长、转得慢。每个位置在所有维度上的取值合起来，就构成了一个独一无二的「指纹」。
+直觉上，可以把不同维度理解成频率不同的时钟：下标 $i$ 小的维度周期短、转得快，对应高频；下标大的维度周期长、转得慢，对应低频。每个位置在所有维度上的取值合起来，就构成了一个独一无二的「指纹」。
 
 ![sine-pe](/img/posts/llm-position-encoding/sine-pe.svg)
 
-正弦编码还有一个精心设计的性质：$PE_{pos+k}$ 可以表示为 $PE_{pos}$ 的线性函数。利用三角函数的和角公式：
+正弦编码还有一个精心设计的性质：$PE_{pos+k}$ 可以表示为 $PE_{pos}$ 的线性函数。利用三角函数的和角公式（记 $\omega_i = 10000^{-2i/d}$）：
 
 $$
 \sin((pos+k)\omega)
@@ -103,23 +104,54 @@ x = tok_emb(x) + self.pos_emb(torch.arange(L))   # [B,L,d_model] + [L,d_model]
 
 ## 相对位置偏置
 
-最早的做法来自 [Shaw et al. 2018](https://arxiv.org/abs/1803.02155)：为每个相对距离准备一组可学习向量，加到 key 和 value 上，距离超出一定范围就截断到同一个桶里。
+最早的做法来自 [Shaw et al. 2018](https://arxiv.org/abs/1803.02155)：为每个相对距离准备一组可学习向量，加到 key 和 value 上，距离超出范围就截断到边缘的桶。
 
-[T5](https://arxiv.org/abs/1910.10683) 把这个思路进一步简化到极致：不再给 key/value 加向量，而是把相对距离分桶，每个桶对应一个可学习标量 bias，直接加到 attention logits 上：
+[T5](https://arxiv.org/abs/1910.10683) 把这个思路进一步简化到极致：不再给 key/value 加向量，而是把相对距离分桶，每个注意力头在每个桶上各学一个标量 bias，直接加到 attention logits 上：
 
 ```python
-i = torch.arange(L)[:, None]                  # [L, 1]
-j = torch.arange(L)[None, :]                  # [1, L]
-rel = (j - i).clamp(-max_dist, max_dist)      # [L, L]，相对距离截断
-bias = self.rel_bias(self.bucket(rel))        # [L, L]，查表
-logits = q @ k.transpose(-1, -2) / math.sqrt(d_head) + bias  # [L, L]
+rel_k = nn.Embedding(2 * max_dist + 1, d_head)   # Shaw：每个桶一个可学习向量
+rel_b = nn.Embedding(2 * max_dist + 1, H)        # T5：每个头各一套标量
+
+i = torch.arange(L)[:, None]                           # [L, 1]
+j = torch.arange(L)[None, :]                           # [1, L]
+rel = (j - i).clamp(-max_dist, max_dist) + max_dist    # [L, L]，截断后平移为桶下标
+
+# Shaw et al.：距离向量加进 k 参与内积（a^V 对 v 同理）；q, k: [H, L, d_head]
+logits = (q[:, :, None] * (k[:, None] + rel_k(rel))).sum(-1) / math.sqrt(d_head)   # [H, L, L]
+
+# T5：距离标量直接加在 logits 上
+logits = q @ k.transpose(-1, -2) / math.sqrt(d_head) + rel_b(rel).permute(2, 0, 1)  # [H, L, L]
 ```
 
-两者本质是同一做法的两个粒度：都是往 score 上加一个依赖 $(i-j)$ 的项，只是一个加向量、一个加标量。
+写成统一的形式，两者都是在 score 上加一个只依赖相对距离的项：
+
+$$
+e_{ij}
+=
+\frac{\mathbf{q}_i \cdot \mathbf{k}_j}{\sqrt{d_{\text{head}}}}
++
+f(j - i).
+$$
+
+区别只在 $f$ 的粒度：Shaw 的 $f(j-i) = \mathbf{q}_i \cdot a^K_{j-i} / \sqrt{d_{\text{head}}}$，以向量形式加进 $k$、$v$ 之后再参与计算；T5 的 $f$ 则直接是一个查表标量。顺带一提，T5 实际的分桶还会把较大距离按对数压缩进少数几个桶，且这组 bias 只在第一层计算、跨层共享；上面的简单截断只是示意。
 
 ## 重参数化
 
-[Transformer-XL](https://arxiv.org/abs/1901.02860) 则走了更理论化的一条路：把 attention score 展开为 content-content、content-position、position-content、position-position 四项并重参数化，使每一项都只依赖相对距离。这样改动之后，位置信息同样只进入 score，并且还顺带支撑了 Transformer-XL 的 segment 级循环机制。
+[Transformer-XL](https://arxiv.org/abs/1901.02860) 则走了更理论化的一条路。原始 Transformer 的 attention score 把绝对位置编码展开后是 content-content、content-position、position-content、position-position 四项；Transformer-XL 对展开式做重参数化，使每一项都只依赖相对距离：
+
+$$
+e_{ij}
+=
+\underbrace{\mathbf{x}_i^\top W_q^\top W_{k,E}\,\mathbf{x}_j}_{\text{content} \to \text{content}}
++
+\underbrace{\mathbf{x}_i^\top W_q^\top W_{k,R}\,\mathbf{R}_{i-j}}_{\text{content} \to \text{position}}
++
+\underbrace{\mathbf{u}^\top W_{k,E}\,\mathbf{x}_j}_{\text{global content bias}}
++
+\underbrace{\mathbf{v}^\top W_{k,R}\,\mathbf{R}_{i-j}}_{\text{global position bias}}.
+$$
+
+重参数化发生在两处：key 侧的绝对位置编码 $\mathbf{U}_j$ 换成了只依赖 $i - j$ 的正弦编码 $\mathbf{R}_{i-j}$；query 侧的 $\mathbf{U}_i^\top W_q^\top$ 对所有位置是同一个常向量，干脆变成两个可学习参数 $\mathbf{u}$、$\mathbf{v}$。同时 key 的投影矩阵被拆成内容侧 $W_{k,E}$ 与位置侧 $W_{k,R}$ 两个，分别服务内容项和位置项。这样位置信息同样只进入 score，并且还顺带支撑了 Transformer-XL 的 segment 级循环机制。
 
 ## 局限
 
@@ -136,12 +168,12 @@ logits = q @ k.transpose(-1, -2) / math.sqrt(d_head) + bias  # [L, L]
 $$
 \text{logits}_{ij}
 =
-\frac{\mathbf{q}_i \cdot \mathbf{k}_j}{\sqrt{d}}
+\frac{\mathbf{q}_i \cdot \mathbf{k}_j}{\sqrt{d_{\text{head}}}}
 -
 m \cdot |i - j|.
 $$
 
-其中 $m$ 是每个注意力头各自的斜率，按几何级数取值，例如 8 个头时取 $2^{-1}, 2^{-2}, \dots, 2^{-8}$：
+其中 $m$ 是每个注意力头各自的斜率，$H$ 个头时按几何级数取 $m_h = 2^{-8h/H}$，例如 8 个头时取 $2^{-1}, 2^{-2}, \dots, 2^{-8}$。顺带说明，论文对因果场景写的其实是 $-m \cdot (i - j)$；带上绝对值是让双向情形也成立的写法，在 causal mask 下两者等价：
 
 ```python
 i = torch.arange(L)[:, None]                  # [L, 1]
@@ -171,7 +203,7 @@ R_m\,\mathbf{q},
 R_n\,\mathbf{k},
 $$
 
-其中 $R_m$ 是按位置 $m$ 构造的旋转矩阵，$\theta_i = 10000^{-2i/d_{\text{head}}}$ 是第 $i$ 个维度对的旋转频率。
+其中 $R_m$ 是按位置 $m$ 构造的旋转矩阵，$\theta_i = 10000^{-2i/d_{\text{head}}}$ 是第 $i$ 个维度对的旋转频率。记号上注意，下文的 $m$、$n$ 是位置下标，与上一节 ALiBi 的斜率 $m$ 无关。
 
 ![rope](/img/posts/llm-position-encoding/rope.svg)
 
@@ -198,16 +230,16 @@ R_m
 \cos m\theta_1 & -\sin m\theta_1 & & \\
 \sin m\theta_1 & \cos m\theta_1 & & \\
 & & \ddots & \\
-& & & \cos m\theta_{d/2} & -\sin m\theta_{d/2} \\
-& & & \sin m\theta_{d/2} & \cos m\theta_{d/2}
+& & & \cos m\theta_{d_{\text{head}}/2} & -\sin m\theta_{d_{\text{head}}/2} \\
+& & & \sin m\theta_{d_{\text{head}}/2} & \cos m\theta_{d_{\text{head}}/2}
 \end{pmatrix}.
 $$
 
-这里画出的是原始论文的相邻维配对形式，与下文代码使用的 half-split 配对只差一个维度置换。工程上并不需要真的构造这个稀疏矩阵——展开后会发现它就是「一半乘 cos、一半乘 sin 再互换相加」的逐元素运算，可以直接写成几行代码，也很容易融合进 kernel。
+这里画出的是原始论文的相邻维配对形式，与下文代码使用的配对方式只差一个维度置换。工程上并不需要真的构造这个稀疏矩阵——展开后会发现它就是「一半乘 cos、一半乘 sin 再互换相加」的逐元素运算，可以直接写成几行代码，也很容易融合进 kernel。
 
 ## 性质
 
-RoPE 有两个值得注意的性质。其一是**远程衰减**：苏剑林在原始分析中指出，在一定条件下注意力得分随距离增大呈衰减趋势——和 ALiBi 的直觉殊途同归，但机制完全不同。需要注意的是这个结论并不严格单调，各频率分量的叠加会产生波动，所以更准确的说法是「整体上呈现衰减趋势」。
+RoPE 有两个值得注意的性质。其一是**远程衰减**：RoPE 论文在 §3.4.3 给出了注意力得分随距离增大的衰减上界——和 ALiBi 的直觉殊途同归，但机制完全不同。需要注意的是这个结论并不严格单调，各频率分量的叠加会产生波动，所以更准确的说法是「整体上呈现衰减趋势」。
 
 其二是**工程兼容性**：RoPE 只在 Q、K 上作用，score 算完它就消失了——attention 内部、FFN、残差流里都没有它的痕迹。因此它与 KV cache、FlashAttention 完全兼容，这正是它在工程上完胜前面那些方案的原因。
 
@@ -215,14 +247,15 @@ RoPE 有两个值得注意的性质。其一是**远程衰减**：苏剑林在�
 
 读开源代码时有两个细节必须先确认，否则很容易踩坑：
 
-* **维度配对方式**。RoPE 原始论文的公式是相邻维两两配对 $(2i, 2i+1)$，即 interleaved；而 HuggingFace / LLaMA 的实现是前后两半配对 $(i, i+d_{\text{head}}/2)$，即 half-split。两者只差一个维度置换，数学上等价，但混用会得到完全不同的结果；
-* **base 的选择**。原始值取 10000，它决定低频维的波长。base 越大，低频维转得越慢、能覆盖的上下文越长——它是后面所有长度外推技巧的总旋钮。
+* **维度配对方式**。RoPE 原始论文和 Meta 官方 LLaMA 实现都是相邻维两两配对 $(2i, 2i+1)$，即 interleaved；而 HuggingFace transformers 的实现是前后两半配对 $(i, i+d_{\text{head}}/2)$，即 half-split（GPT-NeoX 风格，HF 在权重转换时做了维度置换补偿）。两者只差一个维度置换，数学上等价，但混用会得到完全不同的结果；
+* **base 的选择**。原始值取 10000，它决定低频维的波长。base 越大，低频维转得越慢、能覆盖的上下文越长——它是后面所有长度外推技巧的总旋钮；
+* **QK-Norm 与 RoPE 的先后**。上一篇留下的问题在这里收尾：RoPE 是保模长的旋转，不改变向量的 RMS，因此不带可学习参数时，先 Norm 后 RoPE 与先 RoPE 后 Norm 完全等价。真正的差别在逐维缩放 $\gamma$ 上——先归一化再旋转，$\gamma$ 作用在与位置无关的固定坐标上；反过来，$\gamma$ 就作用在随位置旋转的坐标系里，等价于让每个位置学一套不同的缩放。主流实现都把 QK-Norm 放在 RoPE 之前，让归一化只管内容、位置全部交给旋转。
 
 ## 解耦 RoPE
 
 RoPE 与 KV cache 兼容，但它让 K 依赖绝对位置这一点，在某些架构里反而会出问题。[DeepSeek-V2](https://arxiv.org/abs/2405.04434) 的 MLA 就是一个例子：MLA 想把 KV 压成一个低秩的隐向量存进 cache，但如果 K 带了 RoPE，位置信息与内容纠缠在一起，压缩表示就不再成立。
 
-DeepSeek 的解法是**解耦 RoPE**：把 key 拆成两条通路——一条走低秩压缩、不带 RoPE，承载语义内容；另一条是专门的窄 key，不做压缩、专门携带 RoPE 位置信息。用一小部分额外容量，换来了「KV 可压缩」和「位置可编码」两者兼得。这也是 RoPE 进入现代 LLM 架构设计的一个代表性案例，和 [EP.1](../llm-moe/) 的 DeepSeekMoE 一脉相承。
+DeepSeek 的解法是**解耦 RoPE**：把 key 拆成两条通路——一条走低秩压缩、不带 RoPE，承载语义内容；另一条是一个各头共享的窄 key（DeepSeek-V2 中仅 64 维），不做压缩、专门携带 RoPE 位置信息。用一小部分额外容量，换来了「KV 可压缩」和「位置可编码」两者兼得。这也是 RoPE 进入现代 LLM 架构设计的一个代表性案例，和 [EP.1](../llm-moe/) 的 DeepSeekMoE 一脉相承。
 
 ## 代码实现
 
@@ -255,7 +288,7 @@ def apply_rope(x: torch.Tensor, cos: torch.Tensor, sin: torch.Tensor) -> torch.T
     return torch.cat([x1 * cos - x2 * sin, x2 * cos + x1 * sin], dim=-1)  # [T, d]
 ```
 
-`apply_rope` 里 `x1 * cos - x2 * sin` 与 `x2 * cos + x1 * sin` 正是 $2\times2$ 旋转矩阵 $\begin{pmatrix}\cos & -\sin \\ \sin & \cos\end{pmatrix}$ 的展开，配对约定与上面的 `rope_matrix` 保持一致。
+`apply_rope` 里 `x1 * cos - x2 * sin` 与 `x2 * cos + x1 * sin` 正是 $2\times2$ 旋转矩阵 $\begin{pmatrix}\cos & -\sin \\ \sin & \cos\end{pmatrix}$ 的展开，配对约定与上面的 `rope_matrix` 保持一致。把它套回注意力里 `[B, L, H, D]` 形状的 Q/K 时，记得把 cos/sin 补成 `[1, L, 1, d/2]` 的广播形状。
 
 最后数值验证 RoPE 的核心性质：内积只依赖相对位置。
 
@@ -271,7 +304,9 @@ assert torch.allclose(lhs, rhs, atol=1e-5)
 
 # 长度外推
 
-RoPE 性质很好，但它有一个软肋：**外推**。训练时模型只见过长度 $L$ 以内的位置，低频维的旋转角 $pos\cdot\theta_i$ 在训练分布内是有限的；推理时位置一旦超出 $L$，低频维的角度就落到了训练时从未见过的区域，模型的困惑度会急剧上升。
+RoPE 性质很好，但它有一个软肋：**外推**。训练时模型只见过长度 $L$ 以内的位置，低频维的旋转角 $pos\cdot\theta_i$ 在训练分布内是有限的；推理时位置一旦超出 $L$，低频维的角度就落到了训练时从未见过的区域，模型的困惑度（ppl）会急剧上升：
+
+![extrapolation](/img/posts/llm-position-encoding/extrapolation.svg)
 
 围绕这个问题，社区发展出了一系列补救手段。
 
@@ -291,13 +326,13 @@ $$
 
 ## 缩放 base
 
-PI 对所有维度等比缩放，但有些维度（高频维）在 $L$ 内就已经转过很多圈，插值对它们的伤害最大。NTK-aware 缩放的思路是不动位置、改 base：把 base 调大，让低频维转得更慢，从而把视角拉远。高频维几乎不受影响，低频维被拉伸——不微调也能获得一定的外推能力。推理时按输入长度动态调整 base 的 **Dynamic NTK**，就是 Qwen 等模型的实际用法。
+PI 对所有维度等比缩放，但有些维度（高频维）在 $L$ 内就已经转过很多圈，插值对它们的伤害最大。NTK-aware 缩放的思路是不动位置、改 base：目标长度是训练长度的 $s$ 倍时，把 base 按 $base' = base \cdot s^{d_{\text{head}}/(d_{\text{head}}-2)}$ 调大，让低频维转得更慢，从而把视角拉远。高频维几乎不受影响，低频维被拉伸——不微调也能获得一定的外推能力。推理时按输入长度动态调整 base 的 **Dynamic NTK**，就是 Qwen 等模型的实际用法。
 
 另一条更粗暴的路是直接在训练期换尺子：LLaMA 2 → 3 把 RoPE base 从 10000 提到 500000，让模型在更长的上下文上从头训练。可以看到，NTK 缩放和调大 base 拧的是同一个旋钮 $base^{-2i/d_{\text{head}}}$，只是一个改在推理侧、一个改在训练侧。
 
 ## YaRN
 
-[YaRN](https://arxiv.org/abs/2309.00071) 是目前开源模型拉长上下文的主流方案。它按频率分段处理：高频维直接外推，低频维做插值，中间频段平滑过渡（NTK-by-parts），再对 attention logits 乘一个温度系数做校正，弥补插值后注意力分布变软的问题。相比 PI 它几乎不需要微调，相比纯 NTK 缩放它的外推质量更好。
+[YaRN](https://arxiv.org/abs/2309.00071) 是目前开源模型拉长上下文的主流方案。它按频率分段处理：高频维直接外推，低频维做插值，中间频段按线性斜坡平滑过渡（NTK-by-parts）；再对 attention logits 乘温度系数 $1/t = 0.1\ln s + 1$ 做校正，弥补插值后注意力分布变软的问题。相比 PI 它所需的微调量要少一个数量级，配合动态缩放的 Dynamic-YaRN 甚至可以完全免微调；相比纯 NTK 缩放它的外推质量更好。
 
 ## 评估方式
 
@@ -312,7 +347,7 @@ PI 和缩放 base 都只需要动 `precompute_cos_sin` 里的一行：
 angles = (pos[:, None] / s) * inv_freq[None, :]         # [L, d/2]
 
 # 缩放 base：换 inv_freq，高频维几乎不变、低频维被拉伸
-inv_freq = new_base ** (-torch.arange(0, d_head, 2).float() / d_head)   # [d/2]，θ_i = base^{-2i/d_head}
+inv_freq = new_base ** (-torch.arange(0, d_head, 2).float() / d_head)   # [d/2]，θ_i = new_base^{-2i/d_head}
 ```
 
 评估外推效果可以用滑窗 ppl：固定窗口向前滑动，累计每个 token 的负对数似然，画出不同上下文长度下的 ppl 曲线。
@@ -320,18 +355,23 @@ inv_freq = new_base ** (-torch.arange(0, d_head, 2).float() / d_head)   # [d/2]�
 ```python
 def eval_ppl(model, ids: torch.Tensor, ctx_len: int, stride: int = 256) -> float:
     # ids: [B, T]，token id
-    nlls = []
+    nll_sum, n_tok = 0.0, 0
+    prev_end = 0
     for begin in range(0, ids.size(1) - 1, stride):
         end = min(begin + ctx_len, ids.size(1))
         logits = model(ids[:, begin:end]).logits         # [B, t, V]
-        target = ids[:, begin + 1 : end + 1]             # [B, t]
-        nlls.append(F.cross_entropy(logits[0, -stride - 1 : -1], target[0, -stride:]))  # [stride, V] vs [stride]
+        # 只评相对上个窗口新增的 token（首窗口从第 1 个起），保证不重不漏
+        trg = min(end - prev_end, end - begin - 1)
+        # logits[i] 预测的是第 begin+i+1 个 token，尾部 trg 个目标对应下标 [-trg-1:-1]
+        nll_sum += F.cross_entropy(logits[0, -trg - 1 : -1], ids[0, end - trg : end], reduction="sum").item()
+        n_tok += trg
+        prev_end = end
         if end == ids.size(1):
             break
-    return math.exp(torch.stack(nlls).mean().item())
+    return math.exp(nll_sum / n_tok)
 ```
 
-![extrapolation](/img/posts/llm-position-encoding/extrapolation.svg)
+![ppl-curve](/img/posts/llm-position-encoding/ppl-curve.svg)
 
 只改 base 不微调时，曲线会在超过训练长度后明显抬升；PI 和 NTK 类方法则能把它压平。用这样一条曲线来评估外推方案，比单看一个数字要直观得多。
 
@@ -341,19 +381,28 @@ def eval_ppl(model, ids: torch.Tensor, ctx_len: int, stride: int = 256) -> float
 
 > **我们真的需要位置编码吗？**
 
-[Haviv et al. 2022](https://arxiv.org/abs/2203.16634) 的答案是「未必」。Decoder-only 模型的因果 mask 本身就泄露了位置信息：第 $t$ 个 token 只能看到前 $t$ 个位置，可见序列的长度就隐含了它的绝对位置。实验证明不加任何位置编码的 Decoder-only 模型也能正常工作，甚至在某些长度泛化任务上表现更好。
+[Haviv et al. 2022](https://arxiv.org/abs/2203.16634) 的答案是「未必」。Decoder-only 模型的因果 mask 本身就泄露了位置信息：第 $t$ 个 token 只能看到前 $t$ 个位置，可见序列的长度就隐含了它的绝对位置。这一点两行代码就能看清：
+
+```python
+visible = torch.tril(torch.ones(L, L)).sum(dim=-1)   # [L] = 1, 2, ..., L
+# 第 t 个 token 可见的 key 数恰好是它的位置序号，位置信息免费藏在 mask 里
+```
+
+实验证明不加任何位置编码的 Decoder-only 模型也能正常工作；[Kazemnejad et al. 2023](https://arxiv.org/abs/2305.19466) 更系统地比较后还发现，NoPE 在下游长度泛化任务上甚至优于各类显式位置编码。
 
 不过 NoPE 并没有成为主流——显式的位置编码仍然带来了更好的收敛速度与下游效果。但这个方向提醒我们：位置信息未必只能从「加法」或「旋转」里来，模型结构本身也可以是一种编码。
 
 # 多维位置编码
 
-最后提一句多维扩展。在图像和视频里，位置是二维甚至三维的，处理思路和 RoPE 一脉相承：把 head_dim 切成几段，每一段负责一个坐标轴，各自做一维旋转。ViT 中的 2D-RoPE 是这样做的，Qwen-VL 的 M-RoPE（把时间、高度、宽度三个维度分开编码）也是同一个思路，这里点到为止。
+最后提一句多维扩展。在图像和视频里，位置是二维甚至三维的，处理思路和 RoPE 一脉相承：把 $d_{\text{head}}$ 切成几段，每一段负责一个坐标轴，各自做一维旋转。RoPE-ViT 这类工作就是这样做的，Qwen2-VL 的 M-RoPE（把时间、高度、宽度三个维度分开编码）也是同一个思路，这里点到为止。
 
 # 结语
 
 回顾位置编码的演进，主线其实很清晰：先把位置**加在 token 上**（正弦编码、可学习编码），再把它**藏进 score 里**（相对位置偏置、ALiBi），最后把这个「相对偏移」做成了**旋转**（RoPE）——既保留了相对位置的语义，又不给 attention 计算和推理引擎添任何负担，这是它能成为现代 LLM 默认选择的根本原因。
 
 至于长度外推，PI、NTK、YaRN 三代方法拧的都是同一个旋钮：让低频维的旋转角始终落在模型见过的范围内。理解了 RoPE 的频率结构，这些技巧就只是同一个思想的不同实现。
+
+下一篇我们暂时离开模型结构，聊聊训练侧的话题：PPO。
 
 # 参考资料
 
@@ -366,5 +415,5 @@ def eval_ppl(model, ids: torch.Tensor, ctx_len: int, stride: int = 256) -> float
 - [Extending Context Window of Large Language Models via Positional Interpolation](https://arxiv.org/abs/2306.15595)
 - [YaRN: Efficient Context Window Extension of Large Language Models](https://arxiv.org/abs/2309.00071)
 - [DeepSeek-V2: A Strong, Economical, and Efficient Mixture-of-Experts Language Model](https://arxiv.org/abs/2405.04434)
-- [Transformer Language Models without Explicit Positional Encodings](https://arxiv.org/abs/2203.16634)
-- [The Impact of Positional Encoding on Length Generalization](https://arxiv.org/abs/2305.19466)
+- [Transformer Language Models without Positional Encodings Still Learn Positional Information](https://arxiv.org/abs/2203.16634)
+- [The Impact of Positional Encoding on Length Generalization in Transformers](https://arxiv.org/abs/2305.19466)

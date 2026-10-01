@@ -45,6 +45,11 @@ const SORT_META: Record<SortMode, { label: string; hint: string }> = {
 	"date-asc": { label: "日期 正序", hint: "最早发布在前" },
 };
 
+// In dev, astro:data-layer-content can transiently resolve to an empty store
+// (cache invalidation race while content files are being saved). The empty
+// props get baked into the island, so reload once to re-render with real data.
+const EMPTY_RETRY_KEY = "archive:empty-retry";
+
 let groups: Group[] = [];
 let filteredPosts: Post[] = [];
 let seriesPosts: Post[] = [];
@@ -136,6 +141,16 @@ function clickOutside(node: HTMLElement) {
 }
 
 onMount(() => {
+	if (import.meta.env.DEV && sortedPosts.length === 0) {
+		if (!sessionStorage.getItem(EMPTY_RETRY_KEY)) {
+			sessionStorage.setItem(EMPTY_RETRY_KEY, "1");
+			setTimeout(() => window.location.reload(), 300);
+		} else {
+			sessionStorage.removeItem(EMPTY_RETRY_KEY);
+		}
+		return;
+	}
+
 	let pool: Post[] = sortedPosts;
 
 	if (tags.length > 0) {
