@@ -1,6 +1,7 @@
 ---
 title: 一文搞懂归一化技术
 date: 2026-09-27
+updated: 2026-10-01
 description: 本文梳理大模型里的归一化技术：为什么需要它、BN 为何不适合序列模型，以及 LayerNorm、RMSNorm、Pre-Norm/Post-Norm 等方案的取舍。
 tags: [LLM, RMSNorm]
 category: LLM

@@ -32,5 +32,8 @@
 ## 约定
 
 - 仓库日常操作一律走 Make：新建文章用 `make new`（不要手写 frontmatter），完整指令列表见 `README.md` 与 `Makefile`。
+- `make dev` 已带单实例守卫：多个 `astro dev` 共享 `.astro/data-store.json` 会让归档/合集偶发空白，guard 拒绝时先 kill 旧进程，不要绕开它另起 `astro dev`。
+- 为测试起的任何服务进程（`astro dev`、`astro preview`、`python -m http.server` 等）用完必须自己杀掉，不留孤儿进程；用户自己在用的 :4321 dev server 不要动。
 - 改完自检 `make check`（`astro check` + `vitest run`）。
 - 不顺手重构历史代码与历史文章：只做被明确要求的改动。
+- 文章正文不用括号做解释性夹注：括号只保留学术式用法，即术语缩写和专有名词对照（如「点对点访问（P2P）」「超节点（SuperPoD）」）；凡是能写成正文句子的内容——解释、举例、规格枚举、补充说明——一律用逗号、破折号或独立句写进正文。写完文章后 grep `（` 逐条自查。

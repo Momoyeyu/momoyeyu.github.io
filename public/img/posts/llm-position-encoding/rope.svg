@@ -74,7 +74,7 @@
 	<text x="228" y="166" class="math" font-size="18">nθ<tspan baseline-shift="sub" font-size="12">i</tspan></text>
 
 	<!-- conclusion -->
-	<text x="415" y="148" class="math" font-size="19" text-anchor="middle">⟨q<tspan baseline-shift="sub" font-size="13">m</tspan><tspan>, k</tspan><tspan baseline-shift="sub" font-size="13">n</tspan><tspan>⟩ = q</tspan><tspan baseline-shift="super" font-size="13">T</tspan><tspan> R</tspan><tspan baseline-shift="sub" font-size="13">(n−m)θ</tspan><tspan baseline-shift="sub" font-size="10">i</tspan><tspan> k</tspan></text>
+	<text x="415" y="148" class="math" font-size="19" text-anchor="middle">⟨q<tspan baseline-shift="sub" font-size="13">m</tspan><tspan>, k</tspan><tspan baseline-shift="sub" font-size="13">n</tspan><tspan>⟩ = q</tspan><tspan baseline-shift="super" font-size="13">T</tspan><tspan> R</tspan><tspan baseline-shift="sub" font-size="13">n−m</tspan><tspan> k</tspan></text>
 	<text x="415" y="182" class="lbl" text-anchor="middle">只依赖相对位置 <tspan class="math">m − n</tspan></text>
 
 	<!-- caption -->

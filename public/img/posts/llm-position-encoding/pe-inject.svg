@@ -1,4 +1,4 @@
-<svg viewBox="0 0 560 420" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Two ways to inject position information into a Transformer: absolute position encoding adds PE(pos) to the token embedding before the Transformer, while relative position encoding such as RoPE leaves the token unchanged and hides position inside the attention score computation">
+<svg viewBox="0 0 560 420" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Two ways to inject position information into a Transformer: add PE(pos) onto the token representation before the Transformer, or leave the token unchanged and hide position inside the attention score via relative bias or RoPE rotation">
 	<style>
 		:root {
 			--fg: #2b2b2b;
@@ -39,8 +39,8 @@
 	</defs>
 
 	<!-- column titles -->
-	<text x="140" y="32" class="lbl" style="font-size:16px" font-weight="600" text-anchor="middle">绝对位置编码</text>
-	<text x="420" y="32" class="lbl" style="font-size:16px" font-weight="600" text-anchor="middle">相对位置编码 / RoPE</text>
+	<text x="140" y="32" class="lbl" style="font-size:16px" font-weight="600" text-anchor="middle">加在 token 表示上</text>
+	<text x="420" y="32" class="lbl" style="font-size:16px" font-weight="600" text-anchor="middle">藏在 attention score 里</text>
 
 	<!-- separator -->
 	<path d="M280,52 L280,368" stroke="var(--step-stroke)" stroke-width="1.2" stroke-dasharray="3 6" fill="none"/>
