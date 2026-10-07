@@ -201,7 +201,7 @@ void ProcessData(const Data& data) {
 
 ## 更好的替代：依赖注入
 
-很多情况下，单例可以用**依赖注入（Dependency Injection）**替代：
+很多情况下，单例可以用**依赖注入**（Dependency Injection）替代：
 
 ```cpp
 // 单例写法（隐式依赖）

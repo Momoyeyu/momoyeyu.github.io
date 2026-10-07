@@ -1,0 +1,66 @@
+<svg viewBox="0 0 560 230" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="YaRN NTK-by-parts: interpolation factor versus wavelength lambda_i, high-frequency dimensions keep factor 1 meaning direct extrapolation, low-frequency dimensions get factor 1 over s meaning full interpolation, and a linear ramp transitions between thresholds alpha and beta">
+	<style>
+		:root {
+			--fg: #2b2b2b;
+			--line: #3d3d3d;
+			--expert-fill: #dce9f7;
+			--expert-stroke: #7b9cc4;
+			--router-fill: #f5e9c9;
+			--router-stroke: #b8912f;
+			--step-fill: #eef1f4;
+			--step-stroke: #9aa5b1;
+			--gate-fill: #ffffff;
+			--accent: #e0a800;
+		}
+		@media (prefers-color-scheme: dark) {
+			:root {
+				--fg: #d8d8d8;
+				--line: #b8b8b8;
+				--expert-fill: #26364d;
+				--expert-stroke: #6c8ebf;
+				--router-fill: #4a3d1e;
+				--router-stroke: #c9a53f;
+				--step-fill: #2a2f36;
+				--step-stroke: #6b7684;
+				--gate-fill: #1e1e1e;
+				--accent: #e8c547;
+			}
+		}
+		text { fill: var(--fg); }
+		.lbl { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 15px; }
+		.math { font-family: "Times New Roman", Times, serif; font-style: italic; }
+		.edge { stroke: var(--line); stroke-width: 1.6; fill: none; }
+	</style>
+	<defs>
+		<marker id="arw" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+			<path d="M0,0 L10,5 L0,10 z" fill="var(--line)"/>
+		</marker>
+	</defs>
+
+	<!-- transition band shading -->
+	<rect x="250" y="40" width="110" height="145" fill="var(--step-fill)"/>
+
+	<!-- axes -->
+	<path d="M90,185 L517.8,185" class="edge" marker-end="url(#arw)"/>
+	<path d="M90,185 L90,42.2" class="edge" marker-end="url(#arw)"/>
+	<text x="70" y="42" class="lbl" style="font-size:13px" text-anchor="middle">角度缩放因子</text>
+	<text x="536" y="199" class="lbl" text-anchor="end">波长 <tspan class="math">λ<tspan baseline-shift="sub" font-size="10">i</tspan></tspan></text>
+	<text x="74" y="62" class="math" font-size="15" text-anchor="middle">1</text>
+	<text x="74" y="182" class="math" font-size="15" text-anchor="middle">1/s</text>
+
+	<!-- ramp thresholds -->
+	<path d="M250,40 L250,185" stroke="var(--step-stroke)" stroke-width="1.3" stroke-dasharray="5 4" fill="none"/>
+	<path d="M360,40 L360,185" stroke="var(--step-stroke)" stroke-width="1.3" stroke-dasharray="5 4" fill="none"/>
+	<text x="250" y="202" class="math" font-size="13" text-anchor="middle">λ = L/β</text>
+	<text x="360" y="202" class="math" font-size="13" text-anchor="middle">λ = L/α</text>
+
+	<!-- piecewise factor curve: 1 -> ramp -> 1/s -->
+	<path d="M92,58 L250,58 L360,178 L518,178" stroke="var(--expert-stroke)" stroke-width="2.2" fill="none"/>
+
+	<!-- region labels -->
+	<text x="165" y="105" class="lbl" style="font-size:13px" text-anchor="middle">高频维：不动</text>
+	<text x="165" y="123" class="lbl" style="font-size:12px" text-anchor="middle" opacity="0.75">（直接外推）</text>
+	<text x="305" y="105" class="lbl" style="font-size:13px" text-anchor="middle">线性过渡</text>
+	<text x="445" y="140" class="lbl" style="font-size:13px" text-anchor="middle">低频维：÷s</text>
+	<text x="445" y="158" class="lbl" style="font-size:12px" text-anchor="middle" opacity="0.75">（完全插值）</text>
+</svg>

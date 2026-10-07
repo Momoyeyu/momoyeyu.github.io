@@ -1,0 +1,76 @@
+<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="昇腾软件栈与 NVIDIA CUDA 栈的逐层对位：框架、推理引擎、运行时、通信、算子库、硬件">
+	<style>
+		:root {
+			--fg: #2b2b2b;
+			--line: #3d3d3d;
+			--nv-fill: #dce9f7;
+			--nv-stroke: #7b9cc4;
+			--as-fill: #f2dcdc;
+			--as-stroke: #b06a6a;
+			--eq: #9aa5b1;
+		}
+		@media (prefers-color-scheme: dark) {
+			:root {
+				--fg: #d8d8d8;
+				--line: #b8b8b8;
+				--nv-fill: #26364d;
+				--nv-stroke: #6c8ebf;
+				--as-fill: #472c2c;
+				--as-stroke: #c07f7f;
+				--eq: #6b7684;
+			}
+		}
+		text { fill: var(--fg); }
+		.hd { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 14px; font-weight: 600; }
+		.lyr { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 12.5px; }
+		.tag { fill: var(--eq); font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 11.5px; font-style: italic; }
+		.note { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 11.5px; opacity: 0.75; }
+		.box-nv { fill: var(--nv-fill); stroke: var(--nv-stroke); stroke-width: 1.4; rx: 7; }
+		.box-as { fill: var(--as-fill); stroke: var(--as-stroke); stroke-width: 1.4; rx: 7; }
+		.eq { stroke: var(--eq); stroke-width: 1; stroke-dasharray: 3 3; }
+	</style>
+
+	<!-- column headers -->
+	<text x="175" y="34" class="hd" text-anchor="middle">NVIDIA 栈</text>
+	<text x="505" y="34" class="hd" text-anchor="middle">昇腾栈</text>
+	<text x="340" y="34" class="tag" text-anchor="middle">对位层</text>
+
+	<!-- layer 1: inference engine -->
+	<rect x="40" y="50" width="270" height="36" class="box-nv"/><text x="175" y="73" class="lyr" text-anchor="middle">vLLM / TensorRT-LLM</text>
+	<rect x="370" y="50" width="270" height="36" class="box-as"/><text x="505" y="73" class="lyr" text-anchor="middle">vLLM-MindSpore / MindIE</text>
+	<line x1="310" y1="68" x2="370" y2="68" class="eq"/><text x="340" y="102" class="tag" text-anchor="middle" opacity="0">·</text>
+	<text x="340" y="73" class="tag" text-anchor="middle">推理引擎</text>
+
+	<!-- layer 2: framework -->
+	<rect x="40" y="98" width="270" height="36" class="box-nv"/><text x="175" y="121" class="lyr" text-anchor="middle">PyTorch · TensorFlow</text>
+	<rect x="370" y="98" width="270" height="36" class="box-as"/><text x="505" y="121" class="lyr" text-anchor="middle">torch_npu · MindSpore</text>
+	<line x1="310" y1="116" x2="370" y2="116" class="eq"/>
+	<text x="340" y="121" class="tag" text-anchor="middle">框架</text>
+
+	<!-- layer 3: runtime -->
+	<rect x="40" y="146" width="270" height="36" class="box-nv"/><text x="175" y="169" class="lyr" text-anchor="middle">CUDA Runtime</text>
+	<rect x="370" y="146" width="270" height="36" class="box-as"/><text x="505" y="169" class="lyr" text-anchor="middle">CANN（已开源）</text>
+	<line x1="310" y1="164" x2="370" y2="164" class="eq"/>
+	<text x="340" y="169" class="tag" text-anchor="middle">运行时</text>
+
+	<!-- layer 4: collectives -->
+	<rect x="40" y="194" width="270" height="36" class="box-nv"/><text x="175" y="217" class="lyr" text-anchor="middle">NCCL</text>
+	<rect x="370" y="194" width="270" height="36" class="box-as"/><text x="505" y="217" class="lyr" text-anchor="middle">HCCL</text>
+	<line x1="310" y1="212" x2="370" y2="212" class="eq"/>
+	<text x="340" y="217" class="tag" text-anchor="middle">集合通信</text>
+
+	<!-- layer 5: kernels -->
+	<rect x="40" y="242" width="270" height="36" class="box-nv"/><text x="175" y="265" class="lyr" text-anchor="middle">cuBLAS · cuDNN · Triton</text>
+	<rect x="370" y="242" width="270" height="36" class="box-as"/><text x="505" y="265" class="lyr" text-anchor="middle">Ascend kernels · AscendC</text>
+	<line x1="310" y1="260" x2="370" y2="260" class="eq"/>
+	<text x="340" y="265" class="tag" text-anchor="middle">算子库</text>
+
+	<!-- layer 6: hardware -->
+	<rect x="40" y="290" width="270" height="36" class="box-nv"/><text x="175" y="313" class="lyr" text-anchor="middle">GPU（CUDA Core + Tensor Core）</text>
+	<rect x="370" y="290" width="270" height="36" class="box-as"/><text x="505" y="313" class="lyr" text-anchor="middle">NPU（达芬奇架构）</text>
+	<line x1="310" y1="308" x2="370" y2="308" class="eq"/>
+	<text x="340" y="313" class="tag" text-anchor="middle">硬件</text>
+
+	<!-- migration note -->
+	<text x="340" y="336" class="note" text-anchor="middle">CUDA→CANN 迁移主战场在框架与算子两层；推理走 vLLM 插件最顺</text>
+</svg>
