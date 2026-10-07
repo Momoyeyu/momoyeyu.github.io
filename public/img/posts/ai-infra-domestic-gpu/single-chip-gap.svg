@@ -1,0 +1,85 @@
+<svg viewBox="0 0 700 284" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="昇腾 910C 与 A100、H100、B200 在显存、带宽、算力、互联四项指标上的对照条形图">
+	<style>
+		:root {
+			--fg: #2b2b2b;
+			--line: #3d3d3d;
+			--asc: #b06a6a;
+			--nv: #4a7fbf;
+			--grid: #d0d5da;
+		}
+		@media (prefers-color-scheme: dark) {
+			:root {
+				--fg: #d8d8d8;
+				--line: #b8b8b8;
+				--asc: #cf8f8f;
+				--nv: #7fa9d9;
+				--grid: #3a4148;
+			}
+		}
+		text { fill: var(--fg); }
+		.hd { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 13px; font-weight: 600; }
+		.val { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 10.5px; opacity: 0.85; }
+		.leg { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 12px; }
+		.base { stroke: var(--line); stroke-width: 1.4; }
+		.a { fill: var(--asc); }
+		.n { fill: var(--nv); }
+	</style>
+
+	<!-- legend -->
+	<rect x="255" y="260" width="14" height="14" rx="3" class="a"/><text x="275" y="272" class="leg">昇腾 910C</text>
+	<rect x="370" y="260" width="14" height="14" rx="3" class="n"/><text x="390" y="272" class="leg">NVIDIA</text>
+
+	<!-- ============ panel 1: 显存 GB ============ -->
+	<text x="100" y="34" class="hd" text-anchor="middle">显存容量</text>
+	<!-- bars: 910C=128->106.7, A100=80->66.7, H100=80->66.7, B200=180->150 -->
+	<rect x="45" y="103" width="30" height="107" class="a"/><text x="60" y="96" class="val" text-anchor="middle">128</text>
+	<rect x="80" y="143" width="30" height="67" class="n"/><text x="95" y="136" class="val" text-anchor="middle">80</text>
+	<rect x="115" y="143" width="30" height="67" class="n"/><text x="130" y="136" class="val" text-anchor="middle">80</text>
+	<rect x="150" y="60" width="30" height="150" class="n"/><text x="165" y="53" class="val" text-anchor="middle">180</text>
+	<line x1="38" y1="210" x2="192" y2="210" class="base"/>
+	<text x="100" y="230" class="val" text-anchor="middle">GB</text>
+	<!-- chip order labels -->
+	<text x="60" y="250" class="val" text-anchor="middle">910C</text>
+	<text x="95" y="250" class="val" text-anchor="middle">A100</text>
+	<text x="130" y="250" class="val" text-anchor="middle">H100</text>
+	<text x="165" y="250" class="val" text-anchor="middle">B200</text>
+
+	<!-- ============ panel 2: 带宽 ============ -->
+	<text x="265" y="34" class="hd" text-anchor="middle">显存带宽</text>
+	<rect x="210" y="150" width="30" height="60" class="a"/><text x="225" y="143" class="val" text-anchor="middle">3.2</text>
+	<rect x="245" y="172" width="30" height="38" class="n"/><text x="260" y="165" class="val" text-anchor="middle">2.0</text>
+	<rect x="280" y="147" width="30" height="63" class="n"/><text x="295" y="140" class="val" text-anchor="middle">3.35</text>
+	<rect x="315" y="60" width="30" height="150" class="n"/><text x="330" y="53" class="val" text-anchor="middle">8.0</text>
+	<line x1="203" y1="210" x2="357" y2="210" class="base"/>
+	<text x="265" y="230" class="val" text-anchor="middle">TB/s</text>
+	<text x="225" y="250" class="val" text-anchor="middle">910C</text>
+	<text x="260" y="250" class="val" text-anchor="middle">A100</text>
+	<text x="295" y="250" class="val" text-anchor="middle">H100</text>
+	<text x="330" y="250" class="val" text-anchor="middle">B200</text>
+
+	<!-- ============ panel 3: 算力 ============ -->
+	<text x="430" y="34" class="hd" text-anchor="middle">算力（FP16/BF16）</text>
+	<rect x="375" y="162" width="30" height="48" class="a"/><text x="390" y="155" class="val" text-anchor="middle">800</text>
+	<rect x="410" y="191" width="30" height="19" class="n"/><text x="425" y="184" class="val" text-anchor="middle">312</text>
+	<rect x="445" y="150" width="30" height="60" class="n"/><text x="460" y="143" class="val" text-anchor="middle">990</text>
+	<rect x="480" y="60" width="30" height="150" class="n"/><text x="495" y="53" class="val" text-anchor="middle">2500</text>
+	<line x1="368" y1="210" x2="522" y2="210" class="base"/>
+	<text x="430" y="230" class="val" text-anchor="middle">TFLOPS</text>
+	<text x="390" y="250" class="val" text-anchor="middle">910C</text>
+	<text x="425" y="250" class="val" text-anchor="middle">A100</text>
+	<text x="460" y="250" class="val" text-anchor="middle">H100</text>
+	<text x="495" y="250" class="val" text-anchor="middle">B200</text>
+
+	<!-- ============ panel 4: 互联 ============ -->
+	<text x="595" y="34" class="hd" text-anchor="middle">卡间互联</text>
+	<rect x="540" y="145" width="30" height="65" class="a"/><text x="555" y="138" class="val" text-anchor="middle">784</text>
+	<rect x="575" y="160" width="30" height="50" class="n"/><text x="590" y="153" class="val" text-anchor="middle">600</text>
+	<rect x="610" y="135" width="30" height="75" class="n"/><text x="625" y="128" class="val" text-anchor="middle">900</text>
+	<rect x="645" y="60" width="30" height="150" class="n"/><text x="660" y="53" class="val" text-anchor="middle">1800</text>
+	<line x1="533" y1="210" x2="687" y2="210" class="base"/>
+	<text x="595" y="230" class="val" text-anchor="middle">GB/s</text>
+	<text x="555" y="250" class="val" text-anchor="middle">910C</text>
+	<text x="590" y="250" class="val" text-anchor="middle">A100</text>
+	<text x="625" y="250" class="val" text-anchor="middle">H100</text>
+	<text x="660" y="250" class="val" text-anchor="middle">B200</text>
+</svg>

@@ -1,0 +1,91 @@
+<svg viewBox="0 0 700 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="昇腾芯片路线图：2019 年昇腾 910 起步，经 910B、910C，到已官宣的 950PR、950DT、960、970">
+	<style>
+		:root {
+			--fg: #2b2b2b;
+			--line: #3d3d3d;
+			--done-fill: #dce9f7;
+			--done-stroke: #7b9cc4;
+			--plan-fill: #eef1f4;
+			--plan-stroke: #9aa5b1;
+			--hl-fill: #f2dcdc;
+			--hl-stroke: #b06a6a;
+		}
+		@media (prefers-color-scheme: dark) {
+			:root {
+				--fg: #d8d8d8;
+				--line: #b8b8b8;
+				--done-fill: #26364d;
+				--done-stroke: #6c8ebf;
+				--plan-fill: #2a2f36;
+				--plan-stroke: #6b7684;
+				--hl-fill: #472c2c;
+				--hl-stroke: #c07f7f;
+			}
+		}
+		text { fill: var(--fg); }
+		.lbl { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 14px; font-weight: 600; }
+		.sub { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 11px; opacity: 0.75; }
+		.date { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 12px; opacity: 0.85; }
+		.grp { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 12px; font-style: italic; opacity: 0.7; }
+		.spine { stroke: var(--line); stroke-width: 1.8; fill: none; marker-end: url(#ah); }
+		.box { stroke-width: 1.5; rx: 8; }
+		.plan { stroke-dasharray: 5 3; }
+	</style>
+	<defs>
+		<marker id="ah" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="var(--line)"/></marker>
+	</defs>
+
+	<!-- spine -->
+	<path d="M30,105 L672,105" class="spine"/>
+
+	<!-- shipped: solid -->
+	<rect x="14" y="72" width="84" height="66" class="box" fill="var(--done-fill)" stroke="var(--done-stroke)"/>
+	<text x="56" y="95" class="lbl" text-anchor="middle">910 / 310</text>
+	<text x="56" y="114" class="sub" text-anchor="middle">云训练 + 推理</text>
+	<text x="56" y="128" class="sub" text-anchor="middle">达芬奇架构</text>
+	<text x="56" y="160" class="date" text-anchor="middle">2019</text>
+
+	<rect x="112" y="72" width="84" height="66" class="box" fill="var(--done-fill)" stroke="var(--done-stroke)"/>
+	<text x="154" y="95" class="lbl" text-anchor="middle">910B</text>
+	<text x="154" y="114" class="sub" text-anchor="middle">制裁后主力</text>
+	<text x="154" y="128" class="sub" text-anchor="middle">境内工艺</text>
+	<text x="154" y="160" class="date" text-anchor="middle">2022</text>
+
+	<rect x="210" y="72" width="84" height="66" class="box" fill="var(--done-fill)" stroke="var(--done-stroke)"/>
+	<text x="252" y="95" class="lbl" text-anchor="middle">910C</text>
+	<text x="252" y="114" class="sub" text-anchor="middle">128G · 3.2TB/s</text>
+	<text x="252" y="128" class="sub" text-anchor="middle">双 die 封装</text>
+	<text x="252" y="160" class="date" text-anchor="middle">2025 Q1</text>
+
+	<!-- roadmap: dashed -->
+	<rect x="308" y="72" width="84" height="66" class="box plan" fill="var(--plan-fill)" stroke="var(--plan-stroke)"/>
+	<text x="350" y="95" class="lbl" text-anchor="middle">950PR</text>
+	<text x="350" y="114" class="sub" text-anchor="middle">prefill/推荐</text>
+	<text x="350" y="128" class="sub" text-anchor="middle">HiBL 1.6TB/s</text>
+	<text x="350" y="160" class="date" text-anchor="middle">2026 Q1</text>
+
+	<rect x="406" y="72" width="84" height="66" class="box plan" fill="var(--plan-fill)" stroke="var(--plan-stroke)"/>
+	<text x="448" y="95" class="lbl" text-anchor="middle">950DT</text>
+	<text x="448" y="114" class="sub" text-anchor="middle">decode/训练</text>
+	<text x="448" y="128" class="sub" text-anchor="middle">HiZQ 4TB/s</text>
+	<text x="448" y="160" class="date" text-anchor="middle">2026 Q4</text>
+
+	<rect x="504" y="72" width="84" height="66" class="box plan" fill="var(--plan-fill)" stroke="var(--plan-stroke)"/>
+	<text x="546" y="95" class="lbl" text-anchor="middle">960</text>
+	<text x="546" y="114" class="sub" text-anchor="middle">规格翻倍</text>
+	<text x="546" y="128" class="sub" text-anchor="middle">HiF4</text>
+	<text x="546" y="160" class="date" text-anchor="middle">2027 Q4</text>
+
+	<rect x="602" y="72" width="84" height="66" class="box plan" fill="var(--plan-fill)" stroke="var(--plan-stroke)"/>
+	<text x="644" y="95" class="lbl" text-anchor="middle">970</text>
+	<text x="644" y="114" class="sub" text-anchor="middle">再翻倍</text>
+	<text x="644" y="128" class="sub" text-anchor="middle">互联 4TB/s</text>
+	<text x="644" y="160" class="date" text-anchor="middle">2028 Q4</text>
+
+	<!-- group labels -->
+	<text x="154" y="200" class="grp" text-anchor="middle">已发布</text>
+	<text x="497" y="200" class="grp" text-anchor="middle">路线图（2025.9 全联接官宣）</text>
+
+	<!-- pace note -->
+	<text x="350" y="240" class="sub" text-anchor="middle">官方口径：一年一代，算力逐代翻倍</text>
+</svg>

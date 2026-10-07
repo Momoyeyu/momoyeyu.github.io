@@ -132,7 +132,7 @@ AoS 下，`x` 坐标之间有 12 字节的间隔（y/z/w），SIMD gather 指令
 
 GPU 的情况更极端。CUDA 中，**warp** 是调度的基本单元，一个 warp 包含 32 个 thread，这 32 个 thread 在同一时刻执行同一条指令（SIMT 模型）。
 
-当 warp 里的 32 个 thread 发起内存访问时，硬件会尝试把这些访问**合并（coalesce）**成尽量少的内存事务。关键数学：
+当 warp 里的 32 个 thread 发起内存访问时，硬件会尝试把这些访问**合并**（coalesce）成尽量少的内存事务。关键数学：
 
 ```
 32 threads × 4 bytes (float) = 128 bytes

@@ -1,4 +1,4 @@
-<svg viewBox="0 0 560 420" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Two ways to inject position information into a Transformer: add PE(pos) onto the token representation before the Transformer, or leave the token unchanged and hide position inside the attention score via relative bias or RoPE rotation">
+<svg viewBox="0 0 560 420" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Two ways to inject position information into a Transformer: add PE(pos) onto the token representation before the Transformer, or leave the token unchanged and hide position inside the attention logits via relative bias or RoPE rotation">
 	<style>
 		:root {
 			--fg: #2b2b2b;
@@ -40,7 +40,7 @@
 
 	<!-- column titles -->
 	<text x="140" y="32" class="lbl" style="font-size:16px" font-weight="600" text-anchor="middle">加在 token 表示上</text>
-	<text x="420" y="32" class="lbl" style="font-size:16px" font-weight="600" text-anchor="middle">藏在 attention score 里</text>
+	<text x="420" y="32" class="lbl" style="font-size:16px" font-weight="600" text-anchor="middle">藏在 attention logits 里</text>
 
 	<!-- separator -->
 	<path d="M280,52 L280,368" stroke="var(--step-stroke)" stroke-width="1.2" stroke-dasharray="3 6" fill="none"/>
@@ -79,5 +79,5 @@
 	<text x="420" y="328" class="lbl" text-anchor="middle">输出 <tspan class="math">y</tspan></text>
 
 	<!-- caption -->
-	<text x="280" y="394" class="lbl" style="font-size:13px" text-anchor="middle">位置从「加在 <tspan class="math">token</tspan> 上」到「藏在 <tspan class="math">score</tspan> 里」</text>
+	<text x="280" y="394" class="lbl" style="font-size:13px" text-anchor="middle">位置从「加在 <tspan class="math">token</tspan> 上」到「藏在 <tspan class="math">logits</tspan> 里」</text>
 </svg>

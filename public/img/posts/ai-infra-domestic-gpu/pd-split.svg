@@ -1,0 +1,71 @@
+<svg viewBox="0 0 700 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="P/D 分芯示意：roofline 上 prefill 落在算力受限区对应 950PR，decode 落在带宽受限区对应 950DT">
+	<style>
+		:root {
+			--fg: #2b2b2b;
+			--line: #3d3d3d;
+			--roof: #4a7fbf;
+			--fill: #dce9f7;
+			--mem: #b06a6a;
+			--com: #4e9a51;
+			--pr-fill: #f5e9c9;
+			--pr-stroke: #b8912f;
+			--dt-fill: #d8ecd8;
+			--dt-stroke: #6aa86a;
+		}
+		@media (prefers-color-scheme: dark) {
+			:root {
+				--fg: #d8d8d8;
+				--line: #b8b8b8;
+				--roof: #7fa9d9;
+				--fill: #1d2a3d;
+				--mem: #cf8f8f;
+				--com: #7fc47f;
+				--pr-fill: #4a3d1e;
+				--pr-stroke: #c9a53f;
+				--dt-fill: #24392b;
+				--dt-stroke: #7fb37f;
+			}
+		}
+		text { fill: var(--fg); }
+		.lbl { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 13px; font-weight: 600; }
+		.sub { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 11.5px; opacity: 0.78; }
+		.pt { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 11.5px; }
+		.frame { stroke: var(--line); stroke-width: 1.3; fill: none; }
+		.roof { stroke: var(--roof); stroke-width: 2; fill: none; }
+		.fill { fill: var(--fill); opacity: 0.5; }
+		.arr { stroke: var(--line); stroke-width: 1.5; fill: none; marker-end: url(#ah); }
+		.box { stroke-width: 1.6; rx: 9; }
+	</style>
+	<defs>
+		<marker id="ah" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="var(--line)"/></marker>
+	</defs>
+
+	<!-- mini roofline -->
+	<polygon points="50,195 70,195 210,55 330,55 330,195" class="fill"/>
+	<rect x="50" y="30" width="280" height="165" class="frame"/>
+	<path d="M70,195 L210,55 L330,55" class="roof"/>
+	<text x="150" y="150" class="sub" transform="rotate(-45 150 150)">带宽天花板</text>
+	<text x="265" y="48" class="sub" text-anchor="middle">算力天花板</text>
+
+	<!-- decode point (bandwidth-bound) -->
+	<circle cx="105" cy="151" r="6" fill="var(--mem)"/>
+	<text x="105" y="175" class="pt" text-anchor="middle">decode</text>
+	<!-- prefill point (compute-bound) -->
+	<circle cx="300" cy="55" r="6" fill="var(--com)"/>
+	<text x="300" y="85" class="pt" text-anchor="middle">prefill / 推荐</text>
+
+	<!-- arrows to chips -->
+	<path d="M300,55 C370,55 380,80 418,80" class="arr"/>
+	<path d="M105,151 C200,160 350,165 418,165" class="arr"/>
+
+	<!-- chip boxes -->
+	<rect x="420" y="40" width="260" height="80" class="box" fill="var(--pr-fill)" stroke="var(--pr-stroke)"/>
+	<text x="436" y="66" class="lbl">昇腾 950PR</text>
+	<text x="436" y="88" class="sub">面向 prefill 与推荐：低成本 HiBL</text>
+	<text x="436" y="106" class="sub">128 GB · 1.6 TB/s（带宽够用即可）</text>
+
+	<rect x="420" y="132" width="260" height="80" class="box" fill="var(--dt-fill)" stroke="var(--dt-stroke)"/>
+	<text x="436" y="158" class="lbl">昇腾 950DT</text>
+	<text x="436" y="180" class="sub">面向 decode 与训练：高性能 HiZQ</text>
+	<text x="436" y="198" class="sub">144 GB · 4 TB/s（带宽拉满）</text>
+</svg>

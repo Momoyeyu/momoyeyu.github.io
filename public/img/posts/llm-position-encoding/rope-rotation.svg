@@ -1,0 +1,82 @@
+<svg viewBox="0 0 560 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="2D rotation matrix: basis vectors (1,0) and (0,1) rotated counterclockwise by angle theta land on (cos theta, sin theta) and (-sin theta, cos theta); these rotated vectors are exactly the two columns of the rotation matrix R(theta)">
+	<style>
+		:root {
+			--fg: #2b2b2b;
+			--line: #3d3d3d;
+			--expert-fill: #dce9f7;
+			--expert-stroke: #7b9cc4;
+			--router-fill: #f5e9c9;
+			--router-stroke: #b8912f;
+			--step-fill: #eef1f4;
+			--step-stroke: #9aa5b1;
+			--gate-fill: #ffffff;
+			--accent: #e0a800;
+		}
+		@media (prefers-color-scheme: dark) {
+			:root {
+				--fg: #d8d8d8;
+				--line: #b8b8b8;
+				--expert-fill: #26364d;
+				--expert-stroke: #6c8ebf;
+				--router-fill: #4a3d1e;
+				--router-stroke: #c9a53f;
+				--step-fill: #2a2f36;
+				--step-stroke: #6b7684;
+				--gate-fill: #1e1e1e;
+				--accent: #e8c547;
+			}
+		}
+		text { fill: var(--fg); }
+		.lbl { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 15px; }
+		.math { font-family: "Times New Roman", Times, serif; font-style: italic; }
+		.edge { stroke: var(--line); stroke-width: 1.6; fill: none; }
+	</style>
+	<defs>
+		<marker id="arw" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+			<path d="M0,0 L10,5 L0,10 z" fill="var(--line)"/>
+		</marker>
+		<marker id="arwE" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+			<path d="M0,0 L10,5 L0,10 z" fill="var(--expert-stroke)"/>
+		</marker>
+		<marker id="arwR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+			<path d="M0,0 L10,5 L0,10 z" fill="var(--router-stroke)"/>
+		</marker>
+		<marker id="arwA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+			<path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/>
+		</marker>
+	</defs>
+
+	<!-- unit circle -->
+	<circle cx="170" cy="155" r="95" fill="var(--step-fill)" stroke="var(--step-stroke)" stroke-width="1.4" stroke-dasharray="6 5"/>
+
+	<!-- original basis vectors (dashed) -->
+	<path d="M170,155 L261,155" stroke="var(--line)" stroke-width="1.5" stroke-dasharray="5 4" fill="none" opacity="0.55" marker-end="url(#arw)"/>
+	<path d="M170,155 L170,62" stroke="var(--line)" stroke-width="1.5" stroke-dasharray="5 4" fill="none" opacity="0.55" marker-end="url(#arw)"/>
+	<text x="263" y="173" class="math" font-size="15">(1, 0)</text>
+	<text x="150" y="56" class="math" font-size="15">(0, 1)</text>
+
+	<!-- rotated basis vectors -->
+	<path d="M170,155 L224.5,77.2" stroke="var(--expert-stroke)" stroke-width="2.2" fill="none" marker-end="url(#arwE)"/>
+	<path d="M170,155 L92.2,100.5" stroke="var(--router-stroke)" stroke-width="2.2" fill="none" marker-end="url(#arwR)"/>
+	<text x="232" y="70" class="math" font-size="15">(cos <tspan>θ</tspan>, sin <tspan>θ</tspan>)</text>
+	<text x="102" y="93" class="math" font-size="15">(−sin <tspan>θ</tspan>, cos <tspan>θ</tspan>)</text>
+
+	<!-- rotation angle -->
+	<path d="M202,155 A32,32 0 0 0 188.4,128.8" stroke="var(--accent)" stroke-width="1.8" fill="none" marker-end="url(#arwA)"/>
+	<text x="212" y="145" class="math" font-size="18">θ</text>
+
+	<circle cx="170" cy="155" r="2.5" fill="var(--line)"/>
+
+	<!-- rotation matrix -->
+	<text x="352" y="148" class="math" font-size="20" text-anchor="middle">R(θ) =</text>
+	<path d="M400,103 L393,103 L393,181 L400,181" stroke="var(--line)" stroke-width="1.6" fill="none"/>
+	<path d="M508,103 L515,103 L515,181 L508,181" stroke="var(--line)" stroke-width="1.6" fill="none"/>
+	<text x="428" y="126" class="math" font-size="17" text-anchor="middle">cos θ</text>
+	<text x="486" y="126" class="math" font-size="17" text-anchor="middle">−sin θ</text>
+	<text x="428" y="169" class="math" font-size="17" text-anchor="middle">sin θ</text>
+	<text x="486" y="169" class="math" font-size="17" text-anchor="middle">cos θ</text>
+
+	<!-- captions -->
+	<text x="170" y="272" class="lbl" style="font-size:13px" text-anchor="middle">基向量旋转 θ 角</text>
+	<text x="454" y="272" class="lbl" style="font-size:13px" text-anchor="middle">矩阵两列 = 旋转后的基向量</text>
+</svg>

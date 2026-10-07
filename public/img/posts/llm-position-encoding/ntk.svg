@@ -1,0 +1,62 @@
+<svg viewBox="0 0 560 230" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="NTK-aware scaling: plotting angular frequency theta_i against dimension index i, the scaled base leaves high-frequency dimensions nearly unchanged while pushing low-frequency dimensions to smaller theta_i, i.e. longer wavelengths">
+	<style>
+		:root {
+			--fg: #2b2b2b;
+			--line: #3d3d3d;
+			--expert-fill: #dce9f7;
+			--expert-stroke: #7b9cc4;
+			--router-fill: #f5e9c9;
+			--router-stroke: #b8912f;
+			--step-fill: #eef1f4;
+			--step-stroke: #9aa5b1;
+			--gate-fill: #ffffff;
+			--accent: #e0a800;
+		}
+		@media (prefers-color-scheme: dark) {
+			:root {
+				--fg: #d8d8d8;
+				--line: #b8b8b8;
+				--expert-fill: #26364d;
+				--expert-stroke: #6c8ebf;
+				--router-fill: #4a3d1e;
+				--router-stroke: #c9a53f;
+				--step-fill: #2a2f36;
+				--step-stroke: #6b7684;
+				--gate-fill: #1e1e1e;
+				--accent: #e8c547;
+			}
+		}
+		text { fill: var(--fg); }
+		.lbl { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 15px; }
+		.math { font-family: "Times New Roman", Times, serif; font-style: italic; }
+		.edge { stroke: var(--line); stroke-width: 1.6; fill: none; }
+	</style>
+	<defs>
+		<marker id="arw" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+			<path d="M0,0 L10,5 L0,10 z" fill="var(--line)"/>
+		</marker>
+	</defs>
+
+	<!-- axes -->
+	<path d="M90,190 L517.8,190" class="edge" marker-end="url(#arw)"/>
+	<path d="M90,190 L90,42.2" class="edge" marker-end="url(#arw)"/>
+	<text x="64" y="42" class="math" font-size="16" text-anchor="middle">θ<tspan baseline-shift="sub" font-size="11">i</tspan></text>
+	<text x="305" y="224" class="lbl" text-anchor="middle">维度下标 <tspan class="math">i</tspan></text>
+	<text x="92" y="208" class="math" font-size="14" text-anchor="middle">0</text>
+	<text x="512" y="208" class="math" font-size="13" text-anchor="middle">d<tspan baseline-shift="sub" font-size="9">head</tspan>/2</text>
+
+	<!-- theta_i curves: same at i=0, diverge at large i -->
+	<path d="M92,58 C170,110 300,158 518,168" stroke="var(--expert-stroke)" stroke-width="2.2" fill="none"/>
+	<path d="M92,58 C180,128 330,176 518,184" stroke="var(--router-stroke)" stroke-width="2.2" fill="none"/>
+
+	<!-- legend -->
+	<path d="M330,52 L375,52" stroke="var(--expert-stroke)" stroke-width="2.2" fill="none"/>
+	<text x="382" y="57" class="lbl" style="font-size:13px">原始 <tspan class="math">base</tspan></text>
+	<path d="M330,74 L375,74" stroke="var(--router-stroke)" stroke-width="2.2" fill="none"/>
+	<text x="382" y="79" class="lbl" style="font-size:13px">调大 <tspan class="math">base</tspan></text>
+
+	<!-- annotations -->
+	<text x="150" y="112" class="lbl" style="font-size:13px">高频维（<tspan class="math">i</tspan> 小）几乎不变</text>
+	<path d="M497,170.5 L497,181.5" stroke="var(--line)" stroke-width="1.3" fill="none" marker-start="url(#arw)" marker-end="url(#arw)"/>
+	<text x="487" y="180" class="lbl" style="font-size:13px" text-anchor="end">低频维转得更慢</text>
+</svg>

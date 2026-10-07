@@ -1,0 +1,78 @@
+<svg viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="国产算力厂商按生态兼容路线分三列：CUDA 兼容、ROCm 兼容、自有栈">
+	<style>
+		:root {
+			--fg: #2b2b2b;
+			--line: #3d3d3d;
+			--cuda-fill: #f5e9c9;
+			--cuda-stroke: #b8912f;
+			--rocm-fill: #dce9f7;
+			--rocm-stroke: #7b9cc4;
+			--own-fill: #d8ecd8;
+			--own-stroke: #6aa86a;
+		}
+		@media (prefers-color-scheme: dark) {
+			:root {
+				--fg: #d8d8d8;
+				--line: #b8b8b8;
+				--cuda-fill: #4a3d1e;
+				--cuda-stroke: #c9a53f;
+				--rocm-fill: #26364d;
+				--rocm-stroke: #6c8ebf;
+				--own-fill: #24392b;
+				--own-stroke: #7fb37f;
+			}
+		}
+		text { fill: var(--fg); }
+		.hd { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 15px; font-weight: 600; }
+		.name { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 13.5px; font-weight: 600; }
+		.sub { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 11.5px; opacity: 0.75; }
+		.col-hd { stroke-width: 1.6; rx: 9; }
+		.card { stroke-width: 1.3; rx: 7; }
+	</style>
+
+	<!-- column headers -->
+	<rect x="15" y="18" width="218" height="36" class="col-hd" fill="var(--cuda-fill)" stroke="var(--cuda-stroke)"/>
+	<text x="124" y="42" class="hd" text-anchor="middle">CUDA 兼容路线</text>
+
+	<rect x="247" y="18" width="206" height="36" class="col-hd" fill="var(--rocm-fill)" stroke="var(--rocm-stroke)"/>
+	<text x="350" y="42" class="hd" text-anchor="middle">ROCm 兼容路线</text>
+
+	<rect x="467" y="18" width="218" height="36" class="col-hd" fill="var(--own-fill)" stroke="var(--own-stroke)"/>
+	<text x="576" y="42" class="hd" text-anchor="middle">自有栈路线</text>
+
+	<!-- CUDA column -->
+	<rect x="15" y="66" width="218" height="74" class="card" fill="var(--cuda-fill)" stroke="var(--cuda-stroke)" opacity="0.55"/>
+	<text x="29" y="90" class="name">摩尔线程</text>
+	<text x="29" y="110" class="sub">MUSA 架构 · 提供迁移工具</text>
+	<text x="29" y="128" class="sub">S80 消费卡 / S4000·S5000 计算卡</text>
+
+	<rect x="15" y="152" width="218" height="74" class="card" fill="var(--cuda-fill)" stroke="var(--cuda-stroke)" opacity="0.55"/>
+	<text x="29" y="176" class="name">沐曦</text>
+	<text x="29" y="196" class="sub">曦云 C500 ≈ A100 · C600 介于 A100–H100</text>
+	<text x="29" y="214" class="sub">全端异构计算</text>
+
+	<!-- ROCm column -->
+	<rect x="247" y="66" width="206" height="74" class="card" fill="var(--rocm-fill)" stroke="var(--rocm-stroke)" opacity="0.55"/>
+	<text x="261" y="90" class="name">海光 DCU</text>
+	<text x="261" y="110" class="sub">GPGPU · 借 HIP/ROCm 生态</text>
+	<text x="261" y="128" class="sub">深算系列 · 运营商/政务集采</text>
+
+	<!-- own-stack column -->
+	<rect x="467" y="66" width="218" height="74" class="card" fill="var(--own-fill)" stroke="var(--own-stroke)" opacity="0.55"/>
+	<text x="481" y="90" class="name">昇腾（华为）</text>
+	<text x="481" y="110" class="sub">CANN + MindSpore 全栈闭环</text>
+	<text x="481" y="128" class="sub">910B/C → 950/960/970</text>
+
+	<rect x="467" y="152" width="218" height="74" class="card" fill="var(--own-fill)" stroke="var(--own-stroke)" opacity="0.55"/>
+	<text x="481" y="176" class="name">寒武纪</text>
+	<text x="481" y="196" class="sub">Neuware 栈 · ASIC 路线</text>
+	<text x="481" y="214" class="sub">思元 590 ≈ A100 八成</text>
+
+	<rect x="467" y="238" width="218" height="66" class="card" fill="var(--own-fill)" stroke="var(--own-stroke)" opacity="0.55"/>
+	<text x="481" y="260" class="name">壁仞 · 燧原 · 天数智芯</text>
+	<text x="481" y="280" class="sub">BR100 chiplet / 邃思+S60 / 天垓</text>
+	<text x="481" y="296" class="sub">各自推进中</text>
+
+	<!-- footnote -->
+	<text x="350" y="310" class="sub" text-anchor="middle">三条路线的赌注：兼容派赌迁移成本低，自有栈赌闭环体验</text>
+</svg>
