@@ -1,0 +1,63 @@
+<svg viewBox="0 0 720 290" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="三幅以数据均值为原点的二维散点图：左侧分散且秩为二，中间沿一条经过均值的直线近似分布但秩仍为二，右侧精确共线且秩为一">
+	<style>
+		:root { --fg: #2b2b2b; --line: #3d3d3d; --expert-stroke: #7b9cc4; --router-stroke: #b8912f; --step-stroke: #9aa5b1; --accent: #e0a800; }
+		@media (prefers-color-scheme: dark) {
+			:root { --fg: #d8d8d8; --line: #b8b8b8; --expert-stroke: #83aad6; --router-stroke: #dab651; --step-stroke: #6b7684; --accent: #e8c547; }
+		}
+		text { fill: var(--fg); }
+		.lbl { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 15px; }
+		.math { font-family: "Times New Roman", Times, serif; font-style: italic; font-size: 15px; }
+		.axis { stroke: var(--step-stroke); stroke-width: 1.3; fill: none; }
+		.dot { fill: var(--expert-stroke); }
+	</style>
+	<defs>
+		<marker id="axis-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="var(--step-stroke)"/></marker>
+	</defs>
+	<path d="M240 25 V278 M480 25 V278" stroke="var(--step-stroke)" stroke-width="1" stroke-dasharray="3 6" opacity="0.55"/>
+	<text x="120" y="27" class="lbl" text-anchor="middle">分散在平面</text>
+	<text x="360" y="27" class="lbl" text-anchor="middle">接近一条直线</text>
+	<text x="600" y="27" class="lbl" text-anchor="middle">精确落在直线</text>
+	<g class="axis" marker-end="url(#axis-arrow)">
+		<path d="M29 140 H209 M120 226 V49"/>
+		<path d="M269 140 H449 M360 226 V49"/>
+		<path d="M509 140 H689 M600 226 V49"/>
+	</g>
+	<g class="math">
+		<text x="205" y="160">x₁</text><text x="127" y="55">x₂</text>
+		<text x="445" y="160">x₁</text><text x="367" y="55">x₂</text>
+		<text x="685" y="160">x₁</text><text x="607" y="55">x₂</text>
+	</g>
+	<g fill="var(--line)">
+		<circle cx="120" cy="140" r="2"/><circle cx="360" cy="140" r="2"/><circle cx="600" cy="140" r="2"/>
+	</g>
+	<path d="M270 207.5 L450 72.5" stroke="var(--router-stroke)" stroke-width="1.7" stroke-dasharray="5 5" fill="none"/>
+	<path d="M510 207.5 L690 72.5" stroke="var(--router-stroke)" stroke-width="1.8" fill="none"/>
+	<g class="dot">
+		<circle cx="48" cy="98" r="3.4"/><circle cx="192" cy="182" r="3.4"/>
+		<circle cx="68" cy="180" r="3.4"/><circle cx="172" cy="100" r="3.4"/>
+		<circle cx="92" cy="72" r="3.4"/><circle cx="148" cy="208" r="3.4"/>
+		<circle cx="45" cy="155" r="3.4"/><circle cx="195" cy="125" r="3.4"/>
+		<circle cx="82" cy="134" r="3.4"/><circle cx="158" cy="146" r="3.4"/>
+		<circle cx="160" cy="63" r="3.4"/><circle cx="80" cy="217" r="3.4"/>
+		<circle cx="286" cy="193" r="3.4"/><circle cx="434" cy="87" r="3.4"/>
+		<circle cx="304" cy="189" r="3.4"/><circle cx="416" cy="91" r="3.4"/>
+		<circle cx="322" cy="165" r="3.4"/><circle cx="398" cy="115" r="3.4"/>
+		<circle cx="340" cy="163" r="3.4"/><circle cx="380" cy="117" r="3.4"/>
+		<circle cx="348" cy="137" r="3.4"/><circle cx="372" cy="143" r="3.4"/>
+		<circle cx="530" cy="192.5" r="3.4"/><circle cx="670" cy="87.5" r="3.4"/>
+		<circle cx="548" cy="179" r="3.4"/><circle cx="652" cy="101" r="3.4"/>
+		<circle cx="566" cy="165.5" r="3.4"/><circle cx="634" cy="114.5" r="3.4"/>
+		<circle cx="584" cy="152" r="3.4"/><circle cx="616" cy="128" r="3.4"/>
+		<circle cx="592" cy="146" r="3.4"/><circle cx="608" cy="134" r="3.4"/>
+	</g>
+	<g class="math" text-anchor="middle">
+		<text x="120" y="257">rank(X) = 2</text>
+		<text x="360" y="257">rank(X) = 2</text>
+		<text x="600" y="257">rank(X) = 1</text>
+	</g>
+	<g class="lbl" text-anchor="middle" style="font-size:12px">
+		<text x="120" y="279">两个独立方向</text>
+		<text x="360" y="279">可近似为一维</text>
+		<text x="600" y="279">只有一个独立方向</text>
+	</g>
+</svg>
