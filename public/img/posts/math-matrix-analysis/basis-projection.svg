@@ -1,0 +1,19 @@
+<svg viewBox="0 0 680 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="同一向量在左侧完整的两条正交轴下可无损还原，右侧仅保留一条轴时只得到投影点并留下垂直残差">
+	<style>
+		:root { --fg:#2b2b2b; --line:#3d3d3d; --expert-stroke:#7b9cc4; --router-stroke:#b8912f; --step-stroke:#9aa5b1; --accent:#e0a800; }
+		@media (prefers-color-scheme:dark) { :root { --fg:#d8d8d8; --line:#b8b8b8; --expert-stroke:#83aad6; --router-stroke:#dab651; --step-stroke:#6b7684; --accent:#e8c547; } }
+		text { fill:var(--fg); } .lbl { font:15px "Helvetica Neue",Helvetica,Arial,sans-serif; } .math { font:italic 17px "Times New Roman",Times,serif; }
+	</style>
+	<defs><marker id="ax" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="var(--step-stroke)"/></marker><marker id="fg" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="var(--line)"/></marker><marker id="blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="var(--expert-stroke)"/></marker></defs>
+	<path d="M340 26 V256" stroke="var(--step-stroke)" stroke-width="1" stroke-dasharray="3 6" opacity=".6"/>
+	<text x="170" y="29" text-anchor="middle" class="lbl">完整正交基 Q</text><text x="510" y="29" text-anchor="middle" class="lbl">只留一个方向 W</text>
+	<g stroke="var(--step-stroke)" stroke-width="1.2" fill="none" marker-end="url(#ax)"><path d="M50 210 H307 M145 242 V54 M390 210 H647 M485 242 V54"/></g>
+	<path d="M145 210 L265 150 M145 210 L87 94 M485 210 L605 150" stroke="var(--expert-stroke)" stroke-width="1.5" fill="none"/>
+	<path d="M145 210 L245 160 M145 210 L95 110 M485 210 L585 160" stroke="var(--expert-stroke)" stroke-width="2.2" fill="none" marker-end="url(#blue)"/>
+	<path d="M145 210 L179 108 M485 210 L519 108" stroke="var(--line)" stroke-width="2" fill="none" marker-end="url(#fg)"/>
+	<path d="M145 210 L213 176 M485 210 L553 176" stroke="var(--router-stroke)" stroke-width="2" fill="none"/>
+	<path d="M213 176 L179 108 M553 176 L519 108" stroke="var(--accent)" stroke-width="1.8" stroke-dasharray="5 4" fill="none"/>
+	<circle cx="179" cy="108" r="3" fill="var(--line)"/><circle cx="519" cy="108" r="3" fill="var(--line)"/><circle cx="553" cy="176" r="3" fill="var(--router-stroke)"/>
+	<g class="math"><text x="185" y="99">x</text><text x="525" y="99">x</text><text x="237" y="181">q₁</text><text x="80" y="105">q₂</text><text x="583" y="181">w</text><text x="560" y="199">x̂</text></g>
+	<g class="math" text-anchor="middle"><text x="170" y="266">x = QQᵀx</text><text x="510" y="266">x̂ = WWᵀx</text></g>
+</svg>

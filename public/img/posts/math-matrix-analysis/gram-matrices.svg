@@ -1,0 +1,15 @@
+<svg viewBox="0 0 680 232" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="矩形矩阵 A 先把 n 维输入送到 m 维再由转置送回 n 维，得到 A 转置 A；反方向从 m 维出发先由 A 转置到 n 维再由 A 回到 m 维，得到 A A 转置">
+	<style>
+		:root { --fg:#2b2b2b; --line:#3d3d3d; --expert-fill:#dce9f7; --expert-stroke:#7b9cc4; --router-fill:#f5e9c9; --router-stroke:#b8912f; --step-fill:#eef1f4; --step-stroke:#9aa5b1; }
+		@media (prefers-color-scheme:dark) { :root { --fg:#d8d8d8; --line:#b8b8b8; --expert-fill:#26364d; --expert-stroke:#83aad6; --router-fill:#4a3d1e; --router-stroke:#dab651; --step-fill:#2a2f36; --step-stroke:#6b7684; } }
+		text { fill:var(--fg); } .lbl { font:14px "Helvetica Neue",Helvetica,Arial,sans-serif; } .math { font:italic 19px "Times New Roman",Times,serif; } .dim { font:13px "Helvetica Neue",Helvetica,Arial,sans-serif; }
+	</style>
+	<defs><marker id="blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="var(--expert-stroke)"/></marker><marker id="gold" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="var(--router-stroke)"/></marker></defs>
+	<text x="48" y="30" class="lbl">从输入空间出发</text><text x="48" y="145" class="lbl">从输出空间出发</text>
+	<path d="M36 130 H644" stroke="var(--step-stroke)" stroke-width="1" stroke-dasharray="3 6" opacity=".7"/>
+	<g stroke-width="1.5"><rect x="48" y="47" width="132" height="58" rx="7" fill="var(--expert-fill)" stroke="var(--expert-stroke)"/><rect x="274" y="47" width="132" height="58" rx="7" fill="var(--router-fill)" stroke="var(--router-stroke)"/><rect x="500" y="47" width="132" height="58" rx="7" fill="var(--expert-fill)" stroke="var(--expert-stroke)"/><rect x="48" y="162" width="132" height="58" rx="7" fill="var(--router-fill)" stroke="var(--router-stroke)"/><rect x="274" y="162" width="132" height="58" rx="7" fill="var(--expert-fill)" stroke="var(--expert-stroke)"/><rect x="500" y="162" width="132" height="58" rx="7" fill="var(--router-fill)" stroke="var(--router-stroke)"/></g>
+	<g class="math" text-anchor="middle"><text x="114" y="72">x</text><text x="340" y="72">Ax</text><text x="566" y="72">AᵀAx</text><text x="114" y="187">y</text><text x="340" y="187">Aᵀy</text><text x="566" y="187">AAᵀy</text></g>
+	<g class="dim" text-anchor="middle"><text x="114" y="94">n 维</text><text x="340" y="94">m 维</text><text x="566" y="94">n 维</text><text x="114" y="209">m 维</text><text x="340" y="209">n 维</text><text x="566" y="209">m 维</text></g>
+	<g fill="none" stroke-width="2"><path d="M184 76 H268" stroke="var(--expert-stroke)" marker-end="url(#blue)"/><path d="M410 191 H494" stroke="var(--expert-stroke)" marker-end="url(#blue)"/><path d="M410 76 H494" stroke="var(--router-stroke)" marker-end="url(#gold)"/><path d="M184 191 H268" stroke="var(--router-stroke)" marker-end="url(#gold)"/></g>
+	<g class="math" text-anchor="middle"><text x="227" y="67">A</text><text x="453" y="67">Aᵀ</text><text x="227" y="182">Aᵀ</text><text x="453" y="182">A</text></g>
+</svg>

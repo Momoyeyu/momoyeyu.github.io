@@ -1,0 +1,21 @@
+<svg viewBox="0 0 680 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="左侧单位正方形面积一，中间经矩阵二一一二变换为面积三的平行四边形，右侧两列共线时面积压成零">
+	<style>
+		:root { --fg:#2b2b2b; --line:#3d3d3d; --expert-fill:#dce9f7; --expert-stroke:#7b9cc4; --router-fill:#f5e9c9; --router-stroke:#b8912f; --step-stroke:#9aa5b1; }
+		@media (prefers-color-scheme:dark) { :root { --fg:#d8d8d8; --line:#b8b8b8; --expert-fill:#26364d; --expert-stroke:#83aad6; --router-fill:#4a3d1e; --router-stroke:#dab651; --step-stroke:#6b7684; } }
+		text { fill:var(--fg); } .lbl { font:15px "Helvetica Neue",Helvetica,Arial,sans-serif; } .math { font:italic 17px "Times New Roman",Times,serif; }
+	</style>
+	<defs><marker id="axis" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="var(--step-stroke)"/></marker><marker id="blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="var(--expert-stroke)"/></marker><marker id="gold" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="var(--router-stroke)"/></marker></defs>
+	<path d="M226 25 V240 M453 25 V240" stroke="var(--step-stroke)" stroke-width="1" stroke-dasharray="3 6" opacity=".65"/>
+	<text x="112" y="29" text-anchor="middle" class="lbl">单位正方形</text><text x="340" y="29" text-anchor="middle" class="lbl">面积放大</text><text x="566" y="29" text-anchor="middle" class="lbl">空间压扁</text>
+	<g stroke="var(--step-stroke)" stroke-width="1.2" fill="none" marker-end="url(#axis)"><path d="M47 175 H198 M75 208 V60 M248 185 H428 M260 215 V56 M468 185 H650 M490 215 V56"/></g>
+	<rect x="75" y="145" width="30" height="30" fill="var(--expert-fill)" stroke="var(--expert-stroke)" stroke-width="1.8"/>
+	<path d="M75 175 L105 175 M75 175 L75 145" stroke="var(--expert-stroke)" stroke-width="2" fill="none" marker-end="url(#blue)"/>
+	<text x="108" y="193" class="math">e₁</text><text x="83" y="137" class="math">e₂</text>
+	<polygon points="260,185 320,155 350,95 290,125" fill="var(--router-fill)" stroke="var(--router-stroke)" stroke-width="1.8"/>
+	<path d="M260 185 L320 155 M260 185 L290 125" stroke="var(--router-stroke)" stroke-width="2.2" fill="none" marker-end="url(#gold)"/>
+	<text x="325" y="163" class="math">Ae₁</text><text x="294" y="119" class="math">Ae₂</text>
+	<path d="M490 185 L550 155 L580 140 L520 170 Z" fill="var(--router-fill)" stroke="var(--router-stroke)" stroke-width="1.8"/>
+	<path d="M490 185 L550 155 M490 185 L520 170" stroke="var(--router-stroke)" stroke-width="2.2" fill="none" marker-end="url(#gold)"/>
+	<text x="555" y="154" class="math">a₁</text><text x="519" y="193" class="math">a₂</text>
+	<g class="math" text-anchor="middle"><text x="112" y="239">面积 = 1</text><text x="340" y="239">|det A| = 3</text><text x="566" y="239">det A = 0</text></g>
+</svg>
