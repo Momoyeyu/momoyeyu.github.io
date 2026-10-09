@@ -1,0 +1,18 @@
+<svg viewBox="0 0 720 230" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="对矩阵二一一二和输入向量一零：先用 Q 转置换到特征坐标得到零点七零七、零点七零七，沿轴缩放三倍与一倍，再用 Q 换回得到二一">
+	<style>
+		:root { --fg:#2b2b2b; --line:#3d3d3d; --expert-stroke:#7b9cc4; --router-stroke:#b8912f; --step-stroke:#9aa5b1; }
+		@media (prefers-color-scheme:dark) { :root { --fg:#d8d8d8; --line:#b8b8b8; --expert-stroke:#83aad6; --router-stroke:#dab651; --step-stroke:#6b7684; } }
+		text { fill:var(--fg); } .lbl { font:14px "Helvetica Neue",Helvetica,Arial,sans-serif; } .math { font:italic 16px "Times New Roman",Times,serif; } .axis { stroke:var(--step-stroke);stroke-width:1.2;fill:none; }
+	</style>
+	<defs><marker id="axis" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="var(--step-stroke)"/></marker><marker id="fg" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="var(--line)"/></marker><marker id="blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="var(--expert-stroke)"/></marker><marker id="gold" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="var(--router-stroke)"/></marker></defs>
+	<g class="axis" marker-end="url(#axis)"><path d="M28 176 H116 M48 194 V64 M197 176 H285 M217 194 V64 M365 176 H473 M385 194 V64 M540 176 H648 M560 194 V64"/></g>
+	<g class="math" style="font-size:12px"><text x="108" y="192">x₁</text><text x="55" y="69">x₂</text><text x="278" y="192">z₁</text><text x="224" y="69">z₂</text><text x="466" y="192">z₁</text><text x="392" y="69">z₂</text><text x="641" y="192">x₁</text><text x="567" y="69">x₂</text></g>
+	<path d="M48 176 L88 176" stroke="var(--line)" stroke-width="2.2" marker-end="url(#fg)"/>
+	<path d="M217 176 L245.3 147.7" stroke="var(--expert-stroke)" stroke-width="2.2" marker-end="url(#blue)"/>
+	<path d="M385 176 L469.9 147.7" stroke="var(--router-stroke)" stroke-width="2.2" marker-end="url(#gold)"/>
+	<path d="M560 176 L640 136" stroke="var(--line)" stroke-width="2.2" marker-end="url(#fg)"/>
+	<g stroke="var(--step-stroke)" stroke-width="1.5" fill="none" marker-end="url(#axis)"><path d="M127 112 H181 M294 112 H350 M481 112 H527"/></g>
+	<g class="math" text-anchor="middle"><text x="154" y="99">Qᵀ</text><text x="322" y="99">Λ</text><text x="504" y="99">Q</text></g>
+	<g class="math"><text x="91" y="163">x</text><text x="244" y="137">z</text><text x="439" y="137">Λz</text><text x="632" y="126">Ax</text></g>
+	<g class="lbl" text-anchor="middle"><text x="80" y="216">原坐标</text><text x="249" y="216">换到特征方向</text><text x="417" y="216">逐方向缩放</text><text x="593" y="216">换回原坐标</text></g>
+</svg>
