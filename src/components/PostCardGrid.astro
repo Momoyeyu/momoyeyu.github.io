@@ -4,7 +4,7 @@ import path from "node:path";
 import I18nKey from "../i18n/i18nKey";
 import { i18n } from "../i18n/translation";
 import { getCover } from "../utils/cover-utils";
-import { getDir } from "../utils/url-utils";
+import { getCategoryUrl, getDir } from "../utils/url-utils";
 import ImageWrapper from "./misc/ImageWrapper.astro";
 import PostMetadata from "./PostMeta.astro";
 
@@ -56,14 +56,6 @@ const { remarkPluginFrontmatter } = await entry.render();
         )}
         <!-- gradient overlay -->
         <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent pointer-events-none"></div>
-        <!-- category pill -->
-        {category && (
-            <div class="absolute top-3 left-3 z-10">
-                <span class="text-xs px-2 py-0.5 rounded-full font-medium text-white bg-[var(--primary)]/80 backdrop-blur-sm">
-                    {category}
-                </span>
-            </div>
-        )}
         <!-- title on image -->
         <div class="absolute bottom-0 left-0 right-0 p-3 z-10">
             <h2 class="text-white font-bold text-base leading-snug line-clamp-2 drop-shadow-sm">
@@ -71,6 +63,13 @@ const { remarkPluginFrontmatter } = await entry.render();
             </h2>
         </div>
     </a>
+    <!-- category pill -->
+    {category && (
+        <a href={getCategoryUrl(category)} aria-label={`${i18n(I18nKey.categories)} · ${category}`}
+           class="absolute top-3 left-3 z-10 text-xs px-2 py-0.5 rounded-full font-medium text-white bg-[var(--primary)]/80 hover:bg-[var(--primary)] backdrop-blur-sm transition">
+            {category}
+        </a>
+    )}
 
     <!-- Bottom: meta + excerpt, straight top border, no extra rounding -->
     <div class="flex flex-col flex-1 px-4 pt-3 pb-4 gap-2">

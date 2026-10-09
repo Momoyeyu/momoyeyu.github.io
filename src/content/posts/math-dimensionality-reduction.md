@@ -1,6 +1,7 @@
 ---
-title: 矩阵降维：从特征冗余到低秩表示
+title: 矩阵降维
 date: 2026-10-08
+updated: 2026-10-09
 description: 从特征冗余与矩阵的秩出发，理解正交投影、低维表示和重构误差，以及何时值得减少特征维度。
 tags: [Math, 线性代数, 降维]
 category: Math

@@ -4,7 +4,7 @@ import { fly } from "svelte/transition";
 
 import I18nKey from "../i18n/i18nKey";
 import { i18n } from "../i18n/translation";
-import { getPostUrlBySlug } from "../utils/url-utils";
+import { getPostUrlBySlug, getTagUrl, url } from "../utils/url-utils";
 
 // Defaulted because the real values are read from URL params in onMount;
 // callers (archive.astro) intentionally don't pass tags/categories.
@@ -62,10 +62,6 @@ function formatDate(date: Date) {
 	const month = (date.getMonth() + 1).toString().padStart(2, "0");
 	const day = date.getDate().toString().padStart(2, "0");
 	return `${month}-${day}`;
-}
-
-function formatTag(tagList: string[]) {
-	return tagList.map((t) => `#${t}`).join(" ");
 }
 
 function rebuildGroups() {
@@ -189,6 +185,12 @@ onMount(() => {
 
 <svelte:window on:keydown={handleKeydown} />
 
+{#if mounted && categories.length === 1 && tags.length === 0 && !uncategorized}
+    <a href={url('/archive/')} class="inline-flex items-center mb-3 text-sm text-50 hover:text-[var(--primary)] transition">
+        ← {i18n(I18nKey.archive)}
+    </a>
+{/if}
+
 {#if mounted && filteredPosts.length > 1}
     <div class="flex justify-start mb-3" use:clickOutside>
         <div class="relative">
@@ -288,14 +290,11 @@ onMount(() => {
             </div>
 
             {#each group.posts as post}
-                <a
-                        href={getPostUrlBySlug(post.slug)}
-                        aria-label={post.data.title}
-                        class="group btn-plain !block h-10 w-full rounded-lg hover:text-[initial]"
-                >
-                    <div class="flex flex-row justify-start items-center h-full">
+                <div class="flex items-center h-10 w-full rounded-lg hover:bg-[var(--btn-plain-bg-hover)] transition">
+                    <a href={getPostUrlBySlug(post.slug)} aria-label={post.data.title}
+                       class="group flex items-center h-full w-full md:w-[85%] rounded-lg">
                         <!-- date or episode -->
-                        <div class="w-[15%] md:w-[10%] transition text-sm text-right text-50">
+                        <div class="w-[15%] md:w-[11.765%] transition text-sm text-right text-50">
                             {#if group.isSeries && typeof post.data.seriesPosition === "number" && post.data.seriesPosition >= 0}
                                 EP.{post.data.seriesPosition}
                             {:else}
@@ -304,35 +303,34 @@ onMount(() => {
                         </div>
 
                         <!-- dot and line -->
-                        <div class="w-[15%] md:w-[10%] relative dash-line h-full flex items-center">
+                        <div class="w-[15%] md:w-[11.765%] relative dash-line h-full flex items-center">
                             <div
                                     class="transition-all mx-auto w-1 h-1 rounded group-hover:h-5
                        bg-[oklch(0.5_0.05_var(--hue))] group-hover:bg-[var(--primary)]
                        outline outline-4 z-50
                        outline-[var(--card-bg)]
-                       group-hover:outline-[var(--btn-plain-bg-hover)]
-                       group-active:outline-[var(--btn-plain-bg-active)]"
+                       group-hover:outline-[var(--btn-plain-bg-active)]"
                             ></div>
                         </div>
 
                         <!-- post title -->
                         <div
-                                class="w-[70%] md:max-w-[65%] md:w-[65%] text-left font-bold
+                                class="w-[70%] md:w-[76.47%] text-left font-bold
                      group-hover:translate-x-1 transition-all group-hover:text-[var(--primary)]
                      text-75 pr-8 whitespace-nowrap overflow-ellipsis overflow-hidden"
                         >
                             {post.data.title}
                         </div>
+                    </a>
 
-                        <!-- tag list -->
-                        <div
-                                class="hidden md:block md:w-[15%] text-left text-sm transition
-                     whitespace-nowrap overflow-ellipsis overflow-hidden text-30"
-                        >
-                            {formatTag(post.data.tags)}
-                        </div>
+                    <!-- tag list -->
+                    <div class="hidden md:flex md:w-[15%] gap-1 text-left text-sm whitespace-nowrap overflow-x-auto hide-scrollbar text-30">
+                        {#each post.data.tags as tag}
+                            <a href={getTagUrl(tag)} aria-label={`${i18n(I18nKey.tags)} · ${tag}`}
+                               class="shrink-0 hover:text-[var(--primary)] hover:underline transition">#{tag}</a>
+                        {/each}
                     </div>
-                </a>
+                </div>
             {/each}
         </div>
     {/each}
