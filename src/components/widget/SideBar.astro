@@ -1,6 +1,6 @@
 ---
 import { getSortedPosts } from "@utils/content-utils";
-import { getPostUrlBySlug } from "@utils/url-utils";
+import { getCategoryUrl, getPostUrlBySlug } from "@utils/url-utils";
 import { Icon } from "astro-icon/components";
 import Categories from "./Categories.astro";
 import Profile from "./Profile.astro";
@@ -66,9 +66,9 @@ const hasBelow = winEnd < seriesPosts.length;
     <div id="sidebar-sticky" class="transition-all duration-700 flex flex-col w-full gap-4 sticky top-4">
         {isPostPage && seriesPosts.length > 1 ? (
             <series-widget class="card-base pb-4 onload-animation" style="animation-delay: 150ms" data-needs-window={String(needsWindow)}>
-                <div class="font-bold transition text-lg text-neutral-900 dark:text-neutral-100 relative ml-8 mt-4 mb-2
+                <a href={getCategoryUrl(category)} class="block w-fit font-bold transition text-lg text-neutral-900 dark:text-neutral-100 hover:text-[var(--primary)] dark:hover:text-[var(--primary)] relative ml-8 mt-4 mb-2
                     before:w-1 before:h-4 before:rounded-md before:bg-[var(--primary)]
-                    before:absolute before:left-[-16px] before:top-[5.5px]">{`合集 · ${category}`}</div>
+                    before:absolute before:left-[-16px] before:top-[5.5px]">{`合集 · ${category}`}</a>
                 <div class="px-4">
                     {/* Collapsed indicator: N items above */}
                     {hasAbove && (

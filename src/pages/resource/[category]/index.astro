@@ -51,7 +51,8 @@ function commandFor(name: string) {
             const command = commandFor(item.name);
             return (
                 <div class="card-base px-9 py-6 w-full">
-                    <div class="font-bold text-xl text-neutral-900 dark:text-neutral-100">{item.title}</div>
+                    <a href={`/resource/${category.slug}/${item.name}`} target="_blank" rel="noopener"
+                       class="inline-block font-bold text-xl text-neutral-900 dark:text-neutral-100 hover:text-[var(--primary)] transition">{item.title}</a>
                     <div class="mt-1 text-sm text-black/60 dark:text-white/60 font-mono">
                         /resource/{category.slug}/{item.name}
                     </div>
