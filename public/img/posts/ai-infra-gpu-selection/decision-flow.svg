@@ -50,8 +50,8 @@
 	<text x="175" y="114" class="lbl" text-anchor="middle">② 显存门槛</text>
 	<text x="175" y="132" class="sub" text-anchor="middle">模型 × 精度装得下吗</text>
 	<line x1="290" y1="116" x2="318" y2="116" class="glue"/>
-	<text x="324" y="112" class="note">定最低档位：装不下</text>
-	<text x="324" y="130" class="note">就谈不上其他指标</text>
+	<text x="324" y="112" class="note">权重 + KV cache + 开销</text>
+	<text x="324" y="130" class="note">卸载方案另测速度</text>
 
 	<path d="M175,140 L175,164" class="arr"/>
 
@@ -70,8 +70,8 @@
 	<text x="175" y="266" class="lbl" text-anchor="middle">④ 互联与预算</text>
 	<text x="175" y="284" class="sub" text-anchor="middle">一张大显存 vs 多张小卡</text>
 	<line x1="290" y1="268" x2="318" y2="268" class="glue"/>
-	<text x="324" y="264" class="note">PCIe 够用时不必追</text>
-	<text x="324" y="282" class="note">NVLink；训练另说</text>
+	<text x="324" y="264" class="note">按并行方式测通信</text>
+	<text x="324" y="282" class="note">占 step 时间的比例</text>
 
 	<path d="M175,292 L175,316" class="arr"/>
 
@@ -80,9 +80,9 @@
 	<text x="175" y="342" class="lbl" text-anchor="middle">⑤ 落地路径</text>
 	<text x="175" y="360" class="sub" text-anchor="middle">自购 · 魔改 · 云租赁</text>
 	<line x1="290" y1="346" x2="318" y2="346" class="glue"/>
-	<text x="324" y="342" class="acc">非常规方案会改写</text>
-	<text x="324" y="360" class="acc">前几步的价值锚点</text>
+	<text x="324" y="342" class="acc">核对驱动、保修与许可</text>
+	<text x="324" y="360" class="acc">再比较租买总成本</text>
 
 	<!-- footer note -->
-	<text x="175" y="412" class="sub" text-anchor="middle">每一步都在缩小候选集，最后落到预算内最优解</text>
+	<text x="175" y="412" class="sub" text-anchor="middle">用同一模型的实测延迟、吞吐与总成本做比较</text>
 </svg>

@@ -73,5 +73,5 @@
 	<text x="82" y="118" class="tick" text-anchor="end">2万</text>
 	<text x="82" y="64" class="tick" text-anchor="end">2.5万</text>
 
-	<text x="355" y="50" class="note" text-anchor="middle">按 4090 云端约 2 元/小时估算；未计电费、残值与涨价因素</text>
+	<text x="355" y="50" class="note" text-anchor="middle">按 4090 云端约 2 元/小时估算；未计电费、主机、折旧与残值</text>
 </svg>
