@@ -1,11 +1,11 @@
 ---
-title: 矩阵分析基础：从变换到特征方向
-date: 2026-10-08
+title: 矩阵分析基础
+date: 2026-10-09
 description: 从矩阵的几何作用、行列式、正交矩阵和特征方向出发，理解对称矩阵如何为矩形变换提供方向。
 tags: [Math, 线性代数, 矩阵]
 category: Math
 episode: 1
-draft: true
+draft: false
 lang: zh_CN
 ---
 
@@ -43,7 +43,7 @@ $$
 
 ## 行列式与空间大小
 
-对**方阵**，我们还能问变换把空间放大了多少。二维时，从原点出发的两个单位坐标轴围成面积为 $1$ 的正方形；经过 $A$ 后，两条边分别变成 $A$ 的两列，围成平行四边形。新面积与原面积之比是 $|\det A|$，高维时对应体积的缩放倍数。
+想知道一个二维方阵把平面改变了多少，先别盯着元素计算，不妨看一块单位正方形变换后的面积。这正是行列式回答的问题：从原点出发的两个单位坐标轴围成面积为 $1$ 的正方形，经过 $A$ 后，两条边分别变成 $A$ 的两列，围成平行四边形。新面积与原面积之比是 $|\det A|$，高维时对应体积的缩放倍数。
 
 拿 $A=\begin{bmatrix}2&1\\1&2\end{bmatrix}$ 举例，两条边变成 $\begin{bmatrix}2\\1\end{bmatrix}$ 和 $\begin{bmatrix}1\\2\end{bmatrix}$，新面积为 $|2\cdot2-1\cdot1|=3$。也就是说，同一块平面区域经它变换后面积扩大为原来的 $3$ 倍：
 
@@ -91,7 +91,7 @@ $$
 
 ## 不改变方向的向量
 
-普通向量经过方阵 $A$ 后，长度和方向都可能变化。不过有些非零向量 $v$ 满足
+如果逐个追踪向量经过方阵 $A$ 后去了哪里，很难看出变换的规律：长度和方向都可能变化。不如先找那些**仍落在原来直线上的方向**。有些非零向量 $v$ 满足
 
 $$
 Av=\lambda v.
@@ -129,11 +129,35 @@ $$
 
 ![正交换坐标、沿特征方向缩放、再换回原坐标系](/img/posts/math-matrix-analysis/eigen-basis.svg)
 
+图中四支箭头按相同的单位长度绘制，但使用的不是同一组坐标轴。首尾两格用原坐标 $x_1,x_2$，中间两格用特征方向 $q_1,q_2$ 对应的坐标 $z_1,z_2$。因此，$x$ 在第一格水平、$z$ 在第二格指向斜上方，并不意味着同一个几何向量在原平面里转了 $45^\circ$；它只是换了一组坐标来表示。本例的 $Q$ 还包含镜像，不能仅凭不同坐标系下箭头的倾角把换基当成一次旋转。
+
 ## 对称矩阵的作用
 
 上例有个关键条件：$A^\top=A$，它是**实对称矩阵**。任意实对称方阵都有一组完整的标准正交特征向量，而且特征值是实数，因此总能按刚才的方式写成 $A=Q\Lambda Q^\top$。我们只需要记住这个结论的作用：它保证能找到一组互相垂直的方向，让变换逐方向地缩放。
 
-为什么不同缩放值对应的方向会垂直？若 $Aq_i=\lambda_iq_i$、$Aq_j=\lambda_jq_j$ 且 $A^\top=A$，同一个内积 $q_i^\top A q_j$ 一方面等于 $\lambda_jq_i^\top q_j$，另一方面等于 $\lambda_iq_i^\top q_j$。所以
+为什么不同缩放值对应的方向会垂直？设 $Aq_i=\lambda_iq_i$、$Aq_j=\lambda_jq_j$，并且 $A^\top=A$。先看 $A$ 作用于右边的 $q_j$，直接代入特征向量的定义：
+
+$$
+\begin{aligned}
+q_i^\top A q_j
+&=q_i^\top(\lambda_jq_j)\\
+&=\lambda_jq_i^\top q_j.
+\end{aligned}
+$$
+
+再看同一个式子，用转置把 $A$ 移到左边。由于 $A^\top=A$，它作用于 $q_i$ 后同样可以换成缩放倍数：
+
+$$
+\begin{aligned}
+q_i^\top A q_j
+&=(A^\top q_i)^\top q_j\\
+&=(Aq_i)^\top q_j\\
+&=(\lambda_iq_i)^\top q_j\\
+&=\lambda_iq_i^\top q_j.
+\end{aligned}
+$$
+
+左边是同一个数，因此 $\lambda_jq_i^\top q_j=\lambda_iq_i^\top q_j$。把两边相减，就得到
 
 $$
 (\lambda_i-\lambda_j)q_i^\top q_j=0.
@@ -182,3 +206,5 @@ $$
 - [MIT 18.06 Linear Algebra](https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/)
 - [UC Berkeley CS 189 Introduction to Machine Learning](https://eecs189.org/)
 - [Stanford CS229 Machine Learning](https://cs229.stanford.edu/)
+- [漫士沉思录《无痛线代》：线性代数很难学？因为没有深刻理解这个概念](https://www.bilibili.com/video/BV1wu411T7dj/)
+- [漫士沉思录《无痛线代》：特征值究竟体现了矩阵的什么特征？](https://www.bilibili.com/video/BV1TH4y1L7PV/)
