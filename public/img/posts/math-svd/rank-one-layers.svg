@@ -1,0 +1,16 @@
+<svg viewBox="0 0 680 237" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="三行两列的例子矩阵 C 分成两层秩一矩阵：第一层全为正、第二层含正负半单位，相加还原一零零一一一；只保留第一层就是秩一近似">
+	<style>
+		:root { --fg:#2b2b2b; --expert-fill:#dce9f7; --expert-stroke:#7b9cc4; --router-fill:#f5e9c9; --router-stroke:#b8912f; --step-fill:#eef1f4; --step-stroke:#9aa5b1; }
+		@media(prefers-color-scheme:dark) { :root { --fg:#d8d8d8; --expert-fill:#26364d; --expert-stroke:#83aad6; --router-fill:#4a3d1e; --router-stroke:#dab651; --step-fill:#2a2f36; --step-stroke:#6b7684; } }
+		text { fill:var(--fg); } .lbl { font:14px "Helvetica Neue",Helvetica,Arial,sans-serif; } .math { font:italic 18px "Times New Roman",Times,serif; } .cell { stroke-width:1.3;rx:3; }
+	</style>
+	<defs><g id="positive"><rect width="47" height="32" class="cell" fill="var(--expert-fill)" stroke="var(--expert-stroke)"/></g><g id="negative"><rect width="47" height="32" class="cell" fill="var(--router-fill)" stroke="var(--router-stroke)"/></g><g id="zero"><rect width="47" height="32" class="cell" fill="var(--step-fill)" stroke="var(--step-stroke)"/></g></defs>
+	<g class="math" text-anchor="middle"><text x="126" y="38">σ₁u₁v₁ᵀ</text><text x="336" y="38">σ₂u₂v₂ᵀ</text><text x="555" y="38">C</text><text x="235" y="125" style="font-size:27px">+</text><text x="445" y="125" style="font-size:27px">=</text></g>
+	<g><use href="#positive" x="77" y="62"/><use href="#positive" x="128" y="62"/><use href="#positive" x="77" y="98"/><use href="#positive" x="128" y="98"/><use href="#positive" x="77" y="134"/><use href="#positive" x="128" y="134"/>
+	<use href="#positive" x="287" y="62"/><use href="#negative" x="338" y="62"/><use href="#negative" x="287" y="98"/><use href="#positive" x="338" y="98"/><use href="#zero" x="287" y="134"/><use href="#zero" x="338" y="134"/>
+	<use href="#positive" x="506" y="62"/><use href="#zero" x="557" y="62"/><use href="#zero" x="506" y="98"/><use href="#positive" x="557" y="98"/><use href="#positive" x="506" y="134"/><use href="#positive" x="557" y="134"/></g>
+	<g class="math" style="font-size:15px" text-anchor="middle"><text x="100" y="84">½</text><text x="151" y="84">½</text><text x="100" y="120">½</text><text x="151" y="120">½</text><text x="100" y="156">1</text><text x="151" y="156">1</text>
+	<text x="310" y="84">½</text><text x="361" y="84">−½</text><text x="310" y="120">−½</text><text x="361" y="120">½</text><text x="310" y="156">0</text><text x="361" y="156">0</text>
+	<text x="529" y="84">1</text><text x="580" y="84">0</text><text x="529" y="120">0</text><text x="580" y="120">1</text><text x="529" y="156">1</text><text x="580" y="156">1</text></g>
+	<g class="lbl" text-anchor="middle"><text x="126" y="213">第一层，秩 1</text><text x="336" y="213">第二层，秩 1</text><text x="555" y="213">两层还原，秩 2</text></g>
+</svg>
