@@ -1,4 +1,4 @@
-<svg viewBox="0 0 700 284" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="昇腾 910C 与 A100、H100、B200 在显存、带宽、算力、互联四项指标上的对照条形图">
+<svg viewBox="0 0 700 284" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="910C 与 A100、H100、B200 的历史标称规格对照，不代表950系列实测性能；比较算力须统一精度和稀疏口径">
 	<style>
 		:root {
 			--fg: #2b2b2b;

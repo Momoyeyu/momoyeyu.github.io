@@ -1,4 +1,4 @@
-<svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="昇腾软件栈与 NVIDIA CUDA 栈的逐层对位：框架、推理引擎、运行时、通信、算子库、硬件">
+<svg viewBox="0 0 680 362" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="昇腾软件栈与 NVIDIA CUDA 栈的逐层对位：框架、推理引擎、运行时、通信、算子库、硬件">
 	<style>
 		:root {
 			--fg: #2b2b2b;
@@ -37,7 +37,7 @@
 
 	<!-- layer 1: inference engine -->
 	<rect x="40" y="50" width="270" height="36" class="box-nv"/><text x="175" y="73" class="lyr" text-anchor="middle">vLLM / TensorRT-LLM</text>
-	<rect x="370" y="50" width="270" height="36" class="box-as"/><text x="505" y="73" class="lyr" text-anchor="middle">vLLM-MindSpore / MindIE</text>
+	<rect x="370" y="50" width="270" height="36" class="box-as"/><text x="505" y="73" class="lyr" text-anchor="middle">vLLM-Ascend / MindIE</text>
 	<line x1="310" y1="68" x2="370" y2="68" class="eq"/><text x="340" y="102" class="tag" text-anchor="middle" opacity="0">·</text>
 	<text x="340" y="73" class="tag" text-anchor="middle">推理引擎</text>
 
@@ -72,5 +72,5 @@
 	<text x="340" y="313" class="tag" text-anchor="middle">硬件</text>
 
 	<!-- migration note -->
-	<text x="340" y="336" class="note" text-anchor="middle">CUDA→CANN 迁移主战场在框架与算子两层；推理走 vLLM 插件最顺</text>
+	<text x="340" y="352" class="note" text-anchor="middle">迁移重点：框架、算子、通信与版本适配</text>
 </svg>

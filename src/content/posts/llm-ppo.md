@@ -103,7 +103,7 @@ $$
 \pi^* = \arg\max_{\pi} \; \mathbb{E}_{\tau \sim \pi}\left[ G_0 \right].
 $$
 
-## 代码实现
+## 代码示例
 
 本文的代码只依赖 PyTorch，所有代码块共用下面的导入（完整可运行的版本见 [small-language-model](https://github.com/Momoyeyu/small-language-model)）：
 
@@ -118,45 +118,21 @@ import torch.nn.functional as F
 from torch.distributions import Categorical
 ```
 
-为了看清环境内部发生了什么，我们手写一个经典的 CartPole 环境：一根杆子通过铰链连在小车上，智能体每一步可以向左或向右推小车，目标是让杆子尽量长时间不倒。状态是一个 4 维向量，依次为小车位置、小车速度、杆子角度和杆子角速度；动作是 $\{0, 1\}$，表示向左或向右推；每坚持一步奖励为 1。物理参数与 [Gymnasium](https://gymnasium.farama.org/environments/classic_control/cart_pole/) 中的实现一致：
+本文的实验环境是经典的 CartPole：一根杆子通过铰链连在小车上，小车可以在一条有限长的轨道上左右移动，目标是让杆子尽量长时间不倒。
 
-```python
-class CartPole:
-    def __init__(self, max_steps: int = 500) -> None:
-        self.gravity, self.tau, self.force_mag = 9.8, 0.02, 10.0
-        self.mass_cart, self.mass_pole, self.length = 1.0, 0.1, 0.5
-        self.total_mass = self.mass_cart + self.mass_pole
-        self.pole_mass_length = self.mass_pole * self.length
-        self.theta_limit = 12 * 2 * math.pi / 360
-        self.x_limit = 2.4
-        self.max_steps = max_steps
-        self.obs_dim, self.n_actions = 4, 2
+![cartpole](/img/posts/llm-ppo/cartpole.svg)
 
-    def reset(self) -> list[float]:
-        self.state = [random.uniform(-0.05, 0.05) for _ in range(4)]
-        self.t = 0
-        return list(self.state)
+对应到 MDP 的各个要素：
 
-    def step(self, action: int) -> tuple[list[float], float, bool, bool]:
-        x, x_dot, theta, theta_dot = self.state
-        force = self.force_mag if action == 1 else -self.force_mag
-        cos, sin = math.cos(theta), math.sin(theta)
-        temp = (force + self.pole_mass_length * theta_dot**2 * sin) / self.total_mass
-        theta_acc = (self.gravity * sin - cos * temp) / (
-            self.length * (4 / 3 - self.mass_pole * cos**2 / self.total_mass)
-        )
-        x_acc = temp - self.pole_mass_length * theta_acc * cos / self.total_mass
-        x, x_dot = x + self.tau * x_dot, x_dot + self.tau * x_acc
-        theta, theta_dot = theta + self.tau * theta_dot, theta_dot + self.tau * theta_acc
-        self.state = [x, x_dot, theta, theta_dot]
-        self.t += 1
+* **状态**：一个 4 维向量，依次为小车位置、小车速度、杆子倾角和杆子角速度，每个回合开始时都在 0 附近随机初始化；
+* **动作**：$\{0, 1\}$，表示向左或向右给小车施加一个固定大小的力；
+* **奖励**：每坚持一步奖励为 1，因此回报就是坚持的步数；
+* **状态转移**：由小车与杆子的力学方程决定，每一步推进 0.02 秒，对智能体来说是未知的；
+* **回合结束**：杆子倾角超过 12° 或小车位置超出 ±2.4 时任务失败，坚持满 500 步时被强制截断。
 
-        terminated = abs(x) > self.x_limit or abs(theta) > self.theta_limit
-        truncated = self.t >= self.max_steps
-        return list(self.state), 1.0, terminated, truncated
-```
+环境对外只暴露两个接口：`reset()` 返回初始状态；`step(action)` 返回 `(next_state, reward, terminated, truncated)`。其中 `terminated` 表示任务本身失败，`truncated` 表示达到了最大步数被强制截断。二者在语义上不同：被截断时，智能体本可以继续获得奖励，这个区别在后面计算价值时会再次出现。
 
-`step` 返回两个结束标志：`terminated` 表示任务本身失败（杆子倒了或小车出界），`truncated` 表示达到了最大步数被强制截断。二者在语义上不同：被截断时，智能体本可以继续获得奖励，这个区别在后面计算价值时会再次出现。
+我们手写了这个环境，物理参数与 [Gymnasium](https://gymnasium.farama.org/environments/classic_control/cart_pole/) 中的实现一致，完整代码见开源仓库中的 [envs/cartpole.py](https://github.com/Momoyeyu/small-language-model/blob/master/envs/cartpole.py)。对于理解后面的算法而言，知道上面这些规则就足够了。
 
 有了环境，就可以用任意策略采样一条轨迹，并按前面的递推式倒序计算回报：
 
@@ -185,7 +161,7 @@ def rollout(env: CartPole, policy) -> tuple[list[list[float]], list[int], list[f
 用均匀随机的策略跑一下：
 
 ```python
-env = CartPole()
+env = CartPole()                      # 来自仓库中的 envs/cartpole.py
 states, actions, rewards = rollout(env, lambda s: random.randint(0, 1))
 len(rewards)                          # 随机策略平均只能坚持约 22 步
 discounted_returns([1.0, 0.0, 2.0, 3.0], 0.9)  # [4.807, 4.23, 4.7, 3.0]
@@ -253,7 +229,7 @@ $$
 
 由于 $V^\pi(s)$ 是 $Q^\pi(s, a)$ 在策略下的平均，优势函数在策略下的期望恒为零：$\mathbb{E}_{a \sim \pi}\left[ A^\pi(s, a) \right] = 0$。$A > 0$ 说明这个动作好于平均，应该更多地选择它；$A < 0$ 则相反。优势函数是本文的核心概念之一，从策略梯度到 PPO，所有的更新方向本质上都由它决定。
 
-## 代码实现
+## 代码示例
 
 CartPole 的状态是连续的，无法枚举，因此我们换一个经典的小例子来验证上面的公式：[Sutton & Barto](http://incompleteideas.net/book/the-book-2nd.html) 书中的**随机游走**（random walk）。一条链上有 A 到 E 五个非终止状态，两端各有一个终止状态；智能体从中间的 C 出发，每一步以 1/2 的概率向左或向右移动，到达右端终止状态时获得奖励 1，其他情况奖励均为 0。
 
@@ -478,7 +454,7 @@ $$
 
 其中权重 $\Psi_t$ 可以是 $G_t$、$G_t - V(s_t)$，也可以是 $Q^\pi(s_t, a_t)$ 或 $A^\pi(s_t, a_t)$。后文的所有改进，本质上都是在寻找一个**偏差更小、方差也更小**的 $\Psi_t$。
 
-## 代码实现
+## 代码示例
 
 策略网络与价值网络都用一个两层的 MLP。策略网络输出 logits，再包装成 `Categorical` 分布，这样采样和计算 $\log \pi_\theta(a \mid s)$ 都很方便：
 
@@ -627,7 +603,7 @@ $$
 
 有了优势估计，Critic 的回归目标也随之确定：$\hat{R}_t = \hat{A}_t + V(s_t)$。它同样是回报的一个低方差估计，在 $\lambda = 1$ 时恰好等于 $G_t$。
 
-## 代码实现
+## 代码示例
 
 `compute_gae` 对一段长度为 $T$ 的数据倒序递推。这段数据可能跨越多个回合，因此需要用 `dones` 标记回合边界：若第 $t$ 步之后回合结束，下一个状态的价值不应再参与计算，递推也要在此处断开。若数据的最后一步回合尚未结束，则用 `last_value` 即 $V(s_T)$ 做 bootstrap：
 
@@ -876,7 +852,7 @@ PPO 的论文只给出了核心算法，而实际效果在很大程度上取决�
 
 近似 KL 通常用 $\mathbb{E}\left[ (\rho_t - 1) - \log \rho_t \right]$ 估计，它恒为非负，且是 $D_{\text{KL}}(\pi_{\theta_{\text{old}}} \| \pi_\theta)$ 的无偏估计，参见 [Approximating KL Divergence](http://joschu.net/blog/kl-approx.html)。
 
-## 代码实现
+## 代码示例
 
 Actor 与 Critic 使用独立的两层 MLP，并按上面的方式初始化：
 
@@ -1095,7 +1071,7 @@ $$
 
 值得注意的是，这里的 KL 与 PPO 的裁剪约束的是**不同的东西**：裁剪约束的是每轮更新前后的新旧策略 $\pi_\theta$ 与 $\pi_{\theta_{\text{old}}}$，保证单次优化的稳定；KL 惩罚约束的是当前策略与固定的参考模型 $\pi^{\text{ref}}$，保证整个训练过程不偏离初始模型太远。
 
-KL 惩罚还有一个很有用的理论性质：对于上面的目标，最优策略有闭式解 $\pi^*(y \mid x) \propto \pi^{\text{ref}}(y \mid x) \exp\left( r_\psi(x, y) / \beta \right)$。也就是说，$\beta$ 越小，最优策略越偏向高奖励的回答；$\beta$ 越大，越接近参考模型。下面的代码实现会直接验证这一点。
+KL 惩罚还有一个很有用的理论性质：对于上面的目标，最优策略有闭式解 $\pi^*(y \mid x) \propto \pi^{\text{ref}}(y \mid x) \exp\left( r_\psi(x, y) / \beta \right)$。也就是说，$\beta$ 越小，最优策略越偏向高奖励的回答；$\beta$ 越大，越接近参考模型。下面的代码示例会直接验证这一点。
 
 ## 四个模型
 
@@ -1116,7 +1092,7 @@ KL 惩罚还有一个很有用的理论性质：对于上面的目标，最优�
 
 这四个模型通常都与策略模型同等规模，因此 RLHF 的显存与计算开销远大于 SFT：两个需要训练的模型要保存梯度与优化器状态，生成阶段还是逐 token 的自回归解码。这也是 PPO-based RLHF 工程上最主要的难点，关于实际训练中的稳定性问题，可以参考 [Secrets of RLHF in Large Language Models Part I: PPO](https://arxiv.org/abs/2307.04964)。此外，InstructGPT 还在 PPO 损失中混入了一部分预训练数据的语言模型损失（PPO-ptx），以减轻对齐带来的通用能力下降。
 
-## 代码实现
+## 代码示例
 
 我们用一个玩具例子把上面的流程完整跑一遍。策略是一个小型的 GRU 语言模型，词表大小为 8，每次从 BOS 开始生成长度为 8 的序列；Actor 与 Critic 共享主干，分别用一个 LM Head 和一个 Value Head 输出：
 
