@@ -1,4 +1,4 @@
-<svg viewBox="0 0 700 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="昇腾芯片路线图：2019 年昇腾 910 起步，经 910B、910C，到已官宣的 950PR、950DT、960、970">
+<svg viewBox="0 0 700 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="截至2026年10月的昇腾进度：910C已商用，950PR少量上市，950DT测试中；960DT和960PR分别规划2027年一季度与三季度，970和980仍是路线图">
 	<style>
 		:root {
 			--fg: #2b2b2b;
@@ -40,52 +40,53 @@
 
 	<!-- shipped: solid -->
 	<rect x="14" y="72" width="84" height="66" class="box" fill="var(--done-fill)" stroke="var(--done-stroke)"/>
-	<text x="56" y="95" class="lbl" text-anchor="middle">910 / 310</text>
-	<text x="56" y="114" class="sub" text-anchor="middle">云训练 + 推理</text>
-	<text x="56" y="128" class="sub" text-anchor="middle">达芬奇架构</text>
-	<text x="56" y="160" class="date" text-anchor="middle">2019</text>
+	<text x="56" y="95" class="lbl" text-anchor="middle">910C</text>
+	<text x="56" y="114" class="sub" text-anchor="middle">A3 已商用</text>
+	<text x="56" y="128" class="sub" text-anchor="middle">128G HBM</text>
+	<text x="56" y="160" class="date" text-anchor="middle">2025</text>
 
 	<rect x="112" y="72" width="84" height="66" class="box" fill="var(--done-fill)" stroke="var(--done-stroke)"/>
-	<text x="154" y="95" class="lbl" text-anchor="middle">910B</text>
-	<text x="154" y="114" class="sub" text-anchor="middle">制裁后主力</text>
-	<text x="154" y="128" class="sub" text-anchor="middle">境内工艺</text>
-	<text x="154" y="160" class="date" text-anchor="middle">2022</text>
+	<text x="154" y="95" class="lbl" text-anchor="middle">950PR</text>
+	<text x="154" y="114" class="sub" text-anchor="middle">少量上市</text>
+	<text x="154" y="128" class="sub" text-anchor="middle">推理 / 推荐</text>
+	<text x="154" y="160" class="date" text-anchor="middle">2026 Q1</text>
 
-	<rect x="210" y="72" width="84" height="66" class="box" fill="var(--done-fill)" stroke="var(--done-stroke)"/>
-	<text x="252" y="95" class="lbl" text-anchor="middle">910C</text>
-	<text x="252" y="114" class="sub" text-anchor="middle">128G · 3.2TB/s</text>
-	<text x="252" y="128" class="sub" text-anchor="middle">双 die 封装</text>
-	<text x="252" y="160" class="date" text-anchor="middle">2025 Q1</text>
+	<rect x="210" y="72" width="84" height="66" class="box plan" fill="var(--plan-fill)" stroke="var(--plan-stroke)"/>
+	<text x="252" y="95" class="lbl" text-anchor="middle">950DT</text>
+	<text x="252" y="114" class="sub" text-anchor="middle">训练测试中</text>
+	<text x="252" y="128" class="sub" text-anchor="middle">待规模供货</text>
+	<text x="252" y="160" class="date" text-anchor="middle">2026 末起</text>
 
 	<!-- roadmap: dashed -->
 	<rect x="308" y="72" width="84" height="66" class="box plan" fill="var(--plan-fill)" stroke="var(--plan-stroke)"/>
-	<text x="350" y="95" class="lbl" text-anchor="middle">950PR</text>
-	<text x="350" y="114" class="sub" text-anchor="middle">prefill/推荐</text>
-	<text x="350" y="128" class="sub" text-anchor="middle">HiBL 1.6TB/s</text>
-	<text x="350" y="160" class="date" text-anchor="middle">2026 Q1</text>
+	<text x="350" y="95" class="lbl" text-anchor="middle">960DT</text>
+	<text x="350" y="114" class="sub" text-anchor="middle">规划提前</text>
+	<text x="350" y="128" class="sub" text-anchor="middle">训练方向</text>
+	<text x="350" y="160" class="date" text-anchor="middle">2027 Q1</text>
 
 	<rect x="406" y="72" width="84" height="66" class="box plan" fill="var(--plan-fill)" stroke="var(--plan-stroke)"/>
-	<text x="448" y="95" class="lbl" text-anchor="middle">950DT</text>
-	<text x="448" y="114" class="sub" text-anchor="middle">decode/训练</text>
-	<text x="448" y="128" class="sub" text-anchor="middle">HiZQ 4TB/s</text>
-	<text x="448" y="160" class="date" text-anchor="middle">2026 Q4</text>
+	<text x="448" y="95" class="lbl" text-anchor="middle">960PR</text>
+	<text x="448" y="114" class="sub" text-anchor="middle">规划提前</text>
+	<text x="448" y="128" class="sub" text-anchor="middle">推理方向</text>
+	<text x="448" y="160" class="date" text-anchor="middle">2027 Q3</text>
 
 	<rect x="504" y="72" width="84" height="66" class="box plan" fill="var(--plan-fill)" stroke="var(--plan-stroke)"/>
-	<text x="546" y="95" class="lbl" text-anchor="middle">960</text>
-	<text x="546" y="114" class="sub" text-anchor="middle">规格翻倍</text>
-	<text x="546" y="128" class="sub" text-anchor="middle">HiF4</text>
-	<text x="546" y="160" class="date" text-anchor="middle">2027 Q4</text>
+	<text x="546" y="95" class="lbl" text-anchor="middle">970</text>
+	<text x="546" y="114" class="sub" text-anchor="middle">后续芯片</text>
+	<text x="546" y="128" class="sub" text-anchor="middle">路线图</text>
+	<text x="546" y="160" class="date" text-anchor="middle">2028</text>
 
 	<rect x="602" y="72" width="84" height="66" class="box plan" fill="var(--plan-fill)" stroke="var(--plan-stroke)"/>
-	<text x="644" y="95" class="lbl" text-anchor="middle">970</text>
-	<text x="644" y="114" class="sub" text-anchor="middle">再翻倍</text>
-	<text x="644" y="128" class="sub" text-anchor="middle">互联 4TB/s</text>
-	<text x="644" y="160" class="date" text-anchor="middle">2028 Q4</text>
+	<text x="644" y="95" class="lbl" text-anchor="middle">980</text>
+	<text x="644" y="114" class="sub" text-anchor="middle">后续芯片</text>
+	<text x="644" y="128" class="sub" text-anchor="middle">路线图</text>
+	<text x="644" y="160" class="date" text-anchor="middle">2029</text>
 
 	<!-- group labels -->
-	<text x="154" y="200" class="grp" text-anchor="middle">已发布</text>
-	<text x="497" y="200" class="grp" text-anchor="middle">路线图（2025.9 全联接官宣）</text>
+	<text x="105" y="200" class="grp" text-anchor="middle">已商用 / 少量上市</text>
+	<text x="252" y="200" class="grp" text-anchor="middle">测试中</text>
+	<text x="497" y="200" class="grp" text-anchor="middle">规划中（2026.9 更新）</text>
 
 	<!-- pace note -->
-	<text x="350" y="240" class="sub" text-anchor="middle">官方口径：一年一代，算力逐代翻倍</text>
+	<text x="350" y="240" class="sub" text-anchor="middle">按已上市、测试和规划进度排列</text>
 </svg>

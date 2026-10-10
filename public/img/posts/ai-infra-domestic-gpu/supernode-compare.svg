@@ -1,4 +1,4 @@
-<svg viewBox="0 0 660 420" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="CloudMatrix 384 与 GB200 NVL72 的六项指标对照：算力、显存、互联占优，功耗与价格更高">
+<svg viewBox="0 0 660 450" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="2025年第三方估算：CloudMatrix 384 与 GB200 NVL72 的系统标称规格和成本，不是2026年同卡数实测或采购报价">
 	<style>
 		:root {
 			--fg: #2b2b2b;
@@ -28,7 +28,7 @@
 	<rect x="350" y="16" width="14" height="14" rx="3" class="nv"/><text x="369" y="28" class="leg">GB200 NVL72</text>
 
 	<!-- group 1 -->
-	<text x="60" y="60" class="grp">能力指标（越高越好）</text>
+	<text x="60" y="60" class="grp">2025 年估算规格，规模不同</text>
 
 	<!-- row: 芯片数 -->
 	<text x="60" y="82" class="lbl">芯片数（颗）</text>
@@ -51,7 +51,7 @@
 	<rect x="200" y="262" width="178" height="14" class="nv"/><text x="384" y="274" class="val">~130 TB/s</text>
 
 	<!-- group 2 -->
-	<text x="60" y="306" class="grp">代价指标（越低越好）</text>
+	<text x="60" y="306" class="grp">功耗与价格估算</text>
 
 	<!-- row: 功耗 -->
 	<text x="60" y="328" class="lbl">系统功耗</text>
@@ -62,4 +62,5 @@
 	<text x="60" y="380" class="lbl">整机价格</text>
 	<rect x="200" y="386" width="370" height="14" class="cm"/><text x="576" y="398" class="val">~800 万美元</text>
 	<rect x="200" y="404" width="141" height="14" class="nv"/><text x="347" y="416" class="val">~300 万美元</text>
+	<text x="330" y="443" class="val" text-anchor="middle">SemiAnalysis 2025 年系统估算 · 384 卡 vs 72 卡</text>
 </svg>
