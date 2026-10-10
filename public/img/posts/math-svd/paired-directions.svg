@@ -1,0 +1,14 @@
+<svg viewBox="0 0 640 228" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="两个输入方向分别经过矩阵 A 映射到对应的输出方向，第一对拉伸 sigma 一倍，第二对拉伸 sigma 二倍，配对关系不能任意交换">
+	<style>
+		:root { --fg:#2b2b2b; --line:#3d3d3d; --expert-fill:#dce9f7; --expert-stroke:#7b9cc4; --router-fill:#f5e9c9; --router-stroke:#b8912f; --step-stroke:#9aa5b1; }
+		@media(prefers-color-scheme:dark) { :root { --fg:#d8d8d8; --line:#b8b8b8; --expert-fill:#26364d; --expert-stroke:#83aad6; --router-fill:#4a3d1e; --router-stroke:#dab651; --step-stroke:#6b7684; } }
+		text { fill:var(--fg); } .lbl { font:14px "Helvetica Neue",Helvetica,Arial,sans-serif; } .math { font:italic 20px "Times New Roman",Times,serif; }
+	</style>
+	<defs><marker id="blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="var(--expert-stroke)"/></marker><marker id="gold" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="var(--router-stroke)"/></marker></defs>
+	<text x="110" y="29" class="lbl" text-anchor="middle">输入空间 ℝⁿ</text><text x="530" y="29" class="lbl" text-anchor="middle">输出空间 ℝᵐ</text>
+	<g stroke-width="1.6"><rect x="55" y="48" width="110" height="55" rx="8" fill="var(--expert-fill)" stroke="var(--expert-stroke)"/><rect x="475" y="48" width="110" height="55" rx="8" fill="var(--expert-fill)" stroke="var(--expert-stroke)"/><rect x="55" y="125" width="110" height="55" rx="8" fill="var(--router-fill)" stroke="var(--router-stroke)"/><rect x="475" y="125" width="110" height="55" rx="8" fill="var(--router-fill)" stroke="var(--router-stroke)"/></g>
+	<g class="math" text-anchor="middle"><text x="110" y="81">v₁</text><text x="530" y="81">σ₁u₁</text><text x="110" y="159">v₂</text><text x="530" y="159">σ₂u₂</text></g>
+	<path d="M170 75 H468" stroke="var(--expert-stroke)" stroke-width="2" fill="none" marker-end="url(#blue)"/><path d="M170 152 H468" stroke="var(--router-stroke)" stroke-width="2" fill="none" marker-end="url(#gold)"/>
+	<g class="math" text-anchor="middle"><text x="320" y="64">A</text><text x="320" y="141">A</text></g>
+	<text x="320" y="211" class="math" style="font-size:16px" text-anchor="middle">Avᵢ = σᵢuᵢ　，　σᵢ &gt; 0</text>
+</svg>

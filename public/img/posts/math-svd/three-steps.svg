@@ -1,0 +1,17 @@
+<svg viewBox="0 0 720 255" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="带方向标记的圆环：输入图形经 V 转置更换坐标系后大小不变，经 Sigma 沿轴伸缩成椭圆，最后经 U 在输出空间重新定向">
+	<style>
+		:root { --fg:#2b2b2b; --line:#3d3d3d; --expert-fill:#dce9f7; --expert-stroke:#7b9cc4; --router-stroke:#b8912f; --step-stroke:#9aa5b1; --accent:#e0a800; }
+		@media(prefers-color-scheme:dark) { :root { --fg:#d8d8d8; --line:#b8b8b8; --expert-fill:#26364d; --expert-stroke:#83aad6; --router-stroke:#dab651; --step-stroke:#6b7684; --accent:#e8c547; } }
+		text { fill:var(--fg); } .lbl { font:14px "Helvetica Neue",Helvetica,Arial,sans-serif; } .math { font:italic 17px "Times New Roman",Times,serif; } .axis { stroke:var(--step-stroke);stroke-width:1.2;fill:none; }
+	</style>
+	<defs><marker id="arw" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="var(--line)"/></marker></defs>
+	<g class="axis"><path d="M30 140 H139 M85 196 V82 M190 140 H309 M250 196 V82 M350 140 H489 M420 196 V82 M520 140 H659 M590 196 V82"/></g>
+	<g fill="none" stroke="var(--line)" stroke-width="1.5" marker-end="url(#arw)"><path d="M145 140 H182 M315 140 H342 M493 140 H512"/></g>
+	<g class="math" text-anchor="middle"><text x="162" y="122">Vᵀ</text><text x="328" y="122">Σ</text><text x="503" y="122">U</text></g>
+	<g transform="translate(85 140)"><circle r="34" fill="var(--expert-fill)" stroke="var(--expert-stroke)" stroke-width="2.1"/><path d="M0 -29 L9 -14 L-9 -14 Z" fill="var(--accent)"/><circle cx="15" cy="9" r="3" fill="var(--router-stroke)"/></g>
+	<g transform="translate(250 140) rotate(-28)"><circle r="34" fill="var(--expert-fill)" stroke="var(--expert-stroke)" stroke-width="2.1"/><path d="M0 -29 L9 -14 L-9 -14 Z" fill="var(--accent)"/><circle cx="15" cy="9" r="3" fill="var(--router-stroke)"/></g>
+	<g transform="translate(420 140) scale(1.85 .60) rotate(-28)"><circle r="34" fill="var(--expert-fill)" stroke="var(--expert-stroke)" stroke-width="2.1"/><path d="M0 -29 L9 -14 L-9 -14 Z" fill="var(--accent)"/><circle cx="15" cy="9" r="3" fill="var(--router-stroke)"/></g>
+	<g transform="translate(590 140) rotate(35) scale(1.85 .60) rotate(-28)"><circle r="34" fill="var(--expert-fill)" stroke="var(--expert-stroke)" stroke-width="2.1"/><path d="M0 -29 L9 -14 L-9 -14 Z" fill="var(--accent)"/><circle cx="15" cy="9" r="3" fill="var(--router-stroke)"/></g>
+	<g class="math" text-anchor="middle"><text x="85" y="51">x</text><text x="250" y="51">Vᵀx</text><text x="420" y="51">ΣVᵀx</text><text x="590" y="51">UΣVᵀx</text></g>
+	<g class="lbl" text-anchor="middle"><text x="85" y="228">输入</text><text x="250" y="228">坐标轴改变</text><text x="420" y="228">沿轴伸缩</text><text x="590" y="228">输出重新定向</text></g>
+</svg>

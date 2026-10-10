@@ -1,12 +1,12 @@
 ---
 title: 国产算力
 date: 2026-10-04
-updated: 2026-10-09
+updated: 2026-10-10
 description: 核对国产算力的芯片交付、超节点部署、软件适配与选型边界。
-tags: [AI Infra, GPU]
+tags: [AI Infra, GPU，昇腾]
 category: AI Infra
 episode: 8
-draft: true
+draft: false
 lang: zh_CN
 ---
 
@@ -28,9 +28,9 @@ lang: zh_CN
 | --- | --- | --- | --- | --- |
 | 910C | 已商用 | 训练、推理 | 128 GB | 3.2 TB/s |
 | 950PR | 少量上市 | Prefill、推荐 | 112 GB | 1.4 TB/s |
-| 950DT | 超节点测试中 | Decode、训练 | 规划 144 GB | 规划 4 TB/s |
-| 960DT / 960PR | 规划 2027 Q1 / Q3 | 训练 / 推理 | 未公布 | 未公布 |
-| 970 / 980 | 规划 2028 / 2029 | 待公布 | 未公布 | 未公布 |
+| 950DT | 超节点测试中 | Decode、训练 | 预计 144 GB | 预计 4 TB/s |
+| 960DT / 960PR | 预计 2027 Q1 / Q3 | 训练 / 推理 | 未公布 | 未公布 |
+| 970 / 980 | 预计 2028 / 2029 | 待公布 | 未公布 | 未公布 |
 
 华为在 2026 年全联接大会展出了 Atlas 950 超节点，并发布 Peerium 计算架构。Ascend C 新增 SIMD/SIMT 编程模式和 PTO ISA，芯片与软件栈同步迭代。960DT、960PR 的计划上市时间也提前到 2027 年一季度和三季度：
 
