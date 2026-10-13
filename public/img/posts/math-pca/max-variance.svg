@@ -1,0 +1,20 @@
+<svg viewBox="0 0 700 235" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="左图同一数据云沿延展方向投影，投影点散开，方差大；右图沿近垂直方向投影，投影点挤在中心，方差小">
+	<style>
+		:root { --fg:#2b2b2b; --line:#3d3d3d; --expert-stroke:#7b9cc4; --router-stroke:#b8912f; --step-stroke:#9aa5b1; --accent:#e0a800; }
+		@media (prefers-color-scheme:dark) { :root { --fg:#d8d8d8; --line:#b8b8b8; --expert-stroke:#83aad6; --router-stroke:#dab651; --step-stroke:#6b7684; --accent:#e8c547; } }
+		text { fill:var(--fg); } .lbl { font:14px "Helvetica Neue",Helvetica,Arial,sans-serif; } .math { font:italic 16px "Times New Roman",Times,serif; }
+	</style>
+	<defs><marker id="bl2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="var(--expert-stroke)"/></marker></defs>
+	<path d="M350 18 V220" stroke="var(--step-stroke)" stroke-width="1" stroke-dasharray="3 6" opacity=".6"/>
+	<path d="M49 150 L291 86" stroke="var(--expert-stroke)" stroke-width="2.2" fill="none" marker-end="url(#bl2)"/>
+	<g fill="var(--line)" opacity=".8"><circle cx="116" cy="142" r="2.2"/><circle cx="124" cy="120" r="2.2"/><circle cx="135" cy="134" r="2.2"/><circle cx="139" cy="118" r="2.2"/><circle cx="151" cy="133" r="2.2"/><circle cx="154" cy="116" r="2.2"/><circle cx="163" cy="124" r="2.2"/><circle cx="169" cy="113" r="2.2"/><circle cx="180" cy="124" r="2.2"/><circle cx="183" cy="107" r="2.2"/><circle cx="195" cy="117" r="2.2"/><circle cx="200" cy="102" r="2.2"/><circle cx="212" cy="114" r="2.2"/><circle cx="219" cy="99" r="2.2"/><circle cx="228" cy="112" r="2.2"/></g>
+	<g stroke="var(--accent)" stroke-width="1.4" stroke-dasharray="4 3" fill="none"><path d="M116 142 L114 133 M135 134 L133 128 M151 133 L148 124 M183 107 L178 116 M200 102 L202 109 M228 112 L220 104"/></g>
+	<g fill="var(--router-stroke)"><circle cx="114" cy="133" r="2.6"/><circle cx="127" cy="130" r="2.6"/><circle cx="133" cy="128" r="2.6"/><circle cx="148" cy="124" r="2.6"/><circle cx="162" cy="120" r="2.6"/><circle cx="178" cy="116" r="2.6"/><circle cx="194" cy="112" r="2.6"/><circle cx="202" cy="109" r="2.6"/><circle cx="220" cy="104" r="2.6"/></g>
+	<g class="math"><text x="294" y="80">w₁</text></g>
+	<path d="M511 12 L569 224" stroke="var(--expert-stroke)" stroke-width="2.2" fill="none" marker-end="url(#bl2)"/>
+	<g fill="var(--line)" opacity=".8"><circle cx="486" cy="142" r="2.2"/><circle cx="494" cy="120" r="2.2"/><circle cx="505" cy="134" r="2.2"/><circle cx="509" cy="118" r="2.2"/><circle cx="521" cy="133" r="2.2"/><circle cx="524" cy="116" r="2.2"/><circle cx="533" cy="124" r="2.2"/><circle cx="539" cy="113" r="2.2"/><circle cx="550" cy="124" r="2.2"/><circle cx="553" cy="107" r="2.2"/><circle cx="565" cy="117" r="2.2"/><circle cx="570" cy="102" r="2.2"/><circle cx="582" cy="114" r="2.2"/><circle cx="589" cy="99" r="2.2"/><circle cx="598" cy="112" r="2.2"/></g>
+	<g stroke="var(--accent)" stroke-width="1.4" stroke-dasharray="4 3" fill="none"><path d="M486 142 L542 127 M553 107 L538 111 M589 99 L539 112 M521 133 L542 127 M570 102 L538 111"/></g>
+	<g fill="var(--router-stroke)"><circle cx="542" cy="127" r="2.6"/><circle cx="537" cy="108" r="2.6"/><circle cx="538" cy="112" r="2.6"/><circle cx="538" cy="110" r="2.6"/><circle cx="541" cy="122" r="2.6"/><circle cx="539" cy="113" r="2.6"/><circle cx="542" cy="126" r="2.6"/><circle cx="541" cy="123" r="2.6"/><circle cx="542" cy="125" r="2.6"/></g>
+	<g class="math"><text x="497" y="22">w′</text></g>
+	<g class="lbl" text-anchor="middle"><text x="170" y="228">沿延展方向投影，方差大</text><text x="540" y="228">换近垂直方向，方差小</text></g>
+</svg>
