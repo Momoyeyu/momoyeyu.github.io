@@ -1,0 +1,22 @@
+<svg viewBox="0 0 700 235" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="左图数据云偏离原点，过原点的最佳直线被迫指向数据中心而非延展方向；右图数据居中后，直线对准延展方向并可做正交投影">
+	<style>
+		:root { --fg:#2b2b2b; --line:#3d3d3d; --expert-fill:#dce9f7; --expert-stroke:#7b9cc4; --router-stroke:#b8912f; --step-stroke:#9aa5b1; --accent:#e0a800; }
+		@media (prefers-color-scheme:dark) { :root { --fg:#d8d8d8; --line:#b8b8b8; --expert-fill:#26364d; --expert-stroke:#83aad6; --router-stroke:#dab651; --step-stroke:#6b7684; --accent:#e8c547; } }
+		text { fill:var(--fg); } .lbl { font:14px "Helvetica Neue",Helvetica,Arial,sans-serif; } .math { font:italic 16px "Times New Roman",Times,serif; }
+	</style>
+	<defs><marker id="ax" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="var(--step-stroke)"/></marker><marker id="bl" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="var(--expert-stroke)"/></marker></defs>
+	<path d="M345 18 V220" stroke="var(--step-stroke)" stroke-width="1" stroke-dasharray="3 6" opacity=".6"/>
+	<text x="195" y="20" text-anchor="middle" class="lbl">均值远离原点</text><text x="500" y="20" text-anchor="middle" class="lbl">中心化之后</text>
+	<g stroke="var(--step-stroke)" stroke-width="1.2" fill="none" marker-end="url(#ax)"><path d="M55 195 H322 M55 195 V30 M370 118 H612 M480 220 V22"/></g>
+	<path d="M55 195 L327 5" stroke="var(--expert-stroke)" stroke-width="2.2" fill="none" marker-end="url(#bl)"/>
+	<path d="M148 99 L292 61" stroke="var(--router-stroke)" stroke-width="1.8" stroke-dasharray="6 4" fill="none"/>
+	<g fill="var(--line)" opacity=".8"><circle cx="166" cy="104" r="2.2"/><circle cx="174" cy="82" r="2.2"/><circle cx="185" cy="96" r="2.2"/><circle cx="189" cy="80" r="2.2"/><circle cx="201" cy="95" r="2.2"/><circle cx="204" cy="78" r="2.2"/><circle cx="213" cy="86" r="2.2"/><circle cx="219" cy="75" r="2.2"/><circle cx="230" cy="86" r="2.2"/><circle cx="233" cy="69" r="2.2"/><circle cx="245" cy="79" r="2.2"/><circle cx="250" cy="64" r="2.2"/><circle cx="262" cy="76" r="2.2"/><circle cx="269" cy="61" r="2.2"/><circle cx="278" cy="74" r="2.2"/></g>
+	<circle cx="220" cy="80" r="4" fill="var(--router-stroke)"/>
+	<g class="math"><text x="44" y="212">O</text><text x="230" y="99">x̄</text><text x="300" y="72" class="math">延展方向</text></g>
+	<path d="M364 149 L596 87" stroke="var(--expert-stroke)" stroke-width="2.2" fill="none" marker-end="url(#bl)"/>
+	<g fill="var(--line)" opacity=".8"><circle cx="426" cy="142" r="2.2"/><circle cx="434" cy="120" r="2.2"/><circle cx="445" cy="134" r="2.2"/><circle cx="449" cy="118" r="2.2"/><circle cx="461" cy="133" r="2.2"/><circle cx="464" cy="116" r="2.2"/><circle cx="473" cy="124" r="2.2"/><circle cx="479" cy="113" r="2.2"/><circle cx="490" cy="124" r="2.2"/><circle cx="493" cy="107" r="2.2"/><circle cx="505" cy="117" r="2.2"/><circle cx="510" cy="102" r="2.2"/><circle cx="522" cy="114" r="2.2"/><circle cx="529" cy="99" r="2.2"/><circle cx="538" cy="112" r="2.2"/></g>
+	<g stroke="var(--accent)" stroke-width="1.4" stroke-dasharray="4 3" fill="none"><path d="M434 120 L437 130 M445 134 L443 128 M493 107 L495 114 M510 102 L512 109 M529 99 L530 105"/></g>
+	<g fill="var(--router-stroke)"><circle cx="437" cy="130" r="2.6"/><circle cx="443" cy="128" r="2.6"/><circle cx="495" cy="114" r="2.6"/><circle cx="512" cy="109" r="2.6"/><circle cx="530" cy="105" r="2.6"/></g>
+	<g class="math"><text x="596" y="80">w₁</text></g>
+	<g class="lbl" text-anchor="middle"><text x="195" y="228">直线追向数据中心，偏离延展方向</text><text x="500" y="228">直线对准延展方向，投影保留变化</text></g>
+</svg>
