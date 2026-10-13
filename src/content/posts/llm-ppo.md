@@ -132,7 +132,7 @@ from torch.distributions import Categorical
 
 环境对外只暴露两个接口：`reset()` 返回初始状态；`step(action)` 返回 `(next_state, reward, terminated, truncated)`。其中 `terminated` 表示任务本身失败，`truncated` 表示达到了最大步数被强制截断。二者在语义上不同：被截断时，智能体本可以继续获得奖励，这个区别在后面计算价值时会再次出现。
 
-我们手写了这个环境，物理参数与 [Gymnasium](https://gymnasium.farama.org/environments/classic_control/cart_pole/) 中的实现一致，完整代码见开源仓库中的 [envs/cartpole.py](https://github.com/Momoyeyu/small-language-model/blob/master/envs/cartpole.py)。对于理解后面的算法而言，知道上面这些规则就足够了。
+我们手写了这个环境，物理参数与 [Gymnasium](https://gymnasium.farama.org/environments/classic_control/cart_pole/) 中的实现一致，完整代码见开源仓库中的 [slm/envs.py](https://github.com/Momoyeyu/small-language-model/blob/master/slm/envs.py)。对于理解后面的算法而言，知道上面这些规则就足够了。
 
 有了环境，就可以用任意策略采样一条轨迹，并按前面的递推式倒序计算回报：
 
