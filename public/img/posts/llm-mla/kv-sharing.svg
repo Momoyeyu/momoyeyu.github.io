@@ -1,0 +1,116 @@
+<svg viewBox="0 0 660 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="MHA、GQA、MQA 对比：query 头与键值头的共享关系">
+	<style>
+		:root {
+			--fg: #2b2b2b;
+			--line: #3d3d3d;
+			--expert-fill: #dce9f7;
+			--expert-stroke: #7b9cc4;
+			--router-fill: #f5e9c9;
+			--router-stroke: #b8912f;
+			--step-fill: #eef1f4;
+			--step-stroke: #9aa5b1;
+			--gate-fill: #ffffff;
+			--accent: #e0a800;
+		}
+		@media (prefers-color-scheme: dark) {
+			:root {
+				--fg: #d8d8d8;
+				--line: #b8b8b8;
+				--expert-fill: #26364d;
+				--expert-stroke: #6c8ebf;
+				--router-fill: #4a3d1e;
+				--router-stroke: #c9a53f;
+				--step-fill: #2a2f36;
+				--step-stroke: #6b7684;
+				--gate-fill: #1e1e1e;
+				--accent: #e8c547;
+			}
+		}
+		text { fill: var(--fg); }
+		.lbl { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 15px; }
+		.math { font-family: "Times New Roman", Times, serif; font-style: italic; }
+		.edge { stroke: var(--line); stroke-width: 1.4; fill: none; }
+		.box { stroke-width: 1.6; rx: 7; }
+	</style>
+	<defs>
+		<marker id="arw" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+			<path d="M0,0 L10,5 L0,10 z" fill="var(--line)"/>
+		</marker>
+	</defs>
+
+	<!-- ============ MHA panel ============ -->
+	<rect x="16" y="30" width="200" height="236" class="box" fill="var(--step-fill)" stroke="var(--step-stroke)"/>
+	<text x="116" y="56" class="lbl" text-anchor="middle" font-weight="600">MHA</text>
+	<!-- q heads -->
+	<rect x="36"  y="76" width="32" height="26" class="box" fill="var(--expert-fill)" stroke="var(--expert-stroke)"/>
+	<rect x="76"  y="76" width="32" height="26" class="box" fill="var(--expert-fill)" stroke="var(--expert-stroke)"/>
+	<rect x="116" y="76" width="32" height="26" class="box" fill="var(--expert-fill)" stroke="var(--expert-stroke)"/>
+	<rect x="156" y="76" width="32" height="26" class="box" fill="var(--expert-fill)" stroke="var(--expert-stroke)"/>
+	<text x="52"  y="94" class="math" font-size="14" text-anchor="middle">q<tspan baseline-shift="sub" font-size="9">1</tspan></text>
+	<text x="92"  y="94" class="math" font-size="14" text-anchor="middle">q<tspan baseline-shift="sub" font-size="9">2</tspan></text>
+	<text x="132" y="94" class="math" font-size="14" text-anchor="middle">q<tspan baseline-shift="sub" font-size="9">3</tspan></text>
+	<text x="172" y="94" class="math" font-size="14" text-anchor="middle">q<tspan baseline-shift="sub" font-size="9">4</tspan></text>
+	<!-- kv heads -->
+	<rect x="36"  y="168" width="32" height="26" class="box" fill="var(--router-fill)" stroke="var(--router-stroke)"/>
+	<rect x="76"  y="168" width="32" height="26" class="box" fill="var(--router-fill)" stroke="var(--router-stroke)"/>
+	<rect x="116" y="168" width="32" height="26" class="box" fill="var(--router-fill)" stroke="var(--router-stroke)"/>
+	<rect x="156" y="168" width="32" height="26" class="box" fill="var(--router-fill)" stroke="var(--router-stroke)"/>
+	<text x="52"  y="186" class="math" font-size="14" text-anchor="middle">kv<tspan baseline-shift="sub" font-size="9">1</tspan></text>
+	<text x="92"  y="186" class="math" font-size="14" text-anchor="middle">kv<tspan baseline-shift="sub" font-size="9">2</tspan></text>
+	<text x="132" y="186" class="math" font-size="14" text-anchor="middle">kv<tspan baseline-shift="sub" font-size="9">3</tspan></text>
+	<text x="172" y="186" class="math" font-size="14" text-anchor="middle">kv<tspan baseline-shift="sub" font-size="9">4</tspan></text>
+	<!-- arrows: each q uses its own kv -->
+	<path d="M52,102 L52,164" class="edge" marker-end="url(#arw)"/>
+	<path d="M92,102 L92,164" class="edge" marker-end="url(#arw)"/>
+	<path d="M132,102 L132,164" class="edge" marker-end="url(#arw)"/>
+	<path d="M172,102 L172,164" class="edge" marker-end="url(#arw)"/>
+	<text x="116" y="230" class="lbl" font-size="13" text-anchor="middle">每头一份 K/V</text>
+	<text x="116" y="252" class="math" font-size="14" text-anchor="middle">缓存 2 · 4 · d<tspan baseline-shift="sub" font-size="9">head</tspan></text>
+
+	<!-- ============ GQA panel ============ -->
+	<rect x="230" y="30" width="200" height="236" class="box" fill="var(--step-fill)" stroke="var(--step-stroke)"/>
+	<text x="330" y="56" class="lbl" text-anchor="middle" font-weight="600">GQA（2 组）</text>
+	<rect x="250"  y="76" width="32" height="26" class="box" fill="var(--expert-fill)" stroke="var(--expert-stroke)"/>
+	<rect x="290"  y="76" width="32" height="26" class="box" fill="var(--expert-fill)" stroke="var(--expert-stroke)"/>
+	<rect x="330" y="76" width="32" height="26" class="box" fill="var(--expert-fill)" stroke="var(--expert-stroke)"/>
+	<rect x="370" y="76" width="32" height="26" class="box" fill="var(--expert-fill)" stroke="var(--expert-stroke)"/>
+	<text x="266"  y="94" class="math" font-size="14" text-anchor="middle">q<tspan baseline-shift="sub" font-size="9">1</tspan></text>
+	<text x="306"  y="94" class="math" font-size="14" text-anchor="middle">q<tspan baseline-shift="sub" font-size="9">2</tspan></text>
+	<text x="346" y="94" class="math" font-size="14" text-anchor="middle">q<tspan baseline-shift="sub" font-size="9">3</tspan></text>
+	<text x="386" y="94" class="math" font-size="14" text-anchor="middle">q<tspan baseline-shift="sub" font-size="9">4</tspan></text>
+	<!-- 2 kv heads -->
+	<rect x="286"  y="168" width="32" height="26" class="box" fill="var(--router-fill)" stroke="var(--router-stroke)"/>
+	<rect x="334" y="168" width="32" height="26" class="box" fill="var(--router-fill)" stroke="var(--router-stroke)"/>
+	<text x="302"  y="186" class="math" font-size="14" text-anchor="middle">kv<tspan baseline-shift="sub" font-size="9">1</tspan></text>
+	<text x="350" y="186" class="math" font-size="14" text-anchor="middle">kv<tspan baseline-shift="sub" font-size="9">2</tspan></text>
+	<!-- group 1: q1,q2 -> kv1 -->
+	<path d="M266,102 L296,164" class="edge" marker-end="url(#arw)"/>
+	<path d="M306,102 L304,164" class="edge" marker-end="url(#arw)"/>
+	<!-- group 2: q3,q4 -> kv2 -->
+	<path d="M346,102 L348,164" class="edge" marker-end="url(#arw)"/>
+	<path d="M386,102 L356,164" class="edge" marker-end="url(#arw)"/>
+	<text x="330" y="230" class="lbl" font-size="13" text-anchor="middle">组内共享 K/V</text>
+	<text x="330" y="252" class="math" font-size="14" text-anchor="middle">缓存 2 · 2 · d<tspan baseline-shift="sub" font-size="9">head</tspan></text>
+
+	<!-- ============ MQA panel ============ -->
+	<rect x="444" y="30" width="200" height="236" class="box" fill="var(--step-fill)" stroke="var(--step-stroke)"/>
+	<text x="544" y="56" class="lbl" text-anchor="middle" font-weight="600">MQA</text>
+	<rect x="464"  y="76" width="32" height="26" class="box" fill="var(--expert-fill)" stroke="var(--expert-stroke)"/>
+	<rect x="504"  y="76" width="32" height="26" class="box" fill="var(--expert-fill)" stroke="var(--expert-stroke)"/>
+	<rect x="544" y="76" width="32" height="26" class="box" fill="var(--expert-fill)" stroke="var(--expert-stroke)"/>
+	<rect x="584" y="76" width="32" height="26" class="box" fill="var(--expert-fill)" stroke="var(--expert-stroke)"/>
+	<text x="480"  y="94" class="math" font-size="14" text-anchor="middle">q<tspan baseline-shift="sub" font-size="9">1</tspan></text>
+	<text x="520"  y="94" class="math" font-size="14" text-anchor="middle">q<tspan baseline-shift="sub" font-size="9">2</tspan></text>
+	<text x="560" y="94" class="math" font-size="14" text-anchor="middle">q<tspan baseline-shift="sub" font-size="9">3</tspan></text>
+	<text x="600" y="94" class="math" font-size="14" text-anchor="middle">q<tspan baseline-shift="sub" font-size="9">4</tspan></text>
+	<!-- 1 shared kv -->
+	<rect x="528" y="168" width="32" height="26" class="box" fill="var(--router-fill)" stroke="var(--router-stroke)"/>
+	<text x="544" y="186" class="math" font-size="14" text-anchor="middle">kv</text>
+	<!-- all q -> single kv -->
+	<path d="M480,102 L532,164" class="edge" marker-end="url(#arw)"/>
+	<path d="M520,102 L538,164" class="edge" marker-end="url(#arw)"/>
+	<path d="M560,102 L550,164" class="edge" marker-end="url(#arw)"/>
+	<path d="M600,102 L556,164" class="edge" marker-end="url(#arw)"/>
+	<text x="544" y="230" class="lbl" font-size="13" text-anchor="middle">全部头共享一份 K/V</text>
+	<text x="544" y="252" class="math" font-size="14" text-anchor="middle">缓存 2 · 1 · d<tspan baseline-shift="sub" font-size="9">head</tspan></text>
+</svg>
