@@ -1,0 +1,104 @@
+<svg viewBox="0 0 640 330" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="KV Cache 示意：新 token 只算自己的 K/V 追加进缓存，query 与全部缓存做注意力">
+	<style>
+		:root {
+			--fg: #2b2b2b;
+			--line: #3d3d3d;
+			--expert-fill: #dce9f7;
+			--expert-stroke: #7b9cc4;
+			--router-fill: #f5e9c9;
+			--router-stroke: #b8912f;
+			--step-fill: #eef1f4;
+			--step-stroke: #9aa5b1;
+			--gate-fill: #ffffff;
+			--accent: #e0a800;
+		}
+		@media (prefers-color-scheme: dark) {
+			:root {
+				--fg: #d8d8d8;
+				--line: #b8b8b8;
+				--expert-fill: #26364d;
+				--expert-stroke: #6c8ebf;
+				--router-fill: #4a3d1e;
+				--router-stroke: #c9a53f;
+				--step-fill: #2a2f36;
+				--step-stroke: #6b7684;
+				--gate-fill: #1e1e1e;
+				--accent: #e8c547;
+			}
+		}
+		text { fill: var(--fg); }
+		.lbl { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 15px; }
+		.math { font-family: "Times New Roman", Times, serif; font-style: italic; }
+		.tag { fill: var(--accent); font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }
+		.edge { stroke: var(--line); stroke-width: 1.6; fill: none; }
+		.box { stroke-width: 1.6; rx: 9; }
+	</style>
+	<defs>
+		<marker id="arw" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+			<path d="M0,0 L10,5 L0,10 z" fill="var(--line)"/>
+		</marker>
+	</defs>
+
+	<!-- cache container -->
+	<text x="44" y="28" class="lbl">KV Cache</text>
+	<rect x="40" y="34" width="560" height="76" class="box" fill="var(--step-fill)" stroke="var(--step-stroke)"/>
+
+	<!-- cached cells -->
+	<rect x="64"  y="52" width="72" height="36" class="box" fill="var(--gate-fill)" stroke="var(--line)"/>
+	<text x="100" y="76" class="math" font-size="15" text-anchor="middle">k<tspan baseline-shift="sub" font-size="10">1</tspan>, v<tspan baseline-shift="sub" font-size="10">1</tspan></text>
+	<rect x="148" y="52" width="72" height="36" class="box" fill="var(--gate-fill)" stroke="var(--line)"/>
+	<text x="184" y="76" class="math" font-size="15" text-anchor="middle">k<tspan baseline-shift="sub" font-size="10">2</tspan>, v<tspan baseline-shift="sub" font-size="10">2</tspan></text>
+	<rect x="232" y="52" width="72" height="36" class="box" fill="var(--gate-fill)" stroke="var(--line)"/>
+	<text x="268" y="76" class="math" font-size="15" text-anchor="middle">k<tspan baseline-shift="sub" font-size="10">3</tspan>, v<tspan baseline-shift="sub" font-size="10">3</tspan></text>
+	<text x="342" y="76" class="lbl" text-anchor="middle">···</text>
+	<rect x="380" y="52" width="84" height="36" class="box" fill="var(--gate-fill)" stroke="var(--line)"/>
+	<text x="422" y="76" class="math" font-size="15" text-anchor="middle">k<tspan baseline-shift="sub" font-size="10">t−1</tspan>, v<tspan baseline-shift="sub" font-size="10">t−1</tspan></text>
+	<!-- newly appended cell -->
+	<rect x="488" y="52" width="84" height="36" class="box" fill="var(--router-fill)" stroke="var(--accent)" stroke-width="2.2"/>
+	<text x="530" y="68" class="math" font-size="14" text-anchor="middle">k<tspan baseline-shift="sub" font-size="10">t</tspan>, v<tspan baseline-shift="sub" font-size="10">t</tspan></text>
+	<text x="530" y="83" class="tag" font-size="11" text-anchor="middle">追加</text>
+
+	<!-- input token -->
+	<rect x="60" y="208" width="110" height="48" class="box" fill="var(--expert-fill)" stroke="var(--expert-stroke)"/>
+	<text x="115" y="228" class="lbl" font-size="13" text-anchor="middle">新 token</text>
+	<text x="115" y="248" class="math" font-size="16" text-anchor="middle">h<tspan baseline-shift="sub" font-size="10">t</tspan></text>
+
+	<!-- projections -->
+	<rect x="230" y="196" width="76" height="36" class="box" fill="var(--expert-fill)" stroke="var(--expert-stroke)"/>
+	<text x="268" y="220" class="math" font-size="16" text-anchor="middle">W<tspan baseline-shift="super" font-size="10">Q</tspan></text>
+	<rect x="330" y="196" width="76" height="36" class="box" fill="var(--expert-fill)" stroke="var(--expert-stroke)"/>
+	<text x="368" y="220" class="math" font-size="16" text-anchor="middle">W<tspan baseline-shift="super" font-size="10">K</tspan></text>
+	<rect x="430" y="196" width="76" height="36" class="box" fill="var(--expert-fill)" stroke="var(--expert-stroke)"/>
+	<text x="468" y="220" class="math" font-size="16" text-anchor="middle">W<tspan baseline-shift="super" font-size="10">V</tspan></text>
+
+	<path d="M170,224 L226,216" class="edge" marker-end="url(#arw)"/>
+	<path d="M170,232 L326,220" class="edge" marker-end="url(#arw)"/>
+	<path d="M170,240 L426,226" class="edge" marker-end="url(#arw)"/>
+
+	<!-- q/k/v outputs -->
+	<path d="M268,232 L268,258" class="edge" marker-end="url(#arw)"/>
+	<text x="268" y="278" class="math" font-size="16" text-anchor="middle">q<tspan baseline-shift="sub" font-size="10">t</tspan></text>
+	<path d="M368,232 L368,258" class="edge" marker-end="url(#arw)"/>
+	<text x="368" y="278" class="math" font-size="16" text-anchor="middle">k<tspan baseline-shift="sub" font-size="10">t</tspan></text>
+	<path d="M468,232 L468,258" class="edge" marker-end="url(#arw)"/>
+	<text x="468" y="278" class="math" font-size="16" text-anchor="middle">v<tspan baseline-shift="sub" font-size="10">t</tspan></text>
+
+	<!-- append arrows into new cache cell -->
+	<path d="M372,260 C415,215 470,140 502,92" class="edge" marker-end="url(#arw)"/>
+	<path d="M472,260 C495,225 545,145 560,92" class="edge" marker-end="url(#arw)"/>
+
+	<!-- attention -->
+	<rect x="500" y="272" width="100" height="42" class="box" fill="var(--router-fill)" stroke="var(--router-stroke)"/>
+	<text x="550" y="298" class="lbl" text-anchor="middle">注意力</text>
+
+	<!-- q_t -> attention -->
+	<path d="M276,282 C360,298 430,298 496,294" class="edge" marker-end="url(#arw)"/>
+
+	<!-- whole cache feeds attention (left margin + bottom route) -->
+	<path d="M44,110 L44,318 L496,318 L496,298" class="edge" marker-end="url(#arw)"/>
+	<text x="240" y="310" class="lbl" font-size="13" text-anchor="middle">全部缓存的 K/V 参与注意力</text>
+
+	<!-- output -->
+	<path d="M600,293 L622,293" class="edge" marker-end="url(#arw)"/>
+	<text x="634" y="298" class="math" font-size="17" text-anchor="middle">o<tspan baseline-shift="sub" font-size="10">t</tspan></text>
+</svg>

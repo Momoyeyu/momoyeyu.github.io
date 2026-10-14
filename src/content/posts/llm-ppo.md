@@ -1,11 +1,12 @@
 ---
 title: 从零理解 PPO
 date: 2026-10-05
+updated: 2026-10-14
 description: 本文以 PPO 为目标，从马尔可夫决策过程、价值函数、策略梯度讲起，经过 Actor-Critic、GAE 与信任域，最终理解 PPO 以及它在 LLM 的 RLHF 中的用法。
-tags: [LLM, 强化学习, PPO]
+tags: [LLM, 强化学习, PPO, RLHF]
 category: LLM
 episode: 4
-draft: true
+draft: false
 lang: zh_CN
 ---
 
@@ -161,7 +162,7 @@ def rollout(env: CartPole, policy) -> tuple[list[list[float]], list[int], list[f
 用均匀随机的策略跑一下：
 
 ```python
-env = CartPole()                      # 来自仓库中的 envs/cartpole.py
+env = CartPole()                      # 来自仓库中的 slm/envs.py
 states, actions, rewards = rollout(env, lambda s: random.randint(0, 1))
 len(rewards)                          # 随机策略平均只能坚持约 22 步
 discounted_returns([1.0, 0.0, 2.0, 3.0], 0.9)  # [4.807, 4.23, 4.7, 3.0]
@@ -594,13 +595,25 @@ $$
 \hat{A}_t^{(n)} = \sum_{l=0}^{n-1} \gamma^l \delta_{t+l}.
 $$
 
-对 $\hat{A}_t^{(1)}, \hat{A}_t^{(2)}, \dots$ 以 $(1 - \lambda), (1 - \lambda)\lambda, (1 - \lambda)\lambda^2, \dots$ 为权重加权平均，整理后得到一个非常简洁的形式：
+对 $\hat{A}_t^{(1)}, \hat{A}_t^{(2)}, \dots$ 以 $(1 - \lambda), (1 - \lambda)\lambda, (1 - \lambda)\lambda^2, \dots$ 为权重加权平均，其中 $(1 - \lambda)$ 是归一化因子，保证权重和为 1。完整推导为
 
 $$
+\begin{aligned}
 \hat{A}_t^{\text{GAE}(\gamma, \lambda)}
-=
+&=
+(1 - \lambda)\sum_{n=1}^{\infty} \lambda^{n-1} \hat{A}_t^{(n)} \\
+&=
+(1 - \lambda)\sum_{n=1}^{\infty} \lambda^{n-1} \sum_{l=0}^{n-1} \gamma^l \delta_{t+l} \\
+&=
+(1 - \lambda)\sum_{l=0}^{\infty} \gamma^l \delta_{t+l} \sum_{n=l+1}^{\infty} \lambda^{n-1} \\
+&=
+(1 - \lambda)\sum_{l=0}^{\infty} \gamma^l \delta_{t+l} \cdot \frac{\lambda^l}{1 - \lambda} \\
+&=
 \sum_{l=0}^{\infty} (\gamma \lambda)^l \delta_{t+l}.
+\end{aligned}
 $$
+
+关键在于第三行：交换求和次序后，$\delta_{t+l}$ 出现在所有 $n > l$ 的 $n$ 步估计中，因此收集到几何级数的尾部和 $\lambda^l / (1 - \lambda)$；归一化因子恰好抵消，每个 $\delta_{t+l}$ 净得 $\lambda^l$，与自带的 $\gamma^l$ 拼成 $(\gamma \lambda)^l$。
 
 参数 $\lambda \in [0, 1]$ 控制偏差与方差的权衡：
 
@@ -693,17 +706,20 @@ $$
 也就是说，从分布 $q$ 采样，再用权重 $\frac{p(x)}{q(x)}$ 修正，就能得到分布 $p$ 下期望的无偏估计。这个权重称为**重要性权重**。
 
 ```python
-def importance_sampling(p: torch.Tensor, q: torch.Tensor, f: torch.Tensor, n: int = 1000):
-    # p, q, f: [4]
-    x = torch.multinomial(q, n, replacement=True)  # [n]，从行为分布 q 采样
-    w = p[x] / q[x]                                # [n]，重要性权重
-    return (w * f[x]).mean().item(), w.std().item()
+def importance_sampling(target_probs: torch.Tensor, behavior_probs: torch.Tensor,
+                        values: torch.Tensor, n_samples: int = 1000):
+    samples = torch.multinomial(behavior_probs, n_samples, replacement=True)
+    importance_weights = target_probs[samples] / behavior_probs[samples]
+    estimate = (importance_weights * values[samples]).mean()
+    return estimate.item(), importance_weights.std().item()
 
 
-p = torch.tensor([0.1, 0.2, 0.3, 0.4])             # [4]
-f = torch.tensor([1.0, 2.0, 3.0, 4.0])             # [4]，真实期望为 3.0
-importance_sampling(p, torch.tensor([0.15, 0.2, 0.3, 0.35]), f, 100000)  # 估计 ≈ 3.00，权重 std ≈ 0.15
-importance_sampling(p, torch.tensor([0.7, 0.2, 0.07, 0.03]), f, 100000)  # 估计 ≈ 2.96，权重 std ≈ 2.39
+target_probs = torch.tensor([0.1, 0.2, 0.3, 0.4])
+values = torch.tensor([1.0, 2.0, 3.0, 4.0])   # 真实期望 3.0
+# 行为分布接近目标分布：估计 ≈ 3.00，权重 std ≈ 0.15
+importance_sampling(target_probs, torch.tensor([0.15, 0.2, 0.3, 0.35]), values, 100000)
+# 行为分布远离目标分布：估计 ≈ 2.96，权重 std ≈ 2.39
+importance_sampling(target_probs, torch.tensor([0.7, 0.2, 0.07, 0.03]), values, 100000)
 ```
 
 两种情况下估计都是无偏的，但当 $q$ 与 $p$ 相差很大时，重要性权重的方差会急剧增大，估计变得不可靠。这个现象决定了后面所有方法的设计：**新旧策略不能相差太远**。
