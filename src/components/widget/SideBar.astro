@@ -1,4 +1,6 @@
 ---
+import I18nKey from "@i18n/i18nKey";
+import { i18n } from "@i18n/translation";
 import { getSortedPosts } from "@utils/content-utils";
 import { getCategoryUrl, getPostUrlBySlug } from "@utils/url-utils";
 import { Icon } from "astro-icon/components";
@@ -151,7 +153,7 @@ const hasBelow = winEnd < seriesPosts.length;
                         <button class="series-collapse-btn hidden w-full h-9">
                             <div class="btn-plain rounded-lg w-full h-full flex items-center justify-center">
                                 <div class="text-[var(--primary)] flex items-center justify-center gap-2 text-sm">
-                                    <Icon name="material-symbols:expand-less-rounded" class="text-[1.25rem]" /> 收起
+                                    <Icon name="material-symbols:expand-less-rounded" class="text-[1.25rem]" /> {i18n(I18nKey.collapse)}
                                 </div>
                             </div>
                         </button>

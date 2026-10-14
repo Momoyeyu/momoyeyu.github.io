@@ -3,7 +3,7 @@ title: 国产算力
 date: 2026-10-04
 updated: 2026-10-10
 description: 核对国产算力的芯片交付、超节点部署、软件适配与选型边界。
-tags: [AI Infra, GPU，昇腾]
+tags: [AI Infra, GPU, 昇腾]
 category: AI Infra
 episode: 8
 draft: false
