@@ -33,6 +33,7 @@ export const ko: Translation = {
 	[Key.systemMode]: "시스템 모드",
 
 	[Key.more]: "더 보기",
+	[Key.collapse]: "접기",
 
 	[Key.author]: "저자",
 	[Key.publishedAt]: "게시일",

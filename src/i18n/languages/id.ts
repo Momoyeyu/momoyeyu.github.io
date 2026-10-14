@@ -33,6 +33,7 @@ export const id: Translation = {
 	[Key.systemMode]: "Sistem",
 
 	[Key.more]: "Lainnya",
+	[Key.collapse]: "Ciutkan",
 
 	[Key.author]: "Penulis",
 	[Key.publishedAt]: "Diterbitkan pada",

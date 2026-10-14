@@ -27,6 +27,13 @@ const className = Astro.props.class;
                 <Icon name="material-symbols:more-horiz" class="text-[1.75rem]"></Icon> {i18n(I18nKey.more)}
             </div>
         </button>
+    </div>
+    <div class="collapse-btn hidden px-4 -mb-2 mt-2">
+        <button class="btn-plain rounded-lg w-full h-9">
+            <div class="text-[var(--primary)] flex items-center justify-center gap-2 -translate-x-2">
+                <Icon name="material-symbols:expand-less-rounded" class="text-[1.75rem]"></Icon> {i18n(I18nKey.collapse)}
+            </div>
+        </button>
     </div>}
 </widget-layout>
 
@@ -46,10 +53,17 @@ const className = Astro.props.class;
 
             const id = this.dataset.id;
             const btn = this.querySelector('.expand-btn');
+            const collapseBtn = this.querySelector('.collapse-btn');
             const wrapper = this.querySelector(`#${id}`)
             btn!.addEventListener('click', () => {
                 wrapper!.classList.remove('collapsed');
                 btn!.classList.add('hidden');
+                collapseBtn!.classList.remove('hidden');
+            })
+            collapseBtn!.addEventListener('click', () => {
+                wrapper!.classList.add('collapsed');
+                collapseBtn!.classList.add('hidden');
+                btn!.classList.remove('hidden');
             })
         }
     }
