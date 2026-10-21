@@ -1,6 +1,7 @@
 ---
 title: Transformer 的数学表示与代码实现
 date: 2026-09-14
+updated: 2026-10-21
 description: '从 Transformer 开始的 LLM 之旅'
 tags: [LLM, 深度学习, Transformer]
 category: LLM
@@ -66,7 +67,7 @@ $$
 q = x W_q, \quad k = x W_k, \quad v = x W_v
 $$
 
-由于序列中的每个 $x$ 相互独立，我们可以将输入序列拼接成矩阵 $X \in \mathbb{R}^{n \times d_{\text{model}}}$，其中 $n$ 为序列长度。
+由于线性投影逐位置应用相同的权重，我们可以将输入序列拼接成矩阵 $X \in \mathbb{R}^{n \times d_{\text{model}}}$，其中 $n$ 为序列长度。
 通过 GPU 直接对矩阵 $X$ 进行运算，从而大幅提高计算效率：
 
 $$
@@ -86,7 +87,7 @@ $$
 
 使用 $\text{softmax}$ 是为了把注意力分数转化为一组非负且和为 1 的权重，使得注意力输出是 Value 的加权平均，从而符合“注意力”的语义。
 
-公式中还除以了 $\sqrt{d_k}$，这一项是由于点积运算会导致结果的方差变为原来的 $d_k$ 倍，
+公式中还除以了 $\sqrt{d_k}$，在 Q、K 各分量近似独立、均值为 0 且方差为 1 的假设下，点积的方差为 $d_k$，
 所以这里除以标准差 $\sqrt{d_k}$ 可以抵消 $d_k$ 对点积结果量级的影响，让 logits 的数值范围保持稳定。
 这么做可以避免 $\text{softmax}$ 进入饱和区，让模型的训练更稳定。
 
@@ -259,7 +260,7 @@ def padding_mask(pad: torch.Tensor) -> torch.Tensor:
 ### Cross Attention
 
 前面我们在 Self-Attention 中默认三个输入都来自同一个 $X$。
-事实上，注意力机制并不要求三者同源，只要经过投影后的 $Q$ 和 $K$ 维度一致即可。
+事实上，注意力机制并不要求三者同源，需要经过投影后的 $Q$ 和 $K$ 特征维度一致，并且 $K$、$V$ 的序列长度一致。
 因此可以把 MHA 推广为接受三个输入的形式：
 
 $$
@@ -305,14 +306,14 @@ $W_{\text{out}} \in \mathbb{R}^{d_{\text{model}} \times V}$，$V$ 是词表大�
 $p \in \mathbb{R}^{n \times V}$，每一行对应一个位置上所有 token 的概率分布。
 
 训练时，取 $p$ 中对应目标 token 的概率计算交叉熵损失。
-推理时，原始论文使用 beam search，beam size 取 4，即同时保留概率最高的 4 条候选序列，最终选择整体概率最高的一条作为输出。
+推理时，原始论文使用 beam search，beam size 取 4，即同时保留概率最高的 4 条候选序列，并用长度惩罚对候选序列的累计对数概率评分，论文中长度惩罚系数取 0.6。
 
 不难发现，在词表 $V$ 非常大时，$W_{\text{out}}$ 的参数量会十分庞大，而这个问题其实是有办法缓解的。
 
 第一种方式是通过加一层线性变换，先将 Decoder 最后一层的输出特征维度压缩，得到一个更小的向量，然后再进行最终的线性变换。这种方式的优点是实现简单，不过压缩会带来一定的性能损失，实际应用中较少使用。
 
 另一种方式是使用 weight tying，即权重绑定，即让 $W_{\text{out}}$ 与输入的 embedding 层的权重矩阵共享参数：$W_{\text{out}} = E^T$，其中 $E \in \mathbb{R}^{V \times d_{\text{model}}}$ 是 embedding 矩阵。
-这样可以省去对线性分类头参数的独立学习，减少模型参数量。这种方式对模型性能几乎没有影响，在输入输出词表一致的任务中已成为标准做法，原始论文也采用了这种方式。
+这样可以省去对线性分类头参数的独立学习，减少模型参数量。这种方式在输入输出词表一致的任务中很常见，也可能改善困惑度；具体效果取决于模型与训练设置，原始论文也采用了这种方式。
 
 ```python
 class LinearClassifier(nn.Module):
@@ -349,7 +350,7 @@ class Embedding(nn.Module):
         nn.init.normal_(self.w_e.weight, mean=0.0, std=d_model ** -0.5)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        # x: [batch, n]（token id）
+        # x: [batch, n]，token id
         return self.w_e(x) * math.sqrt(self.d_model)  # [batch, n, d_model]
 ```
 
@@ -360,7 +361,7 @@ class Embedding(nn.Module):
 
 最后我们讲一下位置编码。
 
-由于 Transformer 的自注意力机制本身对序列中 token 的顺序是不敏感的，即打乱输入序列的顺序，计算结果也不会改变。因此，我们需要额外为每个 token 注入位置信息。原始论文采用了一种基于正弦和余弦函数的固定位置编码：
+在没有位置编码与位置相关 mask 时，自注意力对输入位置的排列是等变的：重排输入会使输出按同样的方式重排，而非保持输出矩阵不变。因此，我们需要额外为每个 token 注入位置信息。原始论文采用了一种基于正弦和余弦函数的固定位置编码：
 
 $$
 PE_{(pos, 2i)} = \sin\left(\frac{pos}{10000^{2i / d_{\text{model}}}}\right)
@@ -565,8 +566,8 @@ class Transformer(nn.Module):
 推理阶段则可以根据 next_token 的选择策略灵活决定何时、对哪些部分做 $\text{softmax}$。比如：
 - 只选概率最大的 token 时可以直接用 `argmax`；
 - 要做带 temperature 的采样时，可以先对 logits 除以 $T$ 再做 $\text{softmax}$；
-- 要做 top-k 或 top-p 采样时，可以先选出候选集，再在候选集上做 $\text{softmax}$；
-- 或者要做 beam search，每一步也只需要 logits 的相对大小来选 top-k 候选。
+- top-k 可以直接按 logits 排序选出候选集，再归一化；top-p 则需要根据归一化概率的累计质量确定候选集；
+- beam search 需要把每步的 `log_softmax` 分数累加到各条候选序列上；不同前缀的归一化常数不同，不能直接跨序列比较原始 logits。
 
 这样设计的好处是，模型不必在输出时立即对整个 logits 做 $\text{softmax}$，把这一步留给真正需要它的地方。
 
