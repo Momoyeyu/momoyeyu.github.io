@@ -32,7 +32,7 @@ $$
 \mathbf{x} \leftarrow \mathbf{x} + F(\mathbf{x}).
 $$
 
-这意味着每一层的输出都会在原有表示上不断累加。如果各子层输出近似不相关、方差大致恒定，那么残差流（residual stream）的方差会随层数近似线性增长；存在相关性时不一定遵循这一规律。一个简单的实验就能观察到这个现象：
+这意味着每一层的输出都会在原有表示上不断累加。如果各子层输出近似不相关、方差大致恒定，那么残差流（residual stream）的方差会随层数近似线性增长。一个简单的实验就能观察到这个现象：
 
 ```python
 x = torch.randn(8, 128, 512)               # [N, L, C]
@@ -43,7 +43,7 @@ for _ in range(64):
 # stds 大致随 sqrt(层数) 增长，64 层后尺度已明显漂移
 ```
 
-归一化的作用，就是在每个子层读取残差流之前，把输入重新拉回一个固定的尺度，控制各层输入的尺度，但并不保证完整分布一致：
+归一化的作用，就是在每个子层读取残差流之前，把输入重新拉回一个固定的尺度，使各层看到的输入尺度保持稳定：
 
 ![residual-stream](/img/posts/llm-normalization/residual-stream.svg)
 
@@ -250,8 +250,8 @@ $$
 实现层面有几个值得注意的点：
 
 * **统计量在 fp32 下计算**。bf16 激活先 upcast 到 fp32 求均方根，再转回原精度做逐元素乘法，避免累加误差；
-* **用 `rsqrt` 表达倒数平方根**。这有利于内核优化；速度与误差取决于硬件、精度和实现，不能普遍保证它比 `sqrt` 加除法更快或更准确；
-* **fused kernel**。Liger Kernel、FlashInfer 等提供将统计、缩放与乘权重融合的实现；`nn.RMSNorm` 是否走融合内核取决于 PyTorch 版本、设备和编译路径，不能由模块名推断；
+* **用 `rsqrt` 表达倒数平方根**。这有利于内核优化；具体速度与误差可以通过基准测试比较；
+* **fused kernel**。Liger Kernel、FlashInfer 等提供将统计、缩放与乘权重融合的实现；`nn.RMSNorm` 是否走融合内核取决于 PyTorch 版本、设备和编译路径；
 * **Gemma 的小差别**。Gemma 系列的 RMSNorm 权重形式是 $(1 + w)$ 而不是 $w$，参数初始化为 0 而不是 1。数学上等价，但读代码时容易困惑，值得留意。
 
 ## 代码实现
@@ -282,7 +282,7 @@ assert torch.allclose(
 )
 ```
 
-至于“RMSNorm 到底快多少”，可以直接写个基准对比：同样 `[T, d]` 的输入，分别跑 `nn.LayerNorm` 与 `nn.RMSNorm` 各千次取平均。由于两者都是访存受限算子，实际收益主要来自少维护一组 $\beta$ 参数、少一次均值规约，实际加速比例取决于输入形状、设备、精度与内核实现，不能在没有测量的情况下给出固定范围。GPU 基准还应先预热，并同步设备或使用设备计时器。
+至于“RMSNorm 到底快多少”，可以直接写个基准对比：同样 `[T, d]` 的输入，分别跑 `nn.LayerNorm` 与 `nn.RMSNorm` 各千次取平均。由于两者都是访存受限算子，实际收益主要来自少维护一组 $\beta$ 参数、少一次均值规约，具体加速比例值得用实测数字说话。GPU 基准还应先预热，并同步设备或使用设备计时器。
 
 # 归一化放在哪
 
@@ -296,7 +296,7 @@ $$
 \mathbf{x} \leftarrow \text{Norm}(\mathbf{x} + F(\mathbf{x})).
 $$
 
-Post-Norm 的每一层输出都被强制拉回固定尺度，表达能力较强；但代价是残差路径上每一层都要穿过一次归一化。[On Layer Normalization in the Transformer Architecture](https://arxiv.org/abs/2002.04745) 的分析表明，Post-Norm 在训练初期靠近输出层的梯度会异常放大，因此常需 warmup 或其他稳定训练的初始化、缩放设计，不能将 warmup 视为所有 Post-Norm 模型的必要条件。
+Post-Norm 的每一层输出都被强制拉回固定尺度，表达能力较强；但代价是残差路径上每一层都要穿过一次归一化。[On Layer Normalization in the Transformer Architecture](https://arxiv.org/abs/2002.04745) 的分析表明，Post-Norm 在训练初期靠近输出层的梯度会异常放大，因此深层时通常需要配合 warmup 才能稳定收敛。
 
 ## Pre-Norm
 
@@ -321,9 +321,9 @@ Post-Norm 与 Pre-Norm 各有代价，因此也出现了一些折中设计：
 
 | 方案 | 稳定性 | 效果上限 | 实现复杂度 |
 | --- | --- | --- | --- |
-| Post-Norm | 对初始化与 warmup 较敏感 | 依赖任务与优化设置 | 低 |
-| Pre-Norm | 通常较易训练 | 深层贡献可能被残差流稀释 | 低 |
-| DeepNorm / Sandwich | 通过缩放或额外归一化改善稳定性 | 仍需实验评估 | 需调参或额外 Norm |
+| Post-Norm | 差（依赖 warmup） | 高 | 低 |
+| Pre-Norm | 好 | 略低（深层贡献被稀释） | 低 |
+| DeepNorm / Sandwich | 好 | 兼顾二者 | 需调参或多一层 Norm |
 
 ## 代码实现
 
@@ -352,11 +352,11 @@ class PreNormBlock(nn.Module):
         return x + self.sublayer(self.norm(x))   # 归一化后进子层
 ```
 
-如果想直观感受两者的差异，可以堆一个几十层的 mini Transformer，固定学习率、去掉 warmup 分别训练：比较 loss 与梯度的变化。是否发散以及何时发散取决于深度、初始化与学习率，不能预设固定的 step 数或保证 Pre-Norm 必然平滑下降。
+如果想直观感受两者的差异，可以堆一个几十层的 mini Transformer，固定学习率、去掉 warmup 分别训练：观察 Post-Norm 更容易出现的 loss 震荡，以及 Pre-Norm 更平稳的梯度；这个实验比单看公式更直观。
 
 # QK-Norm
 
-归一化不只作用于残差流，注意力内部也有需要校正尺度的地方。随着模型规模增大，attention logits 的数值会不断增长，导致 softmax 饱和、梯度退化，甚至在训练中后期引发 loss 尖刺。[ViT-22B](https://arxiv.org/abs/2302.05442) 在把视觉 Transformer 扩到 220 亿参数时报告了这类不稳定，并采用了直接的解决方案：对 Q、K 分别做归一化，再计算内积，即 QK-Norm。更早的 [Query-Key Normalization for Transformers](https://arxiv.org/abs/2010.04245) 已在 2020 年提出沿头维度做 $\ell_2$ 归一化并配合可学习缩放，不能把这一路线归为 ViT-22B 首创。
+归一化不只作用于残差流，注意力内部也有需要校正尺度的地方。随着模型规模增大，attention logits 的数值会不断增长，导致 softmax 饱和、梯度退化，甚至在训练中后期引发 loss 尖刺。[ViT-22B](https://arxiv.org/abs/2302.05442) 在把视觉 Transformer 扩到 220 亿参数时报告了这类不稳定，并采用了直接的解决方案：对 Q、K 分别做归一化，再计算内积，即 QK-Norm。更早的 [Query-Key Normalization for Transformers](https://arxiv.org/abs/2010.04245) 已在 2020 年提出沿头维度做 $\ell_2$ 归一化并配合可学习缩放。
 
 设某个注意力头的查询与键为 $\mathbf{q}, \mathbf{k} \in \mathbb{R}^{d_{\text{head}}}$，一种常见做法是在 head_dim 上对二者分别归一化：
 
@@ -410,7 +410,7 @@ def forward(self, x):
 
 1. **统计范围**：从 BatchNorm 的跨 batch 统计，收缩到 LayerNorm/RMSNorm 的单 token 统计，这是语言模型对归一化的根本要求；
 2. **统计内容**：从均值加方差，简化到只保留均方根，依据是 re-scaling 不变性起主要作用；
-3. **摆放位置**：Post-Norm 与 Pre-Norm 改变了残差路径上的归一化位置，训练稳定性与最终效果还取决于初始化、深度和优化配置。
+3. **摆放位置**：从 Post-Norm 换到 Pre-Norm，用一点效果上限换来深层训练的稳定性。
 
 下一篇文章我们将讨论 Transformer 的另一个基础组件：位置编码。
 
