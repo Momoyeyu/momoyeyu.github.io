@@ -1,6 +1,53 @@
 import type { CollectionEntry } from "astro:content";
-import { assignSeriesMetadata } from "@utils/content-utils";
-import { describe, expect, it } from "vitest";
+import {
+	assignSeriesMetadata,
+	getSortedPosts,
+	getSortedPostsList,
+	getTagList,
+	getCategoryList,
+} from "@utils/content-utils";
+import { afterEach, describe, expect, it, vi } from "vitest";
+
+const { collectionPosts } = vi.hoisted(() => ({ collectionPosts: [] as unknown[] }));
+vi.mock("astro:content", () => ({
+	getCollection: async (_name: string, filter: (post: unknown) => boolean) =>
+		structuredClone(collectionPosts).filter(filter),
+}));
+
+afterEach(() => vi.unstubAllEnvs());
+
+describe("post visibility", () => {
+	it.each([true, false])("filters every content query with PROD=%s", async (prod) => {
+		vi.stubEnv("PROD", prod);
+		collectionPosts.splice(0, collectionPosts.length,
+			...[
+				{ slug: "public", draft: false, private: false },
+				{ slug: "legacy" },
+				{ slug: "draft", draft: true },
+				{ slug: "private", private: true },
+				{ slug: "both", draft: true, private: true },
+			].map(({ slug, ...flags }, index) => ({
+				...makePost(slug, slug, index),
+				data: {
+					...makePost(slug, slug, index).data,
+					date: new Date(2026, 0, index + 1),
+					tags: [slug],
+					...flags,
+				},
+			})),
+		);
+		const expected = prod ? ["legacy", "public"] : ["both", "private", "draft", "legacy", "public"];
+		const posts = await getSortedPosts();
+		expect(posts.map((post) => post.slug)).toEqual(expected);
+		expect((await getSortedPostsList()).map((post) => post.slug)).toEqual(expected);
+		expect((await getTagList()).map((tag) => tag.name).sort()).toEqual([...expected].sort());
+		expect((await getCategoryList()).map((category) => category.name).sort()).toEqual([...expected].sort());
+		if (prod) {
+			expect(posts[0].data.prevSlug).toBe("public");
+			expect(posts[1].data.nextSlug).toBe("legacy");
+		}
+	});
+});
 
 type Post = CollectionEntry<"posts">;
 

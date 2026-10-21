@@ -32,6 +32,9 @@ enum I18nKey {
 	more = "more",
 	collapse = "collapse",
 
+	mascotReadingCorner = "mascotReadingCorner",
+	mascotInteract = "mascotInteract",
+
 	author = "author",
 	publishedAt = "publishedAt",
 	license = "license",

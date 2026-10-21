@@ -1,0 +1,122 @@
+<script lang="ts">
+	import { onMount } from "svelte";
+	import type { MascotState } from "@constants/mascot";
+
+	const { states, cornerLabel, interactLabel }: { states: MascotState[]; cornerLabel: string; interactLabel: string } = $props();
+	let stateIndex = $state(0);
+	let lastInteraction = 0;
+	let message = $state("");
+	let speaking = $state(false);
+	let resetTimer: ReturnType<typeof setTimeout>;
+	let greetingTimer: ReturnType<typeof setTimeout>;
+	const current = $derived(states[stateIndex]);
+
+	function showMessage(text: string) {
+		clearTimeout(resetTimer);
+		message = text;
+		speaking = true;
+		resetTimer = setTimeout(() => {
+			speaking = false;
+			stateIndex = 0;
+		}, 5200);
+	}
+
+	function interact() {
+		clearTimeout(greetingTimer);
+		lastInteraction = (lastInteraction + 1) % states.length;
+		stateIndex = lastInteraction;
+		const lines = states[stateIndex].messages;
+		showMessage(lines[Math.floor(Math.random() * lines.length)]);
+	}
+
+	onMount(() => {
+		if (window.matchMedia("(min-width: 769px)").matches) {
+			for (const state of states) {
+				const image = new Image();
+				image.src = state.image;
+			}
+			greetingTimer = setTimeout(() => showMessage(states[0].messages[0]), 2000);
+		}
+		return () => {
+			clearTimeout(resetTimer);
+			clearTimeout(greetingTimer);
+		};
+	});
+</script>
+
+<aside class="mascot-widget" aria-label={cornerLabel} data-pagefind-ignore>
+	<div class="mascot-bubble" class:visible={speaking} aria-live="polite" aria-atomic="true">
+		{speaking ? message : ""}
+	</div>
+	<button type="button" class="mascot-button" onclick={interact}
+		aria-label={interactLabel} title={interactLabel}>
+		<img src={current.image} alt={current.label} width="144" height="216" draggable="false" />
+	</button>
+</aside>
+
+<style>
+	.mascot-widget {
+		position: fixed;
+		bottom: 1.25rem;
+		right: 1.25rem;
+		z-index: 49;
+		width: 144px;
+		pointer-events: none;
+	}
+	.mascot-button {
+		display: block;
+		width: 144px;
+		height: 216px;
+		padding: 0;
+		border: 0;
+		border-radius: 1.5rem;
+		background: transparent;
+		cursor: pointer;
+		pointer-events: auto;
+		-webkit-tap-highlight-color: transparent;
+		transition: transform 180ms ease;
+	}
+	.mascot-button img {
+		width: 100%;
+		height: 100%;
+		object-fit: contain;
+		user-select: none;
+		filter: drop-shadow(0 4px 5px rgb(58 34 30 / 12%));
+		animation: breathe 5s ease-in-out infinite;
+	}
+	.mascot-button:hover { transform: translateY(-3px); }
+	.mascot-button:active { transform: translateY(1px) scale(0.97); }
+	.mascot-button:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
+	.mascot-bubble {
+		position: absolute;
+		bottom: calc(100% + 0.5rem);
+		right: 0;
+		width: 180px;
+		padding: 0.75rem 0.9rem;
+		border: 1px solid rgb(172 115 92 / 20%);
+		border-radius: 16px 16px 5px 16px;
+		background: rgb(255 252 246 / 96%);
+		color: #644a40;
+		font-size: 0.8rem;
+		line-height: 1.8;
+		box-shadow: 0 5px 20px rgb(80 46 33 / 8%);
+		opacity: 0;
+		transform: translateY(4px);
+		transition: opacity 180ms ease, transform 180ms ease;
+	}
+	.mascot-bubble.visible { opacity: 1; transform: translateY(0); }
+	:global(.dark) .mascot-bubble {
+		background: rgb(42 34 33 / 97%);
+		border-color: rgb(228 181 149 / 22%);
+		color: #ecdbce;
+	}
+	@keyframes breathe {
+		0%, 100% { transform: translateY(0); }
+		50% { transform: translateY(-3px); }
+	}
+	@media (max-width: 768px) { .mascot-widget { display: none; } }
+	@media (prefers-reduced-motion: reduce) {
+		.mascot-button img { animation: none; }
+		.mascot-button, .mascot-bubble { transition: none; }
+	}
+</style>

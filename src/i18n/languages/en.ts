@@ -2,6 +2,8 @@ import Key from "../i18nKey";
 import type { Translation } from "../translation";
 
 export const en: Translation = {
+	[Key.mascotReadingCorner]: "Komari’s reading corner",
+	[Key.mascotInteract]: "Chat with Komari, change her expression and dialogue",
 	[Key.home]: "Home",
 	[Key.about]: "About",
 	[Key.archive]: "Archive",

@@ -2,6 +2,8 @@ import Key from "../i18nKey";
 import type { Translation } from "../translation";
 
 export const zh_TW: Translation = {
+	[Key.mascotReadingCorner]: "小鞠的閱讀角",
+	[Key.mascotInteract]: "和小鞠聊聊，切換表情與臺詞",
 	[Key.home]: "首頁",
 	[Key.about]: "關於",
 	[Key.archive]: "彙整",

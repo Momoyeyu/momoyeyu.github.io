@@ -17,7 +17,7 @@
 | `make commit` | 提交暂存区（信息为当前时间） |
 | `make push` | 推送到 `origin/master` |
 | `make deploy` | `check` → `commit` → `push` |
-| `make status` | 分支、暂存区与草稿状态 |
+| `make status` | 分支、暂存区、草稿与下架状态 |
 
 `make deploy` 只提交**已暂存**的改动，所以先 `git add` 要发布的内容。
 
@@ -29,6 +29,7 @@
 
 - 文章放在 `src/content/posts/`，文件名用英文小写 + 连字符（`make new` 会校验并生成模板）。
 - frontmatter 字段见 `src/content/config.ts`：`title`、`date`、`episode` 必填，`draft: true` 不进生产构建（开发环境照常显示）。不写 `description` 时，列表卡片简介取正文首段。
+- 下架文章设 `private: true`，`draft` 继续表示未完成的草稿。两者都只在开发环境显示，生产构建不生成文章页，也不进入列表、归档、合集、RSS、搜索和 sitemap。恢复公开时删除 `private` 或改成 `false`。这不是访问控制，源码和 `public/` 中的静态资源仍可被访问。
 - 大改已发布文章时补 `updated`：sitemap 的 `lastmod` 取它，缺省回退 `date`。
 - 发布流程：正文写完把 `draft` 改成 `false` → `git add` → `make deploy`。
 

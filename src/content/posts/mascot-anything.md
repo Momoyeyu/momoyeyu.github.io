@@ -6,6 +6,7 @@ tags: [深度学习, 开源]
 category: 项目
 episode: 1
 draft: false
+private: true
 pinned: true
 image: '/img/posts/mascot-anything/cover.webp'
 lang: 'zh_CN'

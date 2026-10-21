@@ -2,6 +2,8 @@ import Key from "../i18nKey";
 import type { Translation } from "../translation";
 
 export const ko: Translation = {
+	[Key.mascotReadingCorner]: "코마리의 독서 공간",
+	[Key.mascotInteract]: "코마리와 대화하고 표정과 대사 바꾸기",
 	[Key.home]: "홈",
 	[Key.about]: "소개",
 	[Key.archive]: "아카이브",
