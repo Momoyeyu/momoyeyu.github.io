@@ -50,7 +50,7 @@
 	</div>
 	<button type="button" class="mascot-button" onclick={interact}
 		aria-label={interactLabel} title={interactLabel}>
-		<img src={current.image} alt={current.label} width="144" height="216" draggable="false" />
+		<img src={current.image} alt={current.label} width="104" height="128" draggable="false" />
 	</button>
 </aside>
 
@@ -60,13 +60,13 @@
 		bottom: 1.25rem;
 		right: 1.25rem;
 		z-index: 49;
-		width: 144px;
+		width: 104px;
 		pointer-events: none;
 	}
 	.mascot-button {
 		display: block;
-		width: 144px;
-		height: 216px;
+		width: 104px;
+		height: 128px;
 		padding: 0;
 		border: 0;
 		border-radius: 1.5rem;
@@ -91,7 +91,7 @@
 		position: absolute;
 		bottom: calc(100% + 0.5rem);
 		right: 0;
-		width: 180px;
+		width: 160px;
 		padding: 0.75rem 0.9rem;
 		border: 1px solid rgb(172 115 92 / 20%);
 		border-radius: 16px 16px 5px 16px;
