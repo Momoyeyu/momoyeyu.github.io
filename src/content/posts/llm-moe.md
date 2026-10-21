@@ -1,6 +1,7 @@
 ---
 title: MoE 技术原理
 date: 2026-09-23
+updated: 2026-10-21
 description: 本文将介绍 MoE 技术，解释其如何在扩大模型参数容量的同时控制计算成本，并逐渐成为现代 LLM 的核心技术。
 tags: [LLM, MoE, Deepseek]
 category: LLM
@@ -128,7 +129,7 @@ $$
 \text{原 Dense FFN 计算量}.
 $$
 
-这正是“Expert 部分计算量约为原 Dense FFN 的 $\frac{K}{N}$”这一结论的来源，也是 [Switch Transformer](https://arxiv.org/abs/2101.03961) 等工作中稀疏 MoE 的典型设定。
+这正是等参拆分下“Expert 部分计算量约为原 Dense FFN 的 $\frac{K}{N}$”这一结论的来源。它不是 Switch Transformer 的典型设定：Switch 通常保留单个 Expert 的 FFN 规模，以 Top-1 路由增加总参数量，同时维持接近 Dense FFN 的每 token Expert 计算量。
 
 ### 扩容拆分
 
@@ -193,7 +194,7 @@ p_i
 \frac{e^{s_i}}{\sum_{j=1}^{N} e^{s_j}}.
 $$
 
-记 $\mathbf{p} = (p_1, p_2, \dots, p_N)$ 为所有 Expert 的 routing probability 组成的向量，然后选出概率最高的 $K$ 个 Expert，记为集合 $\mathcal{I} = \operatorname{TopK}(\mathbf{p}, K)$，并只对被选中的 Expert 将概率归一化，得到 routing weight：
+记 $\mathbf{p} = (p_1, p_2, \dots, p_N)$ 为所有 Expert 的 routing probability 组成的向量，然后选出概率最高的 $K$ 个 Expert，记为集合 $\mathcal{I} = \operatorname{TopK}(\mathbf{p}, K)$，当 $K > 1$ 时，本文对被选中的 Expert 将概率归一化，得到 routing weight：
 
 $$
 w_i
@@ -202,7 +203,7 @@ w_i
 \quad i\in\mathcal{I},
 $$
 
-这样保证 $\sum_{i\in\mathcal{I}} w_i = 1$。最终，只有这些被选中的 Expert 会参与当前 token 的计算，并根据对应的 routing weight 对 Expert 的输出进行加权求和：
+这时 $\sum_{i\in\mathcal{I}} w_i = 1$。Top-1 需要单独处理：若仍按上式归一化，唯一权重会恒为 1，主任务就无法通过门控权重训练 Router。Switch 保留所选 Expert 的原始概率 $p_i$ 作为权重，下面代码也采用这一约定。最终，只有这些被选中的 Expert 会参与当前 token 的计算，并根据对应的 routing weight 对 Expert 的输出进行加权求和：
 
 $$
 y
@@ -226,7 +227,9 @@ class Router(nn.Module):
         logits = self.weight(x)                                              # [T, N]
         probs = torch.softmax(logits, dim=-1)                                # [T, N]
         topk_probs, topk_idx = probs.topk(self.top_k, dim=-1)                # [T, K], [T, K]
-        routing_weights = topk_probs / topk_probs.sum(dim=-1, keepdim=True)  # [T, K]
+        routing_weights = topk_probs if self.top_k == 1 else (
+            topk_probs / topk_probs.sum(dim=-1, keepdim=True)
+        )  # [T, K]；Top-1 保留概率，避免主任务门控梯度消失
         return probs, topk_idx, routing_weights
 ```
 
@@ -240,13 +243,13 @@ class Router(nn.Module):
 
 ## 负载均衡
 
-理想情况下，如果有 $N$ 个 Expert，那么一个 batch 的 tokens $T$ 应该比较均匀地分配到这些 Expert。例如 $N = 8$，$T = 1024$，如果完全均衡，那么每个 Expert 平均处理的 token 数量为：
+理想情况下，如果有 $N$ 个 Expert，那么一个 batch 的 tokens $T$ 应该比较均匀地分配到这些 Expert。例如 $N = 8$，$T = 1024$，在 Top-1 下，如果完全均衡，那么每个 Expert 平均处理的 token 数量为：
 
 $$
 \frac{T}{N} = \frac{1024}{8} = 128.
 $$
 
-但实际上，Router 会根据 token 的内容动态进行选择，因此不同 Expert 接收到的 token 数量可能存在较大差异。如果大量 token 都被发送给同一个 Expert，就会产生两个问题：
+Top-K 下相应的平均 dispatch 数为 $KT/N$，例如 $K=2$ 时是 256。实际 Router 会根据 token 的内容动态进行选择，因此不同 Expert 接收到的 token 数量可能存在较大差异。如果大量 token 都被发送给同一个 Expert，就会产生两个问题：
 
 1. 部分 Expert 负载过高，成为整个 MoE Layer 的计算瓶颈；
 2. 其他 Expert 接收到的 token 太少，导致这些参数无法得到充分训练。
@@ -342,7 +345,7 @@ def expert_capacity(T: int, num_experts: int, top_k: int, capacity_factor: float
 
 这种被丢弃的情况称为 **token overflow**：如果某个 Expert 接收到的 token 数量超过了它的容量，超出部分的 token 将无法被该 Expert 处理。不同 MoE 实现对于 overflow token 的处理方式有所不同，因此 Expert Capacity 也是实际 MoE 实现中的重要问题。
 
-这一口径与文献和主流框架一致：[GShard](https://arxiv.org/abs/2006.16668)（top-2，即 $\frac{2T}{N}\times CF$）、Megatron-LM 与 Tutel（`capacity = K·T/N×CF`，per-expert 总预算）都把容量定义为**每个 Expert 跨全部槽位共享的总额度**；Switch 的 top-1 则是 $K=1$ 的特例。dispatched token 按槽位顺序先后占用同一额度，只有当一个 token 选中的 Expert 全部溢出时，它才会被完全丢弃、仅经残差连接传到下一层。
+这一口径可见于文献和主流框架：[GShard](https://arxiv.org/abs/2006.16668) 的 Top-2 容量包含两次分发预算，即 $\frac{2T}{N}\times CF$；Megatron-LM 与 Tutel 也常采用 `capacity = K·T/N×CF` 作为每个 Expert 的总预算。这些实现都把容量定义为**每个 Expert 跨全部槽位共享的总额度**；Switch 的 top-1 则是 $K=1$ 的特例。dispatched token 按槽位顺序先后占用同一额度，只有当一个 token 选中的 Expert 全部溢出时，它才会被完全丢弃、仅经残差连接传到下一层。
 
 到这里，一个基础的 MoE Layer 就包含了几个核心组件：
 
@@ -394,7 +397,7 @@ class MoELayer(nn.Module):
 
         self.router = Router(d_model, num_experts, top_k)
 
-        # 等参拆分（扩容拆分时为 d_ff）
+        # 等参拆分；扩容拆分时为 d_ff
         expert_hidden = d_ff // num_experts
 
         self.experts = nn.ModuleList([
@@ -427,7 +430,7 @@ class MoELayer(nn.Module):
         return y, aux_loss
 ```
 
-每个 Expert 的 `capacity` 额度被所有 Top-K 槽位共享，靠前的槽位（token 的 Top-1 选择）优先占用；额度耗尽后，后续槽位中多出的 dispatch 会被丢弃，即前文所说的 overflow。`n_e` 为该槽位中实际被 Expert $e$ 接收的 token 数。返回的 `aux_loss` 即负载均衡辅助损失，训练时可加入总的优化目标。
+每个 Expert 的 `capacity` 额度被所有 Top-K 槽位共享，靠前的槽位优先占用，例如 token 的 Top-1 选择；额度耗尽后，后续槽位中多出的 dispatch 会被丢弃，即前文所说的 overflow。`n_e` 为该槽位中实际被 Expert $e$ 接收的 token 数。返回的 `aux_loss` 即负载均衡辅助损失，训练时可加入总的优化目标。
 
 在实际的大规模 MoE 模型中，还涉及跨设备的 token dispatch 与通信，因此实际实现会比上述过程复杂得多。[Switch Transformer](https://arxiv.org/abs/2101.03961) 的实现就需要显式处理 token dispatch 和 overflow 等问题。
 
@@ -468,7 +471,7 @@ class MoELayer(nn.Module):
 DeepSeekMoE 的代码实现可以在基础 MoE 上继续扩展，核心变化是：
 
 1. 将 Routed Expert 的隐藏维度设置得更小，使 Expert 数量更多、粒度更细；
-2. 从同一个专家池中隔离出若干 Shared Expert（与 Routed Expert 同粒度、同尺寸），让所有 token 都经过 Shared Expert；
+2. 从同一个专家池中隔离出若干 Shared Expert，尺寸与 Routed Expert 相同，让所有 token 都经过 Shared Expert；
 3. 将 Routed Expert 的输出与 Shared Expert 的输出相加。
 
 对应的输出可以写为：
@@ -547,7 +550,7 @@ class DeepSeekMoELayer(nn.Module):
         return shared_out + routed_out, aux_loss
 ```
 
-可以看到，DeepSeekMoE 的 dispatch 流程与基础 MoE 完全一致，差异只在两点：Expert 被切得更小、更多，以及多了一组对所有 token 恒激活的 Shared Expert。需要注意两处与论文的差异：其一，论文为保持激活计算量恒定，会将激活的 Routed Expert 数量相应减少 $K_s$（即 $mK-K_s$），这里的实现保持 `top_k` 不变，激活参数量因此略增；其二，实际的 DeepSeekMoE 不使用 token drop，负载均衡损失的定义也与本文沿用的 Switch 形式不同。实际模型中还有更精细的配置，例如 DeepSeek-V2 将 gating 改为 sigmoid 打分后对选中项归一化，DeepSeek-V3 又在 Router 中引入 bias 项实现无辅助损失的负载均衡，但核心结构仍然是“细粒度 Routed Expert + Shared Expert”。
+可以看到，DeepSeekMoE 的 dispatch 流程与基础 MoE 完全一致，差异只在两点：Expert 被切得更小、更多，以及多了一组对所有 token 恒激活的 Shared Expert。需要注意两处与论文的差异：其一，论文为保持激活计算量恒定，将激活的 Routed Expert 数量设为 $mK-K_s$；本例的 `top_k` 表示隔离共享专家之后的 Routed Expert 激活数，若仍传入 $mK$ 而不扣除 $K_s$，激活计算量就会增加；其二，实际的 DeepSeekMoE 不使用 token drop，负载均衡损失的定义也与本文沿用的 Switch 形式不同。实际模型中还有更精细的配置，例如 DeepSeek-V2 使用 softmax 门控；DeepSeek-V3 改为 sigmoid 打分后对选中项归一化，并在选路时加入动态 bias 以实现主要的负载均衡，同时保留较小的序列级辅助损失，但核心结构仍然是“细粒度 Routed Expert + Shared Expert”。
 
 # 结语
 
@@ -568,5 +571,7 @@ MoE 的核心并不是简单地把模型“变小”，而是通过稀疏激活�
 - [Switch Transformers: Scaling to Trillion Parameter Models with Simple and Efficient Sparsity](https://arxiv.org/abs/2101.03961)
 - [GShard: Scaling Giant Models with Conditional Computation and Automatic Sharding](https://arxiv.org/abs/2006.16668)
 - [DeepSeekMoE: Towards Ultimate Expert Specialization in Mixture-of-Experts Language Models](https://arxiv.org/abs/2401.06066)
+- [DeepSeek-V2](https://arxiv.org/abs/2405.04434)
+- [DeepSeek-V3 Technical Report](https://arxiv.org/abs/2412.19437)
 - [一文搞懂DeepSeek核心技术-DeepSeekMoE](https://zhuanlan.zhihu.com/p/1892675486808778603)
 - [RethinkFun 深度学习](https://www.rethink.fun/)
