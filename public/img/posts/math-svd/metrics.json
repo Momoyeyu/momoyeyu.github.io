@@ -1,0 +1,26 @@
+{
+  "source": "public/img/resources/mascot/novel/phone.png",
+  "size": [
+    192,
+    192
+  ],
+  "alpha": "preserved separately, excluded from factor counts and RMSE",
+  "background": "fully transparent pixels are zero in the grayscale matrix",
+  "metrics": [
+    {
+      "k": 8,
+      "factorValues": 3072,
+      "rmse": 16.15291679295535
+    },
+    {
+      "k": 32,
+      "factorValues": 12288,
+      "rmse": 6.383028713358225
+    },
+    {
+      "k": 80,
+      "factorValues": 30720,
+      "rmse": 0.42155337534396387
+    }
+  ]
+}

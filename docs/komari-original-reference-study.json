@@ -1,0 +1,106 @@
+{
+  "scope": "Original light-novel illustrations only. Anime frames and fan-art images are excluded from the final design reference set.",
+  "sources": [
+    {
+      "kind": "Publisher original chibi",
+      "url": "https://gagagabunko.jp/special/makeine/",
+      "image": "https://gagagabunko.jp/special/makeine/img/chara/chara_b_04.png",
+      "use": "Primary silhouette, body proportions, forward-leaning posture and pink phone."
+    },
+    {
+      "kind": "Volume 1 original contents page, displayed by book retailer",
+      "url": "https://www.fahasa.com/make-heroine-ga-ousugiru-light-novel.html",
+      "use": "Komari's small full-body Q figure; flat shapes, simple hands and visible arms/legs. Compared with publisher's identical chibi."
+    },
+    {
+      "kind": "Volume 8.5 original contents page, displayed by book retailer",
+      "url": "https://jpbookstore.com/products/too-many-losing-heroines-make-heroine-ga-oosugiru-85-light-novel",
+      "use": "Komari in dark nightwear: quiet eyes, restrained mouth and inward stance."
+    },
+    {
+      "kind": "Volume 3 cover, monochrome title page and character introduction, publisher preview",
+      "url": "https://shogakukan.tameshiyo.me/9784094530643",
+      "use": "Wine-magenta bob, iris color, flower-pattern spherical hair ties, four red/gold bows. Both eyes can be visible; fringe is not a permanent eye patch."
+    },
+    {
+      "kind": "Volume 1 color pinup, publisher official merchandise",
+      "url": "https://lifetunes-mall.jp/shop/g/gJ20210104/",
+      "use": "Flustered/pleased facial expression, hands near mouth, shy gratitude."
+    },
+    {
+      "kind": "Volume 3 color opening illustration, publisher official merchandise",
+      "url": "https://lifetunes-mall.jp/shop/g/gJ20220054/",
+      "use": "Startled reaction, seated posture, uniform details."
+    },
+    {
+      "kind": "SSS color opening illustration, publisher official merchandise",
+      "url": "https://lifetunes-mall.jp/shop/g/gJ20250021/",
+      "use": "Casual outfit, bubblegum and phone, relaxed/guarded sideways glance."
+    },
+    {
+      "kind": "Volume 8 color opening illustration, publisher official merchandise",
+      "url": "https://lifetunes-mall.jp/shop/g/gJ20250029/",
+      "use": "Everyday/family scene and subdued tired expression."
+    },
+    {
+      "kind": "Publisher's original short dialogue and character expressions",
+      "url": "https://gagagabunko.jp/special/makeine/img/kobanashi/kobanashi_03.png",
+      "use": "Self-conscious about attention, stammering and blunt short retorts toward a familiar friend."
+    },
+    {
+      "kind": "Original text samples",
+      "url": "https://shogakukan-comic.jp/book?isbn=9784094532425",
+      "use": "Her ongoing presence in the literary club and informal banter. Only public samples were read, not complete volumes."
+    }
+  ],
+  "observations": {
+    "hair": "Muted burgundy/wine-red rounded bob, asymmetrical long fringe, short thin side ponytail on viewer right, two small round red flower-pattern hair beads. Avoid copper-orange hair and large flat daisy clips.",
+    "face": "Small yellow-green/olive eyes with drooping upper lids. Far eye can peek through bangs; expression varies rather than staying permanently half-angry or teary.",
+    "proportions": "Follow novel contents-page Q figures: about three heads tall, small/slim limbs, loose clothing and human hands. Avoid both very tall figurine rendering and round dumpling/mitten designs.",
+    "uniform": "Four alternating burgundy/gold/burgundy/gold bows. Summer blouse and winter blazer are different outfits; current preview uses summer blouse.",
+    "personality": "Self-conscious and hesitant with attention; more direct and dry with familiar people. Range includes embarrassed pleasure, absorbed concentration, wary retorts and genuine excitement.",
+    "rendering": "Restrained printed-book chibi shorthand: flat colors, sparse cel shadows, modest eye highlights and cloth folds; avoid highly glossy generic game-sprite rendering."
+  },
+  "previewPlan": {
+    "status": "Approved; expanded into six transparent sprites",
+    "display": {
+      "width": 104,
+      "height": 128
+    },
+    "pose": "Slight forward lean, pink phone at waist, tentative typing gesture and sideways glance.",
+    "next": "Deployed with SVD article experiment using the approved phone pose"
+  },
+  "generation": {
+    "tool": "Built-in image_gen",
+    "prompt": "Use this ONE ORIGINAL LIGHT NOVEL PUBLISHER CHIBI illustration as the primary shape-language and character-design reference. Create one clean, new full-body Chika Komari Q-version website sprite as a faithful adaptation of the SMALL PRINTED CHIBI, not a polished modern gacha illustration. Closely study its exact silhouette: compact somewhat wide burgundy bob, thin short viewer-right ponytail tied with two small red flower-pattern round beads, simple tiny ahoge; small HALF-LIDDED dull olive-gold eyes, tiny pointed nose mark and awkward small mouth. Eye highlights extremely restrained, upper lids almost horizontal. Do not invent giant glossy eyes or a fat face. Keep the original's small slightly hunched torso and clearly drawn simple arms and legs, short gray skirt and loose oversized white short-sleeved school blouse with pale blue collar and FOUR stacked tiny red/yellow/red/yellow bows. Navy medium-length socks and simple dark brown loafers. Hair must be muted burgundy maroon, not copper orange, bangs fall asymmetrically over brows and toward nose; allow far eye just peeking past fringe. Preserve the reference's charming little book-illustration shorthand: flat mostly solid color regions, fine slightly irregular dark brown cleanup lines, minimal hair detail (a few coherent pointed strands), a few cloth folds and ONE cel-shadow tone, almost no gradients, no airbrushed cheeks or glossy studio lighting. Approximately 3.2 heads tall including the hair, a compact 2D paper-drawn little person rather than bobblehead. New pose: three-quarter front angle facing slightly toward viewer left, slight forward lean and tucked shoulders, small pink smartphone held in left hand in front of waist, right index finger hesitating above screen. Feet close, eyes glance up toward the viewer from the side, quiet shy deadpan expression with a tiny hesitant parted mouth, no generic cute smile. Tiny awkward human hands, not mittens. Intended for viewing at 104 pixels wide. Full figure head to toe, centered in a square transparent canvas with margins. Remove all numbers and yellow circular label from the reference. No backdrop, halo, ambient glow, white outline, pedestal, cast shadow, text, speech bubble or other people. Fully transparent outside the silhouette. Fully opaque character. This is a new pose, do not simply upscale or trace the supplied art.",
+    "previewPath": "/Users/momoyeyu/.codex/generated_images/01a159dd-8d8b-7352-887a-d25825b7bfe9/exec-a5b6747c-247f-497a-a75a-b9b0b12a5d2e.png",
+    "referenceImage": "https://gagagabunko.jp/special/makeine/img/chara/chara_b_04.png",
+    "status": "Approved master and five generated pose variations",
+    "assets": [
+      {
+        "id": "welcome",
+        "path": "/Users/momoyeyu/.codex/generated_images/01a159dd-8d8b-7352-887a-d25825b7bfe9/exec-4ffa897a-e61a-4e34-a1fe-42ad20cacb1e.png"
+      },
+      {
+        "id": "reading",
+        "path": "/Users/momoyeyu/.codex/generated_images/01a159dd-8d8b-7352-887a-d25825b7bfe9/exec-10160484-5c6d-47c2-94ad-bbb9d99fc3eb.png"
+      },
+      {
+        "id": "writing",
+        "path": "/Users/momoyeyu/.codex/generated_images/01a159dd-8d8b-7352-887a-d25825b7bfe9/exec-40337c42-b6af-4d5d-962a-4dc7ab86a4e9.png"
+      },
+      {
+        "id": "startled",
+        "path": "/Users/momoyeyu/.codex/generated_images/01a159dd-8d8b-7352-887a-d25825b7bfe9/exec-c5eac645-7beb-4f27-bb7b-7b579b8d94ea.png"
+      },
+      {
+        "id": "happy",
+        "path": "/Users/momoyeyu/.codex/generated_images/01a159dd-8d8b-7352-887a-d25825b7bfe9/exec-819bea01-9956-4906-8736-425a897a94d0.png"
+      },
+      {
+        "id": "phone",
+        "path": "/Users/momoyeyu/Projects/personal/momoyeyu.github.io/public/img/resources/mascot/novel/phone.png"
+      }
+    ]
+  }
+}

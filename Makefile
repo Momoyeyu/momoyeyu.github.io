@@ -7,7 +7,7 @@ VITEST   := ./node_modules/.bin/vitest
 PAGEFIND := ./node_modules/.bin/pagefind
 NODE     := node
 
-.PHONY: help new dev preview check commit push deploy status
+.PHONY: help new dev preview check commit push deploy status svd-images
 
 help:
 	@echo "make new      新建文章"
@@ -21,6 +21,11 @@ help:
 
 new:
 	@$(NODE) scripts/new-post.js
+
+# PYTHON may point to a runtime with numpy and Pillow installed.
+PYTHON ?= python3
+svd-images:
+	@$(PYTHON) scripts/svd-mascot.py
 
 # 多个 astro dev 实例会共享 .astro/data-store.json：互相触发数据缓存失效与
 # full-reload，导致归档/合集偶发空白。所以同一项目只允许一个 dev server。
