@@ -2,6 +2,8 @@ import Key from "../i18nKey";
 import type { Translation } from "../translation";
 
 export const vi: Translation = {
+	[Key.mascotReadingCorner]: "Góc đọc sách của Komari",
+	[Key.mascotInteract]: "Trò chuyện với Komari, đổi biểu cảm và lời thoại",
 	[Key.home]: "Trang chủ",
 	[Key.about]: "Giới thiệu",
 	[Key.archive]: "Kho bài",

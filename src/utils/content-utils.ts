@@ -4,10 +4,12 @@ import { i18n } from "@i18n/translation";
 import { getCategoryUrl } from "@utils/url-utils.ts";
 
 // Single source of truth for the "which posts are visible" rule: in production,
-// drafts are excluded; in dev, everything is shown. Used by every query below.
+// drafts and private posts are excluded; in dev, everything is shown. Used by every query below.
 async function getPublishedPosts() {
 	return await getCollection("posts", ({ data }) => {
-		return import.meta.env.PROD ? data.draft !== true : true;
+		return import.meta.env.PROD
+			? data.draft !== true && data.private !== true
+			: true;
 	});
 }
 

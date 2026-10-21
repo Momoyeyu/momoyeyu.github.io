@@ -57,6 +57,11 @@
           "type": "boolean"
         },
         {
+          "title": "private",
+          "name": "private",
+          "type": "boolean"
+        },
+        {
           "title": "pinned",
           "name": "pinned",
           "type": "boolean"

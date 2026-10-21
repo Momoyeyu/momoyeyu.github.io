@@ -2,6 +2,8 @@ import Key from "../i18nKey";
 import type { Translation } from "../translation";
 
 export const th: Translation = {
+	[Key.mascotReadingCorner]: "มุมอ่านหนังสือของโคมาริ",
+	[Key.mascotInteract]: "คุยกับโคมาริ เปลี่ยนสีหน้าและบทพูด",
 	[Key.home]: "หน้าแรก",
 	[Key.about]: "เกี่ยวกับ",
 	[Key.archive]: "คลัง",

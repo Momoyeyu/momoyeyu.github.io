@@ -1,0 +1,20 @@
+{
+  "generator": "Built-in image_gen",
+  "character": "Chika Komari / 小鞠知花",
+  "reference": "https://makeine-anime.com/character/",
+  "masterPrompt": "Transparent full-body chibi Chika Komari; shy literary-club companion; auburn bob, viewer-right ponytail with two red flower clips, ahoge, amber eyes; white blazer with navy piping, red/gold/red stacked bows, grey skirt, navy socks, brown loafers; warm brown clean linework and soft cel shading; consistent portrait canvas, proportions and foot baseline; no text, backgrounds, frames or shadows.",
+  "poses": {
+    "reading": "She holds an OPEN small burgundy novel in BOTH hands at chest height, eyes looking down at its pages with a calm absorbed expression, mouth a tiny thoughtful neutral curve. No waving hand, no other props.",
+    "writing": "She holds a small cream open notebook in her LEFT hand at waist/chest height and writes with ONE clearly drawn pencil in her RIGHT hand, eyes looking at the notebook, brow slightly knitted with earnest concentration. Both hands visible and anatomically clear. No extra arms, no book held under arm.",
+    "phone": "She holds ONE small dark smartphone with BOTH hands at chest height, thumbs gently typing, gaze down at the screen. Her expression is shy but visibly more relaxed communicating through writing. No book, no waving.",
+    "startled": "She clutches ONE closed burgundy novel to her chest with BOTH hands, shoulders slightly raised and hunched in surprise, wide amber eyes, tiny startled open mouth, a small subtle blush. A natural shy startled reaction, NOT angry, NOT seductive, no tears or floating symbols.",
+    "happy": "She holds ONE closed burgundy novel against her chest with her LEFT arm, her right hand rests lightly over the book. She has a small unguarded happy smile and sparkling amber eyes, slightly leaning forward excited to discuss a favorite novel, gentle joy not exaggerated laughing."
+  },
+  "export": {
+    "width": 384,
+    "height": 576,
+    "format": "webp",
+    "quality": 90,
+    "alphaQuality": 100
+  }
+}

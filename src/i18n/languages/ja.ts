@@ -2,6 +2,8 @@ import Key from "../i18nKey";
 import type { Translation } from "../translation";
 
 export const ja: Translation = {
+	[Key.mascotReadingCorner]: "小鞠の読書コーナー",
+	[Key.mascotInteract]: "小鞠と話す、表情とセリフを切り替える",
 	[Key.home]: "Home",
 	[Key.about]: "About",
 	[Key.archive]: "Archive",
