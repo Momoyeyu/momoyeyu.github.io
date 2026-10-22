@@ -55,9 +55,9 @@ export const RESOURCE_CATEGORIES: ResourceCategory[] = [
 				desc: "把一台新机器的基础开发环境一次性配好（macOS / Linux 通用）。",
 				details: [
 					"Homebrew（macOS）/ apt（Linux）",
-					"build-essential、curl、git、zsh",
+					"build-essential、curl、git、zsh、vim",
 					"oh-my-zsh + fast-syntax-highlighting + zsh-autosuggestions",
-					"git 用户名 / 邮箱（运行时会提示你输入）+ 常用 alias",
+					"git 用户名 / 邮箱（运行时会提示你输入）+ 常用 alias + 默认分支 master",
 					"zsh 别名、PROMPT，并把默认 shell 切成 zsh",
 				],
 				note: "macOS 上如果弹出 Xcode CLT 安装窗口，装完后重新跑一次即可；中途会提示输入 git 用户名和邮箱（已配置过则直接回车沿用）。",

@@ -242,6 +242,31 @@ export default defineConfig({
 		],
 	},
 	vite: {
+		plugins: [
+			{
+				// dev server 内存中的 optimizeDeps hash 可能落后于磁盘上
+				// node_modules/.vite/deps 的重优化结果，此时所有 .vite/deps 请求
+				// 返回 504 且不会自愈，只能通过 server.restart() 重建状态。
+				name: "dev-outdated-deps-watchdog",
+				apply: "serve",
+				configureServer(server) {
+					let lastRestart = 0;
+					server.middlewares.use((req, res, next) => {
+						res.once("finish", () => {
+							if (
+								res.statusCode === 504 &&
+								req.url?.includes("/.vite/deps/") &&
+								Date.now() - lastRestart > 15000
+							) {
+								lastRestart = Date.now();
+								server.restart();
+							}
+						});
+						next();
+					});
+				},
+			},
+		],
 		server: {
 			warmup: {
 				ssrFiles: ["./src/pages/[...page].astro"],

@@ -43,7 +43,7 @@
 	<text x="80" y="38" class="lane">GeForce 消费级</text>
 	<rect x="80" y="56" width="122" height="58" class="box" fill="var(--geforce-fill)" stroke="var(--geforce-stroke)"/>
 	<text x="141" y="80" class="lbl" text-anchor="middle">Ampere · 30 系</text>
-	<text x="141" y="100" class="sub" text-anchor="middle">GDDR6X·TC3·NVLink</text>
+	<text x="141" y="100" class="sub" text-anchor="middle">TC3 · 部分有 NVLink</text>
 
 	<rect x="240" y="56" width="122" height="58" class="box" fill="var(--geforce-fill)" stroke="var(--geforce-stroke)"/>
 	<text x="301" y="80" class="lbl" text-anchor="middle">Ada · 40 系</text>
@@ -70,7 +70,7 @@
 	<text x="461" y="200" class="sub" text-anchor="middle">HBM3e · NVLink 5 · FP4</text>
 
 	<rect x="536" y="156" width="88" height="58" class="box" fill="var(--dc-fill)" stroke="var(--dc-stroke)" stroke-dasharray="5 3"/>
-	<text x="580" y="180" class="lbl" text-anchor="middle" font-size="12.5">GB300</text>
+	<text x="580" y="180" class="lbl" text-anchor="middle" font-size="12.5">B300</text>
 	<text x="580" y="200" class="sub" text-anchor="middle">Ultra</text>
 
 	<!-- axis -->

@@ -112,6 +112,10 @@ if [[ "$OS_TYPE" == macos ]]; then
     if [[ -x "$brew_bin" ]]; then eval "$("$brew_bin" shellenv)"; break; fi
   done
   ok "Homebrew ready at $(brew --prefix)"
+  if ! command -v vim >/dev/null 2>&1; then
+    info "Installing Vim ..."
+    install_pkgs vim
+  fi
   if xcode-select -p >/dev/null 2>&1 && [[ -d "$(xcode-select -p 2>/dev/null || echo /nonexistent)" ]]; then
     ok "Xcode CLT already installed."
   else
@@ -122,7 +126,7 @@ if [[ "$OS_TYPE" == macos ]]; then
 else
   info "Using apt to install base packages ..."
   run_priv apt-get update -y
-  install_pkgs ca-certificates curl file git zsh build-essential
+  install_pkgs ca-certificates curl file git zsh vim build-essential
   ok "apt packages installed."
 fi
 
@@ -363,6 +367,9 @@ setup_git_config() {
     warn "  git config --global user.name  \"Your Name\""
     warn "  git config --global user.email \"you@example.com\""
   fi
+
+  git config --global init.defaultBranch master
+  ok "Configured git default branch: master"
 
   git config --global alias.st status
   git config --global alias.ci commit

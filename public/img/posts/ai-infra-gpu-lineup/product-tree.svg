@@ -56,7 +56,7 @@
 	<!-- GeForce -->
 	<rect x="250" y="10" width="370" height="52" class="box" fill="var(--geforce-fill)" stroke="var(--geforce-stroke)"/>
 	<text x="264" y="31" class="lbl">GeForce 消费级</text>
-	<text x="606" y="31" class="sub" text-anchor="end">8–32 GB GDDR · 无 NVLink · 无 ECC</text>
+	<text x="606" y="31" class="sub" text-anchor="end">GDDR · 30 系部分型号有 NVLink</text>
 	<text x="264" y="51" class="sub">3060 · 4060 Ti · 5060 Ti · 3090 · 4090 · 5090</text>
 
 	<!-- RTX PRO -->
@@ -68,8 +68,8 @@
 	<!-- datacenter -->
 	<rect x="250" y="140" width="370" height="52" class="box" fill="var(--dc-fill)" stroke="var(--dc-stroke)"/>
 	<text x="264" y="161" class="lbl">数据中心</text>
-	<text x="606" y="161" class="sub" text-anchor="end">40–288 GB HBM · NVLink 域 · MIG</text>
-	<text x="264" y="181" class="sub">L4 · L40S · A100 · H100 · H200 · B200 · GB300</text>
+	<text x="606" y="161" class="sub" text-anchor="end">GDDR / HBM · NVLink / MIG 按型号</text>
+	<text x="264" y="181" class="sub">L4 · L40S · A100 · H100 · H200 · B200 · B300</text>
 
 	<!-- export -->
 	<rect x="250" y="205" width="370" height="52" class="box" fill="var(--exp-fill)" stroke="var(--exp-stroke)"/>

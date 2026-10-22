@@ -1,7 +1,7 @@
 ---
 title: 国产算力
 date: 2026-10-04
-updated: 2026-10-10
+updated: 2026-10-21
 description: 核对国产算力的芯片交付、超节点部署、软件适配与选型边界。
 tags: [AI Infra, GPU, 昇腾]
 category: AI Infra
@@ -99,7 +99,7 @@ SemiAnalysis 在 2025 年对 CloudMatrix 384 和 GB200 NVL72 做了系统级估�
 
 | 2025 年估算口径 | CloudMatrix 384 | GB200 NVL72 |
 | --- | --- | --- |
-| 加速芯片数 | 384 × 910C | 72 × GB200 |
+| 加速芯片数 | 384 × 910C | 72 颗 Blackwell GPU，组成 36 个 GB200 Superchip |
 | BF16 稠密标称算力 | 约 300 PFLOPS | 约 180 PFLOPS |
 | HBM 总量 | 约 48 TB | 约 13.5 TB |
 | Scale-up 互联总带宽 | 约 269 TB/s | 约 130 TB/s |
@@ -161,6 +161,8 @@ vLLM-Ascend 在 2026 年陆续加入 Ascend 950、MXFP8/MXFP4 和更多模型的
 Atlas 900 A3 已规模部署，950PR 已少量上市，950DT 训练系统仍在测试。接下来值得观察的是 950DT 的供货、960 路线图的兑现，以及新硬件在长稳训练中的表现。
 
 # 参考资料
+
+- [NVIDIA：HGX 系列规格，B200 单卡稠密 FP16/BF16 峰值为 2250 TFLOPS](https://www.nvidia.com/en-au/data-center/hgx/)
 
 - [华为 2025 年昇腾芯片与超节点路线图](https://www.huawei.com/cn/news/2025/9/hc-xu-keynote-speech)
 - [华为 2026 年全联接大会芯片路线更新](https://www.huawei.com/en/news/2026/9/hc-wang-keynote)

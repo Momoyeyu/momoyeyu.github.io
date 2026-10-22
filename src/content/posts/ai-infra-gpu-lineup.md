@@ -1,6 +1,7 @@
 ---
 title: NVIDIA GPU 谱系
 date: 2026-10-01
+updated: 2026-10-21
 description: 从 GeForce 到 GB200 NVL72：NVIDIA 面向 AI 的完整产品线梳理，包括工作站卡、数据中心卡、出口特供版和那些不太常见的形态。
 tags: [AI Infra, GPU, LLM]
 category: AI Infra
@@ -47,7 +48,7 @@ NVIDIA 的产品线命名并不友好：GeForce、RTX PRO、Tesla、数据中心
 
 当代旗舰长这样：Founders Edition 的双流式散热设计，也是目前消费级唯一摸到 32G 显存的卡：
 
-![NVIDIA RTX 5090 Founders Edition（图源：NVIDIA）](/img/posts/ai-infra-gpu-lineup/rtx-5090.jpg)
+![NVIDIA RTX 5090 Founders Edition，图源 NVIDIA](/img/posts/ai-infra-gpu-lineup/rtx-5090.jpg)
 
 ## 代际差异
 
@@ -57,7 +58,7 @@ NVIDIA 的产品线命名并不友好：GeForce、RTX PRO、Tesla、数据中心
 
 **显存技术**：中高端卡在 40 系及以前用 GDDR6X，入门款其实是普通 GDDR6，50 系主力换 GDDR7；旗舰还把位宽从 384-bit 扩到 512-bit，带宽从 1008 GB/s 提到 1792 GB/s，涨幅约 78%，远高于同期稠密算力的涨幅。至于新精度口径的算力数字，那是另一套故事，下一篇细讲。后面会看到，对 LLM 推理来说带宽恰恰是最值钱的指标。
 
-把消费级和数据中心两条线的代际放在一起看，节奏其实是对齐的：同一套架构同时喂养两条产品线，只是下放时砍掉了不同的东西：
+把消费级和数据中心两条线的代际放在一起看，节奏其实是对齐的：两条产品线共享部分技术，但也会使用不同架构，例如消费级的 Ada 与数据中心的 Hopper：
 
 ![NVIDIA GPU 架构代际时间线](/img/posts/ai-infra-gpu-lineup/timeline.svg)
 
@@ -67,7 +68,7 @@ NVIDIA 的产品线命名并不友好：GeForce、RTX PRO、Tesla、数据中心
 
 消费卡便宜是有代价的，NVIDIA 在 GeForce 上做的阉割非常精准：
 
-- **互联**：3090 是最后一张保留 NVLink 的 GeForce，速度能到 112.5 GB/s，A100 的零头。40 系起物理上去掉了 NVLink 金手指；GPU 间点对点访问（P2P）也在驱动层面被禁用。
+- **互联**：3090 / 3090 Ti 是最后一代保留 NVLink 的 GeForce，速度能到 112.5 GB/s，A100 的零头。40 系起物理上去掉了 NVLink 金手指；RTX 40 / 50 系在官方驱动下也不支持常规 GPU 点对点访问（P2P）。
 - **ECC**：GeForce 不提供端到端显存 ECC 保护，长时间大负荷运行的位翻转风险自负。
 - **许可**：GeForce 驱动 EULA 明确限制数据中心部署，早期版本里唯一被豁免的场景是区块链挖矿，条款的意图昭然若揭。
 
@@ -77,7 +78,7 @@ NVIDIA 的产品线命名并不友好：GeForce、RTX PRO、Tesla、数据中心
 
 # RTX PRO 工作站
 
-工作站线的前身是 Quadro，2020 年起改名：Ampere 时代叫 RTX A 系（A4000/A5000/A6000），Ada 时代叫 RTX 6000 Ada，Blackwell 时代统一为 RTX PRO 系列，旗舰是 RTX PRO 6000。
+工作站线的前身是 Quadro，2020 年起改名：Ampere 时代叫 RTX A 系，例如 A4000、A5000 和 A6000，Ada 时代叫 RTX 6000 Ada，Blackwell 时代统一为 RTX PRO 系列，旗舰是 RTX PRO 6000。
 
 ## 产品线沿革
 
@@ -97,7 +98,7 @@ RTX PRO 6000 与 5090 同属 GB202 芯片，但更接近满血：CUDA 核心 240
 
 上市价 8565 美元，受显存涨价影响，2026 年官方价已涨到 16000 美元。
 
-多卡互联上，工作站线的待遇其实和消费级一样：A6000 是最后一张保留 NVLink 的工作站卡，两卡桥接 112.5 GB/s；从 Ada 起 NVLink 被一并砍掉，RTX PRO 6000 多卡只能走 PCIe。想要真正的 NVLink 域，还是得买数据中心线。
+多卡互联上，工作站线的待遇其实和消费级一样：RTX A 系是最后一代保留 NVLink 的工作站卡，两卡桥接 112.5 GB/s；从 Ada 起 NVLink 被一并砍掉，RTX PRO 6000 多卡只能走 PCIe。想要真正的 NVLink 域，还是得买数据中心线。
 
 ## 溢价来源
 
@@ -110,7 +111,7 @@ RTX PRO 6000 与 5090 同属 GB202 芯片，但更接近满血：CUDA 核心 240
 
 对纯 AI 负载而言，工作站卡的性价比经常被消费卡吊打；它真正的价值在"既要又要"的场景：需要官方大显存、需要 ECC、需要保修和合规部署三者同时成立的时候。
 
-![NVIDIA RTX PRO 6000 Blackwell 工作站版（图源：NVIDIA）](/img/posts/ai-infra-gpu-lineup/rtx-pro-6000.jpg)
+![NVIDIA RTX PRO 6000 Blackwell 工作站版，图源 NVIDIA](/img/posts/ai-infra-gpu-lineup/rtx-pro-6000.jpg)
 
 外观上和 5090 的 Founders Edition 几乎一个模子，它们本来就是同一颗 GB202 芯片，贵出来的部分在显存、ECC 和服务条款里，看不见。
 
@@ -124,23 +125,23 @@ RTX PRO 6000 与 5090 同属 GB202 芯片，但更接近满血：CUDA 核心 240
 | --- | --- | --- | --- | --- |
 | A100 | 40/80 GB HBM2/HBM2e | 1.6/2.0 TB/s | 600 GB/s | 上一代的标准答案 |
 | H100 SXM | 80 GB HBM3 | 3.35 TB/s | 900 GB/s | 引入 FP8 与 Transformer Engine |
-| H200 | 141 GB HBM3e | 4.8 TB/s | 900 GB/s | H100 同算力，显存带宽加大 |
-| B200 | 180 GB HBM3e（标称 192 GB） | ~8 TB/s | 1.8 TB/s | 第五代 NVLink，引入 FP4 |
-| GB300 | 288 GB HBM3e | ~8 TB/s | 1.8 TB/s | Blackwell Ultra，机柜级出货 |
+| H200 SXM | 141 GB HBM3e | 4.8 TB/s | 900 GB/s | H100 同算力，显存带宽加大 |
+| B200 | 180 GB HBM3e | ~8 TB/s | 1.8 TB/s | 第五代 NVLink，引入 FP4 |
+| B300 / Blackwell Ultra GPU | 288 GB HBM3e | ~8 TB/s | 1.8 TB/s | GB300 NVL72 中的单颗 GPU |
 
 ### SXM 与 PCIe
 
-同一颗核心有两种封装：SXM 是焊在基板上的形态，给足功耗和满血 NVLink；PCIe 是标准插卡，功耗和互联都打折：H100 PCIe 只有 350W、NVLink 降到 600 GB/s。买数据中心卡时型号后面的"SXM5"后缀不是装饰，它决定这卡能不能进 NVLink 域。
+同一颗核心有两种封装：SXM 是安装在专用基板上的模块形态，给足功耗和满血 NVLink；PCIe 是标准插卡，功耗和互联都打折：H100 PCIe 只有 350W、NVLink 降到 600 GB/s。买数据中心卡时型号后面的"SXM5"后缀不是装饰，它关系到系统支持的 NVLink 域规模，PCIe 卡也能组成受支持的 NVLink 直连配置。
 
 SXM 模块长这样：一整块基板上焊着 GPU 核心和周围的 HBM 颗粒，没有显示输出、没有风扇，一切都为密度和互联服务。
 
-![NVIDIA H100 SXM 模块，中央为 GPU 核心、四周环绕 HBM 颗粒（图源：NVIDIA）](/img/posts/ai-infra-gpu-lineup/h100-sxm.jpg)
+![NVIDIA H100 SXM 模块，中央为 GPU 核心、四周环绕 HBM 颗粒，图源 NVIDIA](/img/posts/ai-infra-gpu-lineup/h100-sxm.jpg)
 
 ### NVLink 域
 
-多卡互联的分水岭在 NVSwitch：A100/H100 的 SXM 机型通过 NVSwitch 把 8 卡组成一个全互联的 NVLink 域，域内任意两卡直达；出了域就只能走 InfiniBand 跨节点。B200 世代把这个域扩大到了整个机柜：GB200 NVL72 用 72 颗 GPU 加 NVSwitch 组成一个 130 TB/s 的巨型 NVLink 域，对外宣传为"一张 GPU"。
+多卡互联的分水岭在 NVSwitch：A100/H100 的 SXM 机型通过 NVSwitch 把 8 卡组成一个全互联的 NVLink 域，域内任意两卡经 NVSwitch 互通；出了域通常走 InfiniBand 或 RoCE/Ethernet 跨节点。B200 世代把这个域扩大到了整个机柜：GB200 NVL72 用 72 颗 GPU 加 NVSwitch 组成一个全域双向合计 130 TB/s 的巨型 NVLink 域，对外宣传为"一张 GPU"。
 
-![NVIDIA GB200 NVL72 机柜，上下两层 compute tray 之间是 NVSwitch 交换层（图源：NVIDIA）](/img/posts/ai-infra-gpu-lineup/gb200-nvl72.jpg)
+![NVIDIA GB200 NVL72 机柜，上下两层 compute tray 之间是 NVSwitch 交换层，图源 NVIDIA](/img/posts/ai-infra-gpu-lineup/gb200-nvl72.jpg)
 
 消费级的一台主机最多塞几张卡，而数据中心线的计量单位已经变成了机柜。
 
@@ -181,7 +182,7 @@ SXM 模块长这样：一整块基板上焊着 GPU 核心和周围的 HBM 颗粒
 - **砍算力**：H20，峰值算力不足 H100 的两成，但显存、带宽、NVLink 全部保留。
 - **砍显存/AI 算力**：5090D 系列。
 
-H20 是最值得细品的一张：管制规则卡的是算力密度，NVIDIA 就把算力砍到底、把带宽和互联原样留下，恰好凑成一张推理特化卡：LLM 推理吃带宽不吃算力，原因下篇讲。所以 H20 在中国市场一度供不应求，禁令几收几放，堪称出口管制和产品定义博弈的活教材。
+H20 是最值得细品的一张：管制规则卡的是算力密度，NVIDIA 就把算力砍到底、把带宽和互联原样留下，恰好凑成一张推理特化卡：LLM 的小 batch decode 主要吃带宽，prefill 则更吃算力，原因下篇讲。所以 H20 在中国市场一度供不应求，禁令几收几放，堪称出口管制和产品定义博弈的活教材。
 
 # 特殊形态
 
@@ -189,9 +190,9 @@ H20 是最值得细品的一张：管制规则卡的是算力密度，NVIDIA 就
 
 ## DGX Spark
 
-NVIDIA 官方出的桌面盒子：GB10 超级芯片，CPU 和 GPU 共享 128 GB LPDDR5x 统一内存，整机三千多美元。128G 容量可以装下很多中端模型，但带宽只有约 273 GB/s，前面说过带宽决定推理速度，所以它的定位是**能跑大模型的开发机**，不是跑得快的那种。两台之间可以用 ConnectX-7 直连组成小集群。
+NVIDIA 官方出的桌面盒子：GB10 超级芯片，CPU 和 GPU 共享 128 GB LPDDR5x 统一内存，128 GB 版本上市时售价 3999 美元。128G 容量可以装下很多中端模型，但带宽只有约 273 GB/s，前面说过带宽决定推理速度，所以它的定位是**能跑大模型的开发机**，不是跑得快的那种。两台之间可以用 ConnectX-7 直连组成小集群。
 
-![NVIDIA DGX Spark，右侧的小盒子即主机本体，体积远小于笔记本电脑（图源：NVIDIA）](/img/posts/ai-infra-gpu-lineup/dgx-spark.jpg)
+![NVIDIA DGX Spark，右侧的小盒子即主机本体，体积远小于笔记本电脑，图源 NVIDIA](/img/posts/ai-infra-gpu-lineup/dgx-spark.jpg)
 
 实物尺寸相当小，右边那个小方块就是全部算力，形态上更像一台 Mac mini 而不是工作站。
 
@@ -199,7 +200,7 @@ NVIDIA 官方出的桌面盒子：GB10 超级芯片，CPU 和 GPU 共享 128 GB 
 
 ## 涡轮与服务器版
 
-消费卡官方只有开放式风扇形态，插不了多卡机箱，于是市场上存在一条灰色供应链：OEM 流出的涡轮版 4090/5090、以及第三方换涡轮散热的改装卡。单槽或双槽涡轮往外直排热量，是往 4U 机箱里塞 8 张消费卡的前提。这些卡没有官方保修，多卡互联的限制也一样不少，但确实存在，而且构成了后面偏方篇的物理基础。
+常见消费卡多为开放式风扇形态，密集多卡安装需要解决槽位与散热问题，于是市场上存在一条灰色供应链：OEM 流出的涡轮版 4090/5090、以及第三方换涡轮散热的改装卡。单槽或双槽涡轮往外直排热量，是往 4U 机箱里塞 8 张消费卡的一种方案。第三方改装卡通常没有原厂保修，多卡互联的限制也一样不少，但确实存在，而且构成了后面偏方篇的物理基础。
 
 # 结语
 
@@ -214,6 +215,10 @@ NVIDIA 官方出的桌面盒子：GB10 超级芯片，CPU 和 GPU 共享 128 GB 
 看完谱系，下一个问题自然是：规格表上这些数字到底哪个重要、怎么读。这是下一篇的主题。
 
 # 参考资料
+
+- [NVIDIA：RTX 3090 / 3090 Ti 规格](https://www.nvidia.com/en-eu/geforce/graphics-cards/30-series/rtx-3090-3090ti/)
+- [NVIDIA：HGX H100 / H200 / B200 规格](https://docs.nvidia.com/enterprise-reference-architectures/hgx-ai-factory-h100-h200-b200/latest/components.html)
+- [NVIDIA：GB300 NVL72 规格](https://www.nvidia.com/en-us/data-center/gb300-nvl72/)
 
 - [Which GPU(s) to Get for Deep Learning — Tim Dettmers](https://timdettmers.com/2023/01/30/which-gpu-for-deep-learning/)
 - [Epoch AI — Machine Learning Hardware Dataset](https://epoch.ai/data/machine-learning-hardware)
