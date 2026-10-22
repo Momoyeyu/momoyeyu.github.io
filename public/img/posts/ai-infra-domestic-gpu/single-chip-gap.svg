@@ -58,11 +58,11 @@
 	<text x="330" y="250" class="val" text-anchor="middle">B200</text>
 
 	<!-- ============ panel 3: 算力 ============ -->
-	<text x="430" y="34" class="hd" text-anchor="middle">算力（FP16/BF16）</text>
+	<text x="430" y="34" class="hd" text-anchor="middle">FP16/BF16，稠密</text>
 	<rect x="375" y="162" width="30" height="48" class="a"/><text x="390" y="155" class="val" text-anchor="middle">800</text>
 	<rect x="410" y="191" width="30" height="19" class="n"/><text x="425" y="184" class="val" text-anchor="middle">312</text>
 	<rect x="445" y="150" width="30" height="60" class="n"/><text x="460" y="143" class="val" text-anchor="middle">990</text>
-	<rect x="480" y="60" width="30" height="150" class="n"/><text x="495" y="53" class="val" text-anchor="middle">2500</text>
+	<rect x="480" y="75" width="30" height="135" class="n"/><text x="495" y="68" class="val" text-anchor="middle">2250</text>
 	<line x1="368" y1="210" x2="522" y2="210" class="base"/>
 	<text x="430" y="230" class="val" text-anchor="middle">TFLOPS</text>
 	<text x="390" y="250" class="val" text-anchor="middle">910C</text>

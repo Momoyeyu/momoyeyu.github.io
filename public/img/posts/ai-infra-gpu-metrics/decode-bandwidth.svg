@@ -1,4 +1,4 @@
-<svg viewBox="0 0 660 310" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="70B FP8 模型在不同 GPU 上的单流 decode 速度理论上限对比，仅由显存带宽决定">
+<svg viewBox="0 0 660 310" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="70B FP8 模型在不同 GPU 上的单流 decode 简化估算，假设 70% 有效带宽，只计权重读取">
 	<style>
 		:root {
 			--fg: #2b2b2b;
@@ -32,7 +32,7 @@
 	</style>
 
 	<!-- formula note -->
-	<text x="330" y="24" class="note" text-anchor="middle">70B FP8 · 每 token 读取 ≈ 70 GB：tokens/s ≈ 带宽 × 0.7 ÷ 70（理论上限）</text>
+	<text x="330" y="24" class="note" text-anchor="middle">70B FP8 · 仅计 70 GB 权重 · 假设 70% 有效带宽的估算</text>
 
 	<!-- human reading threshold at 20 t/s -> x = 150 + 20*6 = 270 -->
 	<line x1="270" y1="40" x2="270" y2="276" class="threshold"/>
@@ -44,7 +44,7 @@
 	<rect x="150" y="136" width="120" height="26" class="bar"/>
 	<rect x="150" y="174" width="201" height="26" class="bar"/>
 	<rect x="150" y="212" width="288" height="26" class="bar"/>
-	<rect x="150" y="250" width="462" height="26" class="bar"/>
+	<rect x="150" y="250" width="480" height="26" class="bar"/>
 
 	<!-- labels -->
 	<text x="140" y="78" class="name" text-anchor="end">DGX Spark</text>
@@ -59,7 +59,7 @@
 	<text x="276" y="154" class="val">2.0 TB/s → 20 t/s</text>
 	<text x="357" y="192" class="val">3.35 TB/s → 33 t/s</text>
 	<text x="444" y="230" class="val">4.8 TB/s → 48 t/s</text>
-	<text x="596" y="268" class="val" text-anchor="end" fill="var(--fg)">7.7 TB/s → 77 t/s</text>
+	<text x="596" y="268" class="val" text-anchor="end" fill="var(--fg)">8.0 TB/s → 80 t/s</text>
 
 	<!-- axis -->
 	<text x="150" y="298" class="tick">0</text>

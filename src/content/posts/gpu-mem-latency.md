@@ -1,6 +1,7 @@
 ---
 title: GPU 访存延迟
 date: 2026-05-20
+updated: 2026-10-21
 description: '从 Grid-Stride Loop 入手，解释 warp 切换、SM 并发与 L1/L2 cache 对 GPU 访存延迟的影响，并复盘一次向量化反而变慢的原因。'
 tags: [AI Infra, CUDA, GPU]
 category: AI Infra
@@ -9,7 +10,7 @@ draft: false
 lang: 'zh_CN'
 ---
 
-最近看了杜子源学长的 [`CUDA学习之路[5]——逐元素操作算子`](https://dlog.com.cn/posts/cuda05/element_wise/)（下称 dlog），产生了一些疑问，本文记录一下思考。
+最近看了杜子源学长的 [`CUDA学习之路第 5 篇：逐元素操作算子`](https://dlog.com.cn/posts/cuda05/element_wise/)，下文简称 dlog，产生了一些疑问，本文记录一下思考。
 
 ## 什么是访存延迟
 
@@ -18,11 +19,11 @@ lang: 'zh_CN'
 而当我看到 dlog 在隐藏访存延迟的 section 中提到 `Grid-Stride Loop` 时，我并没有理解。因为我觉得这几种方法看起来要读的数据量都是一样的，在带宽吃满的情况下理论上应该没有区别，那么为什么会说这种策略可以隐藏访存延迟呢？为了探明答案，我思考了以下几个子问题：
 
 - GPU 会不会把待处理的 `N` 个元素一次性 load 到 cache 中？
-  - 答案当然是不会，因为 GPU 的 cache 是有限的，无法把所有数据都一次性放进去。
+  - 不会预先把所有元素一起装入 cache。访问按需发生，能否全部容纳取决于数据量和 cache 容量。
 - 如果没有一次性 load，线程进入下一轮循环时，难道不会再次遇到访存延迟吗？
   - 答案通常是会，因为下一轮循环访问的元素很可能不在 cache 中。
 - 既然每一轮都还是要读显存，那 `stride` 到底帮了什么？
-  - 答案是对同一个线程进行复用，并且通过循环理论上可以支持无限大的数据量。
+  - 答案是复用同一个线程，让数据规模不再受 grid 大小直接限制。
 
 然而，这些问答依旧没有帮助我真正理解 `Grid-Stride Loop` 的作用。因为要读的数据量没有变，要读的次数看起来也没有变化，访存延迟究竟是在哪个环节隐藏的呢？
 
@@ -35,11 +36,11 @@ lang: 'zh_CN'
 - 厂房的“工位”在不同时间给不同小队使用，对应 SM 在不同时间调度不同 warp
 - 小队在开工前需要把原材料搬到手边，对应 warp 发起 load 等待内存返回数据
 
-![访存延迟隐藏（工厂类比动画）](/img/posts/gpu-mem-latency/factory-latency.svg)
+![访存延迟隐藏的工厂类比动画](/img/posts/gpu-mem-latency/factory-latency.svg)
 
 如果沿着这个类比继续往下说，那所谓访存延迟，指的就是小队已经拿到了工位，但原材料还没搬到手边，所以只能等待搬运的那段时间。放到 GPU 上，就是 warp 发起一次 load 之后，到数据真正返回之前的等待时间。
 
-`Grid-Stride Loop` 并不会让某一次访存变快，它更像是在改变“开工方式”：
+`Grid-Stride Loop` 不会让某一次访存变快，它负责复用线程，让 grid 大小与数据规模解耦。warp 调度是 GPU 自身的机制，不写这个循环也能隐藏访存延迟：
 
 - 让同一批 thread 在循环里反复处理多个元素，而不是处理一个元素就结束
 - 当某个 warp 因为等待内存而 stall 时，SM 可以切换到另一个已经 ready 的 warp 继续执行
@@ -50,7 +51,7 @@ lang: 'zh_CN'
 
 换句话说，这里的“隐藏”并不是延迟消失了，而是等待内存的这段时间被其他 warp 的执行覆盖掉了。
 
-所以 `Grid-Stride Loop` 真正解决的不是“某一次访存太慢”，而是“一个 warp 在等数据的时候，SM 能不能还有别的活可干”。如果答案是可以，那么从外面看就像这段等待被隐藏起来了。
+`Grid-Stride Loop` 让我们可以调节 block 数量而不漏掉元素；是否隐藏住延迟，仍取决于 SM 上有没有足够的 ready warp 或独立指令。
 
 ### 为什么这里一定要有 SM
 
@@ -66,7 +67,7 @@ lang: 'zh_CN'
 
 为什么会有多个 warp 之间切换？因为同一个 SM 上本来就会驻留多个 warp。
 
-当某个 warp 发起一次全局内存读取时，它可能需要等待比较久。这时：
+warp 发起全局内存读取后，仍可执行不依赖该数据的指令；需要使用尚未返回的数据时，才会因依赖而停顿。这时：
 
 - 调度器不会傻等这个 warp
 - 而是立刻切到同一个 SM 上另一个 ready 的 warp
@@ -173,7 +174,7 @@ Version 3: 1.96 ms  411.71 GB/s
 
 ## References
 
-- 杜子源，《[CUDA学习之路[5]——逐元素操作算子](https://dlog.com.cn/posts/cuda05/element_wise/)》
+- 杜子源，《[CUDA学习之路第 5 篇：逐元素操作算子](https://dlog.com.cn/posts/cuda05/element_wise/)》
 - NVIDIA，《[CUDA Programming Guide - Programming Model](https://docs.nvidia.com/cuda/cuda-programming-guide/01-introduction/programming-model.html)》
 - NVIDIA，《[CUDA Programming Guide - GPU Hardware Model](https://docs.nvidia.com/cuda/cuda-programming-guide/01-introduction/programming-model.html#gpu-hardware-model)》
 - NVIDIA，《[CUDA Programming Guide - Warps and SIMT](https://docs.nvidia.com/cuda/cuda-programming-guide/01-introduction/programming-model.html#warps-and-simt)》

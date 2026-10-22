@@ -32,7 +32,7 @@
 ## 约定
 
 - 仓库日常操作一律走 Make：新建文章用 `make new`（不要手写 frontmatter），完整指令列表见 `README.md` 与 `Makefile`。
-- `make dev` 已带单实例守卫：多个 `astro dev` 共享 `.astro/data-store.json` 会让归档/合集偶发空白，guard 拒绝时先 kill 旧进程，不要绕开它另起 `astro dev`。
+- `make dev` 已带单实例守卫：多个 `astro dev` 共享 `.astro/data-store.json` 会让归档/合集偶发空白，guard 拒绝时先 kill 旧进程，不要绕开它另起 `astro dev`。`astro.config.mjs` 里另有 dev watchdog：`/.vite/deps/` 请求返回 504（optimizeDeps hash 过期）时自动 `server.restart()` 恢复，不要删。
 - 为测试起的任何服务进程（`astro dev`、`astro preview`、`python -m http.server` 等）用完必须自己杀掉，不留孤儿进程；用户自己在用的 :4321 dev server 不要动。
 - 改完自检 `make check`（`astro check` + `vitest run`）。
 - 不顺手重构历史代码与历史文章：只做被明确要求的改动。

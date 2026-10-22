@@ -1,6 +1,7 @@
 ---
 title: Awesome AI Infra
 date: 2026-05-09
+updated: 2026-10-21
 description: '搜集的 AI Infra 相关 GitHub 资源，持续更新中。'
 tags: [AI Infra, LLM, CUDA]
 category: AI Infra
@@ -14,7 +15,7 @@ lang: 'zh_CN'
 
 ## 体系教程
 
-想先建立全局视角，从这两个仓库入手：
+想先建立全局视角，从这几项资源入手：
 
 - [HuaizhengZhang/AI-Infra-from-Zero-to-Hero](https://github.com/HuaizhengZhang/AI-Infra-from-Zero-to-Hero)：系统视角，从零开始覆盖整个领域。
 - [ai-infra-curriculum](https://github.com/ai-infra-curriculum)：一份课程化的学习路线图。
