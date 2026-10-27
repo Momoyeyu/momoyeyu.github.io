@@ -12,15 +12,16 @@ export const siteConfig: SiteConfig = {
 	subtitle: "技术学习与分享",
 	lang: "zh_CN",
 	themeColor: {
-		hue: 24,
-		fixed: false,
-		defaultScheme: "glass",
-		defaultAccentChroma: 0.16,
-		defaultSurfaceChroma: 0.026,
+		// The five source colors live in styles/variables.styl; hue is a legacy fallback.
+		hue: 250,
+		fixed: true,
+		defaultScheme: "minimal",
+		defaultAccentChroma: 0.055,
+		defaultSurfaceChroma: 0.016,
 	},
 	wallpaper: {
 		defaultMode: "banner",
-		switchable: true,
+		switchable: false,
 	},
 	display: {
 		defaultPostLayout: "grid",
@@ -28,7 +29,7 @@ export const siteConfig: SiteConfig = {
 	},
 	banner: {
 		enable: true,
-		src: "/img/resources/banner.webp",
+		src: "/img/home/ink-feather.webp",
 		position: "center",
 		credit: {
 			enable: false,

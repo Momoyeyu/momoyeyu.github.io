@@ -2,6 +2,18 @@ import Key from "../i18nKey";
 import type { Translation } from "../translation";
 
 export const th: Translation = {
+	[Key.openingDescription]: "เรียบเรียงความคิดระหว่างบรรทัด",
+	[Key.openingScrollHint]: "เลื่อนลงเพื่ออ่านต่อ",
+
+	[Key.readArticles]: "อ่านบทความ",
+	[Key.gridView]: "มุมมองตาราง",
+	[Key.listView]: "มุมมองรายการ",
+
+	[Key.collapseLeftSidebar]: "ซ่อนชุดบทความ",
+	[Key.expandLeftSidebar]: "แสดงชุดบทความ",
+	[Key.collapseRightSidebar]: "ซ่อนสารบัญ",
+	[Key.expandRightSidebar]: "แสดงสารบัญ",
+
 	[Key.mascotReadingCorner]: "มุมอ่านหนังสือของโคมาริ",
 	[Key.mascotInteract]: "คุยกับโคมาริ เปลี่ยนสีหน้าและบทพูด",
 	[Key.home]: "หน้าแรก",

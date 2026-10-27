@@ -4,9 +4,9 @@ import path from "node:path";
 import I18nKey from "../i18n/i18nKey";
 import { i18n } from "../i18n/translation";
 import { getCover } from "../utils/cover-utils";
-import { getCategoryUrl, getDir } from "../utils/url-utils";
+import { formatDateToYYYYMMDD } from "../utils/date-utils";
+import { getCategoryUrl, getDir, getTagUrl } from "../utils/url-utils";
 import ImageWrapper from "./misc/ImageWrapper.astro";
-import PostMetadata from "./PostMeta.astro";
 
 interface Props {
 	class?: string;
@@ -27,7 +27,6 @@ const {
 	title,
 	url,
 	date,
-	updated,
 	tags,
 	category,
 	image,
@@ -38,68 +37,64 @@ const className = Astro.props.class;
 const coverSrc = getCover(entry.id, image || undefined);
 const hasCover = coverSrc !== "";
 const { remarkPluginFrontmatter } = await entry.render();
+const dateLabel = formatDateToYYYYMMDD(date);
 ---
 
 <div class:list={["grid-post-card card-base rounded-[var(--radius-large)] overflow-hidden relative flex flex-col", className]} style={style}>
-    <!-- Top: image with title overlay -->
-    <a href={url} aria-label={title} class="block relative w-full overflow-hidden group" style="height: 11rem;">
+    <a href={url} aria-label={title} class="post-card-cover block relative w-full overflow-hidden group" style="height: 11rem;">
         {hasCover && (
             <ImageWrapper
                 src={coverSrc}
                 basePath={path.join("content/posts/", getDir(entry.id))}
                 alt={title}
-                class="w-full h-full transition-transform duration-500 group-hover:scale-105"
+                class="w-full h-full transition-transform duration-500 group-hover:scale-[1.025]"
             />
         )}
         {!hasCover && (
             <div class="w-full h-full bg-gradient-to-br from-[var(--primary)]/30 to-[var(--primary)]/10"></div>
         )}
-        <!-- gradient overlay -->
-        <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent pointer-events-none"></div>
-        <!-- title on image -->
-        <div class="absolute bottom-0 left-0 right-0 p-3 z-10">
-            <h2 class="text-white font-bold text-base leading-snug line-clamp-2 drop-shadow-sm">
-                {title}
-            </h2>
-        </div>
     </a>
-    <!-- category pill -->
-    {category && (
-        <a href={getCategoryUrl(category)} aria-label={`${i18n(I18nKey.categories)} · ${category}`}
-           class="absolute top-3 left-3 z-10 text-xs px-2 py-0.5 rounded-full font-medium text-white bg-[var(--primary)]/80 hover:bg-[var(--primary)] backdrop-blur-sm transition">
-            {category}
-        </a>
-    )}
 
-    <!-- Bottom: meta + excerpt, straight top border, no extra rounding -->
-    <div class="flex flex-col flex-1 px-4 pt-3 pb-4 gap-2">
-        <PostMetadata
-            date={date}
-            updated={updated}
-            tags={tags}
-            category={category}
-            hideCategory={true}
-            hideTagsForMobile={false}
-            hideUpdateDate={true}
-            class="text-xs"
-        />
-        <p class="text-75 text-sm leading-relaxed line-clamp-2 flex-1">
+    <div class="post-card-content flex flex-col flex-1 px-5 pt-4 pb-5 gap-3 min-w-0">
+        <div class="flex items-baseline justify-between gap-3 min-h-5 text-xs">
+            {category ? (
+                <a href={getCategoryUrl(category)} aria-label={`${i18n(I18nKey.categories)} · ${category}`}
+                    class="post-card-category font-medium truncate text-[var(--primary)] hover:underline underline-offset-4">
+                    {category}
+                </a>
+            ) : <span></span>}
+            <time datetime={dateLabel} class="shrink-0 text-50 tabular-nums">{dateLabel}</time>
+        </div>
+        <h2 class="post-card-title text-90 font-semibold text-lg leading-snug min-h-[2.75em]">
+            <a href={url} class="line-clamp-2 hover:text-[var(--primary)]">{title}</a>
+        </h2>
+        <p class="text-75 text-sm leading-relaxed line-clamp-2 flex-1 min-h-[3.25em]">
             {description || remarkPluginFrontmatter.excerpt}
         </p>
-        <div class="text-xs text-black/30 dark:text-white/30 flex gap-3">
-            <span>{remarkPluginFrontmatter.words} {i18n(I18nKey.wordsCount)}</span>
-            <span>·</span>
-            <span>{remarkPluginFrontmatter.minutes} {i18n(I18nKey.minutesCount)}</span>
+        <div class="post-card-foot flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2 pt-3 border-t border-[var(--line-divider)] text-xs text-50">
+            <div class="flex flex-wrap gap-x-2 gap-y-1 min-w-0">
+                {tags.map(tag => (
+                    <a href={getTagUrl(tag)} aria-label={`View all posts with the ${tag.trim()} tag`}
+                        class="hover:text-[var(--primary)]">#{tag.trim()}</a>
+                ))}
+            </div>
+            <div class="flex flex-wrap gap-x-3 gap-y-1 tabular-nums">
+                <span>{remarkPluginFrontmatter.words} {i18n(I18nKey.wordsCount)}</span>
+                <span>{remarkPluginFrontmatter.minutes} {i18n(I18nKey.minutesCount)}</span>
+            </div>
         </div>
     </div>
 </div>
 
 <style>
 .grid-post-card {
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 .grid-post-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.13), 0 4px 12px rgba(0, 0, 0, 0.07) !important;
+    border-color: color-mix(in oklch, var(--primary) 30%, var(--card-border));
+    box-shadow: 0 5px 18px rgb(0 0 0 / 0.05);
+}
+@media (prefers-reduced-motion: reduce) {
+    .post-card-cover :global(div) { transition: none; }
 }
 </style>

@@ -12,9 +12,6 @@ declare global {
 			}>;
 		};
 	}
-
-	// injected by Layout.astro's define:vars; the language server cannot see it
-	var styleSettingsVersion: string;
 }
 
 interface SearchResult {

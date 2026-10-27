@@ -64,8 +64,34 @@ const jsonLd = {
                 <span aria-hidden="true">/</span>
                 <span aria-current="page" class="truncate min-w-0" title={entry.data.title}>{entry.data.title}</span>
             </nav>
+            <!-- title -->
+            <div class="relative onload-animation">
+                <h1
+                    data-pagefind-body data-pagefind-weight="10" data-pagefind-meta="title"
+                    class="transition w-full block font-bold mb-3
+                    text-3xl md:text-[2.25rem]/[2.75rem]
+                    text-black/90 dark:text-white/90
+                    md:before:w-1 before:h-5 before:rounded-md before:bg-[var(--primary)]
+                    before:absolute before:top-[0.75rem] before:left-[-1.125rem]
+                ">
+                    {entry.data.title}
+                </h1>
+            </div>
+
+            <!-- metadata -->
+            <div class="onload-animation">
+                <PostMetadata
+                        class="mb-1"
+                        date={entry.data.date}
+                        updated={entry.data.updated}
+                        tags={entry.data.tags}
+                        category={entry.data.category}
+                ></PostMetadata>
+
+            </div>
+
             <!-- word count and reading time -->
-            <div class="flex flex-row text-black/30 dark:text-white/30 gap-5 mb-3 transition onload-animation">
+            <div class="post-reading-stats flex flex-row">
                 <div class="flex flex-row items-center">
                     <div class="transition h-6 w-6 rounded-md bg-black/5 dark:bg-white/10 text-black/50 dark:text-white/50 flex items-center justify-center mr-2">
                         <Icon name="material-symbols:notes-rounded"></Icon>
@@ -82,31 +108,6 @@ const jsonLd = {
                 </div>
             </div>
 
-            <!-- title -->
-            <div class="relative onload-animation">
-                <div
-                    data-pagefind-body data-pagefind-weight="10" data-pagefind-meta="title"
-                    class="transition w-full block font-bold mb-3
-                    text-3xl md:text-[2.25rem]/[2.75rem]
-                    text-black/90 dark:text-white/90
-                    md:before:w-1 before:h-5 before:rounded-md before:bg-[var(--primary)]
-                    before:absolute before:top-[0.75rem] before:left-[-1.125rem]
-                ">
-                    {entry.data.title}
-                </div>
-            </div>
-
-            <!-- metadata -->
-            <div class="onload-animation">
-                <PostMetadata
-                        class="mb-5"
-                        date={entry.data.date}
-                        updated={entry.data.updated}
-                        tags={entry.data.tags}
-                        category={entry.data.category}
-                ></PostMetadata>
-                {!entry.data.image && <div class="border-[var(--line-divider)] border-dashed border-b-[1px] mb-5"></div>}
-            </div>
 
             <!-- cover is now shown as the page banner via MainGridLayout, no duplicate here -->
 

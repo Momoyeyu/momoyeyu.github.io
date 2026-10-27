@@ -2,6 +2,18 @@ import Key from "../i18nKey";
 import type { Translation } from "../translation";
 
 export const ko: Translation = {
+	[Key.openingDescription]: "글 사이에서 생각을 가다듬다.",
+	[Key.openingScrollHint]: "아래로 스크롤",
+
+	[Key.readArticles]: "글 읽기",
+	[Key.gridView]: "격자 보기",
+	[Key.listView]: "목록 보기",
+
+	[Key.collapseLeftSidebar]: "시리즈 접기",
+	[Key.expandLeftSidebar]: "시리즈 펼치기",
+	[Key.collapseRightSidebar]: "목차 접기",
+	[Key.expandRightSidebar]: "목차 펼치기",
+
 	[Key.mascotReadingCorner]: "코마리의 독서 공간",
 	[Key.mascotInteract]: "코마리와 대화하고 표정과 대사 바꾸기",
 	[Key.home]: "홈",

@@ -5,6 +5,7 @@ import { getSortedPosts } from "@utils/content-utils";
 import { getCategoryUrl, getPostUrlBySlug } from "@utils/url-utils";
 import { Icon } from "astro-icon/components";
 import Categories from "./Categories.astro";
+import SidebarToggle from "../SidebarToggle.svelte";
 import Profile from "./Profile.astro";
 import Tag from "./Tags.astro";
 
@@ -62,10 +63,17 @@ const hasAbove = winStart > 0;
 const hasBelow = winEnd < seriesPosts.length;
 ---
 <div id="sidebar" class:list={[className, "w-full"]}>
+    <div class="sidebar-rail sidebar-rail-left">
+        <SidebarToggle client:load side="left" variant="rail" collapseLabel={i18n(I18nKey.collapseLeftSidebar)} expandLabel={i18n(I18nKey.expandLeftSidebar)} />
+    </div>
+    <div id="sidebar-content" class="sidebar-content">
     <div class="flex flex-col w-full gap-4 mb-4">
         <Profile></Profile>
     </div>
-    <div id="sidebar-sticky" class="transition-all duration-700 flex flex-col w-full gap-4 sticky top-4">
+    <div id="sidebar-sticky" class="flex flex-col w-full gap-4 sticky top-4">
+        <div class="sidebar-collapse-control">
+            <SidebarToggle client:load side="left" collapseLabel={i18n(I18nKey.collapseLeftSidebar)} expandLabel={i18n(I18nKey.expandLeftSidebar)} />
+        </div>
         {isPostPage && seriesPosts.length > 1 ? (
             <series-widget class="card-base pb-4 onload-animation" style="animation-delay: 150ms" data-needs-window={String(needsWindow)}>
                 <a href={getCategoryUrl(category)} class="block w-fit font-bold transition text-lg text-neutral-900 dark:text-neutral-100 hover:text-[var(--primary)] dark:hover:text-[var(--primary)] relative ml-8 mt-4 mb-2
@@ -167,6 +175,7 @@ const hasBelow = winEnd < seriesPosts.length;
             </>
         )}
     </div>
+    </div>
 </div>
 
 <style>
@@ -180,31 +189,37 @@ const hasBelow = winEnd < seriesPosts.length;
 
 <script>
     class SeriesWidget extends HTMLElement {
-        constructor() {
-            super();
-            if (this.dataset.needsWindow !== "true") return;
+        bound = false;
+
+        handleClick = (event: MouseEvent) => {
+            const target = event.target;
+            if (!(target instanceof Element)) return;
+            const expand = target.closest('.series-expand-btn');
+            const collapse = target.closest('.series-collapse-btn');
+            if (!expand && !collapse) return;
 
             const win = this.querySelector('.series-window');
             const full = this.querySelector('.series-full');
             const expandBtns = this.querySelectorAll('.series-expand-btn');
             const collapseBtn = this.querySelector('.series-collapse-btn');
+            if (!win || !full || !collapseBtn) return;
 
-            const expand = () => {
-                win?.classList.add('hidden');
-                expandBtns.forEach(b => b.classList.add('hidden'));
-                full?.classList.remove('hidden');
-                collapseBtn?.classList.remove('hidden');
-            };
+            const expanded = !!expand;
+            win.classList.toggle('hidden', expanded);
+            expandBtns.forEach(button => button.classList.toggle('hidden', expanded));
+            full.classList.toggle('hidden', !expanded);
+            collapseBtn.classList.toggle('hidden', !expanded);
+        };
 
-            const collapse = () => {
-                win?.classList.remove('hidden');
-                expandBtns.forEach(b => b.classList.remove('hidden'));
-                full?.classList.add('hidden');
-                collapseBtn?.classList.add('hidden');
-            };
+        connectedCallback() {
+            if (this.bound || this.dataset.needsWindow !== "true") return;
+            this.addEventListener('click', this.handleClick);
+            this.bound = true;
+        }
 
-            expandBtns.forEach(b => b.addEventListener('click', expand));
-            collapseBtn?.addEventListener('click', collapse);
+        disconnectedCallback() {
+            this.removeEventListener('click', this.handleClick);
+            this.bound = false;
         }
     }
 

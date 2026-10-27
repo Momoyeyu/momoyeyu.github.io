@@ -2,6 +2,18 @@ import Key from "../i18nKey";
 import type { Translation } from "../translation";
 
 export const id: Translation = {
+	[Key.openingDescription]: "Menjernihkan pikiran di antara baris.",
+	[Key.openingScrollHint]: "Gulir ke bawah",
+
+	[Key.readArticles]: "Baca artikel",
+	[Key.gridView]: "Tampilan kisi",
+	[Key.listView]: "Tampilan daftar",
+
+	[Key.collapseLeftSidebar]: "Sembunyikan koleksi",
+	[Key.expandLeftSidebar]: "Tampilkan koleksi",
+	[Key.collapseRightSidebar]: "Sembunyikan daftar isi",
+	[Key.expandRightSidebar]: "Tampilkan daftar isi",
+
 	[Key.mascotReadingCorner]: "Sudut baca Komari",
 	[Key.mascotInteract]: "Mengobrol dengan Komari, ganti ekspresi dan dialognya",
 	[Key.home]: "Beranda",

@@ -45,26 +45,34 @@ const className = Astro.props.class;
 
 <script>
     class WidgetLayout extends HTMLElement {
-        constructor() {
-            super();
+        bound = false;
 
-            if (this.dataset.isCollapsed !== "true")
-                return;
+        handleClick = (event: MouseEvent) => {
+            const target = event.target;
+            if (!(target instanceof Element)) return;
+            const expand = target.closest('.expand-btn');
+            const collapse = target.closest('.collapse-btn');
+            if (!expand && !collapse) return;
 
-            const id = this.dataset.id;
             const btn = this.querySelector('.expand-btn');
             const collapseBtn = this.querySelector('.collapse-btn');
-            const wrapper = this.querySelector(`#${id}`)
-            btn!.addEventListener('click', () => {
-                wrapper!.classList.remove('collapsed');
-                btn!.classList.add('hidden');
-                collapseBtn!.classList.remove('hidden');
-            })
-            collapseBtn!.addEventListener('click', () => {
-                wrapper!.classList.add('collapsed');
-                collapseBtn!.classList.add('hidden');
-                btn!.classList.remove('hidden');
-            })
+            const wrapper = this.querySelector('.collapse-wrapper');
+            if (!btn || !collapseBtn || !wrapper) return;
+            const expanded = !!expand;
+            wrapper.classList.toggle('collapsed', !expanded);
+            btn.classList.toggle('hidden', expanded);
+            collapseBtn.classList.toggle('hidden', !expanded);
+        };
+
+        connectedCallback() {
+            if (this.bound || this.dataset.isCollapsed !== "true") return;
+            this.addEventListener('click', this.handleClick);
+            this.bound = true;
+        }
+
+        disconnectedCallback() {
+            this.removeEventListener('click', this.handleClick);
+            this.bound = false;
         }
     }
 

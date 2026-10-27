@@ -2,6 +2,18 @@ import Key from "../i18nKey";
 import type { Translation } from "../translation";
 
 export const ja: Translation = {
+	[Key.openingDescription]: "行間で、思いを整える。",
+	[Key.openingScrollHint]: "スクロールして次へ",
+
+	[Key.readArticles]: "記事を読む",
+	[Key.gridView]: "グリッド表示",
+	[Key.listView]: "リスト表示",
+
+	[Key.collapseLeftSidebar]: "シリーズを閉じる",
+	[Key.expandLeftSidebar]: "シリーズを開く",
+	[Key.collapseRightSidebar]: "目次を閉じる",
+	[Key.expandRightSidebar]: "目次を開く",
+
 	[Key.mascotReadingCorner]: "小鞠の読書コーナー",
 	[Key.mascotInteract]: "小鞠と話す、表情とセリフを切り替える",
 	[Key.home]: "Home",

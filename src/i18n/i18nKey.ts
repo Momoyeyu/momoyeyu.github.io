@@ -3,6 +3,11 @@ enum I18nKey {
 	about = "about",
 	archive = "archive",
 	search = "search",
+	gridView = "gridView",
+	listView = "listView",
+	readArticles = "readArticles",
+	openingDescription = "openingDescription",
+	openingScrollHint = "openingScrollHint",
 
 	tags = "tags",
 	categories = "categories",
@@ -31,6 +36,10 @@ enum I18nKey {
 
 	more = "more",
 	collapse = "collapse",
+	collapseLeftSidebar = "collapseLeftSidebar",
+	expandLeftSidebar = "expandLeftSidebar",
+	collapseRightSidebar = "collapseRightSidebar",
+	expandRightSidebar = "expandRightSidebar",
 
 	mascotReadingCorner = "mascotReadingCorner",
 	mascotInteract = "mascotInteract",

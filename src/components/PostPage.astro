@@ -5,23 +5,26 @@ import { Icon } from "astro-icon/components";
 import I18nKey from "../i18n/i18nKey";
 import { i18n } from "../i18n/translation";
 import PostCardGrid from "./PostCardGrid.astro";
+import PostLayoutSwitch from "./PostLayoutSwitch.svelte";
 
 const { page, pinnedPosts = [] } = Astro.props;
 
 const pinned = pinnedPosts as CollectionEntry<"posts">[];
 const rest = page.data as CollectionEntry<"posts">[];
-const showDivider = pinned.length > 0 && rest.length > 0;
+const layoutLabels = { grid: i18n(I18nKey.gridView), list: i18n(I18nKey.listView) };
 
 let delay = 0;
 const interval = 50;
 ---
 {pinned.length > 0 && (
-    <section class="mb-6">
-        <div class="flex items-center gap-1.5 mb-1 ml-1 onload-animation" style={`animation-delay: calc(var(--content-delay) + ${delay * interval}ms);`}>
-            <Icon name="fa6-solid:thumbtack" class="text-[var(--primary)] text-[0.65rem]" />
-            <span class="text-[0.65rem] font-medium text-30 tracking-wide">
+    <section class="mb-8">
+        <div class="feed-section-heading flex items-center gap-2 mb-4 onload-animation" style={`animation-delay: calc(var(--content-delay) + ${delay * interval}ms);`}>
+            <h2 class="text-sm font-semibold text-75">
                 {i18n(I18nKey.pinnedPosts)}
-            </span>
+            </h2>
+            <Icon name="fa6-solid:thumbtack" class="text-[var(--primary)] text-[0.65rem]" />
+            <PostLayoutSwitch labels={layoutLabels} client:load />
+            <span class="flex-1 h-px bg-[var(--line-divider)] ml-2" aria-hidden="true"></span>
         </div>
         <div class="post-feed transition grid grid-cols-1 md:grid-cols-2 gap-4">
             {pinned.map((entry) => (
@@ -44,13 +47,13 @@ const interval = 50;
     </section>
 )}
 
-{showDivider && (
-    <div class="pinned-divider flex items-center gap-3 my-6 onload-animation" style={`animation-delay: calc(var(--content-delay) + ${delay * interval}ms);`}>
-        <span class="flex-1 h-px bg-[var(--line-divider)]"></span>
-        <span class="text-xs uppercase tracking-[0.2em] text-75">
+{rest.length > 0 && (
+    <div class="feed-section-heading pinned-divider flex items-center gap-2 mb-4 onload-animation" style={`animation-delay: calc(var(--content-delay) + ${delay * interval}ms);`}>
+        <h2 class="text-sm font-semibold text-75">
             {i18n(I18nKey.latestPosts)}
-        </span>
-        <span class="flex-1 h-px bg-[var(--line-divider)]"></span>
+        </h2>
+        {pinned.length === 0 && <PostLayoutSwitch labels={layoutLabels} client:load />}
+        <span class="flex-1 h-px bg-[var(--line-divider)] ml-2" aria-hidden="true"></span>
     </div>
 )}
 

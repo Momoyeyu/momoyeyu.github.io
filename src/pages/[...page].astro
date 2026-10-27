@@ -40,6 +40,7 @@ const len = page.data.length;
 
 <MainGridLayout>
     {homeJsonLd && <script is:inline slot="head" type="application/ld+json" set:html={JSON.stringify(homeJsonLd)}></script>}
+    <div id="articles" tabindex="-1" class="article-feed-start"><h1 class="sr-only">{siteConfig.title}</h1></div>
     <PostPage page={page} pinnedPosts={page.currentPage === 1 ? pinned : []}></PostPage>
     <Pagination class="mx-auto onload-animation" page={page} style={`animation-delay: calc(var(--content-delay) + ${(len)*50}ms)`}></Pagination>
 </MainGridLayout>

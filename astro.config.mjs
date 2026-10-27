@@ -68,7 +68,7 @@ export default defineConfig({
 			animationClass: "transition-swup-", // see https://swup.js.org/options/#animationselector
 			// the default value `transition-` cause transition delay
 			// when the Tailwind class `transition-all` is used
-			containers: ["main", "#right-sidebar", "#sidebar-sticky"],
+			containers: ["main", "#right-sidebar", "#sidebar-sticky", "#home-opening", "#page-banner"],
 			smoothScrolling: true,
 			cache: true,
 			preload: true,
@@ -85,7 +85,6 @@ export default defineConfig({
 				"fa6-brands": ["bilibili", "creative-commons", "github"],
 				"fa6-regular": ["address-card"],
 				"fa6-solid": [
-					"arrow-rotate-left",
 					"arrow-up-right-from-square",
 					"chevron-right",
 					"envelope",
@@ -107,7 +106,6 @@ export default defineConfig({
 					"menu-rounded",
 					"more-horiz",
 					"notes-rounded",
-					"palette-outline",
 					"radio-button-partial-outline",
 					"schedule-outline-rounded",
 					"search",
@@ -242,6 +240,11 @@ export default defineConfig({
 		],
 	},
 	vite: {
+        // check/build create a Vite server too. They must not replace the running
+        // dev server's optimized Svelte runtime with another dependency graph.
+        cacheDir: process.argv.some(arg => ["check", "build", "sync"].includes(arg))
+            ? "node_modules/.vite-tools"
+            : "node_modules/.vite",
 		plugins: [
 			{
 				// dev server 内存中的 optimizeDeps hash 可能落后于磁盘上

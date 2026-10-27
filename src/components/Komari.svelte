@@ -7,6 +7,8 @@
 	let lastInteraction = 0;
 	let message = $state("");
 	let speaking = $state(false);
+	let yielding = $state(false);
+	let widget: HTMLElement, button: HTMLButtonElement;
 	let resetTimer: ReturnType<typeof setTimeout>;
 	let greetingTimer: ReturnType<typeof setTimeout>;
 	const current = $derived(states[stateIndex]);
@@ -30,6 +32,26 @@
 	}
 
 	onMount(() => {
+        let frame = 0;
+        const yieldToControls = () => {
+            frame = 0;
+            if (!button || !widget.offsetWidth) return;
+            const rect = button.getBoundingClientRect();
+            button.style.pointerEvents = "none";
+            // Yield only the character's hit area; the artwork remains visible.
+            let overlap = false;
+            for (const u of [.1, .3, .5, .7, .9]) for (const v of [.05, .15, .25, .35, .45, .55, .65, .75, .85, .95]) {
+                const target = document.elementFromPoint(rect.left + rect.width * u, rect.top + rect.height * v);
+                if (target?.closest("a,button,input,select,textarea,summary,[role='button']")) overlap = true;
+            }
+            button.style.removeProperty("pointer-events");
+            yielding = overlap;
+        };
+        const schedule = () => { if (!frame) frame = requestAnimationFrame(yieldToControls); };
+        window.addEventListener("scroll", schedule, { passive: true });
+        window.addEventListener("resize", schedule, { passive: true });
+        document.addEventListener("swup:page:view", schedule);
+        schedule();
 		if (window.matchMedia("(min-width: 769px)").matches) {
 			for (const state of states) {
 				const image = new Image();
@@ -38,17 +60,21 @@
 			greetingTimer = setTimeout(() => showMessage(states[0].messages[0]), 2000);
 		}
 		return () => {
+            cancelAnimationFrame(frame);
+            window.removeEventListener("scroll", schedule);
+            window.removeEventListener("resize", schedule);
+            document.removeEventListener("swup:page:view", schedule);
 			clearTimeout(resetTimer);
 			clearTimeout(greetingTimer);
 		};
 	});
 </script>
 
-<aside class="mascot-widget" aria-label={cornerLabel} data-pagefind-ignore>
+<aside bind:this={widget} class="mascot-widget" class:yielding aria-label={cornerLabel} data-pagefind-ignore>
 	<div class="mascot-bubble" class:visible={speaking} aria-live="polite" aria-atomic="true">
 		{speaking ? message : ""}
 	</div>
-	<button type="button" class="mascot-button" onclick={interact}
+	<button bind:this={button} type="button" class="mascot-button" onclick={interact}
 		aria-label={interactLabel} title={interactLabel}>
 		<img src={current.image} alt={current.label} width="104" height="128" draggable="false" />
 	</button>
@@ -57,16 +83,21 @@
 <style>
 	.mascot-widget {
 		position: fixed;
-		bottom: 1.25rem;
-		right: 1.25rem;
+		bottom: 5rem;
+		right: 0;
 		z-index: 49;
 		width: 104px;
+		height: 128px;
 		pointer-events: none;
 	}
+	.mascot-widget.yielding .mascot-button { pointer-events: none; }
 	.mascot-button {
 		display: block;
-		width: 104px;
-		height: 128px;
+		position: absolute;
+		left: 24px;
+		top: 8px;
+		width: 56px;
+		height: 112px;
 		padding: 0;
 		border: 0;
 		border-radius: 1.5rem;
@@ -77,11 +108,16 @@
 		transition: transform 180ms ease;
 	}
 	.mascot-button img {
-		width: 100%;
-		height: 100%;
+		position: absolute;
+		left: -24px;
+		top: -8px;
+		width: 104px;
+		height: 128px;
+		max-width: none;
 		object-fit: contain;
+		pointer-events: none;
 		user-select: none;
-		filter: drop-shadow(0 4px 5px rgb(58 34 30 / 12%));
+		filter: drop-shadow(0 4px 5px color-mix(in srgb, var(--text-primary) 12%, transparent));
 		animation: breathe 5s ease-in-out infinite;
 	}
 	.mascot-button:hover { transform: translateY(-3px); }
@@ -90,26 +126,21 @@
 	.mascot-bubble {
 		position: absolute;
 		bottom: calc(100% + 0.5rem);
-		right: 0;
+		right: 0.5rem;
 		width: 160px;
 		padding: 0.75rem 0.9rem;
-		border: 1px solid rgb(172 115 92 / 20%);
+		border: 1px solid var(--line-color);
 		border-radius: 16px 16px 5px 16px;
-		background: rgb(255 252 246 / 96%);
-		color: #644a40;
+		background: var(--card-bg);
+		color: var(--text-primary);
 		font-size: 0.8rem;
 		line-height: 1.8;
-		box-shadow: 0 5px 20px rgb(80 46 33 / 8%);
+		box-shadow: 0 5px 20px color-mix(in srgb, var(--text-primary) 8%, transparent);
 		opacity: 0;
 		transform: translateY(4px);
 		transition: opacity 180ms ease, transform 180ms ease;
 	}
 	.mascot-bubble.visible { opacity: 1; transform: translateY(0); }
-	:global(.dark) .mascot-bubble {
-		background: rgb(42 34 33 / 97%);
-		border-color: rgb(228 181 149 / 22%);
-		color: #ecdbce;
-	}
 	@keyframes breathe {
 		0%, 100% { transform: translateY(0); }
 		50% { transform: translateY(-3px); }

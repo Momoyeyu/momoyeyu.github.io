@@ -2,6 +2,9 @@
 import type { MarkdownHeading } from "astro";
 import { siteConfig } from "../../config";
 import TOC from "./TOC.astro";
+import SidebarToggle from "../SidebarToggle.svelte";
+import I18nKey from "../../i18n/i18nKey";
+import { i18n } from "../../i18n/translation";
 
 interface Props {
 	class?: string;
@@ -14,6 +17,9 @@ const className = Astro.props.class;
 
 <div id="right-sidebar-content" class:list={[className, "w-full h-full"]}>
 	<div class="flex flex-col w-full gap-4 sticky top-4 max-h-[calc(100vh-2rem)]">
+        <div class="sidebar-collapse-control">
+            <SidebarToggle client:load side="right" collapseLabel={i18n(I18nKey.collapseRightSidebar)} expandLabel={i18n(I18nKey.expandRightSidebar)} />
+        </div>
 
 		{/* TOC card — styled to match WidgetLayout */}
 		{siteConfig.toc.enable && headings.length > 0 && (
@@ -61,31 +67,26 @@ const className = Astro.props.class;
 		transform: rotate(-45deg);
 		margin-top: 3px;
 	}
+	@media (prefers-reduced-motion: reduce) {
+		.rsb-btt { transition: none; }
+	}
 </style>
 
 <script>
-	function initRsbBackToTop() {
+	function syncRsbBackToTop() {
 		const btn = document.getElementById('rsb-back-to-top');
-		if (!btn) return;
-
-		btn.addEventListener('click', () => {
-			window.scrollTo({ top: 0, behavior: 'smooth' });
-		});
-
-		// `btn` is guaranteed non-null by the early return above, but TS does not
-		// carry that narrowing into this nested closure, so assert it here.
-		function toggle() {
-			if (window.scrollY > 300) {
-				btn!.classList.add('show');
-			} else {
-				btn!.classList.remove('show');
-			}
-		}
-
-		window.addEventListener('scroll', toggle, { passive: true });
-		toggle();
+		btn?.classList.toggle('show', window.scrollY > 300);
 	}
 
-	initRsbBackToTop();
-	document.addEventListener('swup:content:replace', initRsbBackToTop);
+	document.addEventListener('click', event => {
+		const target = event.target;
+		if (!(target instanceof Element) || !target.closest('#rsb-back-to-top')) return;
+		window.scrollTo({
+			top: 0,
+			behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+		});
+	});
+	window.addEventListener('scroll', syncRsbBackToTop, { passive: true });
+	document.addEventListener('swup:content:replace', syncRsbBackToTop);
+	syncRsbBackToTop();
 </script>

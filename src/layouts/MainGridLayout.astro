@@ -3,17 +3,19 @@ import BackToTop from "@components/control/BackToTop.astro";
 import Footer from "@components/Footer.astro";
 import Mascot from "@components/Mascot.astro";
 import Navbar from "@components/Navbar.astro";
+import HomeOpening from "@components/HomeOpening.svelte";
+import ReadingControls from "@components/ReadingControls.svelte";
+import SidebarToggle from "@components/SidebarToggle.svelte";
+import NavigationDust from "@components/NavigationDust.svelte";
+import I18nKey from "../i18n/i18nKey";
+import { i18n } from "../i18n/translation";
 import SideBar from "@components/widget/SideBar.astro";
 import type { MarkdownHeading } from "astro";
 import { Icon } from "astro-icon/components";
 import ImageWrapper from "../components/misc/ImageWrapper.astro";
 import RightSidebar from "../components/widget/RightSidebar.astro";
 import { siteConfig } from "../config";
-import {
-	BANNER_HEIGHT,
-	BANNER_HEIGHT_EXTEND,
-	MAIN_PANEL_OVERLAPS_BANNER_HEIGHT,
-} from "../constants/constants";
+import { pathsEqual, url } from "../utils/url-utils";
 import Layout from "./Layout.astro";
 
 interface Props {
@@ -38,73 +40,41 @@ const {
 	currentSlug,
 } = Astro.props;
 
-const isPostPage = headings.length > 0;
+const isPostPage = !!setOGTypeArticle;
+const isHome = pathsEqual(Astro.url.pathname, url("/"));
 const hasBannerCredit =
 	siteConfig.banner.enable && siteConfig.banner.credit.enable;
 const hasBannerLink = !!siteConfig.banner.credit.url;
-
-const mainPanelTop = siteConfig.banner.enable
-	? `calc(${BANNER_HEIGHT}vh - ${MAIN_PANEL_OVERLAPS_BANNER_HEIGHT}rem)`
-	: "5.5rem";
 
 const bannerSrc = setOGTypeArticle && banner ? banner : siteConfig.banner.src;
 ---
 
 <Layout title={title} banner={banner} description={description} lang={lang} setOGTypeArticle={setOGTypeArticle}>
 
-<!-- Navbar -->
+<NavigationDust client:idle />
+
+<!-- Persistent navigation; the opening and page artwork follow Swup navigation. -->
 <slot slot="head" name="head"></slot>
-<div id="top-row" class="z-50 pointer-events-none relative transition-all duration-700 max-w-[var(--page-width)] px-0 md:px-4 mx-auto" class:list={[""]}>
-    <div id="navbar-wrapper" class="pointer-events-auto sticky top-0 transition-all">
-        <Navbar></Navbar>
-    </div>
+<div id="top-row" class="fixed inset-x-0 top-0 z-50 max-w-[var(--page-width)] px-0 md:px-4 mx-auto">
+    <div id="navbar-wrapper"><Navbar /></div>
+</div>
+<div id="home-opening">
+    {isHome && <HomeOpening client:load image={siteConfig.banner.src} readLabel={i18n(I18nKey.readArticles)}
+        copy={{ intro: i18n(I18nKey.openingDescription), scroll: i18n(I18nKey.openingScrollHint) }} />}
+</div>
+<div id="page-banner" class:list={{ "page-banner-empty": isHome }}>
+    {!isHome && siteConfig.banner.enable && <>
+        <ImageWrapper alt="" class="page-banner-image" src={bannerSrc} position={siteConfig.banner.position} />
+        <div class="banner-fade absolute bottom-0 inset-x-0 pointer-events-none" aria-hidden="true"></div>
+    </>}
 </div>
 
-<!-- Banner -->
-{siteConfig.banner.enable && <div id="banner-wrapper" class={`absolute z-10 w-full transition duration-700 overflow-hidden`} style={`top: -${BANNER_HEIGHT_EXTEND}vh`}>
-    <ImageWrapper id="banner" alt="Banner image of the blog" class:list={["object-cover h-full transition duration-700 opacity-0 scale-105"]}
-                  src={bannerSrc} position={siteConfig.banner.position}
-    >
-    </ImageWrapper>
-    <div id="banner-tint" class="absolute inset-0 z-10 pointer-events-none"></div>
-    <!-- Maple leaf decoration (matches site theme) -->
-    <div class="maple-leaves absolute inset-0 z-[12] pointer-events-none select-none overflow-hidden" aria-hidden="true">
-        <span class="leaf l1">🍁</span>
-        <span class="leaf l2">🍁</span>
-        <span class="leaf l3">🍁</span>
-        <span class="leaf l4">🍁</span>
-        <span class="leaf l5">🍁</span>
-    </div>
-    <!-- Banner motto, only visible on the home page (see Layout.astro CSS) -->
-    <div class="banner-motto absolute inset-0 flex flex-col items-center justify-center z-20 pointer-events-none select-none">
-        <div class="text-white/90 font-bold text-5xl md:text-6xl drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)] tracking-widest banner-text-float">
-            Code Is Elegant
-        </div>
-        <div class="text-white/65 text-lg md:text-xl mt-3 drop-shadow-[0_1px_4px_rgba(0,0,0,0.5)] tracking-wider">
-            写优雅的代码
-        </div>
-    </div>
-    <!-- Wavy fade into page background -->
-    <div class="banner-waves absolute bottom-0 left-0 right-0 z-[15] pointer-events-none h-[10vh] min-h-[3rem] max-h-[9rem] md:h-[14vh]">
-        <svg class="w-full h-full block" xmlns="http://www.w3.org/2000/svg" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="geometricPrecision">
-            <defs>
-                <path id="banner-gentle-wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v48h-352z"></path>
-            </defs>
-            <g>
-                <use href="#banner-gentle-wave" x="48" y="0" style="fill:var(--page-bg);opacity:0.28"></use>
-                <use href="#banner-gentle-wave" x="48" y="3" style="fill:var(--page-bg);opacity:0.5"></use>
-                <use href="#banner-gentle-wave" x="48" y="5" style="fill:var(--page-bg);opacity:0.7"></use>
-                <use href="#banner-gentle-wave" x="48" y="7" style="fill:var(--page-bg);opacity:1"></use>
-            </g>
-        </svg>
-    </div>
-</div>}
-
 <!-- Main content -->
-<div class="absolute w-full z-30 pointer-events-none" style={`top: var(--main-panel-top, ${mainPanelTop})`}>
+<div id="main-panel" class="relative w-full z-30">
     <!-- The pointer-events-none here prevent blocking the click event of the TOC -->
     <div class="relative max-w-[var(--page-width)] mx-auto pointer-events-auto">
-        <div id="main-grid" class="transition duration-700 w-full left-0 right-0 grid grid-cols-[17.5rem_auto] grid-rows-[auto_1fr_auto] lg:grid-rows-[auto] mx-auto gap-4 px-0 md:px-4">
+        <ReadingControls client:load />
+        <div id="main-grid" class:list={{ "has-rsb": isPostPage && siteConfig.toc.enable && headings.length > 0 }} class="transition duration-700 w-full left-0 right-0 grid grid-cols-[17.5rem_auto] grid-rows-[auto_1fr_auto] lg:grid-rows-[auto] mx-auto gap-4 px-0 md:px-4">
             <!-- Banner image credit -->
             {hasBannerCredit && <a href={siteConfig.banner.credit.url} id="banner-credit" target="_blank" rel="noopener" aria-label="Visit image source"
                                    class:list={["group onload-animation transition-all absolute flex justify-center items-center rounded-full " +
@@ -121,7 +91,7 @@ const bannerSrc = setOGTypeArticle && banner ? banner : siteConfig.banner.src;
 
             <SideBar class="mb-4 row-start-2 row-end-3 col-span-2 lg:row-start-1 lg:row-end-2 lg:col-span-1 lg:max-w-[17.5rem] onload-animation" category={category} currentSlug={currentSlug}></SideBar>
 
-            <main id="swup-container" class="transition-swup-fade col-span-2 lg:col-span-1 overflow-hidden">
+            <main id="swup-container" data-article={String(isPostPage)} class="transition-swup-fade col-span-2 lg:col-span-1 overflow-hidden">
                 <div id="content-wrapper" class="onload-animation">
                     <slot></slot>
                     <div class="footer col-span-2 onload-animation hidden lg:block">
@@ -132,13 +102,16 @@ const bannerSrc = setOGTypeArticle && banner ? banner : siteConfig.banner.src;
 
             <!-- Right sidebar: always in the DOM for Swup, content swapped per page -->
             <aside id="right-sidebar" class="xl:row-start-1 xl:row-end-2 xl:col-start-3 xl:max-w-[17.5rem] self-stretch">
-                {isPostPage ? (
-                    <RightSidebar
-                        headings={headings}
-                    />
-                ) : (
-                    <div id="toc-inner-wrapper" class="hidden"><div id="toc"></div></div>
-                )}
+                <div class="sidebar-rail sidebar-rail-right">
+                    <SidebarToggle client:load side="right" variant="rail" collapseLabel={i18n(I18nKey.collapseRightSidebar)} expandLabel={i18n(I18nKey.expandRightSidebar)} />
+                </div>
+                <div id="right-sidebar-body" class="sidebar-content">
+                    {isPostPage ? (
+                        <RightSidebar headings={headings} />
+                    ) : (
+                        <div id="toc-inner-wrapper" class="hidden"><div id="toc"></div></div>
+                    )}
+                </div>
             </aside>
 
             <div class="footer col-span-2 onload-animation block lg:hidden">
@@ -152,42 +125,79 @@ const bannerSrc = setOGTypeArticle && banner ? banner : siteConfig.banner.src;
 </div>
 
 <style is:global>
-    #right-sidebar {
-        width: 0;
-        overflow: hidden;
-        visibility: hidden;
-        position: absolute;
+    #main-panel { margin-top: -2rem; padding-bottom: 1rem; }
+    html[data-home="true"] #main-panel { margin-top: 0; padding-top: 2rem; background: var(--page-bg); }
+    @media(min-width: 768px) and (min-height: 620px) and (prefers-reduced-motion: no-preference) {
+        html[data-home="true"][data-opening-motion="true"]:has(.home-opening:not(.static-opening)) #main-panel { margin-top: -80svh; }
+        html[data-home="true"][data-opening-motion="true"]:has(.home-opening:not(.static-opening)) #main-panel::before {
+            content: ""; position: absolute; inset: -6rem 0 auto; height: 6rem;
+            background: linear-gradient(to bottom, transparent, var(--page-bg)); pointer-events: none;
+        }
+    }
+    #home-opening:empty { display: none; }
+    #page-banner { height: clamp(15rem, 32vh, 23rem); position: relative; overflow: hidden; }
+    #page-banner.page-banner-empty { height: 0; }
+    .page-banner-image { height: 100%; width: 100%; }
+    #swup-container { min-width: 0; }
+    @media(max-width: 767px) {
+        #page-banner { height: 15rem; }
+    }
+    #right-sidebar { display: none; }
+    .sidebar-rail { display: none; }
+    .sidebar-collapse-control { position: absolute; right: .65rem; top: .75rem; z-index: 2; }
+    @media (min-width: 1024px) {
+        #main-grid {
+            grid-template-columns: 15rem minmax(0, 1fr);
+            grid-template-areas: "left main";
+            gap: 1.5rem;
+            transition: grid-template-columns 320ms cubic-bezier(.22,.68,.20,1);
+        }
+        #sidebar { grid-area: left; max-width: none; min-width: 0; position: relative; overflow: clip; }
+        #sidebar-content { height: 100%; }
+        #swup-container { grid-area: main; width: 100%; max-width: none; justify-self: stretch; }
+        html[data-reading="true"] #sidebar-content,
+        html[data-reading="true"] #right-sidebar-body {
+            width: 15rem;
+            transition: opacity 220ms ease, transform 320ms cubic-bezier(.22,.68,.20,1), visibility 0ms;
+            overflow-anchor: none;
+        }
+        html[data-reading="true"] .sidebar-rail { display: block; position: absolute; inset: 0; }
+        html[data-reading="true"] #sidebar-sticky :is(series-widget,widget-layout):first-of-type > :is(a,div):first-child { padding-right: 2rem; }
+        html[data-reading="true"] #right-sidebar-content .card-base > div:first-child { padding-right: 2rem; }
+        html[data-reading="true"][data-left-collapsed="true"] #main-grid {
+            grid-template-columns: 1.25rem minmax(0, 1fr);
+        }
+        html[data-reading="true"][data-left-collapsed="true"] #sidebar-content {
+            opacity: 0; transform: translateX(-.75rem); visibility: hidden;
+            transition: opacity 180ms ease, transform 320ms cubic-bezier(.22,.68,.20,1), visibility 0ms 220ms;
+            pointer-events: none;
+        }
     }
     @media (min-width: 1280px) {
         #main-grid.has-rsb {
-            grid-template-columns: 17.5rem 1fr 17.5rem;
+            grid-template-columns: 15rem minmax(0, 1fr) 15rem;
+            grid-template-areas: "left main right";
         }
-        #main-grid.has-rsb #right-sidebar {
-            width: auto;
-            overflow: visible;
-            visibility: visible;
-            position: static;
+        #main-grid.has-rsb #right-sidebar { display: block; grid-area: right; max-width: none; min-width: 0; position: relative; overflow: clip; }
+        #right-sidebar-body { height: 100%; }
+        html[data-reading="true"][data-left-collapsed="true"] #main-grid.has-rsb {
+            grid-template-columns: 1.25rem minmax(0, 1fr) 15rem;
         }
-        #main-grid.has-rsb .footer.block.lg\:hidden {
-            grid-column: span 3;
+        html[data-reading="true"][data-right-collapsed="true"] #main-grid.has-rsb {
+            grid-template-columns: 15rem minmax(0, 1fr) 1.25rem;
         }
+        html[data-reading="true"][data-right-collapsed="true"] #right-sidebar-body {
+            opacity: 0; transform: translateX(.75rem); visibility: hidden;
+            transition: opacity 180ms ease, transform 320ms cubic-bezier(.22,.68,.20,1), visibility 0ms 220ms;
+            pointer-events: none;
+        }
+        html[data-reading="true"][data-left-collapsed="true"][data-right-collapsed="true"] #main-grid.has-rsb {
+            grid-template-columns: 1.25rem minmax(0, 1fr) 1.25rem;
+        }
+    }
+    @media(prefers-reduced-motion: reduce) {
+        #main-grid, .sidebar-content { transition: none !important; }
     }
 </style>
-
-<script>
-    function syncRightSidebar() {
-        const grid = document.getElementById('main-grid');
-        const sb = document.getElementById('right-sidebar');
-        if (!grid || !sb) return;
-        const hasContent = sb.querySelector('table-of-contents');
-        if (hasContent) {
-            grid.classList.add('has-rsb');
-        } else {
-            grid.classList.remove('has-rsb');
-        }
-    }
-    syncRightSidebar();
-    document.addEventListener('swup:content:replace', syncRightSidebar);
-</script>
 
 </Layout>

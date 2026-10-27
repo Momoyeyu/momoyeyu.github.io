@@ -4,201 +4,29 @@ import {
 	DEFAULT_THEME,
 	LIGHT_MODE,
 } from "@constants/constants.ts";
-import { expressiveCodeConfig } from "@/config";
+import { expressiveCodeConfig, siteConfig } from "@/config";
 import type { LIGHT_DARK_MODE } from "@/types/config";
 
-export type COLOR_SCHEME = "minimal" | "tinted" | "glass";
-export type WALLPAPER_MODE = "banner" | "overlay" | "none";
 export type POST_LAYOUT = "grid" | "list";
-export type BANNER_TITLE_MODE = "show" | "hide";
 
-const DEFAULT_COLOR_SCHEME: COLOR_SCHEME = "glass";
-const DEFAULT_WALLPAPER_MODE: WALLPAPER_MODE = "banner";
-const DEFAULT_POST_LAYOUT: POST_LAYOUT = "grid";
-const DEFAULT_BANNER_TITLE: BANNER_TITLE_MODE = "show";
-const DEFAULT_ACCENT_CHROMA = 0.16;
-const DEFAULT_SURFACE_CHROMA = 0.026;
-
-// SSR guard: these functions run during server rendering when components
-// are rendered with client:load, where document/localStorage don't exist.
-const browser =
-	typeof document !== "undefined" && typeof localStorage !== "undefined";
-
-export function getDefaultHue(): number {
-	const fallback = "250";
-	if (!browser) {
-		return Number.parseInt(fallback, 10);
-	}
-	const configCarrier = document.getElementById("config-carrier");
-	return Number.parseInt(configCarrier?.dataset.hue || fallback, 10);
-}
-
-export function getHue(): number {
-	const stored = browser ? localStorage.getItem("hue") : null;
-	return stored ? Number.parseInt(stored, 10) : getDefaultHue();
-}
-
-export function setHue(hue: number): void {
-	if (!browser) {
-		return;
-	}
-	localStorage.setItem("hue", String(hue));
-	const r = document.querySelector(":root") as HTMLElement;
-	if (!r) {
-		return;
-	}
-	r.style.setProperty("--hue", String(hue));
-}
-
-export function getDefaultColorScheme(): COLOR_SCHEME {
-	const configCarrier = browser
-		? document.getElementById("config-carrier")
-		: null;
-	return (
-		(configCarrier?.dataset.colorScheme as COLOR_SCHEME | undefined) ||
-		DEFAULT_COLOR_SCHEME
-	);
-}
-
-export function getColorScheme(): COLOR_SCHEME {
-	return (
-		(browser
-			? (localStorage.getItem("colorScheme") as COLOR_SCHEME | null)
-			: null) || getDefaultColorScheme()
-	);
-}
-
-export function setColorScheme(scheme: COLOR_SCHEME): void {
-	if (!browser) {
-		return;
-	}
-	localStorage.setItem("colorScheme", scheme);
-	document.documentElement.dataset.colorScheme = scheme;
-}
-
-export function getDefaultAccentChroma(): number {
-	const configCarrier = browser
-		? document.getElementById("config-carrier")
-		: null;
-	return Number.parseFloat(
-		configCarrier?.dataset.accentChroma || String(DEFAULT_ACCENT_CHROMA),
-	);
-}
-
-export function getAccentChroma(): number {
-	const stored = browser ? localStorage.getItem("accentChroma") : null;
-	return stored ? Number.parseFloat(stored) : getDefaultAccentChroma();
-}
-
-export function setAccentChroma(chroma: number): void {
-	if (!browser) {
-		return;
-	}
-	localStorage.setItem("accentChroma", String(chroma));
-	document.documentElement.style.setProperty("--accent-chroma", String(chroma));
-}
-
-export function getDefaultSurfaceChroma(): number {
-	const configCarrier = browser
-		? document.getElementById("config-carrier")
-		: null;
-	return Number.parseFloat(
-		configCarrier?.dataset.surfaceChroma || String(DEFAULT_SURFACE_CHROMA),
-	);
-}
-
-export function getSurfaceChroma(): number {
-	const stored = browser ? localStorage.getItem("surfaceChroma") : null;
-	return stored ? Number.parseFloat(stored) : getDefaultSurfaceChroma();
-}
-
-export function setSurfaceChroma(chroma: number): void {
-	if (!browser) {
-		return;
-	}
-	localStorage.setItem("surfaceChroma", String(chroma));
-	document.documentElement.style.setProperty(
-		"--surface-chroma",
-		String(chroma),
-	);
-}
-
-export function getDefaultWallpaperMode(): WALLPAPER_MODE {
-	const configCarrier = browser
-		? document.getElementById("config-carrier")
-		: null;
-	return (
-		(configCarrier?.dataset.wallpaperMode as WALLPAPER_MODE | undefined) ||
-		DEFAULT_WALLPAPER_MODE
-	);
-}
-
-export function getWallpaperMode(): WALLPAPER_MODE {
-	return (
-		(browser
-			? (localStorage.getItem("wallpaperMode") as WALLPAPER_MODE | null)
-			: null) || getDefaultWallpaperMode()
-	);
-}
-
-export function setWallpaperMode(mode: WALLPAPER_MODE): void {
-	if (!browser) {
-		return;
-	}
-	localStorage.setItem("wallpaperMode", mode);
-	document.documentElement.dataset.wallpaperMode = mode;
-}
+const browser = typeof document !== "undefined";
 
 export function getDefaultPostLayout(): POST_LAYOUT {
-	const configCarrier = browser
-		? document.getElementById("config-carrier")
-		: null;
-	return (
-		(configCarrier?.dataset.postLayout as POST_LAYOUT | undefined) ||
-		DEFAULT_POST_LAYOUT
-	);
+	return siteConfig.display.defaultPostLayout;
 }
 
 export function getPostLayout(): POST_LAYOUT {
-	return (
-		(browser
-			? (localStorage.getItem("postLayout") as POST_LAYOUT | null)
-			: null) || getDefaultPostLayout()
-	);
+	try {
+		const stored = browser ? localStorage.getItem("postLayout") : null;
+		if (stored === "grid" || stored === "list") return stored;
+	} catch { /* Storage is optional. */ }
+	return getDefaultPostLayout();
 }
 
 export function setPostLayout(layout: POST_LAYOUT): void {
-	if (!browser) {
-		return;
-	}
-	localStorage.setItem("postLayout", layout);
+	if (!browser) return;
 	document.documentElement.dataset.postLayout = layout;
-}
-
-export function getDefaultBannerTitle(): BANNER_TITLE_MODE {
-	const configCarrier = browser
-		? document.getElementById("config-carrier")
-		: null;
-	return (
-		(configCarrier?.dataset.bannerTitle as BANNER_TITLE_MODE | undefined) ||
-		DEFAULT_BANNER_TITLE
-	);
-}
-
-export function getBannerTitle(): BANNER_TITLE_MODE {
-	return (
-		(browser
-			? (localStorage.getItem("bannerTitle") as BANNER_TITLE_MODE | null)
-			: null) || getDefaultBannerTitle()
-	);
-}
-
-export function setBannerTitle(mode: BANNER_TITLE_MODE): void {
-	if (!browser) {
-		return;
-	}
-	localStorage.setItem("bannerTitle", mode);
-	document.documentElement.dataset.bannerTitle = mode;
+	try { localStorage.setItem("postLayout", layout); } catch { /* Storage is optional. */ }
 }
 
 export function applyThemeToDocument(theme: LIGHT_DARK_MODE) {
@@ -232,13 +60,14 @@ export function setTheme(theme: LIGHT_DARK_MODE): void {
 	if (!browser) {
 		return;
 	}
-	localStorage.setItem("theme", theme);
+	try { localStorage.setItem("theme", theme); } catch { /* Storage is optional. */ }
 	applyThemeToDocument(theme);
 }
 
 export function getStoredTheme(): LIGHT_DARK_MODE {
-	return (
-		(browser ? (localStorage.getItem("theme") as LIGHT_DARK_MODE) : null) ||
-		DEFAULT_THEME
-	);
+	try {
+		const theme = browser ? localStorage.getItem("theme") : null;
+		if (theme === LIGHT_MODE || theme === DARK_MODE || theme === AUTO_MODE) return theme;
+	} catch { /* Storage is optional. */ }
+	return DEFAULT_THEME;
 }

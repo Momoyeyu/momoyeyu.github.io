@@ -2,6 +2,18 @@ import Key from "../i18nKey";
 import type { Translation } from "../translation";
 
 export const vi: Translation = {
+	[Key.openingDescription]: "Giữa những dòng chữ, ý nghĩ dần sáng rõ.",
+	[Key.openingScrollHint]: "Cuộn xuống để đọc tiếp",
+
+	[Key.readArticles]: "Đọc bài viết",
+	[Key.gridView]: "Chế độ lưới",
+	[Key.listView]: "Chế độ danh sách",
+
+	[Key.collapseLeftSidebar]: "Ẩn bộ sưu tập",
+	[Key.expandLeftSidebar]: "Hiện bộ sưu tập",
+	[Key.collapseRightSidebar]: "Ẩn mục lục",
+	[Key.expandRightSidebar]: "Hiện mục lục",
+
 	[Key.mascotReadingCorner]: "Góc đọc sách của Komari",
 	[Key.mascotInteract]: "Trò chuyện với Komari, đổi biểu cảm và lời thoại",
 	[Key.home]: "Trang chủ",

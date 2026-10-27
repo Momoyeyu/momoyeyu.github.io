@@ -2,6 +2,18 @@ import Key from "../i18nKey";
 import type { Translation } from "../translation";
 
 export const en: Translation = {
+	[Key.openingDescription]: "Finding clarity between the lines.",
+	[Key.openingScrollHint]: "Scroll to turn the page",
+
+	[Key.readArticles]: "Read articles",
+	[Key.gridView]: "Grid view",
+	[Key.listView]: "List view",
+
+	[Key.collapseLeftSidebar]: "Hide collections",
+	[Key.expandLeftSidebar]: "Show collections",
+	[Key.collapseRightSidebar]: "Hide contents",
+	[Key.expandRightSidebar]: "Show contents",
+
 	[Key.mascotReadingCorner]: "Komari’s reading corner",
 	[Key.mascotInteract]: "Chat with Komari, change her expression and dialogue",
 	[Key.home]: "Home",

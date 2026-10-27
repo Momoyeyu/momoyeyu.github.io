@@ -2,6 +2,18 @@ import Key from "../i18nKey";
 import type { Translation } from "../translation";
 
 export const es: Translation = {
+	[Key.openingDescription]: "Entre líneas, las ideas se aclaran.",
+	[Key.openingScrollHint]: "Desplázate para leer",
+
+	[Key.readArticles]: "Leer artículos",
+	[Key.gridView]: "Vista de cuadrícula",
+	[Key.listView]: "Vista de lista",
+
+	[Key.collapseLeftSidebar]: "Ocultar colecciones",
+	[Key.expandLeftSidebar]: "Mostrar colecciones",
+	[Key.collapseRightSidebar]: "Ocultar índice",
+	[Key.expandRightSidebar]: "Mostrar índice",
+
 	[Key.mascotReadingCorner]: "El rincón de lectura de Komari",
 	[Key.mascotInteract]: "Hablar con Komari, cambiar su expresión y diálogo",
 	[Key.home]: "Inicio",

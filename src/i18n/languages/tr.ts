@@ -2,6 +2,18 @@ import Key from "../i18nKey";
 import type { Translation } from "../translation";
 
 export const tr: Translation = {
+	[Key.openingDescription]: "Satır aralarında düşünceler berraklaşır.",
+	[Key.openingScrollHint]: "Okumak için aşağı kaydır",
+
+	[Key.readArticles]: "Yazıları oku",
+	[Key.gridView]: "Izgara görünümü",
+	[Key.listView]: "Liste görünümü",
+
+	[Key.collapseLeftSidebar]: "Koleksiyonları gizle",
+	[Key.expandLeftSidebar]: "Koleksiyonları göster",
+	[Key.collapseRightSidebar]: "İçindekileri gizle",
+	[Key.expandRightSidebar]: "İçindekileri göster",
+
 	[Key.mascotReadingCorner]: "Komari’nin okuma köşesi",
 	[Key.mascotInteract]: "Komari ile sohbet et, ifadesini ve repliğini değiştir",
 	[Key.home]: "Anasayfa",

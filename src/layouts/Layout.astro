@@ -3,13 +3,10 @@ import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 
-import ConfigCarrier from "@components/ConfigCarrier.astro";
 import { profileConfig, siteConfig } from "@/config";
 import {
 	AUTO_MODE,
-	BANNER_HEIGHT,
 	BANNER_HEIGHT_EXTEND,
-	BANNER_HEIGHT_HOME,
 	DARK_MODE,
 	DEFAULT_THEME,
 	LIGHT_MODE,
@@ -19,6 +16,16 @@ import { defaultFavicons } from "../constants/icon";
 import type { Favicon } from "../types/config";
 import { pathsEqual, url } from "../utils/url-utils";
 import "katex/dist/katex.css";
+
+// Keep the shared visual system explicit rather than relying on image glob imports.
+import "../styles/expressive-code.css";
+import "../styles/main.css";
+import "../styles/markdown-extend.styl";
+import "../styles/markdown.css";
+import "../styles/photoswipe.css";
+import "../styles/scrollbar.css";
+import "../styles/transition.css";
+import "../styles/variables.styl";
 
 interface Props {
 	title?: string;
@@ -53,7 +60,6 @@ const defaultPostLayout = siteConfig.display.defaultPostLayout;
 const defaultBannerTitle = siteConfig.display.defaultBannerTitle
 	? "show"
 	: "hide";
-const styleSettingsVersion = "maple-red-v1";
 if (!banner || typeof banner !== "string" || banner.trim() === "") {
 	banner = siteConfig.banner.src;
 }
@@ -79,18 +85,13 @@ if (!lang) {
 }
 const siteLang = lang.replace("_", "-");
 
-const bannerOffsetByPosition = {
-	top: `${BANNER_HEIGHT_EXTEND}vh`,
-	center: `${BANNER_HEIGHT_EXTEND / 2}vh`,
-	bottom: "0",
-};
-const bannerOffset =
-	bannerOffsetByPosition[siteConfig.banner.position || "center"];
 ---
 
 <!DOCTYPE html>
 <html lang={siteLang} class="bg-[var(--page-bg)] transition text-[14px] md:text-[16px]"
 	  data-overlayscrollbars-initialize
+      data-reading={String(!!setOGTypeArticle)}
+      data-home={String(isHomePage)}
 >
 	<head>
 
@@ -130,9 +131,13 @@ const bannerOffset =
 		))}
 
 		<!-- Set the theme before the page is rendered to avoid a flash -->
-		<script is:inline define:vars={{DEFAULT_THEME, LIGHT_MODE, DARK_MODE, AUTO_MODE, BANNER_HEIGHT_EXTEND, PAGE_WIDTH, configHue, defaultColorScheme, defaultAccentChroma, defaultSurfaceChroma, defaultWallpaperMode, defaultPostLayout, defaultBannerTitle, styleSettingsVersion}}>
-			// Load the theme from local storage
-			const theme = localStorage.getItem('theme') || DEFAULT_THEME;
+		<script is:inline define:vars={{DEFAULT_THEME, LIGHT_MODE, DARK_MODE, AUTO_MODE, BANNER_HEIGHT_EXTEND, PAGE_WIDTH, configHue, defaultColorScheme, defaultAccentChroma, defaultSurfaceChroma, defaultWallpaperMode, defaultPostLayout, defaultBannerTitle}}>
+			document.documentElement.dataset.openingMotion = String(
+                !window.matchMedia('(prefers-reduced-motion: reduce)').matches && !navigator.connection?.saveData
+            );
+            // Load the theme from local storage
+			let theme = DEFAULT_THEME;
+			try { theme = localStorage.getItem('theme') || DEFAULT_THEME; } catch { /* Storage is optional. */ }
 			switch (theme) {
 				case LIGHT_MODE:
 					document.documentElement.classList.remove('dark');
@@ -148,36 +153,26 @@ const bannerOffset =
 					}
 			}
 
-			const storedStyleSettingsVersion = localStorage.getItem('styleSettingsVersion');
-			if (storedStyleSettingsVersion !== styleSettingsVersion) {
-				const storedHue = localStorage.getItem('hue');
-				if (!storedHue || storedHue === '18') {
-					localStorage.setItem('hue', String(configHue));
-				}
-				localStorage.setItem('styleSettingsVersion', styleSettingsVersion);
-			}
+			document.documentElement.style.setProperty('--hue', String(configHue));
+			document.documentElement.dataset.colorScheme = defaultColorScheme;
+			document.documentElement.style.setProperty('--accent-chroma', String(defaultAccentChroma));
+			document.documentElement.style.setProperty('--surface-chroma', String(defaultSurfaceChroma));
+			document.documentElement.dataset.wallpaperMode = defaultWallpaperMode;
 
-			// Load the hue from local storage
-			const hue = localStorage.getItem('hue') || configHue;
-			document.documentElement.style.setProperty('--hue', hue);
-
-			const colorScheme = localStorage.getItem('colorScheme') || defaultColorScheme;
-			document.documentElement.dataset.colorScheme = colorScheme;
-
-			const accentChroma = localStorage.getItem('accentChroma') || defaultAccentChroma;
-			document.documentElement.style.setProperty('--accent-chroma', accentChroma);
-
-			const surfaceChroma = localStorage.getItem('surfaceChroma') || defaultSurfaceChroma;
-			document.documentElement.style.setProperty('--surface-chroma', surfaceChroma);
-
-			const wallpaperMode = localStorage.getItem('wallpaperMode') || defaultWallpaperMode;
-			document.documentElement.dataset.wallpaperMode = wallpaperMode;
-
-			const postLayout = localStorage.getItem('postLayout') || defaultPostLayout;
+			let postLayout = defaultPostLayout;
+			try {
+				const storedLayout = localStorage.getItem('postLayout');
+				if (storedLayout === 'grid' || storedLayout === 'list') postLayout = storedLayout;
+			} catch { /* Storage is optional. */ }
 			document.documentElement.dataset.postLayout = postLayout;
 
-			const bannerTitle = localStorage.getItem('bannerTitle') || defaultBannerTitle;
+			const bannerTitle = defaultBannerTitle;
 			document.documentElement.dataset.bannerTitle = bannerTitle;
+
+			try {
+				document.documentElement.dataset.leftCollapsed = localStorage.getItem('reading-left:v1') || 'false';
+				document.documentElement.dataset.rightCollapsed = localStorage.getItem('reading-right:v1') || 'false';
+			} catch { /* Reading preferences are optional. */ }
 
 			// calculate the --banner-height-extend, which needs to be a multiple of 4 to avoid blurry text
 			let offset = Math.floor(window.innerHeight * (BANNER_HEIGHT_EXTEND / 100));
@@ -215,7 +210,6 @@ const bannerOffset =
 	<body class=" min-h-screen transition " class:list={[{"lg:is-home": isHomePage, "enable-banner": enableBanner}]}
 		  data-overlayscrollbars-initialize
 	>
-		<ConfigCarrier></ConfigCarrier>
 		<!-- Fullscreen wallpaper backdrop, only visible in overlay mode -->
 		<div id="web_bg" aria-hidden="true"></div>
 		<slot />
@@ -225,46 +219,7 @@ const bannerOffset =
 	</body>
 </html>
 
-<style is:global define:vars={{
-	bannerOffset,
-	'banner-height-home': `${BANNER_HEIGHT_HOME}vh`,
-	'banner-height': `${BANNER_HEIGHT}vh`,
-}}>
-@tailwind components;
-@layer components {
-	.enable-banner.is-home #banner-wrapper {
-		@apply h-[var(--banner-height-home)] translate-y-[var(--banner-height-extend)]
-	}
-	.enable-banner #banner-wrapper {
-		@apply h-[var(--banner-height-home)]
-	}
 
-	.enable-banner.is-home #banner {
-		@apply h-[var(--banner-height-home)] translate-y-0
-	}
-	.enable-banner #banner {
-		@apply h-[var(--banner-height-home)] translate-y-[var(--bannerOffset)]
-	}
-	.enable-banner.is-home #main-grid {
-		@apply translate-y-[var(--banner-height-extend)];
-	}
-	.enable-banner #top-row {
-		@apply h-[calc(var(--banner-height-home)_-_4.5rem)] transition-all duration-300
-	}
-	.enable-banner.is-home #sidebar-sticky {
-		@apply top-[calc(1rem_-_var(--banner-height-extend))]
-	}
-	.navbar-hidden {
-		@apply opacity-0 -translate-y-16
-	}
-}
-
-/* banner-motto is only shown on the home page; all other pages show
-   the banner image without any text overlay. */
-body:not(.lg\:is-home) .banner-motto {
-	display: none;
-}
-</style>
 
 <script>
 import 'overlayscrollbars/overlayscrollbars.css';
@@ -274,24 +229,7 @@ import {
 	// SizeObserverPlugin,
 	// ClickScrollPlugin
 } from 'overlayscrollbars';
-import {
-	getAccentChroma,
-	getBannerTitle,
-	getColorScheme,
-	getHue,
-	getPostLayout,
-	getStoredTheme,
-	getSurfaceChroma,
-	getWallpaperMode,
-	setAccentChroma,
-	setBannerTitle,
-	setColorScheme,
-	setHue,
-	setPostLayout,
-	setSurfaceChroma,
-	setTheme,
-	setWallpaperMode,
-} from "../utils/setting-utils";
+import { getPostLayout, getStoredTheme, setPostLayout, setTheme } from "../utils/setting-utils";
 import {pathsEqual, url} from "../utils/url-utils";
 import {
 	BANNER_HEIGHT,
@@ -299,10 +237,9 @@ import {
 	BANNER_HEIGHT_EXTEND,
 	MAIN_PANEL_OVERLAPS_BANNER_HEIGHT
 } from "../constants/constants";
-import { siteConfig } from '../config';
 
 
-const bannerEnabled = !!document.getElementById('banner-wrapper')
+const bannerEnabled = false;
 
 function setClickOutsideToClose(panel: string, ignores: string[]) {
 	document.addEventListener("click", event => {
@@ -318,7 +255,6 @@ function setClickOutsideToClose(panel: string, ignores: string[]) {
 		panelDom!.classList.add("float-panel-closed");
 	});
 }
-setClickOutsideToClose("display-setting", ["display-setting", "display-settings-switch"])
 setClickOutsideToClose("nav-menu-panel", ["nav-menu-panel", "nav-menu-switch"])
 setClickOutsideToClose("search-panel", ["search-panel", "search-bar", "search-switch"])
 
@@ -326,19 +262,6 @@ setClickOutsideToClose("search-panel", ["search-panel", "search-bar", "search-sw
 function loadTheme() {
 	const theme = getStoredTheme()
 	setTheme(theme)
-}
-
-function loadHue() {
-	setHue(getHue())
-}
-
-function loadStyleSettings() {
-	setColorScheme(getColorScheme())
-	setAccentChroma(getAccentChroma())
-	setSurfaceChroma(getSurfaceChroma())
-	setWallpaperMode(getWallpaperMode())
-	setPostLayout(getPostLayout())
-	setBannerTitle(getBannerTitle())
 }
 
 function initCustomScrollbar() {
@@ -406,30 +329,20 @@ function initCustomScrollbar() {
 	});
 }
 
-function showBanner() {
-	if (!siteConfig.banner.enable) return;
-
-	const banner = document.getElementById('banner');
-	if (!banner) {
-		console.error('Banner element not found');
-		return;
-	}
-
-	banner.classList.remove('opacity-0', 'scale-105');
-}
-
 function init() {
 	loadTheme();
-	loadHue();
-	loadStyleSettings();
+	setPostLayout(getPostLayout());
 	initCustomScrollbar();
-	showBanner();
 }
 
 /* Load settings when entering the site */
 init();
 
 const setup = () => {
+    // The DOM is replaced without a document navigation. Let Swup restore its
+    // cached positions after replacement instead of native history restoring early.
+    window.swup.options.animateHistoryBrowsing = true;
+    window.history.scrollRestoration = 'manual';
 	window.swup.hooks.on('link:click', () => {
 		// Remove the delay for the first time page load
 		document.documentElement.style.setProperty('--content-delay', '0ms')
@@ -448,7 +361,8 @@ const setup = () => {
 		}
 	})
 	window.swup.hooks.on('content:replace', initCustomScrollbar)
-	window.swup.hooks.on('visit:start', (visit: {to: {url: string}}) => {
+	window.swup.hooks.on('visit:start', (visit: {to: {url: string}, scroll: {animate: boolean}}) => {
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) visit.scroll.animate = false;
 		// change banner height immediately when a link is clicked
 		const bodyElement = document.querySelector('body')
 		if (pathsEqual(visit.to.url, url('/'))) {
@@ -586,6 +500,10 @@ function createPhotoSwipe() {
 }
 
 const setup = () => {
+    // The DOM is replaced without a document navigation. Let Swup restore its
+    // cached positions after replacement instead of native history restoring early.
+    window.swup.options.animateHistoryBrowsing = true;
+    window.history.scrollRestoration = 'manual';
 	if (!lightbox) {
 		createPhotoSwipe()
 	}

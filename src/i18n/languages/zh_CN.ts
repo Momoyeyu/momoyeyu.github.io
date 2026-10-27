@@ -2,6 +2,18 @@ import Key from "../i18nKey";
 import type { Translation } from "../translation";
 
 export const zh_CN: Translation = {
+	[Key.openingDescription]: "在字里行间，理清思绪。",
+	[Key.openingScrollHint]: "向下翻页",
+
+	[Key.readArticles]: "阅读文章",
+	[Key.gridView]: "网格视图",
+	[Key.listView]: "列表视图",
+
+	[Key.collapseLeftSidebar]: "收起合集侧栏",
+	[Key.expandLeftSidebar]: "展开合集侧栏",
+	[Key.collapseRightSidebar]: "收起文章目录",
+	[Key.expandRightSidebar]: "展开文章目录",
+
 	[Key.mascotReadingCorner]: "小鞠的阅读角",
 	[Key.mascotInteract]: "和小鞠聊聊，切换表情与台词",
 	[Key.home]: "主页",

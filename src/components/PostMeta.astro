@@ -27,60 +27,36 @@ const {
 const className = Astro.props.class;
 ---
 
-<div class:list={["flex flex-wrap text-neutral-500 dark:text-neutral-400 items-center gap-4 gap-x-4 gap-y-2", className]}>
-    <!-- publish date -->
-    <div class="flex items-center">
-        <div class="meta-icon"
-        >
-            <Icon name="material-symbols:calendar-today-outline-rounded" class="text-xl"></Icon>
-        </div>
-        <span class="text-50 text-sm font-medium">{formatDateToYYYYMMDD(date)}</span>
+<div class:list={["post-metadata flex flex-wrap text-50 items-center gap-x-5 gap-y-3 text-sm", className]}>
+    <div class="flex items-center gap-1.5">
+        <Icon name="material-symbols:calendar-today-outline-rounded" class="text-base opacity-70" aria-hidden="true" />
+        <time datetime={formatDateToYYYYMMDD(date)} title={i18n(I18nKey.publishedAt)} class="tabular-nums">{formatDateToYYYYMMDD(date)}</time>
     </div>
 
     <!-- update date -->
     {!hideUpdateDate && updated && updated.getTime() !== date.getTime() && (
-        <div class="flex items-center">
-            <div class="meta-icon"
-            >
-                <Icon name="material-symbols:edit-calendar-outline-rounded" class="text-xl"></Icon>
-            </div>
-            <span class="text-50 text-sm font-medium">{formatDateToYYYYMMDD(updated)}</span>
+        <div class="flex items-center gap-1.5">
+            <Icon name="material-symbols:edit-calendar-outline-rounded" class="text-base opacity-70" aria-hidden="true" />
+            <time datetime={formatDateToYYYYMMDD(updated)} class="tabular-nums">{formatDateToYYYYMMDD(updated)}</time>
         </div>
     )}
 
     <!-- categories -->
     {!hideCategory && (
-        <div class="flex items-center">
-            <div class="meta-icon"
-            >
-                <Icon name="material-symbols:book-2-outline-rounded" class="text-xl"></Icon>
-            </div>
-            <div class="flex flex-row flex-nowrap items-center">
-                <a href={getCategoryUrl(category)} aria-label={`View all posts in the ${category} category`}
-                   class="link-lg transition text-50 text-sm font-medium
-                                hover:text-[var(--primary)] dark:hover:text-[var(--primary)] whitespace-nowrap">
-                    {category || i18n(I18nKey.uncategorized)}
-                </a>
-            </div>
-        </div>
+        <a href={getCategoryUrl(category)} aria-label={`View all posts in the ${category} category`}
+           class="font-medium text-[var(--primary)] hover:underline underline-offset-4">
+            {category || i18n(I18nKey.uncategorized)}
+        </a>
     )}
 
     <!-- tags -->
-    <div class:list={["items-center", {"flex": !hideTagsForMobile, "hidden md:flex": hideTagsForMobile}]}>
-        <div class="meta-icon"
-        >
-            <Icon name="material-symbols:tag-rounded" class="text-xl"></Icon>
-        </div>
-        <div class="flex flex-row flex-nowrap items-center">
-            {(tags && tags.length > 0) && tags.map((tag, i) => (
-                <div class:list={[{"hidden": i == 0}, "mx-1.5 text-[var(--meta-divider)] text-sm"]}>/</div>
+    <div class:list={["post-metadata-tags items-center flex-wrap gap-x-3 gap-y-1 text-xs", {"flex": !hideTagsForMobile, "hidden md:flex": hideTagsForMobile}]}>
+            {(tags && tags.length > 0) && tags.map(tag => (
                 <a href={getTagUrl(tag)} aria-label={`View all posts with the ${tag.trim()} tag`}
-                   class="link-lg transition text-50 text-sm font-medium
-                                hover:text-[var(--primary)] dark:hover:text-[var(--primary)] whitespace-nowrap">
-                    {tag.trim()}
+                   class="hover:text-[var(--primary)]">
+                    #{tag.trim()}
                 </a>
             ))}
-            {!(tags && tags.length > 0) && <div class="transition text-50 text-sm font-medium">{i18n(I18nKey.noTags)}</div>}
-        </div>
+            {!(tags && tags.length > 0) && <span>{i18n(I18nKey.noTags)}</span>}
     </div>
 </div>

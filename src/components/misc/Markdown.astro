@@ -14,30 +14,38 @@ const className = Astro.props.class;
 </div>
 
 <script>
-document.addEventListener("click", function (e: MouseEvent) {
-    const target = e.target as Element | null;
-    if (target && target.classList.contains("copy-btn")) {
-        const preEle = target.closest("pre");
+document.addEventListener("click", async (event: MouseEvent) => {
+    const target = event.target;
+    const button = target instanceof Element
+        ? target.closest<HTMLButtonElement>(".custom-md button.copy-btn:not([data-command])")
+        : null;
+    if (button) {
+        const preEle = button.closest("pre");
         const codeEle = preEle?.querySelector("code");
+        if (!codeEle) return;
         const code = Array.from(codeEle?.querySelectorAll(".code:not(summary *)") ?? [])
             .map(el => el.textContent)
             .map(t => t === "\n" ? "" : t)
             .join("\n");
-        navigator.clipboard.writeText(code);
+        try {
+            await navigator.clipboard.writeText(code);
+        } catch {
+            return;
+        }
 
-        const timeoutId = target.getAttribute("data-timeout-id");
+        const timeoutId = button.getAttribute("data-timeout-id");
         if (timeoutId) {
             clearTimeout(parseInt(timeoutId));
         }
 
-        target.classList.add("success");
+        button.classList.add("success");
 
         // 设置新的timeout并保存ID到按钮的自定义属性中
         const newTimeoutId = setTimeout(() => {
-            target.classList.remove("success");
+            button.classList.remove("success");
         }, 1000);
 
-        target.setAttribute("data-timeout-id", newTimeoutId.toString());
+        button.setAttribute("data-timeout-id", newTimeoutId.toString());
     }
 });
 </script>
