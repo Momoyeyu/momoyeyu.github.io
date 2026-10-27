@@ -1,0 +1,1113 @@
+{
+  "hardware": {
+    "gpu": "NVIDIA GeForce RTX 4090 D",
+    "vram_mib": 24564,
+    "cpu": "Intel Xeon Gold 6530",
+    "available_physical_cores": 16,
+    "ram_gib": 60,
+    "driver": "595.84"
+  },
+  "engine": {
+    "version": "0.1.47",
+    "source": "f-022-rel 76f90e58436d",
+    "archs": [
+      75,
+      86,
+      89,
+      120
+    ],
+    "ptx": true,
+    "cuda": "13.0",
+    "portable": true,
+    "vision": "cuda13.0"
+  },
+  "model": {
+    "name": "Qwen3.8-Flash-Next GSQ-RCO Q2_0",
+    "repo": "ISTA-DASLab/Qwen3.8-Flash-Next-GSQ-RCO-GGUF",
+    "revision": "ed59f92082b1e93c0e96d60a8b11aab089b52f09",
+    "main_shard_bytes": 37623740192,
+    "ple_shard_bytes": 28800138432,
+    "experts_loaded_gib": 31.64,
+    "total_routed_experts": 24576
+  },
+  "method": {
+    "prompt": "<|im_start|>user\nExplain in about 400 words how virtual memory works in an operating system. Cover virtual addresses, page tables, page faults, demand paging, and swapping. Use five clear paragraphs and no bullet points.<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n",
+    "prompt_tokens": 55,
+    "output_tokens_per_run": 256,
+    "repeats": 2,
+    "context_tokens": 8192,
+    "kv": "int8",
+    "mtp": false,
+    "verify_window_tokens": 1,
+    "adapt_every": 0,
+    "route_tail_skip": 0,
+    "cpu_participating_threads": 16,
+    "ple_io": "mmap",
+    "prefill_chunk": 512,
+    "fixed_continuation": true,
+    "order": [
+      "small_cpu",
+      "large_cpu",
+      "large_split",
+      "large_split",
+      "large_cpu",
+      "small_cpu",
+      "small_split",
+      "small_split"
+    ],
+    "throughput": "sum(generated_tokens) / sum(decode_seconds)",
+    "pcie_mode": "CPU only uses --pcie-frac 0; split uses the engine startup PCIe probe",
+    "cache_hit_metric": "The engine R4 statistic excludes PCIe-offloaded entries from its lookup denominator."
+  },
+  "groups": [
+    {
+      "group": "small_cpu",
+      "runs_found": 2,
+      "runs_aggregated": 2,
+      "expected_repeats": 2,
+      "repeat_count_matches": true,
+      "total_decode_tokens": 512,
+      "total_decode_ms": 11320.5,
+      "aggregate_decode_tok_s": 45.22768428956318,
+      "decode_tok_s_min": 43.17250451118944,
+      "decode_tok_s_max": 47.488313422868586,
+      "decode_tok_s_median": 45.330408967029015,
+      "cache_slots_observed": [
+        2048
+      ],
+      "cache_gib_observed": [
+        2.64
+      ],
+      "pooled_cache_hits": 74650,
+      "pooled_cache_lookups": 245760,
+      "pooled_cache_hit_fraction": 0.3037516276041667,
+      "cpu_experts_distinct_per_layer_round_weighted": 6.96,
+      "cpu_experts_routed_per_layer_round_weighted": 6.96,
+      "pcie_experts_distinct_per_layer_round_weighted": 0.0,
+      "pcie_share_fractions_observed": [
+        0.0
+      ],
+      "initial_pcie_probe_gb_s_observed": [],
+      "initial_pcie_fractions_observed": [],
+      "pool_participating_threads_observed": [
+        16
+      ],
+      "peak_gpu_memory_mib": 7112.0,
+      "peak_rss_kib": 34721616.0,
+      "peak_rss_gib": 33.11311340332031,
+      "warning_count": 0
+    },
+    {
+      "group": "large_cpu",
+      "runs_found": 2,
+      "runs_aggregated": 2,
+      "expected_repeats": 2,
+      "repeat_count_matches": true,
+      "total_decode_tokens": 512,
+      "total_decode_ms": 5672.4,
+      "aggregate_decode_tok_s": 90.26161765742896,
+      "decode_tok_s_min": 89.36675277525659,
+      "decode_tok_s_max": 91.17458508440771,
+      "decode_tok_s_median": 90.27066892983214,
+      "cache_slots_observed": [
+        14605
+      ],
+      "cache_gib_observed": [
+        18.8
+      ],
+      "pooled_cache_hits": 228053,
+      "pooled_cache_lookups": 245760,
+      "pooled_cache_hit_fraction": 0.9279500325520833,
+      "cpu_experts_distinct_per_layer_round_weighted": 0.72,
+      "cpu_experts_routed_per_layer_round_weighted": 0.72,
+      "pcie_experts_distinct_per_layer_round_weighted": 0.0,
+      "pcie_share_fractions_observed": [
+        0.0
+      ],
+      "initial_pcie_probe_gb_s_observed": [],
+      "initial_pcie_fractions_observed": [],
+      "pool_participating_threads_observed": [
+        16
+      ],
+      "peak_gpu_memory_mib": 23668.0,
+      "peak_rss_kib": 34718980.0,
+      "peak_rss_gib": 33.110599517822266,
+      "warning_count": 0
+    },
+    {
+      "group": "large_split",
+      "runs_found": 2,
+      "runs_aggregated": 2,
+      "expected_repeats": 2,
+      "repeat_count_matches": true,
+      "total_decode_tokens": 512,
+      "total_decode_ms": 5570.200000000001,
+      "aggregate_decode_tok_s": 91.91770492980503,
+      "decode_tok_s_min": 90.39867226950103,
+      "decode_tok_s_max": 93.48866084797136,
+      "decode_tok_s_median": 91.9436665587362,
+      "cache_slots_observed": [
+        14605
+      ],
+      "cache_gib_observed": [
+        18.8
+      ],
+      "pooled_cache_hits": 228043,
+      "pooled_cache_lookups": 241157,
+      "pooled_cache_hit_fraction": 0.9456204878979254,
+      "cpu_experts_distinct_per_layer_round_weighted": 0.535,
+      "cpu_experts_routed_per_layer_round_weighted": 0.535,
+      "pcie_experts_distinct_per_layer_round_weighted": 0.19,
+      "pcie_share_fractions_observed": [
+        0.55078125
+      ],
+      "initial_pcie_probe_gb_s_observed": [
+        27.0
+      ],
+      "initial_pcie_fractions_observed": [
+        0.55
+      ],
+      "pool_participating_threads_observed": [
+        16
+      ],
+      "peak_gpu_memory_mib": 23668.0,
+      "peak_rss_kib": 34723020.0,
+      "peak_rss_gib": 33.11445236206055,
+      "warning_count": 0
+    },
+    {
+      "group": "small_split",
+      "runs_found": 2,
+      "runs_aggregated": 2,
+      "expected_repeats": 2,
+      "repeat_count_matches": true,
+      "total_decode_tokens": 512,
+      "total_decode_ms": 10616.6,
+      "aggregate_decode_tok_s": 48.22636248893242,
+      "decode_tok_s_min": 44.21187157832927,
+      "decode_tok_s_max": 53.04270352029505,
+      "decode_tok_s_median": 48.62728754931216,
+      "cache_slots_observed": [
+        2048
+      ],
+      "cache_gib_observed": [
+        2.64
+      ],
+      "pooled_cache_hits": 74690,
+      "pooled_cache_lookups": 166250,
+      "pooled_cache_hit_fraction": 0.44926315789473686,
+      "cpu_experts_distinct_per_layer_round_weighted": 3.73,
+      "cpu_experts_routed_per_layer_round_weighted": 3.73,
+      "pcie_experts_distinct_per_layer_round_weighted": 3.2350000000000003,
+      "pcie_share_fractions_observed": [
+        0.55078125
+      ],
+      "initial_pcie_probe_gb_s_observed": [
+        27.0
+      ],
+      "initial_pcie_fractions_observed": [
+        0.55
+      ],
+      "pool_participating_threads_observed": [
+        16
+      ],
+      "peak_gpu_memory_mib": 7112.0,
+      "peak_rss_kib": 34719276.0,
+      "peak_rss_gib": 33.11088180541992,
+      "warning_count": 0
+    }
+  ],
+  "runs": [
+    {
+      "name": "large_cpu-1",
+      "group": "large_cpu",
+      "decode_tokens": 256,
+      "decode_ms": 2864.6,
+      "reported_decode_tok_s": 89.37,
+      "cache_slots": 14605,
+      "cache_gib": 18.8,
+      "cache_hits": 114026,
+      "cache_lookups": 122880,
+      "cache_hit_fraction": 0.9279459635416667,
+      "reported_cache_hit_fraction": 0.9279,
+      "verify_rounds": 256,
+      "cpu_experts_distinct_per_layer": 0.72,
+      "cpu_experts_routed_per_layer": 0.72,
+      "pcie_experts_distinct_per_layer": 0.0,
+      "pcie_share_numerator_256": 0,
+      "pcie_share_fraction": 0.0,
+      "initial_pcie_probe_gb_s": null,
+      "initial_pcie_fraction": null,
+      "pool_participating_threads": 16,
+      "pool_workers": 15,
+      "follow_differing_tokens": 1,
+      "follow_emitted_tokens": 256,
+      "expert_loaded_gib": 31.64,
+      "configured_spec_window": 2,
+      "drafts_accepted": 0,
+      "drafts_offered": 0,
+      "verify_wait_ms_per_round": 7.191,
+      "verify_pool_ms_per_round": 3.253,
+      "verify_host_ms_per_round": 1.719,
+      "verify_commit_ms_per_round": 0.0,
+      "peak_gpu_memory_mib": 23668.0,
+      "peak_rss_kib": 34673208.0,
+      "peak_rss_gib": 33.06694793701172,
+      "gpu_sample_count": 64,
+      "rss_sample_count": 64,
+      "returncode": 0,
+      "pcie_zero_inferred_from_metadata_command": true,
+      "computed_decode_tok_s": 89.36675277525659,
+      "included_in_aggregate": true,
+      "statistics": {
+        "rounds": [
+          "speculation              256 rounds of 2, drafts accepted 0 of 0 (0.000), 1.00 tokens per round"
+        ],
+        "follow": [
+          "follow                   1 of 256 emitted tokens differ from the argmax"
+        ],
+        "verify": [
+          "verify window            wait for rings 7.191  pool 3.253  host 1.719  commit 0.000 ms/round; CPU experts 0.72 distinct / 0.72 routed per layer"
+        ],
+        "decode": [
+          "decode                   256 tokens in 2864.6 ms  ->  89.37 tok/s"
+        ],
+        "hits": [
+          "  R4 expert-cache hits   114026 of 122880 = 0.9279      (0 admitted, 8854 refused, cache 100.0000% full)"
+        ],
+        "expert_load": [
+          "strata generate: loaded 31.64 GiB at 1.57 GiB/s"
+        ],
+        "pool": [
+          "strata generate: CPU pool tasks/phase: 48 (automatic), participating threads: 16"
+        ],
+        "worker": [
+          "strata generate: CPU pool: 15 workers by default (16 physical cores, 16 logical processors; bounded by every physical core but the host's)"
+        ],
+        "cache": [
+          "strata generate: expert cache 14605 slots, 18.80 GiB of VRAM; policy is"
+        ]
+      },
+      "sha256": {
+        ".stdout": "d9e5bac9ca285e24a9fb0a99d6982fc7f0edff902d00b2f8260238bcd785dc5b",
+        ".stderr": "8c5ecf6d96ba19c911e68558df4e2d71acaee9f90236ab177491334747418947",
+        ".metadata.json": "202a2199f570b166f8f525bddd9a2e7aa5845e46cdb21fbecf02a207b2e862ae"
+      }
+    },
+    {
+      "name": "large_cpu-2",
+      "group": "large_cpu",
+      "decode_tokens": 256,
+      "decode_ms": 2807.8,
+      "reported_decode_tok_s": 91.17,
+      "cache_slots": 14605,
+      "cache_gib": 18.8,
+      "cache_hits": 114027,
+      "cache_lookups": 122880,
+      "cache_hit_fraction": 0.9279541015625,
+      "reported_cache_hit_fraction": 0.928,
+      "verify_rounds": 256,
+      "cpu_experts_distinct_per_layer": 0.72,
+      "cpu_experts_routed_per_layer": 0.72,
+      "pcie_experts_distinct_per_layer": 0.0,
+      "pcie_share_numerator_256": 0,
+      "pcie_share_fraction": 0.0,
+      "initial_pcie_probe_gb_s": null,
+      "initial_pcie_fraction": null,
+      "pool_participating_threads": 16,
+      "pool_workers": 15,
+      "follow_differing_tokens": 2,
+      "follow_emitted_tokens": 256,
+      "expert_loaded_gib": 31.64,
+      "configured_spec_window": 2,
+      "drafts_accepted": 0,
+      "drafts_offered": 0,
+      "verify_wait_ms_per_round": 7.201,
+      "verify_pool_ms_per_round": 2.987,
+      "verify_host_ms_per_round": 1.423,
+      "verify_commit_ms_per_round": 0.0,
+      "peak_gpu_memory_mib": 23668.0,
+      "peak_rss_kib": 34718980.0,
+      "peak_rss_gib": 33.110599517822266,
+      "gpu_sample_count": 72,
+      "rss_sample_count": 71,
+      "returncode": 0,
+      "pcie_zero_inferred_from_metadata_command": true,
+      "computed_decode_tok_s": 91.17458508440771,
+      "included_in_aggregate": true,
+      "statistics": {
+        "rounds": [
+          "speculation              256 rounds of 2, drafts accepted 0 of 0 (0.000), 1.00 tokens per round"
+        ],
+        "follow": [
+          "follow                   2 of 256 emitted tokens differ from the argmax"
+        ],
+        "verify": [
+          "verify window            wait for rings 7.201  pool 2.987  host 1.423  commit 0.000 ms/round; CPU experts 0.72 distinct / 0.72 routed per layer"
+        ],
+        "decode": [
+          "decode                   256 tokens in 2807.8 ms  ->  91.17 tok/s"
+        ],
+        "hits": [
+          "  R4 expert-cache hits   114027 of 122880 = 0.9280      (0 admitted, 8853 refused, cache 100.0000% full)"
+        ],
+        "expert_load": [
+          "strata generate: loaded 31.64 GiB at 1.17 GiB/s"
+        ],
+        "pool": [
+          "strata generate: CPU pool tasks/phase: 48 (automatic), participating threads: 16"
+        ],
+        "worker": [
+          "strata generate: CPU pool: 15 workers by default (16 physical cores, 16 logical processors; bounded by every physical core but the host's)"
+        ],
+        "cache": [
+          "strata generate: expert cache 14605 slots, 18.80 GiB of VRAM; policy is"
+        ]
+      },
+      "sha256": {
+        ".stdout": "c49e6161c202ffb0e3af6cc63f7d60183cf7cbb26baed835ffde59e42a3b85de",
+        ".stderr": "8f535b1f674e3c9926adec0b31ce4cf3219d630aa7c5ff58bdd257628d37edc1",
+        ".metadata.json": "03c17a54096b036e2bbea00b382ef1801888f6e962351f2666e102045640be91"
+      }
+    },
+    {
+      "name": "large_split-1",
+      "group": "large_split",
+      "decode_tokens": 256,
+      "decode_ms": 2738.3,
+      "reported_decode_tok_s": 93.49,
+      "cache_slots": 14605,
+      "cache_gib": 18.8,
+      "cache_hits": 114001,
+      "cache_lookups": 120577,
+      "cache_hit_fraction": 0.9454622357497698,
+      "reported_cache_hit_fraction": 0.9455,
+      "verify_rounds": 256,
+      "cpu_experts_distinct_per_layer": 0.54,
+      "cpu_experts_routed_per_layer": 0.54,
+      "pcie_experts_distinct_per_layer": 0.19,
+      "pcie_share_numerator_256": 141,
+      "pcie_share_fraction": 0.55078125,
+      "initial_pcie_probe_gb_s": 27.0,
+      "initial_pcie_fraction": 0.55,
+      "pool_participating_threads": 16,
+      "pool_workers": 15,
+      "follow_differing_tokens": 5,
+      "follow_emitted_tokens": 256,
+      "expert_loaded_gib": 31.64,
+      "configured_spec_window": 2,
+      "drafts_accepted": 0,
+      "drafts_offered": 0,
+      "verify_wait_ms_per_round": 7.486,
+      "verify_pool_ms_per_round": 2.409,
+      "verify_host_ms_per_round": 1.081,
+      "verify_commit_ms_per_round": 0.0,
+      "peak_gpu_memory_mib": 23668.0,
+      "peak_rss_kib": 34723020.0,
+      "peak_rss_gib": 33.11445236206055,
+      "gpu_sample_count": 65,
+      "rss_sample_count": 64,
+      "returncode": 0,
+      "pcie_zero_inferred_from_metadata_command": false,
+      "computed_decode_tok_s": 93.48866084797136,
+      "included_in_aggregate": true,
+      "statistics": {
+        "rounds": [
+          "speculation              256 rounds of 2, drafts accepted 0 of 0 (0.000), 1.00 tokens per round"
+        ],
+        "follow": [
+          "follow                   5 of 256 emitted tokens differ from the argmax"
+        ],
+        "verify": [
+          "verify window            wait for rings 7.486  pool 2.409  host 1.081  commit 0.000 ms/round; CPU experts 0.54 distinct / 0.54 routed per layer"
+        ],
+        "pcie": [
+          "pcie experts             0.19 distinct experts per layer read over PCIe (share 141/256 of the misses)"
+        ],
+        "decode": [
+          "decode                   256 tokens in 2738.3 ms  ->  93.49 tok/s"
+        ],
+        "hits": [
+          "  R4 expert-cache hits   114001 of 120577 = 0.9455      (0 admitted, 6576 refused, cache 100.0000% full)"
+        ],
+        "probe": [
+          "strata generate: PCIe probe: 27.0 GB/s host->device (best of 27.0 27.0 27.0 27.0) -> pcie_frac 0.55 (default 0.55)"
+        ],
+        "expert_load": [
+          "strata generate: loaded 31.64 GiB at 1.37 GiB/s"
+        ],
+        "pool": [
+          "strata generate: CPU pool tasks/phase: 48 (automatic), participating threads: 16"
+        ],
+        "worker": [
+          "strata generate: CPU pool: 15 workers by default (16 physical cores, 16 logical processors; bounded by every physical core but the host's)"
+        ],
+        "cache": [
+          "strata generate: expert cache 14605 slots, 18.80 GiB of VRAM; policy is"
+        ]
+      },
+      "sha256": {
+        ".stdout": "b55bd12fde4a6be7ae95652fe5aefd4cb2cfad1e33b4f747a6e6f39ec45cd0da",
+        ".stderr": "5cf2a2bc726ad5ffd2757b716d2b2432f07bd4c9454e287920715c55546e72eb",
+        ".metadata.json": "ea9a40f8d24c9d875487e19b572b687886d578cedf35151c8271767c6ff97cb1"
+      }
+    },
+    {
+      "name": "large_split-2",
+      "group": "large_split",
+      "decode_tokens": 256,
+      "decode_ms": 2831.9,
+      "reported_decode_tok_s": 90.4,
+      "cache_slots": 14605,
+      "cache_gib": 18.8,
+      "cache_hits": 114042,
+      "cache_lookups": 120580,
+      "cache_hit_fraction": 0.9457787361088075,
+      "reported_cache_hit_fraction": 0.9458,
+      "verify_rounds": 256,
+      "cpu_experts_distinct_per_layer": 0.53,
+      "cpu_experts_routed_per_layer": 0.53,
+      "pcie_experts_distinct_per_layer": 0.19,
+      "pcie_share_numerator_256": 141,
+      "pcie_share_fraction": 0.55078125,
+      "initial_pcie_probe_gb_s": 27.0,
+      "initial_pcie_fraction": 0.55,
+      "pool_participating_threads": 16,
+      "pool_workers": 15,
+      "follow_differing_tokens": 3,
+      "follow_emitted_tokens": 256,
+      "expert_loaded_gib": 31.64,
+      "configured_spec_window": 2,
+      "drafts_accepted": 0,
+      "drafts_offered": 0,
+      "verify_wait_ms_per_round": 7.492,
+      "verify_pool_ms_per_round": 2.787,
+      "verify_host_ms_per_round": 1.529,
+      "verify_commit_ms_per_round": 0.0,
+      "peak_gpu_memory_mib": 23668.0,
+      "peak_rss_kib": 34669368.0,
+      "peak_rss_gib": 33.06328582763672,
+      "gpu_sample_count": 71,
+      "rss_sample_count": 70,
+      "returncode": 0,
+      "pcie_zero_inferred_from_metadata_command": false,
+      "computed_decode_tok_s": 90.39867226950103,
+      "included_in_aggregate": true,
+      "statistics": {
+        "rounds": [
+          "speculation              256 rounds of 2, drafts accepted 0 of 0 (0.000), 1.00 tokens per round"
+        ],
+        "follow": [
+          "follow                   3 of 256 emitted tokens differ from the argmax"
+        ],
+        "verify": [
+          "verify window            wait for rings 7.492  pool 2.787  host 1.529  commit 0.000 ms/round; CPU experts 0.53 distinct / 0.53 routed per layer"
+        ],
+        "pcie": [
+          "pcie experts             0.19 distinct experts per layer read over PCIe (share 141/256 of the misses)"
+        ],
+        "decode": [
+          "decode                   256 tokens in 2831.9 ms  ->  90.40 tok/s"
+        ],
+        "hits": [
+          "  R4 expert-cache hits   114042 of 120580 = 0.9458      (0 admitted, 6538 refused, cache 100.0000% full)"
+        ],
+        "probe": [
+          "strata generate: PCIe probe: 27.0 GB/s host->device (best of 27.0 27.0 27.0 27.0) -> pcie_frac 0.55 (default 0.55)"
+        ],
+        "expert_load": [
+          "strata generate: loaded 31.64 GiB at 1.25 GiB/s"
+        ],
+        "pool": [
+          "strata generate: CPU pool tasks/phase: 48 (automatic), participating threads: 16"
+        ],
+        "worker": [
+          "strata generate: CPU pool: 15 workers by default (16 physical cores, 16 logical processors; bounded by every physical core but the host's)"
+        ],
+        "cache": [
+          "strata generate: expert cache 14605 slots, 18.80 GiB of VRAM; policy is"
+        ]
+      },
+      "sha256": {
+        ".stdout": "bf6ed4bafaae36b269ecd8aeccfa956177c2e8e3496db294d393aa72375476a2",
+        ".stderr": "5715042e6e3f825b56916c99c467e532a218262b8890d0d94f585712e18c91e4",
+        ".metadata.json": "5889a44b785bdcedf56eb53ae59c984b43758ddd3d9fed3eb4c7ac1edad99868"
+      }
+    },
+    {
+      "name": "small_cpu-1",
+      "group": "small_cpu",
+      "decode_tokens": 256,
+      "decode_ms": 5390.8,
+      "reported_decode_tok_s": 47.49,
+      "cache_slots": 2048,
+      "cache_gib": 2.64,
+      "cache_hits": 37339,
+      "cache_lookups": 122880,
+      "cache_hit_fraction": 0.30386555989583336,
+      "reported_cache_hit_fraction": 0.3039,
+      "verify_rounds": 256,
+      "cpu_experts_distinct_per_layer": 6.96,
+      "cpu_experts_routed_per_layer": 6.96,
+      "pcie_experts_distinct_per_layer": 0.0,
+      "pcie_share_numerator_256": 0,
+      "pcie_share_fraction": 0.0,
+      "initial_pcie_probe_gb_s": null,
+      "initial_pcie_fraction": null,
+      "pool_participating_threads": 16,
+      "pool_workers": 15,
+      "follow_differing_tokens": 4,
+      "follow_emitted_tokens": 256,
+      "expert_loaded_gib": 31.64,
+      "configured_spec_window": 2,
+      "drafts_accepted": 0,
+      "drafts_offered": 0,
+      "verify_wait_ms_per_round": 6.262,
+      "verify_pool_ms_per_round": 14.051,
+      "verify_host_ms_per_round": 2.121,
+      "verify_commit_ms_per_round": 0.0,
+      "peak_gpu_memory_mib": 7112.0,
+      "peak_rss_kib": 34721616.0,
+      "peak_rss_gib": 33.11311340332031,
+      "gpu_sample_count": 87,
+      "rss_sample_count": 87,
+      "returncode": 0,
+      "pcie_zero_inferred_from_metadata_command": true,
+      "computed_decode_tok_s": 47.488313422868586,
+      "included_in_aggregate": true,
+      "statistics": {
+        "rounds": [
+          "speculation              256 rounds of 2, drafts accepted 0 of 0 (0.000), 1.00 tokens per round"
+        ],
+        "follow": [
+          "follow                   4 of 256 emitted tokens differ from the argmax"
+        ],
+        "verify": [
+          "verify window            wait for rings 6.262  pool 14.051  host 2.121  commit 0.000 ms/round; CPU experts 6.96 distinct / 6.96 routed per layer"
+        ],
+        "decode": [
+          "decode                   256 tokens in 5390.8 ms  ->  47.49 tok/s"
+        ],
+        "hits": [
+          "  R4 expert-cache hits   37339 of 122880 = 0.3039      (0 admitted, 85541 refused, cache 100.0000% full)"
+        ],
+        "expert_load": [
+          "strata generate: loaded 31.64 GiB at 1.10 GiB/s"
+        ],
+        "pool": [
+          "strata generate: CPU pool tasks/phase: 48 (automatic), participating threads: 16"
+        ],
+        "worker": [
+          "strata generate: CPU pool: 15 workers by default (16 physical cores, 16 logical processors; bounded by every physical core but the host's)"
+        ],
+        "cache": [
+          "strata generate: expert cache 2048 slots, 2.64 GiB of VRAM; policy is"
+        ]
+      },
+      "sha256": {
+        ".stdout": "22f1889a05e9663a038c5a00026db56d4ea22e262c910b6e901f0da87df87097",
+        ".stderr": "bb6069d0b7604bc1757aaf940c9c05d7320e092ca424336c64671c19fb605bab",
+        ".metadata.json": "58c4959cccfb93539a20c88fc4d4c45adb46dc85d3e3d6d6ce021117e41b0a0a"
+      }
+    },
+    {
+      "name": "small_cpu-2",
+      "group": "small_cpu",
+      "decode_tokens": 256,
+      "decode_ms": 5929.7,
+      "reported_decode_tok_s": 43.17,
+      "cache_slots": 2048,
+      "cache_gib": 2.64,
+      "cache_hits": 37311,
+      "cache_lookups": 122880,
+      "cache_hit_fraction": 0.3036376953125,
+      "reported_cache_hit_fraction": 0.3036,
+      "verify_rounds": 256,
+      "cpu_experts_distinct_per_layer": 6.96,
+      "cpu_experts_routed_per_layer": 6.96,
+      "pcie_experts_distinct_per_layer": 0.0,
+      "pcie_share_numerator_256": 0,
+      "pcie_share_fraction": 0.0,
+      "initial_pcie_probe_gb_s": null,
+      "initial_pcie_fraction": null,
+      "pool_participating_threads": 16,
+      "pool_workers": 15,
+      "follow_differing_tokens": 4,
+      "follow_emitted_tokens": 256,
+      "expert_loaded_gib": 31.64,
+      "configured_spec_window": 2,
+      "drafts_accepted": 0,
+      "drafts_offered": 0,
+      "verify_wait_ms_per_round": 6.437,
+      "verify_pool_ms_per_round": 15.944,
+      "verify_host_ms_per_round": 3.722,
+      "verify_commit_ms_per_round": 0.0,
+      "peak_gpu_memory_mib": 7112.0,
+      "peak_rss_kib": 34669184.0,
+      "peak_rss_gib": 33.0631103515625,
+      "gpu_sample_count": 66,
+      "rss_sample_count": 65,
+      "returncode": 0,
+      "pcie_zero_inferred_from_metadata_command": true,
+      "computed_decode_tok_s": 43.17250451118944,
+      "included_in_aggregate": true,
+      "statistics": {
+        "rounds": [
+          "speculation              256 rounds of 2, drafts accepted 0 of 0 (0.000), 1.00 tokens per round"
+        ],
+        "follow": [
+          "follow                   4 of 256 emitted tokens differ from the argmax"
+        ],
+        "verify": [
+          "verify window            wait for rings 6.437  pool 15.944  host 3.722  commit 0.000 ms/round; CPU experts 6.96 distinct / 6.96 routed per layer"
+        ],
+        "decode": [
+          "decode                   256 tokens in 5929.7 ms  ->  43.17 tok/s"
+        ],
+        "hits": [
+          "  R4 expert-cache hits   37311 of 122880 = 0.3036      (0 admitted, 85569 refused, cache 100.0000% full)"
+        ],
+        "expert_load": [
+          "strata generate: loaded 31.64 GiB at 1.48 GiB/s"
+        ],
+        "pool": [
+          "strata generate: CPU pool tasks/phase: 48 (automatic), participating threads: 16"
+        ],
+        "worker": [
+          "strata generate: CPU pool: 15 workers by default (16 physical cores, 16 logical processors; bounded by every physical core but the host's)"
+        ],
+        "cache": [
+          "strata generate: expert cache 2048 slots, 2.64 GiB of VRAM; policy is"
+        ]
+      },
+      "sha256": {
+        ".stdout": "e2b1427946e89e4bc229e2fc98aefaadbdebb2a3fc339058ff4c2ce2006c2039",
+        ".stderr": "f74f75b9dcea6184553d6994cddf57af1002ab7a06f6676c2e4e3cc877bf77ad",
+        ".metadata.json": "a4aaeac2408421c975352a3301c71433e82bfed592fe7223423a612b492b2264"
+      }
+    },
+    {
+      "name": "small_split-1",
+      "group": "small_split",
+      "decode_tokens": 256,
+      "decode_ms": 4826.3,
+      "reported_decode_tok_s": 53.04,
+      "cache_slots": 2048,
+      "cache_gib": 2.64,
+      "cache_hits": 37346,
+      "cache_lookups": 83120,
+      "cache_hit_fraction": 0.44930221366698747,
+      "reported_cache_hit_fraction": 0.4493,
+      "verify_rounds": 256,
+      "cpu_experts_distinct_per_layer": 3.73,
+      "cpu_experts_routed_per_layer": 3.73,
+      "pcie_experts_distinct_per_layer": 3.24,
+      "pcie_share_numerator_256": 141,
+      "pcie_share_fraction": 0.55078125,
+      "initial_pcie_probe_gb_s": 27.0,
+      "initial_pcie_fraction": 0.55,
+      "pool_participating_threads": 16,
+      "pool_workers": 15,
+      "follow_differing_tokens": 2,
+      "follow_emitted_tokens": 256,
+      "expert_loaded_gib": 31.64,
+      "configured_spec_window": 2,
+      "drafts_accepted": 0,
+      "drafts_offered": 0,
+      "verify_wait_ms_per_round": 9.572,
+      "verify_pool_ms_per_round": 8.346,
+      "verify_host_ms_per_round": 1.389,
+      "verify_commit_ms_per_round": 0.0,
+      "peak_gpu_memory_mib": 7112.0,
+      "peak_rss_kib": 34719276.0,
+      "peak_rss_gib": 33.11088180541992,
+      "gpu_sample_count": 68,
+      "rss_sample_count": 68,
+      "returncode": 0,
+      "pcie_zero_inferred_from_metadata_command": false,
+      "computed_decode_tok_s": 53.04270352029505,
+      "included_in_aggregate": true,
+      "statistics": {
+        "rounds": [
+          "speculation              256 rounds of 2, drafts accepted 0 of 0 (0.000), 1.00 tokens per round"
+        ],
+        "follow": [
+          "follow                   2 of 256 emitted tokens differ from the argmax"
+        ],
+        "verify": [
+          "verify window            wait for rings 9.572  pool 8.346  host 1.389  commit 0.000 ms/round; CPU experts 3.73 distinct / 3.73 routed per layer"
+        ],
+        "pcie": [
+          "pcie experts             3.24 distinct experts per layer read over PCIe (share 141/256 of the misses)"
+        ],
+        "decode": [
+          "decode                   256 tokens in 4826.3 ms  ->  53.04 tok/s"
+        ],
+        "hits": [
+          "  R4 expert-cache hits   37346 of 83120 = 0.4493      (0 admitted, 45774 refused, cache 100.0000% full)"
+        ],
+        "probe": [
+          "strata generate: PCIe probe: 27.0 GB/s host->device (best of 27.0 27.0 27.0 27.0) -> pcie_frac 0.55 (default 0.55)"
+        ],
+        "expert_load": [
+          "strata generate: loaded 31.64 GiB at 1.27 GiB/s"
+        ],
+        "pool": [
+          "strata generate: CPU pool tasks/phase: 48 (automatic), participating threads: 16"
+        ],
+        "worker": [
+          "strata generate: CPU pool: 15 workers by default (16 physical cores, 16 logical processors; bounded by every physical core but the host's)"
+        ],
+        "cache": [
+          "strata generate: expert cache 2048 slots, 2.64 GiB of VRAM; policy is"
+        ]
+      },
+      "sha256": {
+        ".stdout": "831735e3246374f4ec39fcf4753ee7d8069f8fa4f63fc98d2bbef600355af5b5",
+        ".stderr": "4f0f77fefb4d7315c83a206c75cdb4cde74b21149044572de975f8a3eefa50cd",
+        ".metadata.json": "d2693811022de5d4b5fff523b62011d848b08ca20df8d83091fb892dbc30c071"
+      }
+    },
+    {
+      "name": "small_split-2",
+      "group": "small_split",
+      "decode_tokens": 256,
+      "decode_ms": 5790.3,
+      "reported_decode_tok_s": 44.21,
+      "cache_slots": 2048,
+      "cache_gib": 2.64,
+      "cache_hits": 37344,
+      "cache_lookups": 83130,
+      "cache_hit_fraction": 0.44922410682064234,
+      "reported_cache_hit_fraction": 0.4492,
+      "verify_rounds": 256,
+      "cpu_experts_distinct_per_layer": 3.73,
+      "cpu_experts_routed_per_layer": 3.73,
+      "pcie_experts_distinct_per_layer": 3.23,
+      "pcie_share_numerator_256": 141,
+      "pcie_share_fraction": 0.55078125,
+      "initial_pcie_probe_gb_s": 27.0,
+      "initial_pcie_fraction": 0.55,
+      "pool_participating_threads": 16,
+      "pool_workers": 15,
+      "follow_differing_tokens": 8,
+      "follow_emitted_tokens": 256,
+      "expert_loaded_gib": 31.64,
+      "configured_spec_window": 2,
+      "drafts_accepted": 0,
+      "drafts_offered": 0,
+      "verify_wait_ms_per_round": 9.385,
+      "verify_pool_ms_per_round": 12.296,
+      "verify_host_ms_per_round": 5.226,
+      "verify_commit_ms_per_round": 0.0,
+      "peak_gpu_memory_mib": 7112.0,
+      "peak_rss_kib": 34670740.0,
+      "peak_rss_gib": 33.06459426879883,
+      "gpu_sample_count": 66,
+      "rss_sample_count": 66,
+      "returncode": 0,
+      "pcie_zero_inferred_from_metadata_command": false,
+      "computed_decode_tok_s": 44.21187157832927,
+      "included_in_aggregate": true,
+      "statistics": {
+        "rounds": [
+          "speculation              256 rounds of 2, drafts accepted 0 of 0 (0.000), 1.00 tokens per round"
+        ],
+        "follow": [
+          "follow                   8 of 256 emitted tokens differ from the argmax"
+        ],
+        "verify": [
+          "verify window            wait for rings 9.385  pool 12.296  host 5.226  commit 0.000 ms/round; CPU experts 3.73 distinct / 3.73 routed per layer"
+        ],
+        "pcie": [
+          "pcie experts             3.23 distinct experts per layer read over PCIe (share 141/256 of the misses)"
+        ],
+        "decode": [
+          "decode                   256 tokens in 5790.3 ms  ->  44.21 tok/s"
+        ],
+        "hits": [
+          "  R4 expert-cache hits   37344 of 83130 = 0.4492      (0 admitted, 45786 refused, cache 100.0000% full)"
+        ],
+        "probe": [
+          "strata generate: PCIe probe: 27.0 GB/s host->device (best of 27.0 27.0 27.0 27.0) -> pcie_frac 0.55 (default 0.55)"
+        ],
+        "expert_load": [
+          "strata generate: loaded 31.64 GiB at 1.51 GiB/s"
+        ],
+        "pool": [
+          "strata generate: CPU pool tasks/phase: 48 (automatic), participating threads: 16"
+        ],
+        "worker": [
+          "strata generate: CPU pool: 15 workers by default (16 physical cores, 16 logical processors; bounded by every physical core but the host's)"
+        ],
+        "cache": [
+          "strata generate: expert cache 2048 slots, 2.64 GiB of VRAM; policy is"
+        ]
+      },
+      "sha256": {
+        ".stdout": "96d6d81f1c98969b4526b57cbf9b00448a3719275d8746c6b9d9eec465776d0d",
+        ".stderr": "08d423207a72500364dc73e8f8b8608c429816c06885a9243a4e4639231583ab",
+        ".metadata.json": "eadb07ef89855373eba31693ba7c6e26bcfd2d3cd9b154bff6dee62394fda8c7"
+      }
+    }
+  ],
+  "continuation_ids": [
+    31931,
+    4779,
+    369,
+    264,
+    15346,
+    7059,
+    303,
+    6278,
+    10042,
+    5757,
+    421,
+    5954,
+    264,
+    6165,
+    310,
+    34512,
+    430,
+    413,
+    424,
+    682,
+    777,
+    4779,
+    1056,
+    424,
+    21219,
+    47571,
+    13,
+    1061,
+    56764,
+    369,
+    16496,
+    539,
+    12366,
+    279,
+    19214,
+    2534,
+    3433,
+    314,
+    264,
+    1817,
+    310,
+    6745,
+    4779,
+    10155,
+    13,
+    3095,
+    264,
+    1957,
+    8213,
+    11,
+    424,
+    5533,
+    3972,
+    13822,
+    11,
+    864,
+    513,
+    4752,
+    45640,
+    364,
+    795,
+    2785,
+    279,
+    1817,
+    725,
+    1593,
+    314,
+    4779,
+    13,
+    4081,
+    13822,
+    513,
+    524,
+    2050,
+    26564,
+    310,
+    6745,
+    21360,
+    694,
+    4598,
+    14505,
+    1083,
+    264,
+    6150,
+    12366,
+    1785,
+    8704,
+    539,
+    279,
+    10042,
+    1785,
+    13,
+    1061,
+    23956,
+    24546,
+    421,
+    1754,
+    1817,
+    25224,
+    303,
+    1141,
+    1765,
+    23443,
+    2534,
+    3433,
+    11,
+    25325,
+    799,
+    3638,
+    494,
+    31315,
+    21241,
+    286,
+    279,
+    4779,
+    314,
+    2361,
+    11,
+    26600,
+    44941,
+    4610,
+    321,
+    19150,
+    13,
+    271,
+    760,
+    16456,
+    421,
+    45351,
+    1439,
+    3972,
+    13822,
+    1083,
+    6745,
+    13822,
+    369,
+    279,
+    2081,
+    1898,
+    13,
+    561,
+    10042,
+    1785,
+    62634,
+    4779,
+    1083,
+    8097,
+    6948,
+    9714,
+    2512,
+    6602,
+    11,
+    10813,
+    2943,
+    14609,
+    26148,
+    2262,
+    303,
+    1331,
+    13,
+    8618,
+    1817,
+    30941,
+    264,
+    2081,
+    1898,
+    421,
+    5435,
+    10379,
+    12366,
+    3050,
+    3972,
+    6602,
+    310,
+    6745,
+    13684,
+    303,
+    21360,
+    13,
+    3095,
+    279,
+    13540,
+    49703,
+    449,
+    7359,
+    11,
+    424,
+    5686,
+    685,
+    279,
+    3972,
+    2534,
+    303,
+    279,
+    2081,
+    1898,
+    310,
+    7995,
+    1332,
+    279,
+    795,
+    3404,
+    51190,
+    303,
+    6745,
+    4779,
+    13,
+    1061,
+    14053,
+    8311,
+    17290,
+    391,
+    310,
+    279,
+    1156,
+    11,
+    10377,
+    7233,
+    310,
+    381,
+    5158,
+    430,
+    413,
+    781,
+    599,
+    2528,
+    310,
+    264,
+    3349,
+    11,
+    64258,
+    2424,
+    314,
+    4779,
+    11,
+    1442,
+    3384,
+    279,
+    16045,
+    6745,
+    5638,
+    1189,
+    381,
+    83123,
+    466,
+    24443,
+    23598,
+    539,
+    975,
+    11036,
+    13,
+    271,
+    10883,
+    11,
+    524,
+    660
+  ],
+  "generated_text": "Virtual memory is a fundamental concept in modern operating systems that allows a computer to behave as if it has more memory than it physically possesses. This abstraction is achieved by mapping the logical address space of a process to physical memory locations. When a program runs, it uses virtual addresses, which are unique identifiers for data within the process’s view of memory. These addresses are not direct pointers to physical RAM but rather indices into a complex mapping system managed by the operating system. This separation ensures that each process operates in its own isolated address space, preventing one application from accidentally corrupting the memory of another, thereby enhancing security and stability.\n\nThe mechanism that translates these virtual addresses into physical addresses is the page table. The operating system divides memory into fixed-size blocks called pages, typically four kilobytes in size. Each process maintains a page table that contains entries mapping specific virtual pages to physical frames in RAM. When the CPU executes an instruction, it looks up the virtual address in the page table to determine where the data actually resides in physical memory. This translation happens transparently to the user, allowing programs to be written as if they have access to a large, contiguous block of memory, even though the underlying physical storage may be fragmented or partially occupied by other processes.\n\nHowever, not all"
+}

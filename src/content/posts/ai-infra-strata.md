@@ -1,8 +1,8 @@
 ---
 title: How Strata Works
 date: 2026-10-21
-updated: 2026-10-22
-description: 从稀疏激活、权重分层、CPU/GPU 并行与投机解码出发，结合源码和 Mac Studio 实例理解 Strata 的推理设计。
+updated: 2026-10-26
+description: 从稀疏激活、权重分层、CPU/GPU 并行与投机解码出发，结合源码与 RTX 4090D 实测理解 Strata 的推理设计。
 tags: [LLM, 推理, Strata]
 category: AI Infra
 episode: 9
@@ -14,7 +14,7 @@ lang: zh_CN
 
 在 [GPU 性能评估](../ai-infra-gpu-metrics/)中，我们用容量判断模型能不能装下，用带宽估算 decode 速度。[Strata](https://github.com/Niko1221/Strata) 则把问题推进了一步：用 12 GB 显卡与 64 GB 系统内存运行 Qwen3.8-Flash-Next，权重远大于显存，仍然能有流畅的生成速度。
 
-直觉上的办法是把装不下的权重放进内存，用到时再搬给 GPU。但 PCIe 比显存慢得多，为什么搬运没有拖垮速度？本文先跟着一个 token 走完一层计算，再看缓存与批量验证如何进一步提速。分析结合 Strata `011c9e60` 的源码与[项目论文](https://github.com/Niko1221/Strata/blob/011c9e60/docs/paper/Strata-Paper.pdf)，最后回到我的 Mac Studio 实例。
+直觉上的办法是把装不下的权重放进内存，用到时再搬给 GPU。但 PCIe 比显存慢得多，为什么搬运没有拖垮速度？本文先跟着一个 token 走完一层计算，再看缓存与批量验证如何进一步提速。分析结合 Strata `011c9e60` 的源码与[项目论文](https://github.com/Niko1221/Strata/blob/011c9e60/docs/paper/Strata-Paper.pdf)，最后在 RTX 4090D 上验证显存缓存与 CPU/GPU 分流，再补充 Mac 的统一内存路径。
 
 # 稀疏性的机会
 
@@ -84,11 +84,11 @@ Strata 把每步都用的共享部分留在显存，再为注意力历史、运�
 
 Strata 启动时根据已有 expert profile 填充缓存，运行中再统计当前对话的热度。PC 路径默认每 4 轮检查一次，最多替换 96 个专家，并在适应后把累计计数乘以 0.7，让旧热点逐渐退场、新热点获得位置。[`generate.cpp`](https://github.com/Niko1221/Strata/blob/011c9e60/src/program/generate.cpp)负责选择替换，[`expert_cache.cpp`](https://github.com/Niko1221/Strata/blob/011c9e60/src/core/expert_cache.cpp)管理缓存存储。
 
-注意，服务本轮未命中的临时搬运，与决定后续哪些专家常驻，是两个独立动作。缓存解决的是接下来少走几次慢路径，前面的并行调度解决的是这次未命中怎样尽快完成。
+临时搬运服务本轮未命中的专家，缓存替换决定后续哪些专家常驻。前者缩短这次计算的等待，后者减少接下来的未命中。
 
 ## 代码实现
 
-下面用一个简化成本模型，观察分配比例如何改变汇合时间。设本层有 24 MB 未命中权重，CPU 有效读取速度为 20 GB/s，PCIe 为 12 GB/s；GPU 计算常驻专家需 0.2 ms，计算全部未命中专家需 0.12 ms。这些是教学设定，模型把 CPU 与 PCIe 的有效带宽分开计算。
+用一组假设参数观察分配比例如何改变汇合时间。设本层有 24 MB 未命中权重，CPU 有效读取速度为 20 GB/s，PCIe 为 12 GB/s；GPU 计算常驻专家需 0.2 ms，计算全部未命中专家需 0.12 ms。
 
 如果全部未命中都交给 CPU，它需要 $24\text{ MB}/20\text{ GB/s}=1.2$ ms。若全部搬给 GPU，则先传输 2 ms，再计算 0.12 ms。扫描两者之间的比例，就能找到更早汇合的位置：
 
@@ -212,19 +212,51 @@ committed, _ = verify(prefix, cases[1])
 assert plain(prefix + committed, 2) == plain(prefix, len(committed) + 2)[-2:]
 ```
 
+# 独显验证
+
+## 实验配置
+
+这次使用一张 24 GB 显存的 RTX 4090D，CPU 为 Xeon Gold 6530，可用 16 个物理核心，系统内存 60 GiB。引擎使用官方 `0.1.47` CUDA 13 发布包，模型为 Qwen3.8-Flash-Next 的 Q2_0 量化版本。
+
+主权重文件为 37.6 GB，其中路由专家加载到系统内存后占 **31.64 GiB，超过整张显卡的显存**。另外 28.8 GB 的 n-gram 表单独按行读取。GPU 常驻共享权重，再用剩余显存缓存一部分专家，这正对应前面讨论的权重分层。
+
+为了分别观察缓存和分流的作用，测试设置两档专家缓存，并分别让未命中专家全部留在 CPU，或由 CPU 与 PCIe 搬运共同处理。提示词为 55 token，生成 256 token，上下文配置 8192、KV 使用 int8，关闭 MTP 和在线缓存替换。
+
+先正常生成一次，再让各配置执行完整前向，按同一份 token 序列推进上下文，避免答案变化影响路由负载。四种配置各运行两次，表中的吞吐按总生成 token 数除以总 decode 时间计算。[实测记录](/resource/data/strata-4090d.json)保留了每轮结果和原始统计行。
+
+## 缓存与分流
+
+每个 token 在每层选择 10 个路由专家。下表的 CPU 列表示平均有几个专家留在 CPU 计算，PCIe 列表示平均有几个专家搬到 GPU 计算；其余专家直接命中显存缓存。
+
+| 显存专家缓存 | 未命中处理 | CPU 专家 / 层 | PCIe 专家 / 层 | Decode token/s |
+| --- | --- | ---: | ---: | ---: |
+| 2048 个，2.64 GiB | 全部交给 CPU | 6.96 | 0 | 45.23 |
+| 2048 个，2.64 GiB | CPU 与 PCIe 分流 | 3.73 | 3.24 | 48.23 |
+| 14605 个，18.80 GiB | 全部交给 CPU | 0.72 | 0 | 90.26 |
+| 14605 个，18.80 GiB | CPU 与 PCIe 分流 | 0.54 | 0.19 | 91.92 |
+
+先比较未命中全部交给 CPU 的两行。缓存从 2048 个专家增至 14605 个，CPU 每层的工作从 6.96 个专家降到 0.72 个，吞吐约翻倍。14605 个只占全部 24576 个专家的 **59.4%**，却承担了约 **92.8%** 的路由访问，热点常驻的作用因此很直观。
+
+再看分流。小缓存下，原来留给 CPU 的 6.96 个专家变成 CPU 处理 3.73 个、PCIe 搬运 3.24 个，吞吐从 45.23 提高到 48.23 token/s。大缓存下，CPU 本来每层只剩 0.72 个专家，再分流后的吞吐与原来接近。**缓存减少慢路径的工作量，分流改变剩余工作的分配；前者在这组实验中贡献了主要收益。**
+
+启动探测的主机到 GPU 传输带宽为 27.0 GB/s，自动缓存配置的显存峰值约为 23.11 GiB。整份专家库保存在 RAM，显存只保留热点，未命中再按需计算或搬运，模型因此能在 24 GB 显卡上持续生成。
+
 # 统一内存
 
 ## 权重映射
 
-Apple Silicon 的 CPU 与 GPU 共享物理内存。主权重装得下时，Strata 将 GGUF 文件 mmap 后包装为 no-copy Metal buffer，GPU 按张量偏移读取，省去 PC 路径的整份上传与专家跨 PCIe 搬运。文件页面仍需读入内存，计算仍消耗内存带宽；专用量化 kernel、prefill 分组和 MTP 复用也仍然有用。实现在 [`window.cpp`](https://github.com/Niko1221/Strata/blob/011c9e60/metal/src/engine/window.cpp)。
+Apple Silicon 的 CPU 与 GPU 共享物理内存。主权重装得下时，Strata 将 GGUF 文件 mmap 后包装为 no-copy Metal buffer，GPU 按张量偏移读取，省去 PC 路径的整份上传与专家跨 PCIe 搬运。GPU 直接读取同一份权重，主要瓶颈转为共享内存带宽。量化 kernel、prefill 分组和 MTP 继续减少数据读取与计算开销。实现在 [`window.cpp`](https://github.com/Niko1221/Strata/blob/011c9e60/metal/src/engine/window.cpp)。
 
 权重之外还要为系统、KV、MTP 和运行缓冲区预留空间。预算不足时，Metal 改用专家流式路径：热点留在 arena，缺失专家从文件读取，并预取下一层可能使用的专家。配套文件把 gate、up、down 矩阵排在一起，以减少 I/O 请求。实现在 [`stream.cpp`](https://github.com/Niko1221/Strata/blob/011c9e60/metal/src/engine/stream.cpp)。驻留路径主要消耗内存带宽，流式路径还要应对 SSD 延迟。
 
-## 实例验证
+## Mac Studio
 
-我的实例是一台 M3 Ultra Mac Studio，512 GB 统一内存，macOS 15.4.1。模型为 IQ3_S，实例报告引擎 `0.1.46-metal`，上下文配置 65536，启用 MTP，`--spec 2`。
+我的 Mac Studio 配置为 M3 Ultra，512 GB 统一内存，macOS 15.4.1。模型为 IQ3_S，实例报告引擎 `0.1.46-metal`，上下文配置 65536，启用 MTP，`--spec 2`。
 
 加载日志打印主文件为 `wrapped (54.8 GB)`，说明主权重走驻留映射路径；n-gram 表单独按行读取。残差门控的一部分矩阵使用 Q8_0，减少这部分权重的读取量。
+
+<details>
+<summary>Mac Studio 测速记录</summary>
 
 [测试脚本](/resource/script/strata-bench.py)先预热一次，再连续请求三次：温度为 0，关闭 thinking，每次最多生成 128 token，并记录生成耗时、缓存复用量与草稿接受量。可通过 SSH 在服务所在机器运行。
 
@@ -237,6 +269,8 @@ Apple Silicon 的 CPU 与 GPU 共享物理内存。主权重装得下时，Strat
 | 3 | 782.5 | 4970.3 | 25.8 | 52 / 78 |
 
 用三次总生成 token 数除以总 decode 时间，得到 **26.78 token/s**，草稿总体接受比例为 $160/236\approx67.8\%$。
+
+</details>
 
 # 结语
 
