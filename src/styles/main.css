@@ -75,7 +75,7 @@
     }
 
     .text-90 { color: var(--text-primary); }
-    .text-75 { color: color-mix(in oklch, var(--text-primary) 88%, transparent); }
+    .text-75 { color: color-mix(in srgb, var(--text-primary) 88%, transparent); }
     .text-50 { color: var(--text-secondary); }
     .text-30 { color: var(--text-muted); }
     .text-25 { color: var(--text-muted); }
@@ -379,7 +379,7 @@ widget-layout > div:first-child::before, series-widget > a:first-child::before,
 }
 .post-feed { gap: 1.5rem; }
 #navbar .navbar-shell {
-    background: color-mix(in oklch, var(--page-bg) 94%, transparent);
+    background: color-mix(in srgb, var(--page-bg) 94%, transparent);
     border-color: var(--line-divider);
     border-radius: 0 !important;
     border-width: 0 0 1px;

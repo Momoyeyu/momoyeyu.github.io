@@ -47,7 +47,7 @@
 <style>
     .sidebar-toggle { display: none; color: var(--btn-content); border: 1px solid var(--line-color); background: var(--card-bg); cursor: pointer; transition: background .18s ease, border-color .18s ease, opacity .22s ease; }
     .sidebar-toggle:not(.ready) { visibility: hidden; }
-    .sidebar-toggle:hover { background: var(--btn-plain-bg-hover); border-color: color-mix(in oklch, var(--primary) 40%, var(--line-color)); }
+    .sidebar-toggle:hover { background: var(--btn-plain-bg-hover); border-color: color-mix(in srgb, var(--primary) 40%, var(--line-color)); }
     .sidebar-toggle:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
     .sidebar-toggle[data-variant="icon"] { width: 1.875rem; height: 1.875rem; border-radius: .7rem; align-items: center; justify-content: center; flex-shrink: 0; }
     svg { width: 1.1rem; height: 1.1rem; }

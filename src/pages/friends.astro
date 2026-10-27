@@ -21,9 +21,9 @@ const groups: FriendGroup[] = [
 		links: [
 			{
 				name: "Weifei Jin",
-				url: "https://weifeijin.github.io/",
-				avatar: "https://weifeijin.github.io/images/profile.png",
-				descr: "One of my best friends",
+				url: "https://weifeijin.com/",
+				avatar: "https://weifeijin.com/images/profile.webp",
+				descr: "Duke University Ph.D. Student · Trustworthy AI",
 			},
 			{
 				name: "杜子源's Blog",
@@ -48,6 +48,12 @@ const groups: FriendGroup[] = [
 				url: "https://mingblog.site",
 				avatar: "https://mingblog.site/favicon.svg",
 				descr: "记录日常生活、城市影像、旅行与观察，以及认真看过、读过和听过的作品。",
+			},
+			{
+				name: "雲月 UNGETSU",
+				url: "https://ungetsu.net/",
+				avatar: "https://ungetsu.net/curtain/moon.jpg",
+				descr: "未知难解，已知难别；新知难结，旧知难见。",
 			},
 		],
 	},
@@ -115,7 +121,7 @@ const groups: FriendGroup[] = [
 								<div class="font-semibold text-neutral-900 dark:text-neutral-100 group-hover:text-[var(--primary)] transition truncate">
 									{link.name}
 								</div>
-								<div class="text-sm text-50 truncate">{link.descr}</div>
+								<div class="text-sm text-50 leading-relaxed line-clamp-2" title={link.descr}>{link.descr}</div>
 							</div>
 						</a>
 					))}

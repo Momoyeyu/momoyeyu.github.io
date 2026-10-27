@@ -26,6 +26,7 @@
         let renderer: InkWashRenderer | null = null;
         let decoded = false, disposed = false, visible = true, frame = 0, previous = 0;
         let current = 0, target = 0;
+        let dark = document.documentElement.classList.contains("dark");
 
         function readProgress() {
             return clamp(-runway.getBoundingClientRect().top / Math.max(1, runway.offsetHeight - stage.offsetHeight));
@@ -40,7 +41,7 @@
             footer.inert = raw > .42;
             stage.dataset.progress = raw.toFixed(4);
             stage.dataset.dissolve = p.toFixed(4);
-            stage.dataset.phase = p === 0 ? "feather" : p === 1 ? "clear" : "dissolve";
+            stage.dataset.phase = p === 0 ? "feather" : p === 1 ? "clear" : "ink-drops";
             renderer?.render(p);
         }
         function stop() { cancelAnimationFrame(frame); frame = 0; previous = 0; }
@@ -63,7 +64,10 @@
         function resize() {
             stop();
             if (!enhanced || !renderer) return;
-            renderer.resize(canvas.clientWidth, canvas.clientHeight, Math.min(devicePixelRatio || 1, 1.5));
+            const plate = stage.getBoundingClientRect(), art = feather.getBoundingClientRect();
+            renderer.resize(stage.clientWidth, stage.clientHeight, Math.min(devicePixelRatio || 1, 1.25), {
+                left: art.left - plate.left, top: art.top - plate.top, width: art.width, height: art.height,
+            });
             current = target = readProgress(); draw(current);
         }
         function resetPresentation() {
@@ -74,10 +78,13 @@
             stop();
             document.documentElement.dataset.openingMotion = String(!motion.matches && !connection?.saveData);
             const allowed = screen.matches && !motion.matches && !connection?.saveData;
-            if (allowed && decoded && !renderer) renderer = createInkWash(canvas, feather);
+            if (allowed && decoded && !renderer) {
+                renderer = createInkWash(canvas, feather);
+                renderer?.setTheme(document.documentElement.classList.contains("dark"));
+            }
             enhanced = allowed && !!renderer;
             fallback = !allowed || (decoded && !renderer);
-            stage.dataset.renderer = enhanced ? "ink-wash" : "static";
+            stage.dataset.renderer = enhanced ? "ink-drops" : "static";
             if (enhanced) requestAnimationFrame(() => { if (!disposed) resize(); });
             else resetPresentation();
         }
@@ -91,6 +98,13 @@
         });
         intersection.observe(runway);
         const observer = new ResizeObserver(resize); observer.observe(stage);
+        const themeObserver = new MutationObserver(() => {
+            const next = document.documentElement.classList.contains("dark");
+            if (next === dark) return;
+            dark = next; renderer?.setTheme(dark);
+            if (enhanced) draw(current);
+        });
+        themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
         window.addEventListener("scroll", scroll, { passive: true });
         document.addEventListener("visibilitychange", visibility);
         screen.addEventListener("change", preferences); motion.addEventListener("change", preferences);
@@ -106,7 +120,7 @@
             decoded = true; preferences();
         }).catch(() => { fallback = true; });
         return () => {
-            disposed = true; stop(); intersection.disconnect(); observer.disconnect();
+            disposed = true; stop(); intersection.disconnect(); observer.disconnect(); themeObserver.disconnect();
             window.removeEventListener("scroll", scroll); document.removeEventListener("visibilitychange", visibility);
             screen.removeEventListener("change", preferences); motion.removeEventListener("change", preferences);
             canvas.removeEventListener("webglcontextlost", contextLost); renderer?.dispose();
@@ -119,8 +133,8 @@
         <div class="opening-orbit" aria-hidden="true"></div>
         <div class="opening-art" aria-hidden="true">
             <img bind:this={feather} class="opening-feather" src={image} alt="" fetchpriority="high" decoding="async" />
-            <canvas bind:this={canvas} aria-hidden="true"></canvas>
         </div>
+        <canvas bind:this={canvas} aria-hidden="true"></canvas>
         <div class="opening-copy">
             <div bind:this={intro} class="opening-intro">
                 <h1 class="hero-lettering">Code Is Elegant</h1>
