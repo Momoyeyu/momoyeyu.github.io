@@ -1,0 +1,173 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="560" viewBox="0 0 900 560" role="img" aria-labelledby="title desc"><title id="title">逐位置 FFN：同一网络，分别处理每个 token</title><desc id="desc">每个位置使用同一个两层网络，先升维，经 ReLU 后再降维。图以3、6、3个节点示意 d_model、d_ff、d_model，实际 d_ff 等于4倍 d_model。不同位置之间没有连线。</desc><style>
+:root{--fg:#29303b;--line:#657285;--bg:#f8fafc;--a:#e0eee6;--b:#e7e4f3;--c:#f7ead6;--accent:#508369;--muted:#667386}
+@media(prefers-color-scheme:dark){:root{--fg:#e0e5ec;--line:#a4afbd;--bg:#222731;--a:#283e35;--b:#353148;--c:#483b2b;--accent:#86b49b;--muted:#b2bdcb}}
+text{font-family:Helvetica,Arial,'PingFang SC',sans-serif;fill:var(--fg);font-size:20px}
+.title{font-size:26px;font-weight:600}.head{font-size:22px;font-weight:600}.small{font-size:17px;fill:var(--muted)}.num{font-size:14px}.operator{font-size:22px;fill:var(--muted)}
+.box{fill:var(--bg);stroke:var(--line);stroke-width:1.4}.a{fill:var(--a)}.b{fill:var(--b)}.c{fill:var(--c)}.panel{stroke-opacity:.5}.selected{stroke-width:2.3}.faint{opacity:.4}
+.arrow{fill:none;stroke:var(--line);stroke-width:1.7;stroke-linejoin:round;marker-end:url(#arrow)}
+.route{fill:none;stroke:var(--line);stroke-width:2.2;stroke-linejoin:round;marker-end:url(#arrow)}
+.option{fill:none;stroke:var(--line);stroke-width:1.2;stroke-dasharray:3 4;opacity:.35;marker-end:url(#arrow)}
+.divider{fill:none;stroke:var(--line);stroke-width:1;opacity:.45}.glyph{fill:none;stroke:var(--line);stroke-width:1.4;stroke-linecap:round;opacity:.65}.score{fill:var(--accent)}
+</style><defs><marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="var(--line)"/></marker></defs>
+<text x="450" y="40" class="title" text-anchor="middle">逐位置 FFN：同一网络，分别处理每个 token</text>
+<text x="160" y="95" class="head" text-anchor="middle">位置 1</text>
+<path d="M121.84 174.49 L88.16 275.51" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M124.17 174.97 L115.83 275.03" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M126.64 174.86 L143.36 275.14" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M128.85 174.23 L171.15 275.77" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M130.55 173.32 L199.45 276.68" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M131.76 172.37 L228.24 277.63" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M154.70 173.48 L90.30 276.52" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M156.49 174.36 L118.51 275.64" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M158.76 174.92 L146.24 275.08" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M161.24 174.92 L173.76 275.08" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M163.51 174.36 L201.49 275.64" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M165.30 173.48 L229.70 276.52" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M188.24 172.37 L91.76 277.63" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M189.45 173.32 L120.55 276.68" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M191.15 174.23 L148.85 275.77" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M193.36 174.86 L176.64 275.14" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M195.83 174.97 L204.17 275.03" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M198.16 174.49 L231.84 275.51" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M88.16 294.49 L121.84 395.51" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M90.30 293.48 L154.70 396.52" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M91.76 292.37 L188.24 397.63" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M115.83 294.97 L124.17 395.03" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M118.51 294.36 L156.49 395.64" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M120.55 293.32 L189.45 396.68" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M143.36 294.86 L126.64 395.14" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M146.24 294.92 L158.76 395.08" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M148.85 294.23 L191.15 395.77" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M171.15 294.23 L128.85 395.77" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M173.76 294.92 L161.24 395.08" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M176.64 294.86 L193.36 395.14" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M199.45 293.32 L130.55 396.68" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M201.49 294.36 L163.51 395.64" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M204.17 294.97 L195.83 395.03" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M228.24 292.37 L131.76 397.63" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M229.70 293.48 L165.30 396.52" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M231.84 294.49 L198.16 395.51" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<circle cx="125" cy="165" r="10" class="box b"/>
+<circle cx="160" cy="165" r="10" class="box b"/>
+<circle cx="195" cy="165" r="10" class="box b"/>
+<circle cx="85.0" cy="285" r="10" class="box a"/>
+<circle cx="115.0" cy="285" r="10" class="box a"/>
+<circle cx="145.0" cy="285" r="10" class="box a"/>
+<circle cx="175.0" cy="285" r="10" class="box a"/>
+<circle cx="205.0" cy="285" r="10" class="box a"/>
+<circle cx="235.0" cy="285" r="10" class="box a"/>
+<circle cx="125" cy="405" r="10" class="box b"/>
+<circle cx="160" cy="405" r="10" class="box b"/>
+<circle cx="195" cy="405" r="10" class="box b"/>
+<text x="160" y="225" class="small" text-anchor="middle">W₁ + b₁</text>
+<text x="160" y="335" class="small" text-anchor="middle">W₂ + b₂</text>
+<text x="160" y="450" class="small" text-anchor="middle">同一组参数</text>
+<text x="450" y="95" class="head" text-anchor="middle">位置 2</text>
+<path d="M411.84 174.49 L378.16 275.51" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M414.17 174.97 L405.83 275.03" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M416.64 174.86 L433.36 275.14" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M418.85 174.23 L461.15 275.77" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M420.55 173.32 L489.45 276.68" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M421.76 172.37 L518.24 277.63" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M444.70 173.48 L380.30 276.52" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M446.49 174.36 L408.51 275.64" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M448.76 174.92 L436.24 275.08" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M451.24 174.92 L463.76 275.08" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M453.51 174.36 L491.49 275.64" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M455.30 173.48 L519.70 276.52" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M478.24 172.37 L381.76 277.63" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M479.45 173.32 L410.55 276.68" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M481.15 174.23 L438.85 275.77" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M483.36 174.86 L466.64 275.14" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M485.83 174.97 L494.17 275.03" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M488.16 174.49 L521.84 275.51" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M378.16 294.49 L411.84 395.51" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M380.30 293.48 L444.70 396.52" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M381.76 292.37 L478.24 397.63" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M405.83 294.97 L414.17 395.03" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M408.51 294.36 L446.49 395.64" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M410.55 293.32 L479.45 396.68" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M433.36 294.86 L416.64 395.14" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M436.24 294.92 L448.76 395.08" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M438.85 294.23 L481.15 395.77" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M461.15 294.23 L418.85 395.77" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M463.76 294.92 L451.24 395.08" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M466.64 294.86 L483.36 395.14" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M489.45 293.32 L420.55 396.68" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M491.49 294.36 L453.51 395.64" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M494.17 294.97 L485.83 395.03" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M518.24 292.37 L421.76 397.63" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M519.70 293.48 L455.30 396.52" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M521.84 294.49 L488.16 395.51" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<circle cx="415" cy="165" r="10" class="box b"/>
+<circle cx="450" cy="165" r="10" class="box b"/>
+<circle cx="485" cy="165" r="10" class="box b"/>
+<circle cx="375.0" cy="285" r="10" class="box a"/>
+<circle cx="405.0" cy="285" r="10" class="box a"/>
+<circle cx="435.0" cy="285" r="10" class="box a"/>
+<circle cx="465.0" cy="285" r="10" class="box a"/>
+<circle cx="495.0" cy="285" r="10" class="box a"/>
+<circle cx="525.0" cy="285" r="10" class="box a"/>
+<circle cx="415" cy="405" r="10" class="box b"/>
+<circle cx="450" cy="405" r="10" class="box b"/>
+<circle cx="485" cy="405" r="10" class="box b"/>
+<text x="450" y="225" class="small" text-anchor="middle">W₁ + b₁</text>
+<text x="450" y="335" class="small" text-anchor="middle">W₂ + b₂</text>
+<text x="450" y="450" class="small" text-anchor="middle">同一组参数</text>
+<text x="740" y="95" class="head" text-anchor="middle">位置 3</text>
+<path d="M701.84 174.49 L668.16 275.51" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M704.17 174.97 L695.83 275.03" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M706.64 174.86 L723.36 275.14" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M708.85 174.23 L751.15 275.77" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M710.55 173.32 L779.45 276.68" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M711.76 172.37 L808.24 277.63" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M734.70 173.48 L670.30 276.52" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M736.49 174.36 L698.51 275.64" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M738.76 174.92 L726.24 275.08" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M741.24 174.92 L753.76 275.08" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M743.51 174.36 L781.49 275.64" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M745.30 173.48 L809.70 276.52" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M768.24 172.37 L671.76 277.63" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M769.45 173.32 L700.55 276.68" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M771.15 174.23 L728.85 275.77" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M773.36 174.86 L756.64 275.14" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M775.83 174.97 L784.17 275.03" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M778.16 174.49 L811.84 275.51" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M668.16 294.49 L701.84 395.51" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M670.30 293.48 L734.70 396.52" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M671.76 292.37 L768.24 397.63" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M695.83 294.97 L704.17 395.03" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M698.51 294.36 L736.49 395.64" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M700.55 293.32 L769.45 396.68" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M723.36 294.86 L706.64 395.14" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M726.24 294.92 L738.76 395.08" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M728.85 294.23 L771.15 395.77" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M751.15 294.23 L708.85 395.77" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M753.76 294.92 L741.24 395.08" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M756.64 294.86 L773.36 395.14" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M779.45 293.32 L710.55 396.68" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M781.49 294.36 L743.51 395.64" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M784.17 294.97 L775.83 395.03" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M808.24 292.37 L711.76 397.63" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M809.70 293.48 L745.30 396.52" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<path d="M811.84 294.49 L778.16 395.51" fill="none" stroke="var(--line)" stroke-width="1" opacity=".25"/>
+<circle cx="705" cy="165" r="10" class="box b"/>
+<circle cx="740" cy="165" r="10" class="box b"/>
+<circle cx="775" cy="165" r="10" class="box b"/>
+<circle cx="665.0" cy="285" r="10" class="box a"/>
+<circle cx="695.0" cy="285" r="10" class="box a"/>
+<circle cx="725.0" cy="285" r="10" class="box a"/>
+<circle cx="755.0" cy="285" r="10" class="box a"/>
+<circle cx="785.0" cy="285" r="10" class="box a"/>
+<circle cx="815.0" cy="285" r="10" class="box a"/>
+<circle cx="705" cy="405" r="10" class="box b"/>
+<circle cx="740" cy="405" r="10" class="box b"/>
+<circle cx="775" cy="405" r="10" class="box b"/>
+<text x="740" y="225" class="small" text-anchor="middle">W₁ + b₁</text>
+<text x="740" y="335" class="small" text-anchor="middle">W₂ + b₂</text>
+<text x="740" y="450" class="small" text-anchor="middle">同一组参数</text>
+<text x="450" y="125" class="small" text-anchor="middle">输入 · d_model</text>
+<text x="450" y="260" class="small" text-anchor="middle">ReLU · d_ff</text>
+<text x="450" y="485" class="small" text-anchor="middle">输出 · d_model</text>
+<text x="450" y="535" class="small" text-anchor="middle">节点数量仅作示意；原始 Transformer 取 d_ff = 4 d_model</text>
+</svg>

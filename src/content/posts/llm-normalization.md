@@ -1,7 +1,7 @@
 ---
 title: 一文搞懂归一化技术
 date: 2026-09-27
-updated: 2026-10-21
+updated: 2026-10-29
 description: 本文梳理大模型里的归一化技术：为什么需要它、BN 为何不适合序列模型，以及 LayerNorm、RMSNorm、Pre-Norm/Post-Norm 等方案的取舍。
 tags: [LLM, RMSNorm]
 category: LLM
@@ -47,7 +47,7 @@ for _ in range(64):
 
 ![residual-stream](/img/posts/llm-normalization/residual-stream.svg)
 
-这个“在残差流上进行尺度校正”的视角，是后面理解 Pre-Norm 与 Post-Norm 差异的基础。
+图中的平稳曲线表示子层读取的 Norm 输出，残差流本身仍可持续增长。这个“在残差流上进行尺度校正”的视角，是后面理解 Pre-Norm 与 Post-Norm 差异的基础。
 
 # 归一化是什么
 
@@ -321,8 +321,8 @@ Post-Norm 与 Pre-Norm 各有代价，因此也出现了一些折中设计：
 
 | 方案 | 稳定性 | 效果上限 | 实现复杂度 |
 | --- | --- | --- | --- |
-| Post-Norm | 差（依赖 warmup） | 高 | 低 |
-| Pre-Norm | 好 | 略低（深层贡献被稀释） | 低 |
+| Post-Norm | 差，依赖 warmup | 高 | 低 |
+| Pre-Norm | 好 | 略低，深层贡献被稀释 | 低 |
 | DeepNorm / Sandwich | 好 | 兼顾二者 | 需调参或多一层 Norm |
 
 ## 代码实现

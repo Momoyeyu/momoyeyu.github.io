@@ -1,51 +1,23 @@
 <svg viewBox="0 0 560 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ALiBi attention bias for three heads with slopes m = 1/2, 1/16 and 1/256: each heatmap shows bias -m|i-j|, so the diagonal is brightest and larger slopes darken faster with distance">
 <style>
-    :root {
-        --fg: #2b2b2b;
-        --line: #3d3d3d;
-        --expert-fill: #dce9f7;
-        --expert-stroke: #7b9cc4;
-        --router-fill: #f5e9c9;
-        --router-stroke: #b8912f;
-        --step-fill: #eef1f4;
-        --step-stroke: #9aa5b1;
-        --gate-fill: #ffffff;
-        --accent: #e0a800;
-    }
-    @media (prefers-color-scheme: dark) {
-        :root {
-            --fg: #d8d8d8;
-            --line: #b8b8b8;
-            --expert-fill: #26364d;
-            --expert-stroke: #6c8ebf;
-            --router-fill: #4a3d1e;
-            --router-stroke: #c9a53f;
-            --step-fill: #2a2f36;
-            --step-stroke: #6b7684;
-            --gate-fill: #1e1e1e;
-            --accent: #e8c547;
-        }
-    }
+:root{--heat-hi:var(--a);--heat-lo:var(--line)}
+@media(prefers-color-scheme:dark){:root{--heat-hi:var(--accent);--heat-lo:var(--bg)}}
+     :root{--fg:#29303b;--line:#657285;--bg:#f8fafc;--a:#e0eee6;--b:#e7e4f3;--c:#f7ead6;--accent:#508369;--muted:#667386;--expert-fill:var(--a);--expert-stroke:var(--accent);--router-fill:var(--b);--router-stroke:#82749c;--step-fill:var(--bg);--step-stroke:var(--line);--gate-fill:var(--bg)}
+@media(prefers-color-scheme:dark){:root{--fg:#e0e5ec;--line:#a4afbd;--bg:#222731;--a:#283e35;--b:#353148;--c:#483b2b;--accent:#86b49b;--muted:#b2bdcb;--router-stroke:#b6a4d0}}
+
     text { fill: var(--fg); }
-    .lbl { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 15px; }
+    .lbl { font-family: "Helvetica Neue", Helvetica, Arial, 'PingFang SC', sans-serif; font-size: 15px; }
     .math { font-family: "Times New Roman", Times, serif; font-style: italic; }
     .edge { stroke: var(--line); stroke-width: 1.6; fill: none; }
     .box { stroke-width: 1.6; rx: 9; }
 </style>
 <style>
-    :root {
-        --heat-hi: #ffffff;
-        --heat-lo: #35567a;
-    }
-    @media (prefers-color-scheme: dark) {
-        :root {
-            --heat-hi: #d8dee6;
-            --heat-lo: #12181f;
-        }
-    }
+     :root{--fg:#29303b;--line:#657285;--bg:#f8fafc;--a:#e0eee6;--b:#e7e4f3;--c:#f7ead6;--accent:#508369;--muted:#667386;--expert-fill:var(--a);--expert-stroke:var(--accent);--router-fill:var(--b);--router-stroke:#82749c;--step-fill:var(--bg);--step-stroke:var(--line);--gate-fill:var(--bg)}
+@media(prefers-color-scheme:dark){:root{--fg:#e0e5ec;--line:#a4afbd;--bg:#222731;--a:#283e35;--b:#353148;--c:#483b2b;--accent:#86b49b;--muted:#b2bdcb;--router-stroke:#b6a4d0}}
+
 </style>
 <defs>
-    <marker id="arw" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <marker id="arw" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
         <path d="M0,0 L10,5 L0,10 z" fill="var(--line)"/>
     </marker>
 </defs>

@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="520" viewBox="0 0 900 520" role="img" aria-labelledby="title desc"><title id="title">因果掩码：每个位置只读取自己和过去</title><desc id="desc">五乘五掩码矩阵，下三角含对角线为零，上三角为负无穷。右侧展示第三个 query 的 softmax 权重，未来位置权重为零。颜色仅区分可见与屏蔽，不表示真实注意力强度。</desc><style>
+:root{--fg:#29303b;--line:#657285;--bg:#f8fafc;--a:#e0eee6;--b:#e7e4f3;--c:#f7ead6;--accent:#508369;--muted:#667386}
+@media(prefers-color-scheme:dark){:root{--fg:#e0e5ec;--line:#a4afbd;--bg:#222731;--a:#283e35;--b:#353148;--c:#483b2b;--accent:#86b49b;--muted:#b2bdcb}}
+text{font-family:Helvetica,Arial,'PingFang SC',sans-serif;fill:var(--fg);font-size:20px}
+.title{font-size:26px;font-weight:600}.head{font-size:22px;font-weight:600}.small{font-size:17px;fill:var(--muted)}.num{font-size:14px}.operator{font-size:22px;fill:var(--muted)}
+.box{fill:var(--bg);stroke:var(--line);stroke-width:1.4}.a{fill:var(--a)}.b{fill:var(--b)}.c{fill:var(--c)}.panel{stroke-opacity:.5}.selected{stroke-width:2.3}.faint{opacity:.4}
+.arrow{fill:none;stroke:var(--line);stroke-width:1.7;stroke-linejoin:round;marker-end:url(#arrow)}
+.route{fill:none;stroke:var(--line);stroke-width:2.2;stroke-linejoin:round;marker-end:url(#arrow)}
+.option{fill:none;stroke:var(--line);stroke-width:1.2;stroke-dasharray:3 4;opacity:.35;marker-end:url(#arrow)}
+.divider{fill:none;stroke:var(--line);stroke-width:1;opacity:.45}.glyph{fill:none;stroke:var(--line);stroke-width:1.4;stroke-linecap:round;opacity:.65}.score{fill:var(--accent)}
+</style><defs><marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="var(--line)"/></marker></defs>
+<text x="450" y="40" class="title" text-anchor="middle">因果掩码：每个位置只读取自己和过去</text>
+<text x="285" y="98" class="head" text-anchor="middle">Key 位置</text>
+<text x="50" y="260" class="head" text-anchor="middle">Q</text>
+<text x="150" y="133" class="small" text-anchor="middle">1</text>
+<text x="95" y="182" class="small" text-anchor="middle">1</text>
+<rect x="123" y="151" width="54" height="48" rx="7" class="box a"/>
+<text x="150.0" y="182.0" class="" text-anchor="middle">0</text>
+<rect x="187" y="151" width="54" height="48" rx="7" class="box b"/>
+<text x="214.0" y="182.0" class="" text-anchor="middle">−∞</text>
+<rect x="251" y="151" width="54" height="48" rx="7" class="box b"/>
+<text x="278.0" y="182.0" class="" text-anchor="middle">−∞</text>
+<rect x="315" y="151" width="54" height="48" rx="7" class="box b"/>
+<text x="342.0" y="182.0" class="" text-anchor="middle">−∞</text>
+<rect x="379" y="151" width="54" height="48" rx="7" class="box b"/>
+<text x="406.0" y="182.0" class="" text-anchor="middle">−∞</text>
+<text x="214" y="133" class="small" text-anchor="middle">2</text>
+<text x="95" y="240" class="small" text-anchor="middle">2</text>
+<rect x="123" y="209" width="54" height="48" rx="7" class="box a"/>
+<text x="150.0" y="240.0" class="" text-anchor="middle">0</text>
+<rect x="187" y="209" width="54" height="48" rx="7" class="box a"/>
+<text x="214.0" y="240.0" class="" text-anchor="middle">0</text>
+<rect x="251" y="209" width="54" height="48" rx="7" class="box b"/>
+<text x="278.0" y="240.0" class="" text-anchor="middle">−∞</text>
+<rect x="315" y="209" width="54" height="48" rx="7" class="box b"/>
+<text x="342.0" y="240.0" class="" text-anchor="middle">−∞</text>
+<rect x="379" y="209" width="54" height="48" rx="7" class="box b"/>
+<text x="406.0" y="240.0" class="" text-anchor="middle">−∞</text>
+<text x="278" y="133" class="small" text-anchor="middle">3</text>
+<text x="95" y="298" class="small" text-anchor="middle">3</text>
+<rect x="123" y="267" width="54" height="48" rx="7" class="box a"/>
+<text x="150.0" y="298.0" class="" text-anchor="middle">0</text>
+<rect x="187" y="267" width="54" height="48" rx="7" class="box a"/>
+<text x="214.0" y="298.0" class="" text-anchor="middle">0</text>
+<rect x="251" y="267" width="54" height="48" rx="7" class="box a"/>
+<text x="278.0" y="298.0" class="" text-anchor="middle">0</text>
+<rect x="315" y="267" width="54" height="48" rx="7" class="box b"/>
+<text x="342.0" y="298.0" class="" text-anchor="middle">−∞</text>
+<rect x="379" y="267" width="54" height="48" rx="7" class="box b"/>
+<text x="406.0" y="298.0" class="" text-anchor="middle">−∞</text>
+<text x="342" y="133" class="small" text-anchor="middle">4</text>
+<text x="95" y="356" class="small" text-anchor="middle">4</text>
+<rect x="123" y="325" width="54" height="48" rx="7" class="box a"/>
+<text x="150.0" y="356.0" class="" text-anchor="middle">0</text>
+<rect x="187" y="325" width="54" height="48" rx="7" class="box a"/>
+<text x="214.0" y="356.0" class="" text-anchor="middle">0</text>
+<rect x="251" y="325" width="54" height="48" rx="7" class="box a"/>
+<text x="278.0" y="356.0" class="" text-anchor="middle">0</text>
+<rect x="315" y="325" width="54" height="48" rx="7" class="box a"/>
+<text x="342.0" y="356.0" class="" text-anchor="middle">0</text>
+<rect x="379" y="325" width="54" height="48" rx="7" class="box b"/>
+<text x="406.0" y="356.0" class="" text-anchor="middle">−∞</text>
+<text x="406" y="133" class="small" text-anchor="middle">5</text>
+<text x="95" y="414" class="small" text-anchor="middle">5</text>
+<rect x="123" y="383" width="54" height="48" rx="7" class="box a"/>
+<text x="150.0" y="414.0" class="" text-anchor="middle">0</text>
+<rect x="187" y="383" width="54" height="48" rx="7" class="box a"/>
+<text x="214.0" y="414.0" class="" text-anchor="middle">0</text>
+<rect x="251" y="383" width="54" height="48" rx="7" class="box a"/>
+<text x="278.0" y="414.0" class="" text-anchor="middle">0</text>
+<rect x="315" y="383" width="54" height="48" rx="7" class="box a"/>
+<text x="342.0" y="414.0" class="" text-anchor="middle">0</text>
+<rect x="379" y="383" width="54" height="48" rx="7" class="box a"/>
+<text x="406.0" y="414.0" class="" text-anchor="middle">0</text>
+<text x="690" y="150" class="head" text-anchor="middle">第 3 行经过 softmax</text>
+<path d="M570 340 V290.0" stroke="var(--accent)" stroke-width="24"/>
+<text x="570" y="375" class="small" text-anchor="middle">1</text>
+<text x="570" y="272.0" class="small" text-anchor="middle">0.2</text>
+<path d="M623 340 V215.0" stroke="var(--accent)" stroke-width="24"/>
+<text x="623" y="375" class="small" text-anchor="middle">2</text>
+<text x="623" y="197.0" class="small" text-anchor="middle">0.5</text>
+<path d="M676 340 V265.0" stroke="var(--accent)" stroke-width="24"/>
+<text x="676" y="375" class="small" text-anchor="middle">3</text>
+<text x="676" y="247.0" class="small" text-anchor="middle">0.3</text>
+<path d="M729 340 V340" stroke="var(--accent)" stroke-width="24"/>
+<text x="729" y="375" class="small" text-anchor="middle">4</text>
+<text x="729" y="322" class="small" text-anchor="middle">0</text>
+<path d="M782 340 V340" stroke="var(--accent)" stroke-width="24"/>
+<text x="782" y="375" class="small" text-anchor="middle">5</text>
+<text x="782" y="322" class="small" text-anchor="middle">0</text>
+<path d="M545 340 H815" class="divider"/>
+<text x="690" y="425" class="small" text-anchor="middle">未来位置的权重为 0</text>
+<text x="450" y="495" class="small" text-anchor="middle">mask 加到 logits 上，再做 softmax；不是在 softmax 后加 mask</text>
+</svg>

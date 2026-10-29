@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="780" viewBox="0 0 900 780" role="img" aria-labelledby="title desc"><title id="title">Transformer 的 Encoder–Decoder 架构</title><desc id="desc">原始 Transformer 使用六层 Encoder 与六层 Decoder，均为 Post-Norm。Encoder 输出为各 Decoder 层交叉注意力提供 K 和 V；Decoder 从目标序列的右移输入产生下一个 token 的分布。</desc><style>
+:root{--fg:#29303b;--line:#657285;--bg:#f8fafc;--a:#e0eee6;--b:#e7e4f3;--c:#f7ead6;--accent:#508369;--muted:#667386}
+@media(prefers-color-scheme:dark){:root{--fg:#e0e5ec;--line:#a4afbd;--bg:#222731;--a:#283e35;--b:#353148;--c:#483b2b;--accent:#86b49b;--muted:#b2bdcb}}
+text{font-family:Helvetica,Arial,'PingFang SC',sans-serif;fill:var(--fg);font-size:20px}
+.title{font-size:26px;font-weight:600}.head{font-size:22px;font-weight:600}.small{font-size:17px;fill:var(--muted)}.num{font-size:14px}.operator{font-size:22px;fill:var(--muted)}
+.box{fill:var(--bg);stroke:var(--line);stroke-width:1.4}.a{fill:var(--a)}.b{fill:var(--b)}.c{fill:var(--c)}.panel{stroke-opacity:.5}.selected{stroke-width:2.3}.faint{opacity:.4}
+.arrow{fill:none;stroke:var(--line);stroke-width:1.7;stroke-linejoin:round;marker-end:url(#arrow)}
+.route{fill:none;stroke:var(--line);stroke-width:2.2;stroke-linejoin:round;marker-end:url(#arrow)}
+.option{fill:none;stroke:var(--line);stroke-width:1.2;stroke-dasharray:3 4;opacity:.35;marker-end:url(#arrow)}
+.divider{fill:none;stroke:var(--line);stroke-width:1;opacity:.45}.glyph{fill:none;stroke:var(--line);stroke-width:1.4;stroke-linecap:round;opacity:.65}.score{fill:var(--accent)}
+</style><defs><marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="var(--line)"/></marker></defs>
+<text x="450" y="40" class="title" text-anchor="middle">Transformer 的 Encoder–Decoder 架构</text>
+<rect x="65" y="100" width="315" height="500" rx="7" class="box panel"/>
+<rect x="505" y="100" width="330" height="500" rx="7" class="box panel"/>
+<text x="220" y="135" class="head" text-anchor="middle">Encoder × 6</text>
+<text x="670" y="135" class="head" text-anchor="middle">Decoder × 6</text>
+<rect x="110" y="475" width="225" height="42" rx="7" class="box a"/>
+<text x="222.5" y="503.0" class="" text-anchor="middle">Self-Attention</text>
+<rect x="110" y="405" width="225" height="42" rx="7" class="box b"/>
+<text x="222.5" y="433.0" class="" text-anchor="middle">Add &amp; Norm</text>
+<rect x="110" y="300" width="225" height="42" rx="7" class="box a"/>
+<text x="222.5" y="328.0" class="" text-anchor="middle">FFN</text>
+<rect x="110" y="230" width="225" height="42" rx="7" class="box b"/>
+<text x="222.5" y="258.0" class="" text-anchor="middle">Add &amp; Norm</text>
+<rect x="550" y="490" width="240" height="42" rx="7" class="box a"/>
+<text x="670.0" y="518.0" class="" text-anchor="middle">Masked Attention</text>
+<rect x="550" y="425" width="240" height="42" rx="7" class="box b"/>
+<text x="670.0" y="453.0" class="" text-anchor="middle">Add &amp; Norm</text>
+<rect x="550" y="350" width="240" height="42" rx="7" class="box c"/>
+<text x="670.0" y="378.0" class="" text-anchor="middle">Cross Attention</text>
+<rect x="550" y="285" width="240" height="42" rx="7" class="box b"/>
+<text x="670.0" y="313.0" class="" text-anchor="middle">Add &amp; Norm</text>
+<rect x="550" y="210" width="240" height="42" rx="7" class="box a"/>
+<text x="670.0" y="238.0" class="" text-anchor="middle">FFN</text>
+<rect x="550" y="145" width="240" height="42" rx="7" class="box b"/>
+<text x="670.0" y="173.0" class="" text-anchor="middle">Add &amp; Norm</text>
+<path d="M222 475 V447" class="arrow"/>
+<path d="M222 405 V342" class="arrow"/>
+<path d="M222 300 V272" class="arrow"/>
+<path d="M670 490 V467" class="arrow"/>
+<path d="M670 425 V392" class="arrow"/>
+<path d="M670 350 V327" class="arrow"/>
+<path d="M670 285 V252" class="arrow"/>
+<path d="M670 210 V187" class="arrow"/>
+<path d="M222 542 H90 V426 H110" class="arrow"/>
+<path d="M222 382 H90 V251 H110" class="arrow"/>
+<path d="M670 550 H815 V446 H790" class="arrow"/>
+<path d="M670 412 H815 V306 H790" class="arrow"/>
+<path d="M670 272 H815 V166 H790" class="arrow"/>
+<path d="M222 230 V180 H440 V371 H550" class="arrow"/>
+<text x="440" y="225" class="small" text-anchor="middle">K、V</text>
+<text x="695" y="410" class="small" text-anchor="middle">Q</text>
+<rect x="117" y="660" width="210" height="45" rx="7" class="box"/>
+<text x="222.0" y="689.5" class="" text-anchor="middle">源序列</text>
+<path d="M222 660 V635" class="arrow"/>
+<rect x="117" y="605" width="210" height="30" rx="7" class="box c"/>
+<text x="222" y="627" class="small" text-anchor="middle">Embedding + PE</text>
+<path d="M222 605 V517" class="arrow"/>
+<rect x="565" y="660" width="210" height="45" rx="7" class="box"/>
+<text x="670.0" y="689.5" class="" text-anchor="middle">目标序列右移</text>
+<path d="M670 660 V635" class="arrow"/>
+<rect x="565" y="605" width="210" height="30" rx="7" class="box c"/>
+<text x="670" y="627" class="small" text-anchor="middle">Embedding + PE</text>
+<path d="M670 605 V532" class="arrow"/>
+<path d="M670 145 V90 H880 V55" class="arrow"/>
+<text x="710" y="75" class="small" text-anchor="middle">Linear → Softmax</text>
+<text x="450" y="755" class="small" text-anchor="middle">各子层：Dropout → 残差相加 → LayerNorm</text>
+</svg>

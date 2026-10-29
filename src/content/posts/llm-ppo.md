@@ -1,7 +1,7 @@
 ---
 title: 从零理解 PPO
 date: 2026-10-05
-updated: 2026-10-21
+updated: 2026-10-29
 description: 本文以 PPO 为目标，从马尔可夫决策过程、价值函数、策略梯度讲起，经过 Actor-Critic、GAE 与信任域，最终理解 PPO 以及它在 LLM 的 RLHF 中的用法。
 tags: [LLM, 强化学习, PPO, RLHF]
 category: LLM
@@ -66,7 +66,7 @@ LLM 同样面临这样的问题。SFT 本质上是监督学习：给定 prompt �
 
 这些要素构成了一个不断循环的交互过程：
 
-![agent-env](/img/posts/llm-ppo/agent-env.svg)
+![智能体选择动作，环境返回奖励与下一状态](/img/posts/llm-ppo/agent-env.svg)
 
 智能体的行为由**策略**（policy） $\pi(a \mid s)$ 描述，它给出在状态 $s$ 下选择各个动作的概率。与环境交互时，智能体从初始状态 $s_0$ 出发，按照策略采样动作 $a_0 \sim \pi(\cdot \mid s_0)$，环境给出奖励 $r_0$ 并转移到 $s_1$，如此往复，直到回合（episode）结束。这一串交互记录称为**轨迹**（trajectory）：
 
@@ -121,7 +121,7 @@ from torch.distributions import Categorical
 
 本文的实验环境是经典的 CartPole：一根杆子通过铰链连在小车上，小车可以在一条有限长的轨道上左右移动，目标是让杆子尽量长时间不倒。
 
-![cartpole](/img/posts/llm-ppo/cartpole.svg)
+![CartPole 的左右施力、倾角与轨道边界](/img/posts/llm-ppo/cartpole.svg)
 
 对应到 MDP 的各个要素：
 
@@ -814,9 +814,9 @@ $$
 | $\hat{A}_t < 0$ | $\rho_t < 1 - \epsilon$ | 裁剪项 | 0，停止继续削弱 |
 | $\hat{A}_t < 0$ | $\rho_t \ge 1 - \epsilon$ | 未裁剪项 | 正常，削弱该动作 |
 
-把 $L^{\text{CLIP}}$ 作为 $\rho_t$ 的函数画出来，裁剪的效果一目了然。圆点是每轮优化的起点 $\rho_t = 1$，虚线是未裁剪的 $\rho_t \hat{A}_t$，灰色区域是梯度为零的区间：
+把 $L^{\text{CLIP}}$ 作为 $\rho_t$ 的函数画出来，裁剪的效果一目了然。圆点是每轮优化的起点 $\rho_t = 1$，虚线是未裁剪的 $\rho_t \hat{A}_t$，绿色区域是梯度为零的区间：
 
-![clip-objective](/img/posts/llm-ppo/clip-objective.svg)
+![正负优势下 PPO 裁剪目标的精确分段曲线](/img/posts/llm-ppo/clip-objective.svg)
 
 因此，$\min$ 的作用是取一个**悲观的下界**：裁剪只会阻止目标变得“过于乐观”，在把单个样本的概率比视为自变量时，仍保留朝相反方向偏离后的修正梯度。神经网络参数由样本共享，还受其他损失影响，因此概率比仍可能越过裁剪区间。
 
@@ -1018,7 +1018,7 @@ def ppo(
 
 把 PPO 与前面的两个 REINFORCE 放在一起，以环境交互步数为横轴比较，结果取 3 个随机种子的平均：
 
-![learning-curves](/img/posts/llm-ppo/learning-curves.svg)
+![CartPole 上三个随机种子的平均学习曲线](/img/posts/llm-ppo/learning-curves.svg)
 
 PPO 在 3.4 万到 5.7 万步之间，10 个回合的平均回报就首次达到 475，而带基线的 REINFORCE 要到 15 万步左右才接近 500，之后还有明显波动。二者的差距主要来自两点：GAE 提供了方差更低的优势估计，而裁剪目标让每批数据可以被重复使用 10 个 epoch。
 
@@ -1114,7 +1114,7 @@ KL 惩罚还有一个很有用的理论性质：对于上面的目标，最优�
 
 它们在一次 PPO 迭代中的关系如下：
 
-![rlhf-ppo](/img/posts/llm-ppo/rlhf-ppo.svg)
+![RLHF 中采样、奖励塑形、GAE 与 PPO 更新的数据流](/img/posts/llm-ppo/rlhf-ppo.svg)
 
 具体来说，Actor 对一批 prompt 生成回答；Reference 计算每个 token 的 log prob，用于 KL 惩罚；Reward Model 对完整回答打分；Critic 给出每个 token 位置的价值；之后按前文的方式计算逐 token 奖励与 GAE，并对 Actor 和 Critic 做多轮 PPO 更新。
 

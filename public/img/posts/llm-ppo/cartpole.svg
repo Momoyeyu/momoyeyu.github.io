@@ -1,70 +1,25 @@
-<svg viewBox="0 0 560 270" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="CartPole 环境示意：小车在轨道上左右移动，杆子通过铰链连在小车上；动作 0 向左推、动作 1 向右推；杆子倾角超过 12 度或小车位置超出正负 2.4 时回合失败；每坚持一步奖励加 1，最多 500 步">
-	<style>
-		:root {
-			--fg: #2b2b2b;
-			--line: #3d3d3d;
-			--expert-fill: #dce9f7;
-			--expert-stroke: #7b9cc4;
-			--router-fill: #f5e9c9;
-			--router-stroke: #b8912f;
-			--step-fill: #eef1f4;
-			--step-stroke: #9aa5b1;
-			--gate-fill: #ffffff;
-			--accent: #e0a800;
-		}
-		@media (prefers-color-scheme: dark) {
-			:root {
-				--fg: #d8d8d8;
-				--line: #b8b8b8;
-				--expert-fill: #26364d;
-				--expert-stroke: #6c8ebf;
-				--router-fill: #4a3d1e;
-				--router-stroke: #c9a53f;
-				--step-fill: #2a2f36;
-				--step-stroke: #6b7684;
-				--gate-fill: #1e1e1e;
-				--accent: #e8c547;
-			}
-		}
-		text { fill: var(--fg); }
-		.lbl { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 15px; }
-		.math { font-family: "Times New Roman", Times, serif; font-style: italic; }
-		.edge { stroke: var(--line); stroke-width: 1.6; fill: none; }
-		.guide { stroke: var(--step-stroke); stroke-width: 1.3; stroke-dasharray: 5 4; fill: none; }
-	</style>
-	<defs>
-		<marker id="arw" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-			<path d="M0,0 L10,5 L0,10 z" fill="var(--line)"/>
-		</marker>
-	</defs>
-
-	<!-- reward note -->
-	<text x="30" y="34" class="lbl">每坚持一步奖励 +1，最多 500 步</text>
-
-	<!-- track and boundaries -->
-	<path d="M60,200 L500,200" stroke="var(--line)" stroke-width="2" fill="none"/>
-	<path d="M80,120 L80,208 M480,120 L480,208" class="guide"/>
-	<text x="80" y="226" class="math" font-size="15" text-anchor="middle">−2.4</text>
-	<text x="480" y="226" class="math" font-size="15" text-anchor="middle">2.4</text>
-	<text x="280" y="254" class="lbl" text-anchor="middle">小车位置超出 ±2.4 即失败</text>
-
-	<!-- vertical reference and angle -->
-	<path d="M280,150 L280,40" class="guide"/>
-	<path d="M280,90 A60,60 0 0,1 300.5,93.6" stroke="var(--accent)" stroke-width="2" fill="none"/>
-	<text x="328" y="96" class="lbl">倾角超过 12° 即失败</text>
-
-	<!-- pole -->
-	<path d="M280,150 L317.6,46.6" stroke="var(--router-stroke)" stroke-width="8" stroke-linecap="round"/>
-
-	<!-- cart -->
-	<rect x="240" y="150" width="80" height="36" rx="6" fill="var(--expert-fill)" stroke="var(--expert-stroke)" stroke-width="1.6"/>
-	<circle cx="256" cy="193" r="7" fill="var(--gate-fill)" stroke="var(--line)" stroke-width="1.6"/>
-	<circle cx="304" cy="193" r="7" fill="var(--gate-fill)" stroke="var(--line)" stroke-width="1.6"/>
-	<circle cx="280" cy="150" r="4.5" fill="var(--line)"/>
-
-	<!-- actions -->
-	<path d="M232,168 L172,168" class="edge" marker-end="url(#arw)"/>
-	<text x="202" y="158" class="lbl" text-anchor="middle">0：向左推</text>
-	<path d="M328,168 L388,168" class="edge" marker-end="url(#arw)"/>
-	<text x="358" y="158" class="lbl" text-anchor="middle">1：向右推</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="370" viewBox="0 0 800 370" role="img" aria-labelledby="title desc">
+<title id="title">CartPole 环境</title><desc id="desc">小车位于轨道上，杆子相对竖直方向倾斜。向左或向右施力保持平衡；倾角超过12度或小车位置超出正负2.4时失败。</desc>
+<style>
+:root{--fg:#29303b;--line:#657285;--bg:#f8fafc;--a:#e0eee6;--b:#e7e4f3;--c:#f7ead6;--accent:#508369;--muted:#667386}
+@media(prefers-color-scheme:dark){:root{--fg:#e0e5ec;--line:#a4afbd;--bg:#222731;--a:#283e35;--b:#353148;--c:#483b2b;--accent:#86b49b;--muted:#b2bdcb}}
+text{font-family:Helvetica,Arial,'PingFang SC',sans-serif;fill:var(--fg);font-size:20px}.title{font-size:26px;font-weight:600}.head{font-size:22px;font-weight:600}.small{font-size:17px;fill:var(--muted)}.math{font-family:'Times New Roman',Times,serif;font-style:italic}.box{fill:var(--bg);stroke:var(--line);stroke-width:1.4}.a{fill:var(--a)}.b{fill:var(--b)}.c{fill:var(--c)}.arrow{fill:none;stroke:var(--line);stroke-width:1.7;stroke-linejoin:round;marker-end:url(#arrow)}.guide{fill:none;stroke:var(--line);stroke-width:1.2;stroke-dasharray:5 5;opacity:.6}.line{fill:none;stroke:var(--line);stroke-width:1.5}.curve{fill:none;stroke:var(--accent);stroke-width:3}.update{fill:none;stroke:var(--accent);stroke-width:2;stroke-dasharray:6 4;marker-end:url(#update)}
+</style><defs><marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10Z" fill="var(--line)"/></marker><marker id="update" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="var(--accent)"/></marker></defs>
+<text x="400" y="38" class="title" text-anchor="middle">CartPole：推小车，让杆保持直立</text>
+<path d="M80 280 H720" class="line"/>
+<path d="M115 240 V290 M685 240 V290" class="guide"/>
+<text x="115" y="315" class="math" text-anchor="middle">−2.4</text>
+<text x="685" y="315" class="math" text-anchor="middle">+2.4</text>
+<path d="M400 224 V75" class="guide"/>
+<path d="M400 224 L433.5 66" class="line"/>
+<path d="M400 224 L433.5 66" stroke="var(--accent)" stroke-width="10" stroke-linecap="round"/>
+<path d="M400 145 A79 79 0 0 1 416.4 146.7" class="line"/>
+<text x="452" y="137" class="math" text-anchor="middle">θ</text>
+<text x="490" y="97" class="small" text-anchor="start">|θ| &gt; 12°：失败</text>
+<rect x="345" y="224" width="110" height="39" rx="9" class="box b"/>
+<circle cx="365" cy="272" r="8" class="box"/><circle cx="435" cy="272" r="8" class="box"/><circle cx="400" cy="224" r="5" fill="var(--line)"/><path d="M335 244 H218" class="arrow"/>
+<path d="M465 244 H582" class="arrow"/>
+<text x="270" y="230" class="" text-anchor="middle">0：向左推</text>
+<text x="530" y="230" class="" text-anchor="middle">1：向右推</text>
+<text x="400" y="343" class="small" text-anchor="middle">每步奖励 +1 · 最多 500 步</text>
 </svg>

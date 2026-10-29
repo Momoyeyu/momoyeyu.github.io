@@ -1,7 +1,7 @@
 ---
 title: MoE 技术原理
 date: 2026-09-23
-updated: 2026-10-21
+updated: 2026-10-29
 description: 本文将介绍 MoE 技术，解释其如何在扩大模型参数容量的同时控制计算成本，并逐渐成为现代 LLM 的核心技术。
 tags: [LLM, MoE, Deepseek]
 category: LLM
@@ -361,7 +361,7 @@ def expert_capacity(T: int, num_experts: int, top_k: int, capacity_factor: float
 
 在代码实现中，可以先实现一个最基础的 Top-K MoE Layer。
 
-整体流程可以抽象为：
+将多个 token 放在一起看，dispatch 会先按 Expert 分组，combine 再恢复原 token 顺序：
 
 ![moe-forward](/img/posts/llm-moe/moe-forward.svg)
 

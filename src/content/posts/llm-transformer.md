@@ -1,7 +1,7 @@
 ---
 title: Transformer 的数学表示与代码实现
 date: 2026-09-14
-updated: 2026-10-21
+updated: 2026-10-29
 description: '从 Transformer 开始的 LLM 之旅'
 tags: [LLM, 深度学习, Transformer]
 category: LLM
@@ -27,7 +27,7 @@ Transformer 以更低的训练成本和更高的性能在当时成为了翻译�
 
 # 模型架构
 
-![ModalNet-21.png](https://s3.bmp.ovh/2026/09/13/hWWm8Md7.png)
+![原始 Transformer 的 Encoder 与 Decoder 数据流](/img/posts/llm-transformer/architecture.svg)
 
 Transformer 使用了 **[Encoder-Decoder](https://arxiv.org/abs/1406.1078)** 架构，这是当时解决 seq2seq 问题的经典架构。
 
@@ -168,7 +168,7 @@ class MHA(nn.Module):
 
 ### FFN
 
-![ModalNet-23.png](https://s3.bmp.ovh/2026/09/14/aZdYW61H.png)
+![逐位置共享参数的两层 FFN](/img/posts/llm-transformer/ffn.svg)
 
 FFN 本质就是一个双层 MLP，它对序列中每个位置独立地应用同一个网络，因此不进行跨位置的信息混合。
 由于这种 FFN 在每次前向传播中会激活全部参数，因此后来也被称为 Dense FFN，与之相对的是后来提出的 MoE 架构。
@@ -222,7 +222,7 @@ Transformer 总共堆叠了 6 个 DecoderBlock。
 
 为了避免这种情况，需要在计算注意力分数后，将未来位置的分数设为一个极大的负数，通常是 $-\infty$，这样经过 softmax 后这些位置的权重就变为 0。
 
-![mask.png](https://s3.bmp.ovh/2026/09/15/sCq3sL7m.png)
+![因果掩码与第三个 query 的注意力权重示意](/img/posts/llm-transformer/causal-mask.svg)
 
 设注意力分数矩阵为 $A = Q K^T / \sqrt{d_k} \in \mathbb{R}^{n \times n}$。定义掩码矩阵 $M \in \mathbb{R}^{n \times n}$：
 
@@ -390,7 +390,7 @@ $$
 
 可以看到，点积的结果只与相对位置 $\Delta t$ 有关，而与绝对位置 $t$ 无关。这意味着模型可以通过这种编码自然地学习到“两个 token 之间相隔多远”这样的相对位置关系，这对于自然语言处理是非常重要的。
 
-![position encoding.png](https://s3.bmp.ovh/2026/09/14/h0yOLxJn.png)
+![不同频率的正弦位置编码与输入相加](/img/posts/llm-transformer/position-encoding.svg)
 
 ```python
 class PositionEncoding(nn.Module):

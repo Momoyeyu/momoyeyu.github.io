@@ -1,108 +1,193 @@
-<svg viewBox="0 0 560 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Four isometric N x L x C tensor cubes comparing statistical dimensions of normalization methods: BatchNorm aggregates over N and L at a fixed channel, LayerNorm over C at a fixed position of a fixed sample, InstanceNorm over L at a fixed channel of a fixed sample, GroupNorm over L and a channel group of a fixed sample">
-	<style>
-		:root {
-			--fg: #2b2b2b;
-			--line: #3d3d3d;
-			--expert-fill: #dce9f7;
-			--expert-stroke: #7b9cc4;
-			--router-fill: #f5e9c9;
-			--router-stroke: #b8912f;
-			--step-fill: #eef1f4;
-			--step-stroke: #9aa5b1;
-			--gate-fill: #ffffff;
-			--accent: #e0a800;
-		}
-		@media (prefers-color-scheme: dark) {
-			:root {
-				--fg: #d8d8d8;
-				--line: #b8b8b8;
-				--expert-fill: #26364d;
-				--expert-stroke: #6c8ebf;
-				--router-fill: #4a3d1e;
-				--router-stroke: #c9a53f;
-				--step-fill: #2a2f36;
-				--step-stroke: #6b7684;
-				--gate-fill: #1e1e1e;
-				--accent: #e8c547;
-			}
-		}
-		text { fill: var(--fg); }
-		.lbl { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 15px; }
-		.math { font-family: "Times New Roman", Times, serif; font-style: italic; }
-		.edge { stroke: var(--line); stroke-width: 1.6; fill: none; }
-		.box { stroke-width: 1.6; rx: 9; }
-	</style>
-	<defs>
-		<marker id="arw" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-			<path d="M0,0 L10,5 L0,10 z" fill="var(--line)"/>
-		</marker>
-	</defs>
-
-	<!-- tensor shape -->
-	<text x="280" y="42" class="math" font-size="17" text-anchor="middle">X ∈ R<tspan baseline-shift="super" font-size="11">N×L×C</tspan></text>
-
-	<!-- BatchNorm -->
-	<g fill="var(--expert-fill)" stroke="var(--expert-stroke)" stroke-width="1.6" stroke-linejoin="round">
-		<polygon points="30,96 110,96 110,188 30,188"/>
-		<polygon points="30,96 110,96 134,80 54,80"/>
-		<polygon points="110,96 134,80 134,172 110,188"/>
-	</g>
-	<g fill="var(--router-fill)" stroke="var(--router-stroke)" stroke-width="1.5" fill-opacity="0.6" stroke-linejoin="round">
-		<polygon points="76,96 88,96 88,188 76,188"/>
-		<polygon points="76,96 88,96 112,80 100,80"/>
-		<polygon points="88,96 112,80 112,172 88,188"/>
-	</g>
-
-	<!-- LayerNorm -->
-	<g fill="var(--expert-fill)" stroke="var(--expert-stroke)" stroke-width="1.6" stroke-linejoin="round">
-		<polygon points="162,96 242,96 242,188 162,188"/>
-		<polygon points="162,96 242,96 266,80 186,80"/>
-		<polygon points="242,96 266,80 266,172 242,188"/>
-	</g>
-	<g fill="var(--router-fill)" stroke="var(--router-stroke)" stroke-width="1.5" fill-opacity="0.6" stroke-linejoin="round">
-		<polygon points="170.4,130.4 250.4,130.4 250.4,138.4 170.4,138.4"/>
-		<polygon points="170.4,130.4 250.4,130.4 257.6,125.6 177.6,125.6"/>
-		<polygon points="250.4,130.4 257.6,125.6 257.6,133.6 250.4,138.4"/>
-	</g>
-
-	<!-- InstanceNorm -->
-	<g fill="var(--expert-fill)" stroke="var(--expert-stroke)" stroke-width="1.6" stroke-linejoin="round">
-		<polygon points="294,96 374,96 374,188 294,188"/>
-		<polygon points="294,96 374,96 398,80 318,80"/>
-		<polygon points="374,96 398,80 398,172 374,188"/>
-	</g>
-	<g fill="var(--router-fill)" stroke="var(--router-stroke)" stroke-width="1.5" fill-opacity="0.6" stroke-linejoin="round">
-		<polygon points="336.4,90.4 344.4,90.4 344.4,182.4 336.4,182.4"/>
-		<polygon points="336.4,90.4 344.4,90.4 351.6,85.6 343.6,85.6"/>
-		<polygon points="344.4,90.4 351.6,85.6 351.6,177.6 344.4,182.4"/>
-	</g>
-
-	<!-- GroupNorm -->
-	<g fill="var(--expert-fill)" stroke="var(--expert-stroke)" stroke-width="1.6" stroke-linejoin="round">
-		<polygon points="426,96 506,96 506,188 426,188"/>
-		<polygon points="426,96 506,96 530,80 450,80"/>
-		<polygon points="506,96 530,80 530,172 506,188"/>
-	</g>
-	<g fill="var(--router-fill)" stroke="var(--router-stroke)" stroke-width="1.5" fill-opacity="0.6" stroke-linejoin="round">
-		<polygon points="434.4,90.4 474.4,90.4 474.4,182.4 434.4,182.4"/>
-		<polygon points="434.4,90.4 474.4,90.4 481.6,85.6 441.6,85.6"/>
-		<polygon points="474.4,90.4 481.6,85.6 481.6,177.6 474.4,182.4"/>
-	</g>
-
-	<!-- axis hints on the first cube -->
-	<path d="M21,184 L21,104" class="edge" marker-end="url(#arw)"/>
-	<path d="M36,199 L100,199" class="edge" marker-end="url(#arw)"/>
-	<path d="M112,197 L133,183" class="edge" marker-end="url(#arw)"/>
-	<text x="13" y="146" class="math" font-size="15" text-anchor="middle">L</text>
-	<text x="68" y="215" class="math" font-size="15" text-anchor="middle">C</text>
-	<text x="141" y="185" class="math" font-size="15" text-anchor="middle">N</text>
-
-	<!-- method labels -->
-	<text x="82" y="233" class="lbl" text-anchor="middle">BatchNorm</text>
-	<text x="214" y="233" class="lbl" text-anchor="middle">LayerNorm</text>
-	<text x="346" y="233" class="lbl" text-anchor="middle">InstanceNorm</text>
-	<text x="478" y="233" class="lbl" text-anchor="middle">GroupNorm</text>
-
-	<!-- caption -->
-	<text x="280" y="272" class="lbl" style="font-size:13px" text-anchor="middle">高亮区域 = 参与均值与方差统计的元素</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="840" height="380" viewBox="0 0 840 380" role="img" aria-labelledby="title desc">
+<title id="title">归一化的统计维度</title>
+<desc id="desc">输入 N×L×C，图示两个样本。BatchNorm 高亮两个样本的同一通道全部位置；LayerNorm 高亮一个样本一个位置的全部通道；InstanceNorm 高亮一个样本一个通道的全部位置；GroupNorm 高亮一个样本两个通道的全部位置。</desc>
+<style>:root{--fg:#29303b;--line:#657285;--bg:#f8fafc;--a:#e0eee6;--b:#e7e4f3;--c:#f7ead6;--accent:#508369;--muted:#667386}@media(prefers-color-scheme:dark){:root{--fg:#e0e5ec;--line:#a4afbd;--bg:#222731;--a:#283e35;--b:#353148;--c:#483b2b;--accent:#86b49b;--muted:#b2bdcb}}text{font-family:Helvetica,Arial,'PingFang SC',sans-serif;fill:var(--fg);font-size:20px}.title{font-size:25px;font-weight:600}.small{font-size:17px;fill:var(--muted)}.math{font-family:'Times New Roman',serif;font-style:italic}.box{fill:var(--bg);stroke:var(--line);stroke-width:1.4}.a{fill:var(--a)}.b{fill:var(--b)}.c{fill:var(--c)}.arrow{fill:none;stroke:var(--line);stroke-width:1.7;stroke-linejoin:round;marker-end:url(#arrow)}.weight{stroke:var(--accent);stroke-dasharray:5 5}.faint{opacity:.3}.wire{fill:none;stroke:var(--line);stroke-width:1.4}</style>
+<defs>
+<marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+<path d="M0 0 L10 5 L0 10Z" fill="var(--line)"/>
+</marker>
+</defs>
+<text x="420" y="36" text-anchor="middle" class="title">统计范围：每次高亮只产生一组均值与方差</text>
+<text x="420" y="71" text-anchor="middle" class="small">每个小格是一个元素；每个矩阵是一个样本</text>
+<text x="115" y="113" text-anchor="middle" class="">BatchNorm</text>
+<text x="115" y="145" text-anchor="middle" class="math">N × L</text>
+<text x="63" y="180" text-anchor="middle" class="small">样本 1</text>
+<rect x="25" y="195" width="17" height="22" rx="2" class="box faint"/>
+<rect x="44" y="195" width="17" height="22" rx="2" class="box a"/>
+<rect x="63" y="195" width="17" height="22" rx="2" class="box faint"/>
+<rect x="82" y="195" width="17" height="22" rx="2" class="box faint"/>
+<rect x="25" y="219" width="17" height="22" rx="2" class="box faint"/>
+<rect x="44" y="219" width="17" height="22" rx="2" class="box a"/>
+<rect x="63" y="219" width="17" height="22" rx="2" class="box faint"/>
+<rect x="82" y="219" width="17" height="22" rx="2" class="box faint"/>
+<rect x="25" y="243" width="17" height="22" rx="2" class="box faint"/>
+<rect x="44" y="243" width="17" height="22" rx="2" class="box a"/>
+<rect x="63" y="243" width="17" height="22" rx="2" class="box faint"/>
+<rect x="82" y="243" width="17" height="22" rx="2" class="box faint"/>
+<rect x="25" y="267" width="17" height="22" rx="2" class="box faint"/>
+<rect x="44" y="267" width="17" height="22" rx="2" class="box a"/>
+<rect x="63" y="267" width="17" height="22" rx="2" class="box faint"/>
+<rect x="82" y="267" width="17" height="22" rx="2" class="box faint"/>
+<rect x="25" y="291" width="17" height="22" rx="2" class="box faint"/>
+<rect x="44" y="291" width="17" height="22" rx="2" class="box a"/>
+<rect x="63" y="291" width="17" height="22" rx="2" class="box faint"/>
+<rect x="82" y="291" width="17" height="22" rx="2" class="box faint"/>
+<text x="157" y="180" text-anchor="middle" class="small">样本 2</text>
+<rect x="119" y="195" width="17" height="22" rx="2" class="box faint"/>
+<rect x="138" y="195" width="17" height="22" rx="2" class="box a"/>
+<rect x="157" y="195" width="17" height="22" rx="2" class="box faint"/>
+<rect x="176" y="195" width="17" height="22" rx="2" class="box faint"/>
+<rect x="119" y="219" width="17" height="22" rx="2" class="box faint"/>
+<rect x="138" y="219" width="17" height="22" rx="2" class="box a"/>
+<rect x="157" y="219" width="17" height="22" rx="2" class="box faint"/>
+<rect x="176" y="219" width="17" height="22" rx="2" class="box faint"/>
+<rect x="119" y="243" width="17" height="22" rx="2" class="box faint"/>
+<rect x="138" y="243" width="17" height="22" rx="2" class="box a"/>
+<rect x="157" y="243" width="17" height="22" rx="2" class="box faint"/>
+<rect x="176" y="243" width="17" height="22" rx="2" class="box faint"/>
+<rect x="119" y="267" width="17" height="22" rx="2" class="box faint"/>
+<rect x="138" y="267" width="17" height="22" rx="2" class="box a"/>
+<rect x="157" y="267" width="17" height="22" rx="2" class="box faint"/>
+<rect x="176" y="267" width="17" height="22" rx="2" class="box faint"/>
+<rect x="119" y="291" width="17" height="22" rx="2" class="box faint"/>
+<rect x="138" y="291" width="17" height="22" rx="2" class="box a"/>
+<rect x="157" y="291" width="17" height="22" rx="2" class="box faint"/>
+<rect x="176" y="291" width="17" height="22" rx="2" class="box faint"/>
+<text x="107" y="348" text-anchor="middle" class="small">特征 C →</text>
+<text x="325" y="113" text-anchor="middle" class="">LayerNorm</text>
+<text x="325" y="145" text-anchor="middle" class="math">C</text>
+<text x="273" y="180" text-anchor="middle" class="small">样本 1</text>
+<rect x="235" y="195" width="17" height="22" rx="2" class="box faint"/>
+<rect x="254" y="195" width="17" height="22" rx="2" class="box faint"/>
+<rect x="273" y="195" width="17" height="22" rx="2" class="box faint"/>
+<rect x="292" y="195" width="17" height="22" rx="2" class="box faint"/>
+<rect x="235" y="219" width="17" height="22" rx="2" class="box faint"/>
+<rect x="254" y="219" width="17" height="22" rx="2" class="box faint"/>
+<rect x="273" y="219" width="17" height="22" rx="2" class="box faint"/>
+<rect x="292" y="219" width="17" height="22" rx="2" class="box faint"/>
+<rect x="235" y="243" width="17" height="22" rx="2" class="box a"/>
+<rect x="254" y="243" width="17" height="22" rx="2" class="box a"/>
+<rect x="273" y="243" width="17" height="22" rx="2" class="box a"/>
+<rect x="292" y="243" width="17" height="22" rx="2" class="box a"/>
+<rect x="235" y="267" width="17" height="22" rx="2" class="box faint"/>
+<rect x="254" y="267" width="17" height="22" rx="2" class="box faint"/>
+<rect x="273" y="267" width="17" height="22" rx="2" class="box faint"/>
+<rect x="292" y="267" width="17" height="22" rx="2" class="box faint"/>
+<rect x="235" y="291" width="17" height="22" rx="2" class="box faint"/>
+<rect x="254" y="291" width="17" height="22" rx="2" class="box faint"/>
+<rect x="273" y="291" width="17" height="22" rx="2" class="box faint"/>
+<rect x="292" y="291" width="17" height="22" rx="2" class="box faint"/>
+<text x="367" y="180" text-anchor="middle" class="small">样本 2</text>
+<rect x="329" y="195" width="17" height="22" rx="2" class="box faint"/>
+<rect x="348" y="195" width="17" height="22" rx="2" class="box faint"/>
+<rect x="367" y="195" width="17" height="22" rx="2" class="box faint"/>
+<rect x="386" y="195" width="17" height="22" rx="2" class="box faint"/>
+<rect x="329" y="219" width="17" height="22" rx="2" class="box faint"/>
+<rect x="348" y="219" width="17" height="22" rx="2" class="box faint"/>
+<rect x="367" y="219" width="17" height="22" rx="2" class="box faint"/>
+<rect x="386" y="219" width="17" height="22" rx="2" class="box faint"/>
+<rect x="329" y="243" width="17" height="22" rx="2" class="box faint"/>
+<rect x="348" y="243" width="17" height="22" rx="2" class="box faint"/>
+<rect x="367" y="243" width="17" height="22" rx="2" class="box faint"/>
+<rect x="386" y="243" width="17" height="22" rx="2" class="box faint"/>
+<rect x="329" y="267" width="17" height="22" rx="2" class="box faint"/>
+<rect x="348" y="267" width="17" height="22" rx="2" class="box faint"/>
+<rect x="367" y="267" width="17" height="22" rx="2" class="box faint"/>
+<rect x="386" y="267" width="17" height="22" rx="2" class="box faint"/>
+<rect x="329" y="291" width="17" height="22" rx="2" class="box faint"/>
+<rect x="348" y="291" width="17" height="22" rx="2" class="box faint"/>
+<rect x="367" y="291" width="17" height="22" rx="2" class="box faint"/>
+<rect x="386" y="291" width="17" height="22" rx="2" class="box faint"/>
+<text x="317" y="348" text-anchor="middle" class="small">特征 C →</text>
+<text x="535" y="113" text-anchor="middle" class="">InstanceNorm</text>
+<text x="535" y="145" text-anchor="middle" class="math">L</text>
+<text x="483" y="180" text-anchor="middle" class="small">样本 1</text>
+<rect x="445" y="195" width="17" height="22" rx="2" class="box faint"/>
+<rect x="464" y="195" width="17" height="22" rx="2" class="box a"/>
+<rect x="483" y="195" width="17" height="22" rx="2" class="box faint"/>
+<rect x="502" y="195" width="17" height="22" rx="2" class="box faint"/>
+<rect x="445" y="219" width="17" height="22" rx="2" class="box faint"/>
+<rect x="464" y="219" width="17" height="22" rx="2" class="box a"/>
+<rect x="483" y="219" width="17" height="22" rx="2" class="box faint"/>
+<rect x="502" y="219" width="17" height="22" rx="2" class="box faint"/>
+<rect x="445" y="243" width="17" height="22" rx="2" class="box faint"/>
+<rect x="464" y="243" width="17" height="22" rx="2" class="box a"/>
+<rect x="483" y="243" width="17" height="22" rx="2" class="box faint"/>
+<rect x="502" y="243" width="17" height="22" rx="2" class="box faint"/>
+<rect x="445" y="267" width="17" height="22" rx="2" class="box faint"/>
+<rect x="464" y="267" width="17" height="22" rx="2" class="box a"/>
+<rect x="483" y="267" width="17" height="22" rx="2" class="box faint"/>
+<rect x="502" y="267" width="17" height="22" rx="2" class="box faint"/>
+<rect x="445" y="291" width="17" height="22" rx="2" class="box faint"/>
+<rect x="464" y="291" width="17" height="22" rx="2" class="box a"/>
+<rect x="483" y="291" width="17" height="22" rx="2" class="box faint"/>
+<rect x="502" y="291" width="17" height="22" rx="2" class="box faint"/>
+<text x="577" y="180" text-anchor="middle" class="small">样本 2</text>
+<rect x="539" y="195" width="17" height="22" rx="2" class="box faint"/>
+<rect x="558" y="195" width="17" height="22" rx="2" class="box faint"/>
+<rect x="577" y="195" width="17" height="22" rx="2" class="box faint"/>
+<rect x="596" y="195" width="17" height="22" rx="2" class="box faint"/>
+<rect x="539" y="219" width="17" height="22" rx="2" class="box faint"/>
+<rect x="558" y="219" width="17" height="22" rx="2" class="box faint"/>
+<rect x="577" y="219" width="17" height="22" rx="2" class="box faint"/>
+<rect x="596" y="219" width="17" height="22" rx="2" class="box faint"/>
+<rect x="539" y="243" width="17" height="22" rx="2" class="box faint"/>
+<rect x="558" y="243" width="17" height="22" rx="2" class="box faint"/>
+<rect x="577" y="243" width="17" height="22" rx="2" class="box faint"/>
+<rect x="596" y="243" width="17" height="22" rx="2" class="box faint"/>
+<rect x="539" y="267" width="17" height="22" rx="2" class="box faint"/>
+<rect x="558" y="267" width="17" height="22" rx="2" class="box faint"/>
+<rect x="577" y="267" width="17" height="22" rx="2" class="box faint"/>
+<rect x="596" y="267" width="17" height="22" rx="2" class="box faint"/>
+<rect x="539" y="291" width="17" height="22" rx="2" class="box faint"/>
+<rect x="558" y="291" width="17" height="22" rx="2" class="box faint"/>
+<rect x="577" y="291" width="17" height="22" rx="2" class="box faint"/>
+<rect x="596" y="291" width="17" height="22" rx="2" class="box faint"/>
+<text x="527" y="348" text-anchor="middle" class="small">特征 C →</text>
+<text x="745" y="113" text-anchor="middle" class="">GroupNorm</text>
+<text x="745" y="145" text-anchor="middle" class="math">L × C/G</text>
+<text x="693" y="180" text-anchor="middle" class="small">样本 1</text>
+<rect x="655" y="195" width="17" height="22" rx="2" class="box a"/>
+<rect x="674" y="195" width="17" height="22" rx="2" class="box a"/>
+<rect x="693" y="195" width="17" height="22" rx="2" class="box faint"/>
+<rect x="712" y="195" width="17" height="22" rx="2" class="box faint"/>
+<rect x="655" y="219" width="17" height="22" rx="2" class="box a"/>
+<rect x="674" y="219" width="17" height="22" rx="2" class="box a"/>
+<rect x="693" y="219" width="17" height="22" rx="2" class="box faint"/>
+<rect x="712" y="219" width="17" height="22" rx="2" class="box faint"/>
+<rect x="655" y="243" width="17" height="22" rx="2" class="box a"/>
+<rect x="674" y="243" width="17" height="22" rx="2" class="box a"/>
+<rect x="693" y="243" width="17" height="22" rx="2" class="box faint"/>
+<rect x="712" y="243" width="17" height="22" rx="2" class="box faint"/>
+<rect x="655" y="267" width="17" height="22" rx="2" class="box a"/>
+<rect x="674" y="267" width="17" height="22" rx="2" class="box a"/>
+<rect x="693" y="267" width="17" height="22" rx="2" class="box faint"/>
+<rect x="712" y="267" width="17" height="22" rx="2" class="box faint"/>
+<rect x="655" y="291" width="17" height="22" rx="2" class="box a"/>
+<rect x="674" y="291" width="17" height="22" rx="2" class="box a"/>
+<rect x="693" y="291" width="17" height="22" rx="2" class="box faint"/>
+<rect x="712" y="291" width="17" height="22" rx="2" class="box faint"/>
+<text x="787" y="180" text-anchor="middle" class="small">样本 2</text>
+<rect x="749" y="195" width="17" height="22" rx="2" class="box faint"/>
+<rect x="768" y="195" width="17" height="22" rx="2" class="box faint"/>
+<rect x="787" y="195" width="17" height="22" rx="2" class="box faint"/>
+<rect x="806" y="195" width="17" height="22" rx="2" class="box faint"/>
+<rect x="749" y="219" width="17" height="22" rx="2" class="box faint"/>
+<rect x="768" y="219" width="17" height="22" rx="2" class="box faint"/>
+<rect x="787" y="219" width="17" height="22" rx="2" class="box faint"/>
+<rect x="806" y="219" width="17" height="22" rx="2" class="box faint"/>
+<rect x="749" y="243" width="17" height="22" rx="2" class="box faint"/>
+<rect x="768" y="243" width="17" height="22" rx="2" class="box faint"/>
+<rect x="787" y="243" width="17" height="22" rx="2" class="box faint"/>
+<rect x="806" y="243" width="17" height="22" rx="2" class="box faint"/>
+<rect x="749" y="267" width="17" height="22" rx="2" class="box faint"/>
+<rect x="768" y="267" width="17" height="22" rx="2" class="box faint"/>
+<rect x="787" y="267" width="17" height="22" rx="2" class="box faint"/>
+<rect x="806" y="267" width="17" height="22" rx="2" class="box faint"/>
+<rect x="749" y="291" width="17" height="22" rx="2" class="box faint"/>
+<rect x="768" y="291" width="17" height="22" rx="2" class="box faint"/>
+<rect x="787" y="291" width="17" height="22" rx="2" class="box faint"/>
+<rect x="806" y="291" width="17" height="22" rx="2" class="box faint"/>
+<text x="737" y="348" text-anchor="middle" class="small">特征 C →</text>
+<text x="16" y="258" text-anchor="middle" class="math">L</text>
 </svg>
