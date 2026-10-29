@@ -7,7 +7,55 @@
 	let lastInteraction = 0;
 	let message = $state("");
 	let speaking = $state(false);
-	let yielding = $state(false);
+	let dragging = $state(false);
+	let position = $state<{ x: number; y: number } | null>(null);
+	let gesture: { id: number; x: number; y: number; left: number; top: number } | null = null;
+	let suppressClick = false;
+	const positionKey = "komari-position:v1";
+
+	function moveTo(x: number, y: number) {
+		position = {
+			x: Math.max(0, Math.min(x, window.innerWidth - widget.offsetWidth)),
+			y: Math.max(0, Math.min(y, window.innerHeight - widget.offsetHeight)),
+		};
+	}
+
+	function rememberPosition() {
+		if (!position) return;
+		try {
+			localStorage.setItem(positionKey, JSON.stringify({
+				x: position.x / Math.max(1, window.innerWidth - widget.offsetWidth),
+				y: position.y / Math.max(1, window.innerHeight - widget.offsetHeight),
+			}));
+		} catch { /* Storage is optional. */ }
+	}
+
+	function startDrag(event: PointerEvent) {
+		if (!event.isPrimary || event.button !== 0) return;
+		event.preventDefault();
+		button.focus({ preventScroll: true });
+		const rect = widget.getBoundingClientRect();
+		gesture = { id: event.pointerId, x: event.clientX, y: event.clientY, left: rect.left, top: rect.top };
+		suppressClick = false;
+		button.setPointerCapture(event.pointerId);
+	}
+
+	function moveDrag(event: PointerEvent) {
+		if (!gesture || gesture.id !== event.pointerId) return;
+		const dx = event.clientX - gesture.x, dy = event.clientY - gesture.y;
+		if (!dragging && Math.hypot(dx, dy) < 5) return;
+		dragging = true;
+		suppressClick = true;
+		moveTo(gesture.left + dx, gesture.top + dy);
+	}
+
+	function endDrag(event: PointerEvent) {
+		if (!gesture || gesture.id !== event.pointerId) return;
+		if (dragging) rememberPosition();
+		gesture = null;
+		dragging = false;
+		if (button.hasPointerCapture(event.pointerId)) button.releasePointerCapture(event.pointerId);
+	}
 	let widget: HTMLElement, button: HTMLButtonElement;
 	let resetTimer: ReturnType<typeof setTimeout>;
 	let greetingTimer: ReturnType<typeof setTimeout>;
@@ -23,7 +71,9 @@
 		}, 5200);
 	}
 
-	function interact() {
+	function interact(event: MouseEvent) {
+		if (suppressClick && event.detail !== 0) { suppressClick = false; return; }
+		suppressClick = false;
 		clearTimeout(greetingTimer);
 		lastInteraction = (lastInteraction + 1) % states.length;
 		stateIndex = lastInteraction;
@@ -32,26 +82,16 @@
 	}
 
 	onMount(() => {
-        let frame = 0;
-        const yieldToControls = () => {
-            frame = 0;
-            if (!button || !widget.offsetWidth) return;
-            const rect = button.getBoundingClientRect();
-            button.style.pointerEvents = "none";
-            // Yield only the character's hit area; the artwork remains visible.
-            let overlap = false;
-            for (const u of [.1, .3, .5, .7, .9]) for (const v of [.05, .15, .25, .35, .45, .55, .65, .75, .85, .95]) {
-                const target = document.elementFromPoint(rect.left + rect.width * u, rect.top + rect.height * v);
-                if (target?.closest("a,button,input,select,textarea,summary,[role='button']")) overlap = true;
-            }
-            button.style.removeProperty("pointer-events");
-            yielding = overlap;
-        };
-        const schedule = () => { if (!frame) frame = requestAnimationFrame(yieldToControls); };
-        window.addEventListener("scroll", schedule, { passive: true });
-        window.addEventListener("resize", schedule, { passive: true });
-        document.addEventListener("swup:page:view", schedule);
-        schedule();
+		try {
+			const saved = JSON.parse(localStorage.getItem(positionKey) || "null");
+			if (saved && Number.isFinite(saved.x) && Number.isFinite(saved.y)) {
+				moveTo(saved.x * (window.innerWidth - widget.offsetWidth), saved.y * (window.innerHeight - widget.offsetHeight));
+			}
+		} catch { /* Ignore unavailable or invalid storage. */ }
+		const resize = () => {
+			if (position && widget.offsetWidth) moveTo(position.x, position.y);
+		};
+		window.addEventListener("resize", resize, { passive: true });
 		if (window.matchMedia("(min-width: 769px)").matches) {
 			for (const state of states) {
 				const image = new Image();
@@ -60,21 +100,27 @@
 			greetingTimer = setTimeout(() => showMessage(states[0].messages[0]), 2000);
 		}
 		return () => {
-            cancelAnimationFrame(frame);
-            window.removeEventListener("scroll", schedule);
-            window.removeEventListener("resize", schedule);
-            document.removeEventListener("swup:page:view", schedule);
+			window.removeEventListener("resize", resize);
 			clearTimeout(resetTimer);
 			clearTimeout(greetingTimer);
 		};
 	});
 </script>
 
-<aside bind:this={widget} class="mascot-widget" class:yielding aria-label={cornerLabel} data-pagefind-ignore>
+<aside bind:this={widget} class="mascot-widget" class:dragging
+	class:near-left={position !== null && position.x < 170}
+	class:near-top={position !== null && position.y < 140}
+	style:left={position ? `${position.x}px` : undefined}
+	style:top={position ? `${position.y}px` : undefined}
+	style:right={position ? "auto" : undefined}
+	style:bottom={position ? "auto" : undefined}
+	aria-label={cornerLabel} data-pagefind-ignore>
 	<div class="mascot-bubble" class:visible={speaking} aria-live="polite" aria-atomic="true">
 		{speaking ? message : ""}
 	</div>
 	<button bind:this={button} type="button" class="mascot-button" onclick={interact}
+		onpointerdown={startDrag} onpointermove={moveDrag} onpointerup={endDrag}
+		onpointercancel={endDrag} onlostpointercapture={endDrag}
 		aria-label={interactLabel} title={interactLabel}>
 		<img src={current.image} alt={current.label} width="104" height="128" draggable="false" />
 	</button>
@@ -89,8 +135,11 @@
 		width: 104px;
 		height: 128px;
 		pointer-events: none;
+		transition: none;
 	}
-	.mascot-widget.yielding .mascot-button { pointer-events: none; }
+	.mascot-widget.dragging .mascot-button { cursor: grabbing; transform: none; }
+	.mascot-widget.near-left .mascot-bubble { left: 0.5rem; right: auto; }
+	.mascot-widget.near-top .mascot-bubble { top: calc(100% + 0.5rem); bottom: auto; }
 	.mascot-button {
 		display: block;
 		position: absolute;
@@ -102,7 +151,9 @@
 		border: 0;
 		border-radius: 1.5rem;
 		background: transparent;
-		cursor: pointer;
+		cursor: grab;
+		touch-action: none;
+		user-select: none;
 		pointer-events: auto;
 		-webkit-tap-highlight-color: transparent;
 		transition: transform 180ms ease;

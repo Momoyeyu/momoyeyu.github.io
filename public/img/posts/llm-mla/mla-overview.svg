@@ -1,0 +1,123 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1100" viewBox="0 0 900 1100" role="img" aria-labelledby="title desc"><title id="title">MLA · 压缩、吸收与解耦 RoPE</title><desc id="desc">吸收后的单头解码路径。当前输入经WDQ生成cQ，再分别生成dc维内容query和经RoPE旋转的位置query。历史输入经WDKV生成cKV，并经WKR及RoPE生成位置key，缓存只保存cKV与已旋转的kR。内容内积与位置内积相加，经缩放和softmax产生同一组注意力权重。这组权重对cKV加权求和，再经合并矩阵Bi投影，各头贡献相加输出。Mi为WUQi转置乘WUKi，Bi为WOi乘WUVi；不显式还原历史内容K与V。</desc><style>
+:root{--fg:#29303b;--line:#657285;--bg:#f8fafc;--a:#e0eee6;--b:#e7e4f3;--c:#f7ead6;--accent:#508369;--muted:#667386}
+@media(prefers-color-scheme:dark){:root{--fg:#e0e5ec;--line:#a4afbd;--bg:#222731;--a:#283e35;--b:#353148;--c:#483b2b;--accent:#86b49b;--muted:#b2bdcb}}
+text{font-family:Helvetica,Arial,'PingFang SC',sans-serif;fill:var(--fg);font-size:20px}
+.title{font-size:26px;font-weight:600}.head{font-size:22px;font-weight:600}.small{font-size:17px;fill:var(--muted)}.num{font-size:14px}.operator{font-size:22px;fill:var(--muted)}
+.box{fill:var(--bg);stroke:var(--line);stroke-width:1.4}.a{fill:var(--a)}.b{fill:var(--b)}.c{fill:var(--c)}.panel{stroke-opacity:.5}.selected{stroke-width:2.3}.faint{opacity:.4}
+.arrow{fill:none;stroke:var(--line);stroke-width:1.7;stroke-linejoin:round;marker-end:url(#arrow)}
+.route{fill:none;stroke:var(--line);stroke-width:2.2;stroke-linejoin:round;marker-end:url(#arrow)}
+.option{fill:none;stroke:var(--line);stroke-width:1.2;stroke-dasharray:3 4;opacity:.35;marker-end:url(#arrow)}
+.divider{fill:none;stroke:var(--line);stroke-width:1;opacity:.45}.glyph{fill:none;stroke:var(--line);stroke-width:1.4;stroke-linecap:round;opacity:.65}.score{fill:var(--accent)}
+</style><defs><marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="var(--line)"/></marker></defs>
+<text x="450" y="40" class="title" text-anchor="middle">MLA · 压缩、吸收与解耦 RoPE</text>
+<style>.math{font-family:Times New Roman,serif;font-size:23px;font-style:italic}.cache{fill:var(--a);fill-opacity:.22;stroke:var(--accent);stroke-width:1.4;stroke-dasharray:6 5}.position{fill:none;stroke:var(--line);stroke-width:1.6;stroke-dasharray:4 3;marker-end:url(#arrow)}</style>
+<text x="190" y="91" class="small" text-anchor="middle">当前 token</text>
+<text x="635" y="91" class="small" text-anchor="middle">历史位置 j ≤ t</text>
+<rect x="141" y="128" width="98" height="37" rx="7" class="box c"/>
+<circle cx="158" cy="146" r="4" fill="var(--accent)" opacity=".65"/>
+<circle cx="174" cy="146" r="4" fill="var(--accent)" opacity=".65"/>
+<circle cx="190" cy="146" r="4" fill="var(--accent)" opacity=".65"/>
+<circle cx="206" cy="146" r="4" fill="var(--accent)" opacity=".65"/>
+<circle cx="222" cy="146" r="4" fill="var(--accent)" opacity=".65"/>
+<text x="268" y="153" text-anchor="middle" class="math">h<tspan baseline-shift="sub" font-size="15">t</tspan></text>
+<rect x="586" y="128" width="98" height="37" rx="7" class="box c"/>
+<circle cx="603" cy="146" r="4" fill="var(--accent)" opacity=".65"/>
+<circle cx="619" cy="146" r="4" fill="var(--accent)" opacity=".65"/>
+<circle cx="635" cy="146" r="4" fill="var(--accent)" opacity=".65"/>
+<circle cx="651" cy="146" r="4" fill="var(--accent)" opacity=".65"/>
+<circle cx="667" cy="146" r="4" fill="var(--accent)" opacity=".65"/>
+<text x="713" y="153" text-anchor="middle" class="math">h<tspan baseline-shift="sub" font-size="15">j</tspan></text>
+<path d="M190 165 V253" class="arrow"/>
+<text x="143" y="204" text-anchor="middle" class="math">W<tspan baseline-shift="super" font-size="15">DQ</tspan></text>
+<rect x="141" y="253" width="98" height="37" rx="7" class="box c"/>
+<circle cx="158" cy="271" r="4" fill="var(--accent)" opacity=".65"/>
+<circle cx="174" cy="271" r="4" fill="var(--accent)" opacity=".65"/>
+<circle cx="190" cy="271" r="4" fill="var(--accent)" opacity=".65"/>
+<circle cx="206" cy="271" r="4" fill="var(--accent)" opacity=".65"/>
+<circle cx="222" cy="271" r="4" fill="var(--accent)" opacity=".65"/>
+<text x="268" y="278" text-anchor="middle" class="math">c<tspan baseline-shift="sub" font-size="15">t</tspan><tspan baseline-shift="super" font-size="15">Q</tspan></text>
+<path d="M635 165 V190 H440 V253" class="arrow"/>
+<text x="480" y="212" text-anchor="middle" class="math">W<tspan baseline-shift="super" font-size="15">DKV</tspan></text>
+<path d="M635 190 H760 V253" class="position"/>
+<text x="773" y="214" text-anchor="middle" class="math">W<tspan baseline-shift="super" font-size="15">KR</tspan></text>
+<rect x="367" y="225" width="468" height="110" rx="12" class="cache"/>
+<text x="600" y="317" class="small" text-anchor="middle">KV cache</text>
+<rect x="391" y="253" width="98" height="37" rx="7" class="box a"/>
+<circle cx="408" cy="271" r="4" fill="var(--accent)" opacity=".65"/>
+<circle cx="424" cy="271" r="4" fill="var(--accent)" opacity=".65"/>
+<circle cx="440" cy="271" r="4" fill="var(--accent)" opacity=".65"/>
+<circle cx="456" cy="271" r="4" fill="var(--accent)" opacity=".65"/>
+<circle cx="472" cy="271" r="4" fill="var(--accent)" opacity=".65"/>
+<text x="518" y="278" text-anchor="middle" class="math">c<tspan baseline-shift="sub" font-size="15">j</tspan><tspan baseline-shift="super" font-size="15">KV</tspan></text>
+<rect x="711" y="253" width="98" height="37" rx="7" class="box b"/>
+<circle cx="728" cy="271" r="4" fill="var(--accent)" opacity=".65"/>
+<circle cx="744" cy="271" r="4" fill="var(--accent)" opacity=".65"/>
+<circle cx="760" cy="271" r="4" fill="var(--accent)" opacity=".65"/>
+<circle cx="776" cy="271" r="4" fill="var(--accent)" opacity=".65"/>
+<circle cx="792" cy="271" r="4" fill="var(--accent)" opacity=".65"/>
+<text x="838" y="278" text-anchor="middle" class="math">k<tspan baseline-shift="sub" font-size="15">j</tspan><tspan baseline-shift="super" font-size="15">R</tspan></text>
+<text x="697" y="214" class="small" text-anchor="middle">RoPE</text>
+<path d="M190 290 V328 H110 V426" class="arrow"/>
+<text x="110" y="365" text-anchor="middle" class="math">M<tspan baseline-shift="sub" font-size="15">i</tspan><tspan baseline-shift="super" font-size="15">T</tspan></text>
+<path d="M190 328 H570 V396" fill="none" stroke="var(--bg)" stroke-width="7"/>
+<path d="M190 328 H570 V426" class="position"/>
+<text x="570" y="365" text-anchor="middle" class="math">W<tspan baseline-shift="sub" font-size="15">i</tspan><tspan baseline-shift="super" font-size="15">QR</tspan></text>
+<text x="660" y="365" class="small" text-anchor="middle">RoPE</text>
+<rect x="61" y="426" width="98" height="37" rx="7" class="box c"/>
+<circle cx="78" cy="444" r="4" fill="var(--accent)" opacity=".65"/>
+<circle cx="94" cy="444" r="4" fill="var(--accent)" opacity=".65"/>
+<circle cx="110" cy="444" r="4" fill="var(--accent)" opacity=".65"/>
+<circle cx="126" cy="444" r="4" fill="var(--accent)" opacity=".65"/>
+<circle cx="142" cy="444" r="4" fill="var(--accent)" opacity=".65"/>
+<text x="188" y="451" text-anchor="middle" class="math">q<tspan baseline-shift="sub" font-size="15">lat,i</tspan></text>
+<rect x="521" y="426" width="98" height="37" rx="7" class="box b"/>
+<circle cx="538" cy="444" r="4" fill="var(--accent)" opacity=".65"/>
+<circle cx="554" cy="444" r="4" fill="var(--accent)" opacity=".65"/>
+<circle cx="570" cy="444" r="4" fill="var(--accent)" opacity=".65"/>
+<circle cx="586" cy="444" r="4" fill="var(--accent)" opacity=".65"/>
+<circle cx="602" cy="444" r="4" fill="var(--accent)" opacity=".65"/>
+<text x="648" y="451" text-anchor="middle" class="math">q<tspan baseline-shift="sub" font-size="15">t,i</tspan><tspan baseline-shift="super" font-size="15">R</tspan></text>
+<path d="M110 463 V540 H250" class="arrow"/>
+<path d="M440 290 V540 H290" class="arrow"/>
+<circle cx="270" cy="540" r="20" class="box"/>
+<text x="270" y="547" class="" text-anchor="middle">·</text>
+<path d="M570 463 V540 H645" class="position"/>
+<path d="M760 290 V540 H685" class="position"/>
+<circle cx="665" cy="540" r="20" class="box"/>
+<text x="665" y="547" class="" text-anchor="middle">·</text>
+<text x="270" y="588" class="small" text-anchor="middle">内容分</text>
+<text x="665" y="588" class="small" text-anchor="middle">位置分</text>
+<path d="M270 560 V622 H430" class="arrow"/>
+<path d="M665 560 V622 H470" class="position"/>
+<circle cx="450" cy="622" r="20" class="box"/>
+<text x="450" y="629" class="" text-anchor="middle">+</text>
+<path d="M450 642 V688" class="arrow"/>
+<rect x="335" y="688" width="230" height="44" rx="7" class="box b"/>
+<text x="450.0" y="717.0" class="" text-anchor="middle">缩放 → softmax</text>
+<path d="M450 732 V788" class="arrow"/>
+<text x="485" y="770" text-anchor="middle" class="math">α<tspan baseline-shift="sub" font-size="15">t,j</tspan><tspan baseline-shift="super" font-size="15">(i)</tspan></text>
+<path d="M440 370 H55 V824 H430" fill="none" stroke="var(--bg)" stroke-width="7"/>
+<path d="M440 370 H55 V824 H430" class="arrow"/>
+<circle cx="450" cy="824" r="20" class="box"/>
+<text x="450" y="831" class="" text-anchor="middle">Σ</text>
+<text x="565" y="831" class="small" text-anchor="middle">加权求和</text>
+<path d="M450 844 V885" class="arrow"/>
+<rect x="401" y="885" width="98" height="37" rx="7" class="box a"/>
+<circle cx="418" cy="903" r="4" fill="var(--accent)" opacity=".65"/>
+<circle cx="434" cy="903" r="4" fill="var(--accent)" opacity=".65"/>
+<circle cx="450" cy="903" r="4" fill="var(--accent)" opacity=".65"/>
+<circle cx="466" cy="903" r="4" fill="var(--accent)" opacity=".65"/>
+<circle cx="482" cy="903" r="4" fill="var(--accent)" opacity=".65"/>
+<text x="528" y="910" text-anchor="middle" class="math">z<tspan baseline-shift="sub" font-size="15">t,i</tspan></text>
+<path d="M450 922 V979" class="arrow"/>
+<text x="498" y="960" text-anchor="middle" class="math">B<tspan baseline-shift="sub" font-size="15">i</tspan></text>
+<text x="450" y="1006" class="small" text-anchor="middle">各头贡献相加</text>
+<path d="M450 1018 V1040" class="arrow"/>
+<text x="450" y="1070" text-anchor="middle" class="math">u<tspan baseline-shift="sub" font-size="15">t</tspan></text>
+<path d="M70 681 H110" class="arrow"/>
+<text x="145" y="687" class="small" text-anchor="middle">内容</text>
+<path d="M70 713 H110" class="position"/>
+<text x="145" y="719" class="small" text-anchor="middle">位置</text>
+<text x="687" y="940" text-anchor="middle" class="math">M<tspan baseline-shift="sub" font-size="15">i</tspan> = (W<tspan baseline-shift="sub" font-size="15">i</tspan><tspan baseline-shift="super" font-size="15">UQ</tspan>)ᵀ W<tspan baseline-shift="sub" font-size="15">i</tspan><tspan baseline-shift="super" font-size="15">UK</tspan></text>
+<text x="687" y="980" text-anchor="middle" class="math">B<tspan baseline-shift="sub" font-size="15">i</tspan> = W<tspan baseline-shift="sub" font-size="15">i</tspan><tspan baseline-shift="super" font-size="15">O</tspan> W<tspan baseline-shift="sub" font-size="15">i</tspan><tspan baseline-shift="super" font-size="15">UV</tspan></text>
+</svg>

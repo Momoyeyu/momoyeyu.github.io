@@ -1,104 +1,115 @@
-<svg viewBox="0 0 640 330" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="KV Cache 示意：新 token 只算自己的 K/V 追加进缓存，query 与全部缓存做注意力">
-	<style>
-		:root {
-			--fg: #2b2b2b;
-			--line: #3d3d3d;
-			--expert-fill: #dce9f7;
-			--expert-stroke: #7b9cc4;
-			--router-fill: #f5e9c9;
-			--router-stroke: #b8912f;
-			--step-fill: #eef1f4;
-			--step-stroke: #9aa5b1;
-			--gate-fill: #ffffff;
-			--accent: #e0a800;
-		}
-		@media (prefers-color-scheme: dark) {
-			:root {
-				--fg: #d8d8d8;
-				--line: #b8b8b8;
-				--expert-fill: #26364d;
-				--expert-stroke: #6c8ebf;
-				--router-fill: #4a3d1e;
-				--router-stroke: #c9a53f;
-				--step-fill: #2a2f36;
-				--step-stroke: #6b7684;
-				--gate-fill: #1e1e1e;
-				--accent: #e8c547;
-			}
-		}
-		text { fill: var(--fg); }
-		.lbl { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 15px; }
-		.math { font-family: "Times New Roman", Times, serif; font-style: italic; }
-		.tag { fill: var(--accent); font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }
-		.edge { stroke: var(--line); stroke-width: 1.6; fill: none; }
-		.box { stroke-width: 1.6; rx: 9; }
-	</style>
-	<defs>
-		<marker id="arw" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-			<path d="M0,0 L10,5 L0,10 z" fill="var(--line)"/>
-		</marker>
-	</defs>
-
-	<!-- cache container -->
-	<text x="44" y="28" class="lbl">KV Cache</text>
-	<rect x="40" y="34" width="560" height="76" class="box" fill="var(--step-fill)" stroke="var(--step-stroke)"/>
-
-	<!-- cached cells -->
-	<rect x="64"  y="52" width="72" height="36" class="box" fill="var(--gate-fill)" stroke="var(--line)"/>
-	<text x="100" y="76" class="math" font-size="15" text-anchor="middle">k<tspan baseline-shift="sub" font-size="10">1</tspan>, v<tspan baseline-shift="sub" font-size="10">1</tspan></text>
-	<rect x="148" y="52" width="72" height="36" class="box" fill="var(--gate-fill)" stroke="var(--line)"/>
-	<text x="184" y="76" class="math" font-size="15" text-anchor="middle">k<tspan baseline-shift="sub" font-size="10">2</tspan>, v<tspan baseline-shift="sub" font-size="10">2</tspan></text>
-	<rect x="232" y="52" width="72" height="36" class="box" fill="var(--gate-fill)" stroke="var(--line)"/>
-	<text x="268" y="76" class="math" font-size="15" text-anchor="middle">k<tspan baseline-shift="sub" font-size="10">3</tspan>, v<tspan baseline-shift="sub" font-size="10">3</tspan></text>
-	<text x="342" y="76" class="lbl" text-anchor="middle">···</text>
-	<rect x="380" y="52" width="84" height="36" class="box" fill="var(--gate-fill)" stroke="var(--line)"/>
-	<text x="422" y="76" class="math" font-size="15" text-anchor="middle">k<tspan baseline-shift="sub" font-size="10">t−1</tspan>, v<tspan baseline-shift="sub" font-size="10">t−1</tspan></text>
-	<!-- newly appended cell -->
-	<rect x="488" y="52" width="84" height="36" class="box" fill="var(--router-fill)" stroke="var(--accent)" stroke-width="2.2"/>
-	<text x="530" y="68" class="math" font-size="14" text-anchor="middle">k<tspan baseline-shift="sub" font-size="10">t</tspan>, v<tspan baseline-shift="sub" font-size="10">t</tspan></text>
-	<text x="530" y="83" class="tag" font-size="11" text-anchor="middle">追加</text>
-
-	<!-- input token -->
-	<rect x="60" y="208" width="110" height="48" class="box" fill="var(--expert-fill)" stroke="var(--expert-stroke)"/>
-	<text x="115" y="228" class="lbl" font-size="13" text-anchor="middle">新 token</text>
-	<text x="115" y="248" class="math" font-size="16" text-anchor="middle">h<tspan baseline-shift="sub" font-size="10">t</tspan></text>
-
-	<!-- projections -->
-	<rect x="230" y="196" width="76" height="36" class="box" fill="var(--expert-fill)" stroke="var(--expert-stroke)"/>
-	<text x="268" y="220" class="math" font-size="16" text-anchor="middle">W<tspan baseline-shift="super" font-size="10">Q</tspan></text>
-	<rect x="330" y="196" width="76" height="36" class="box" fill="var(--expert-fill)" stroke="var(--expert-stroke)"/>
-	<text x="368" y="220" class="math" font-size="16" text-anchor="middle">W<tspan baseline-shift="super" font-size="10">K</tspan></text>
-	<rect x="430" y="196" width="76" height="36" class="box" fill="var(--expert-fill)" stroke="var(--expert-stroke)"/>
-	<text x="468" y="220" class="math" font-size="16" text-anchor="middle">W<tspan baseline-shift="super" font-size="10">V</tspan></text>
-
-	<path d="M170,224 L226,216" class="edge" marker-end="url(#arw)"/>
-	<path d="M170,232 L326,220" class="edge" marker-end="url(#arw)"/>
-	<path d="M170,240 L426,226" class="edge" marker-end="url(#arw)"/>
-
-	<!-- q/k/v outputs -->
-	<path d="M268,232 L268,258" class="edge" marker-end="url(#arw)"/>
-	<text x="268" y="278" class="math" font-size="16" text-anchor="middle">q<tspan baseline-shift="sub" font-size="10">t</tspan></text>
-	<path d="M368,232 L368,258" class="edge" marker-end="url(#arw)"/>
-	<text x="368" y="278" class="math" font-size="16" text-anchor="middle">k<tspan baseline-shift="sub" font-size="10">t</tspan></text>
-	<path d="M468,232 L468,258" class="edge" marker-end="url(#arw)"/>
-	<text x="468" y="278" class="math" font-size="16" text-anchor="middle">v<tspan baseline-shift="sub" font-size="10">t</tspan></text>
-
-	<!-- append arrows into new cache cell -->
-	<path d="M372,260 C415,215 470,140 502,92" class="edge" marker-end="url(#arw)"/>
-	<path d="M472,260 C495,225 545,145 560,92" class="edge" marker-end="url(#arw)"/>
-
-	<!-- attention -->
-	<rect x="500" y="272" width="100" height="42" class="box" fill="var(--router-fill)" stroke="var(--router-stroke)"/>
-	<text x="550" y="298" class="lbl" text-anchor="middle">注意力</text>
-
-	<!-- q_t -> attention -->
-	<path d="M276,282 C360,298 430,298 496,294" class="edge" marker-end="url(#arw)"/>
-
-	<!-- whole cache feeds attention (left margin + bottom route) -->
-	<path d="M44,110 L44,318 L496,318 L496,298" class="edge" marker-end="url(#arw)"/>
-	<text x="240" y="310" class="lbl" font-size="13" text-anchor="middle">全部缓存的 K/V 参与注意力</text>
-
-	<!-- output -->
-	<path d="M600,293 L622,293" class="edge" marker-end="url(#arw)"/>
-	<text x="634" y="298" class="math" font-size="17" text-anchor="middle">o<tspan baseline-shift="sub" font-size="10">t</tspan></text>
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="490" viewBox="0 0 900 490" role="img" aria-labelledby="title desc"><title id="title">KV cache 复用历史，只追加新位置</title><desc id="desc">prefill 将提示词各位置的 K 和 V 写入缓存；decode 只计算新位置的 Q、K、V，将新 KV 追加后，用新 Q 读取全部缓存。</desc><style>
+:root{--fg:#29303b;--line:#657285;--bg:#f8fafc;--a:#e0eee6;--b:#e7e4f3;--c:#f7ead6;--accent:#508369;--muted:#667386}
+@media(prefers-color-scheme:dark){:root{--fg:#e0e5ec;--line:#a4afbd;--bg:#222731;--a:#283e35;--b:#353148;--c:#483b2b;--accent:#86b49b;--muted:#b2bdcb}}
+text{font-family:Helvetica,Arial,'PingFang SC',sans-serif;fill:var(--fg);font-size:20px}
+.title{font-size:26px;font-weight:600}.head{font-size:22px;font-weight:600}.small{font-size:17px;fill:var(--muted)}.num{font-size:14px}.operator{font-size:22px;fill:var(--muted)}
+.box{fill:var(--bg);stroke:var(--line);stroke-width:1.4}.a{fill:var(--a)}.b{fill:var(--b)}.c{fill:var(--c)}.panel{stroke-opacity:.5}.selected{stroke-width:2.3}.faint{opacity:.4}
+.arrow{fill:none;stroke:var(--line);stroke-width:1.7;stroke-linejoin:round;marker-end:url(#arrow)}
+.route{fill:none;stroke:var(--line);stroke-width:2.2;stroke-linejoin:round;marker-end:url(#arrow)}
+.option{fill:none;stroke:var(--line);stroke-width:1.2;stroke-dasharray:3 4;opacity:.35;marker-end:url(#arrow)}
+.divider{fill:none;stroke:var(--line);stroke-width:1;opacity:.45}.glyph{fill:none;stroke:var(--line);stroke-width:1.4;stroke-linecap:round;opacity:.65}.score{fill:var(--accent)}
+</style><defs><marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="var(--line)"/></marker></defs>
+<text x="450" y="40" class="title" text-anchor="middle">KV cache 复用历史，只追加新位置</text>
+<text x="235" y="90" class="head" text-anchor="middle">① Prefill</text>
+<text x="670" y="90" class="head" text-anchor="middle">② Decode</text>
+<rect x="65" y="123" width="70" height="36" rx="7" class="box"/>
+<text x="100.0" y="148.0" class="" text-anchor="middle">x1</text>
+<path d="M100 159 V210" class="arrow"/>
+<rect x="65" y="210" width="70" height="36" rx="7" class="box a"/>
+<path d="M75.0 219 v18" class="glyph"/>
+<path d="M82.14285714285714 219 v18" class="glyph"/>
+<path d="M89.28571428571429 219 v18" class="glyph"/>
+<path d="M96.42857142857143 219 v18" class="glyph"/>
+<path d="M103.57142857142857 219 v18" class="glyph"/>
+<path d="M110.71428571428572 219 v18" class="glyph"/>
+<path d="M117.85714285714286 219 v18" class="glyph"/>
+<rect x="65" y="265" width="70" height="36" rx="7" class="box b"/>
+<path d="M75.0 274 v18" class="glyph"/>
+<path d="M82.14285714285714 274 v18" class="glyph"/>
+<path d="M89.28571428571429 274 v18" class="glyph"/>
+<path d="M96.42857142857143 274 v18" class="glyph"/>
+<path d="M103.57142857142857 274 v18" class="glyph"/>
+<path d="M110.71428571428572 274 v18" class="glyph"/>
+<path d="M117.85714285714286 274 v18" class="glyph"/>
+<rect x="155" y="123" width="70" height="36" rx="7" class="box"/>
+<text x="190.0" y="148.0" class="" text-anchor="middle">x2</text>
+<path d="M190 159 V210" class="arrow"/>
+<rect x="155" y="210" width="70" height="36" rx="7" class="box a"/>
+<path d="M165.0 219 v18" class="glyph"/>
+<path d="M172.14285714285714 219 v18" class="glyph"/>
+<path d="M179.28571428571428 219 v18" class="glyph"/>
+<path d="M186.42857142857142 219 v18" class="glyph"/>
+<path d="M193.57142857142858 219 v18" class="glyph"/>
+<path d="M200.71428571428572 219 v18" class="glyph"/>
+<path d="M207.85714285714286 219 v18" class="glyph"/>
+<rect x="155" y="265" width="70" height="36" rx="7" class="box b"/>
+<path d="M165.0 274 v18" class="glyph"/>
+<path d="M172.14285714285714 274 v18" class="glyph"/>
+<path d="M179.28571428571428 274 v18" class="glyph"/>
+<path d="M186.42857142857142 274 v18" class="glyph"/>
+<path d="M193.57142857142858 274 v18" class="glyph"/>
+<path d="M200.71428571428572 274 v18" class="glyph"/>
+<path d="M207.85714285714286 274 v18" class="glyph"/>
+<rect x="245" y="123" width="70" height="36" rx="7" class="box"/>
+<text x="280.0" y="148.0" class="" text-anchor="middle">x3</text>
+<path d="M280 159 V210" class="arrow"/>
+<rect x="245" y="210" width="70" height="36" rx="7" class="box a"/>
+<path d="M255.0 219 v18" class="glyph"/>
+<path d="M262.14285714285717 219 v18" class="glyph"/>
+<path d="M269.2857142857143 219 v18" class="glyph"/>
+<path d="M276.42857142857144 219 v18" class="glyph"/>
+<path d="M283.57142857142856 219 v18" class="glyph"/>
+<path d="M290.7142857142857 219 v18" class="glyph"/>
+<path d="M297.85714285714283 219 v18" class="glyph"/>
+<rect x="245" y="265" width="70" height="36" rx="7" class="box b"/>
+<path d="M255.0 274 v18" class="glyph"/>
+<path d="M262.14285714285717 274 v18" class="glyph"/>
+<path d="M269.2857142857143 274 v18" class="glyph"/>
+<path d="M276.42857142857144 274 v18" class="glyph"/>
+<path d="M283.57142857142856 274 v18" class="glyph"/>
+<path d="M290.7142857142857 274 v18" class="glyph"/>
+<path d="M297.85714285714283 274 v18" class="glyph"/>
+<rect x="335" y="123" width="70" height="36" rx="7" class="box"/>
+<text x="370.0" y="148.0" class="" text-anchor="middle">x4</text>
+<path d="M370 159 V210" class="arrow"/>
+<rect x="335" y="210" width="70" height="36" rx="7" class="box a"/>
+<path d="M345.0 219 v18" class="glyph"/>
+<path d="M352.14285714285717 219 v18" class="glyph"/>
+<path d="M359.2857142857143 219 v18" class="glyph"/>
+<path d="M366.42857142857144 219 v18" class="glyph"/>
+<path d="M373.57142857142856 219 v18" class="glyph"/>
+<path d="M380.7142857142857 219 v18" class="glyph"/>
+<path d="M387.85714285714283 219 v18" class="glyph"/>
+<rect x="335" y="265" width="70" height="36" rx="7" class="box b"/>
+<path d="M345.0 274 v18" class="glyph"/>
+<path d="M352.14285714285717 274 v18" class="glyph"/>
+<path d="M359.2857142857143 274 v18" class="glyph"/>
+<path d="M366.42857142857144 274 v18" class="glyph"/>
+<path d="M373.57142857142856 274 v18" class="glyph"/>
+<path d="M380.7142857142857 274 v18" class="glyph"/>
+<path d="M387.85714285714283 274 v18" class="glyph"/>
+<text x="30" y="235" class="small" text-anchor="middle">K</text>
+<text x="30" y="290" class="small" text-anchor="middle">V</text>
+<text x="230" y="339" class="small" text-anchor="middle">历史 KV 留在缓存中</text>
+<rect x="625" y="123" width="100" height="36" rx="7" class="box c"/>
+<text x="675.0" y="148.0" class="" text-anchor="middle">x₅</text>
+<path d="M675 159 V188 H570 V210" class="arrow"/>
+<path d="M675 188 V210" class="arrow"/>
+<path d="M675 188 H780 V210" class="arrow"/>
+<rect x="535" y="210" width="70" height="40" rx="7" class="box c"/>
+<text x="570.0" y="237.0" class="" text-anchor="middle">Q₅</text>
+<rect x="640" y="210" width="70" height="40" rx="7" class="box a"/>
+<text x="675.0" y="237.0" class="" text-anchor="middle">K₅</text>
+<rect x="745" y="210" width="70" height="40" rx="7" class="box b"/>
+<text x="780.0" y="237.0" class="" text-anchor="middle">V₅</text>
+<path d="M675 250 V290" class="arrow"/>
+<path d="M780 250 V290" class="arrow"/>
+<rect x="625" y="290" width="205" height="50" rx="7" class="box"/>
+<text x="727.5" y="322.0" class="" text-anchor="middle">追加 K₅、V₅</text>
+<path d="M375 265 H470 V365 H675 V385" class="arrow"/>
+<path d="M725 340 V385" class="arrow"/>
+<path d="M570 250 V410 H625" class="arrow"/>
+<rect x="625" y="385" width="205" height="50" rx="7" class="box c"/>
+<text x="727.5" y="417.0" class="" text-anchor="middle">注意力读取</text>
+<text x="450" y="477" class="small" text-anchor="middle">每步读取全部历史 KV，但不重复计算它们的投影</text>
 </svg>

@@ -1,12 +1,12 @@
 ---
 title: 从零理解 MLA
 date: 2026-10-20
-updated: 2026-10-21
+updated: 2026-10-29
 description: 本文从 KV cache 的推理开销讲起，经过 MQA 与 GQA 的共享方案，理解 DeepSeek-V2 提出的多头潜在注意力：低秩联合压缩、矩阵吸收与解耦 RoPE。
 tags: [LLM, Deepseek, MLA, KV Cache, AI Infra]
 category: LLM
 episode: 5
-draft: true
+draft: false
 lang: zh_CN
 ---
 
@@ -14,7 +14,7 @@ lang: zh_CN
 
 回顾 [EP.0](../llm-transformer/) 的 Transformer，每个 Block 里真正做计算的就是两个模块：注意力与 FFN。现代 LLM 的架构创新也主要集中在这两处：[EP.1](../llm-moe/) 讲的 MoE 是在 FFN 上做稀疏化改造，本文要讲的 MLA 则是在注意力上动刀。
 
-MLA 全名**多头潜在注意力**（Multi-head Latent Attention），由 [DeepSeek-V2](https://arxiv.org/abs/2405.04434) 在 2024 年 5 月首次提出，之后被 DeepSeek-V3、R1 等模型沿用。它主要针对自回归推理时的 KV cache 开销，同时也通过查询压缩减少训练时的激活显存。这也是本系列第一次讨论注意力本身的改进，前面的归一化、位置编码都是在注意力的外围做加固。[EP.3](../llm-position-encoding/) 在介绍解耦 RoPE 时曾留下一个伏笔：为什么 DeepSeek 要专门拆出一条位置通道？答案就藏在 MLA 的完整结构里，本文会把它收回来。
+MLA 全名**多头潜在注意力**（Multi-head Latent Attention），由 [DeepSeek-V2](https://arxiv.org/abs/2405.04434) 在 2024 年 5 月首次提出，之后被 DeepSeek-V3、R1 等模型沿用。它主要针对自回归推理时的 KV cache 开销，同时也通过查询压缩减少训练时的激活显存。[EP.3](../llm-position-encoding/) 在介绍解耦 RoPE 时曾留下一个伏笔：为什么 DeepSeek 要专门拆出一条位置通道？MLA 的结构会解释这个选择。
 
 我们的路线是：先看清问题本身，即 KV cache 为什么成为推理瓶颈；再看最直接的解法 MQA 与 GQA 付出了什么代价；然后理解 MLA 的两件武器，低秩联合压缩与矩阵吸收；最后处理它与 RoPE 的冲突，把 DeepSeek-V2 的注意力维度配置摆出来。
 
@@ -24,25 +24,17 @@ MLA 全名**多头潜在注意力**（Multi-head Latent Attention），由 [Deep
 
 语言模型的生成是逐个 token 进行的：每步只产生一个新 token，把它拼到输入后面，再算下一个。由于因果掩码的存在，第 $t$ 步的 token 只能看到位置 $1$ 到 $t$ 的内容。
 
-对解码过程做一点观察就会发现大量重复计算。第 $t$ 步要做的事，是让新 token 的 query 与所有历史位置的 key、value 做注意力。推理时，历史位置看不到后续 token，因此续写不会改变这些位置在各层的表示，也不会改变它们的 K/V。若每步重新计算整个前缀，就会对不变的历史表示重复做 K/V 投影。
+第 $t$ 步要做的事，是让新 token 的 query 与所有历史位置的 key、value 做注意力。推理时，历史位置看不到后续 token，因此续写不会改变这些位置在各层的表示，也不会改变它们的 K/V。若每步重新计算整个前缀，就会对不变的历史表示重复做 K/V 投影。
 
-> **既然历史 K/V 不变，能不能算一次就存下来，后面直接用？**
+把历史 K/V 算一次并保存，后续直接复用，就是 **KV Cache**。工程上把生成过程拆成两个阶段：prefill 阶段一次性处理整段 prompt，把所有 K/V 算好存起来；decode 阶段每步只给新 token 算 Q、K、V，把新的 K/V 追加进缓存，再与全部缓存做注意力。
 
-当然可以，这就是 **KV Cache**。工程上把生成过程拆成两个阶段：prefill 阶段一次性处理整段 prompt，把所有 K/V 算好存起来；decode 阶段每步只给新 token 算 Q、K、V，把新的 K/V 追加进缓存，再与全部缓存做注意力。
-
-![kv-cache](/img/posts/llm-mla/kv-cache.svg)
+![Prefill 写入历史 KV，decode 追加新 KV 并读取全部缓存](/img/posts/llm-mla/kv-cache.svg)
 
 ## 缓存开销
 
-天下没有免费的午餐，KV cache 省的是计算，花的是显存。标准 MHA 下，每个 token 在每一层都要存一份完整的 K 和 V，大小为
+KV cache 用显存换计算。标准 MHA 下，每个 token 每层缓存完整的 K 和 V，共 $2 n_h d_{\text{head}}$ 个元素。其中 $n_h$ 是注意力头数，$d_{\text{head}}$ 是每头维度。乘上层数 $L$，就是每个 token 的全部缓存。
 
-$$
-2 \cdot n_h \cdot d_{\text{head}} \quad \text{个元素},
-$$
-
-其中 $n_h$ 是注意力头数，$d_{\text{head}}$ 是每头维度。乘上层数 $L$，就是每个 token 的全部缓存。
-
-这个开销有多大？拿 DeepSeek-V2 的规模估一下：$n_h = 128$、$d_{\text{head}} = 128$、$L = 60$，如果它用标准 MHA，每个 token 要缓存约 197 万个元素；一条 $128 \times 1024$ token 的序列就是约 2580 亿个元素，fp16 下约 480 GiB。这还没有计入模型权重与其他运行时开销，batch size 增大时缓存还会成倍增加。长上下文 decode 的注意力计算往往受缓存读取带宽限制：每生成一个 token，都要把整个缓存读一遍，缓存越大，生成越慢。KV cache 同时卡住了显存容量和显存带宽，这就是它成为推理瓶颈的原因。
+以 DeepSeek-V2 的规模估算：$n_h = 128$、$d_{\text{head}} = 128$、$L = 60$，如果它用标准 MHA，每个 token 要缓存约 197 万个元素；一条 $128 \times 1024$ token 的序列就是约 2580 亿个元素，fp16 下约 480 GiB。这还没有计入模型权重与其他运行时开销，batch size 增大时缓存还会成倍增加。长上下文 decode 的注意力计算往往受缓存读取带宽限制：每生成一个 token，都要把整个缓存读一遍，缓存越大，生成越慢。KV cache 同时卡住了显存容量和显存带宽。
 
 ## 代码示例
 
@@ -122,15 +114,15 @@ K/V 投影次数：无缓存 78 次，有缓存 12 次
 缓存元素数：1536 = 2 × 4 × 16 × 12
 ```
 
-两种方式逐位一致，但 K/V 投影次数从 $1 + 2 + \cdots + 12 = 78$ 降到了 12，这正是 KV cache 的价值；而 1536 个缓存元素正好对应公式 $2 n_h d_{\text{head}}$ 每 token。把每 token 每层这个数字乘以 60 层、$128 \times 1024$ 的序列长度和不算大的 batch，就能看出问题所在。
+两种方式的输出在给定误差范围内一致，而 K/V 投影次数从 $1 + 2 + \cdots + 12 = 78$ 降到了 12，这正是 KV cache 的价值；而 1536 个缓存元素正好对应公式 $2 n_h d_{\text{head}}$ 每 token。把每 token 每层这个数字乘以 60 层、$128 \times 1024$ 的序列长度和不算大的 batch，就能看出问题所在。
 
 # MQA 与 GQA
 
-最直接的压缩思路是共享：如果多个注意力头用同一份 K/V，缓存不就按共享倍数缩小了吗？
+最直接的压缩方法是让多个注意力头共享 K/V，按共享比例减少缓存。
 
 **多查询注意力**（Multi-Query Attention，MQA）把这个思路推到极限：所有 $n_h$ 个 query 头共享同一份 K 和 V，每个 token 每层只缓存 $2 d_{\text{head}}$ 个元素。**分组查询注意力**（Grouped-Query Attention，GQA）折中一些：把 $n_h$ 个头分成 $n_g$ 组，组内共享 K/V，缓存为 $2 n_g d_{\text{head}}$ 每 token 每层。Llama、Qwen 等系列广泛采用 GQA，但组数因型号而异；本文用 GQA-8 表示有 8 个 K/V 头的配置。
 
-![kv-sharing](/img/posts/llm-mla/kv-sharing.svg)
+![MHA、GQA 与 MQA 的 query 到 KV 共享关系](/img/posts/llm-mla/kv-sharing.svg)
 
 共享 K/V 减少了键值投影的独立性，但各头仍有不同的 query，可以形成不同的注意力权重，并不等于合并成一个注意力头。DeepSeek-V2 的技术报告附录 D.1 对比了三个约 7B 的 dense 模型：三者同样训练 1.33T token，除注意力机制外，还调整了层数以使总参数量接近：
 
@@ -141,7 +133,7 @@ K/V 投影次数：无缓存 78 次，有缓存 12 次
 | C-Eval | 30.0 | 37.7 | 42.9 |
 | CMMLU | 34.6 | 38.4 | 43.5 |
 
-这组实验中，共享越多，掉点越多：MQA 相比 MHA 在四个基准上全面大幅落后，GQA-8 居中。共享方案用性能换来了缓存，这不是免费的压缩。
+这组实验中，MQA 在四个基准上均低于 MHA，GQA-8 居中，说明共享 K/V 可能损失模型质量。
 
 ## 代码示例
 
@@ -196,7 +188,7 @@ K/V 头数   2：参数量 170.4M，每 token 缓存   30.7K 元素
 K/V 头数   1：参数量 169.1M，每 token 缓存   15.4K 元素
 ```
 
-从 128 个 K/V 头砍到 1 个，缓存缩小了 128 倍，注意力模块参数量却只省了一半。这张表也埋下了 MLA 的目标：能不能找到一种压缩方式，缓存接近 MQA，性能却不输 MHA？
+从 128 个 K/V 头砍到 1 个，缓存缩小了 128 倍，注意力模块参数量却只省了一半。MLA 要进一步解决的是：能不能找到一种压缩方式，缓存接近 MQA，性能却不输 MHA？
 
 # MLA
 
@@ -220,17 +212,17 @@ $$
 
 $W^{UK}, W^{UV} \in \mathbb{R}^{n_h d_{\text{head}} \times d_c}$，输出同样切分成 $n_h$ 个头。缓存里只放 $\mathbf{c}_t^{KV}$，每 token 每层 $d_c$ 个元素。
 
-![mla](/img/posts/llm-mla/mla.svg)
+![MLA 的共享隐向量与各头独立上投影](/img/posts/llm-mla/mla.svg)
 
 > **这和 MQA 的共享有什么本质区别？**
 
-区别在于「各自还原」。MQA 是所有头拿到完全相同的一份 K/V；MLA 里第 $i$ 个头的 $\mathbf{k}_{t,i}^{C}$ 是隐向量经 $W^{UK}$ 的第 $i$ 个分块投影出来的，每个头仍然有自己的 key 和 value。低秩约束作用于所有头拼接后的联合表示：$W^{UK}$、$W^{UV}$ 以及两者纵向拼接的矩阵，其秩都至多为 $d_c$。信息被迫走一条窄通道，但每个头走自己的门。DeepSeek-V2 的消融实验显示，MLA 在多数所测指标上优于 MHA；可以把低秩瓶颈理解为一种类似正则化的约束。
+区别在于「各自还原」。MQA 是所有头拿到完全相同的一份 K/V；MLA 里第 $i$ 个头的 $\mathbf{k}_{t,i}^{C}$ 是隐向量经 $W^{UK}$ 的第 $i$ 个分块投影出来的，每个头仍然有自己的 key 和 value。低秩约束作用于所有头拼接后的联合表示：$W^{UK}$、$W^{UV}$ 以及两者纵向拼接的矩阵，其秩都至多为 $d_c$。因此，共享的是低维表示，各头的 K/V 仍可不同。DeepSeek-V2 的消融实验显示，MLA 在多数所测指标上优于 MHA；可以把低秩瓶颈理解为一种类似正则化的约束。
 
 ## 矩阵吸收
 
-上面的方案省下了缓存，却引入了一个新问题：推理时取出缓存的 $\mathbf{c}_t^{KV}$，还得先乘 $W^{UK}$、$W^{UV}$ 解压出 K/V 才能算注意力。缓存的本意是省计算，这不又把计算加回来了吗？
+上面的方案省下了缓存，却引入了一个新问题：推理时取出缓存的 $\mathbf{c}_t^{KV}$，还得先乘 $W^{UK}$、$W^{UV}$ 解压出 K/V 才能算注意力。若每步都还原全部历史 K/V，就会引入重复计算。
 
-解围的工具是矩阵乘法的结合律。先看 logits，第 $i$ 个头的 query 为 $\mathbf{q}_{t,i}^{C}$，与位置 $j$ 的 key 做内积：
+矩阵乘法的结合律可以避免这一步。先看 logits，第 $i$ 个头的 query 为 $\mathbf{q}_{t,i}^{C}$，与位置 $j$ 的 key 做内积：
 
 $$
 (\mathbf{q}_{t,i}^{C})^{\top}\,\mathbf{k}_{j,i}^{C}
@@ -240,7 +232,7 @@ $$
 \big((W_i^{UK})^{\top}\,\mathbf{q}_{t,i}^{C}\big)^{\top}\,\mathbf{c}_j^{KV},
 $$
 
-其中 $W_i^{UK} \in \mathbb{R}^{d_{\text{head}} \times d_c}$ 是 $W^{UK}$ 的第 $i$ 个头的分块。注意最右边：$(W_i^{UK})^{\top}\mathbf{q}_{t,i}^{C}$ 是一个 $d_c$ 维向量，它与缓存的 $\mathbf{c}_j^{KV}$ 直接做内积就得到 logits，相当于把解压矩阵从 K 侧「吸收」到了 Q 侧，每头预先算好 $W^{UK}_i$ 的转置即可，历史 K 根本不需要显式还原。
+其中 $W_i^{UK} \in \mathbb{R}^{d_{\text{head}} \times d_c}$ 是 $W^{UK}$ 的第 $i$ 个头的分块。看等式右侧：$(W_i^{UK})^{\top}\mathbf{q}_{t,i}^{C}$ 是一个 $d_c$ 维向量，它与缓存的 $\mathbf{c}_j^{KV}$ 直接做内积就得到 logits，相当于把解压矩阵从 K 侧「吸收」到了 Q 侧，每头预先算好 $W^{UK}_i$ 的转置即可，历史 K 根本不需要显式还原。
 
 输出侧同理。第 $i$ 个头的输出是 value 的加权和，而 value 也是隐向量解压出来的：
 
@@ -264,7 +256,7 @@ $$
 
 每头的 $W_i^{O}W_i^{UV} \in \mathbb{R}^{d \times d_c}$ 可以预先合并成一个矩阵，$W^{UV}$ 被「吸收」进了 $W^{O}$。
 
-于是推理时的图景变成了：缓存存 $\mathbf{c}^{KV}$，logits 在隐空间里直接算，value 也以隐向量形式加权聚合，**K 和 V 从头到尾都不需要被还原出来**。缓存省下来了，重复还原历史 K/V 的计算也省下来了。
+吸收后的推理流程是：缓存存 $\mathbf{c}^{KV}$，logits 在隐空间里直接算，value 也以隐向量形式加权聚合，**K 和 V 从头到尾都不需要被还原出来**。
 
 ## 查询压缩
 
@@ -283,6 +275,7 @@ $$
 =
 (\mathbf{c}_t^{Q})^{\top}\,\underbrace{(W_i^{UQ})^{\top}W_i^{UK}}_{\text{每头一个可预计算的 }d_c'\times d_c\text{ 矩阵}}\,\mathbf{c}_j^{KV}.
 $$
+
 
 ## 代码示例
 
@@ -340,7 +333,7 @@ class MLA(nn.Module):
         return self.w_o(o.reshape(-1, 1, self.n_heads * self.d_head)), cache
 ```
 
-注意 `w_uk.weight` 的形状：PyTorch 的 `nn.Linear(in, out)` 权重是 `[out, in]`，所以 `view(H, d_head, d_c)` 的第 $i$ 块正好是 $W_i^{UK}$。验证两种算法逐位一致，并数一数缓存：
+注意 `w_uk.weight` 的形状：PyTorch 的 `nn.Linear(in, out)` 权重是 `[out, in]`，所以 `view(H, d_head, d_c)` 的第 $i$ 块正好是 $W_i^{UK}$。验证两种算法在给定误差范围内一致，并数一数缓存：
 
 ```python
 torch.manual_seed(0)
@@ -367,9 +360,9 @@ print(f"每 token 每层缓存：MLA {mla.d_c} 元素，MHA {kv_elems} 元素，
 
 # 解耦 RoPE
 
-MLA 看起来已经很完美了，但还有一个问题被刻意回避了：位置编码。[EP.3](../llm-position-encoding/) 讲过，现代 LLM 几乎都用 RoPE，而把它直接施加到内容 K/Q 上，会妨碍刚才的矩阵吸收。
+还需要处理位置编码。[EP.3](../llm-position-encoding/) 讲过，现代 LLM 几乎都用 RoPE，而把它直接施加到内容 K/Q 上，会妨碍刚才的矩阵吸收。
 
-原因就在矩阵吸收上。给 $\mathbf{k}_j^{C}$ 施加位置 $j$ 的旋转 $R_j$、给 $\mathbf{q}_{t,i}^{C}$ 施加位置 $t$ 的旋转 $R_t$ 之后，把 $\mathbf{q}_{t,i}^{C} = W_i^{UQ}\mathbf{c}_t^{Q}$ 也展开，logits 变成
+给 $\mathbf{k}_j^{C}$ 施加位置 $j$ 的旋转 $R_j$、给 $\mathbf{q}_{t,i}^{C}$ 施加位置 $t$ 的旋转 $R_t$ 之后，把 $\mathbf{q}_{t,i}^{C} = W_i^{UQ}\mathbf{c}_t^{Q}$ 也展开，logits 变成
 
 $$
 (\mathbf{q}_{t,i}^{C})^{\top}\,R_t^{\top}\,R_j\,W_i^{UK}\,\mathbf{c}_j^{KV}
@@ -377,9 +370,9 @@ $$
 (\mathbf{c}_t^{Q})^{\top}\,(W_i^{UQ})^{\top}\,\underbrace{R_t^{\top}R_j}_{R_{j-t}}\,W_i^{UK}\,\mathbf{c}_j^{KV}.
 $$
 
-$R_{j-t}$ 是随相对位置变化的块对角矩阵，正好卡在 $(W_i^{UQ})^{\top}$ 与 $W_i^{UK}$ 之间。中间因子依赖相对位置，因而无法像前面那样预先合并为一个与位置无关的固定矩阵。朴素做法需要还原 K 后旋转，前面那条固定矩阵吸收的路被 RoPE 堵住了。
+$R_{j-t}$ 是随相对位置变化的块对角矩阵，正好卡在 $(W_i^{UQ})^{\top}$ 与 $W_i^{UK}$ 之间。中间因子依赖相对位置，因而无法像前面那样预先合并为一个与位置无关的固定矩阵。朴素做法需要还原 K 后旋转，无法沿用前面的固定矩阵吸收。
 
-> **DeepSeek 怎么办？把位置信息从压缩通道里拆出去。**
+DeepSeek 将位置信息从压缩通道中拆出。
 
 这就是**解耦 RoPE**（decoupled RoPE）：在原本的内容通道之外，额外开一条窄小的位置通道，专门承载 RoPE。对 query，每头从 $\mathbf{c}_t^{Q}$ 投影出一段 $d_r$ 维向量并旋转：
 
@@ -479,7 +472,7 @@ class MLADecoupledRoPE(MLA):
         return self.w_o(o.reshape(-1, 1, self.n_heads * self.d_head)), cache
 ```
 
-注意位置分的内积 `s_r` 直接用缓存的 `kr_cache`：$\mathbf{k}^{R}$ 在入缓存时就已经按自己的位置旋转过了，读出来即用，这正是解耦的意义：它不参与低秩压缩，位置信息不会卡住吸收。验证完整 MLA 的两种实现：
+注意位置分的内积 `s_r` 直接用缓存的 `kr_cache`：$\mathbf{k}^{R}$ 在入缓存时就已经按自己的位置旋转过了，读出来即用，这正是解耦的意义：它不参与低秩压缩，位置信息不会卡住吸收。验证带解耦 RoPE 的两种实现：
 
 ```python
 torch.manual_seed(0)
@@ -525,19 +518,23 @@ $$
 | 250B | MMLU / BBH | 57.5 / 46.6 | 59.0 / 50.7 |
 | 250B | C-Eval | 57.9 | 59.2 |
 
-![cache-compare](/img/posts/llm-mla/cache-compare.svg)
+![同配置下 MHA、GQA、MLA 与 MQA 的缓存元素数](/img/posts/llm-mla/cache-compare.svg)
 
 MLA 在这些实验的多数指标上更好，小模型的 C-Eval 则略有下降。
 
-两个工程细节也值得知道。其一，论文在压缩隐向量后面加了额外的 RMSNorm，并在瓶颈处乘缩放因子，因为低秩压缩会改变层的输出尺度，这与 [EP.2](../llm-normalization/) 讲的归一化思路一脉相承。上面的教学代码省略了这些归一化、额外缩放以及长上下文 YaRN 配置，验证的是简化结构中朴素前向与吸收计算的等价性。其二，吸收形式下 logits 是在 $d_c$ 维的隐空间里算的，它换来的是显存与带宽，而不是更少的乘加。长上下文 decode 的瓶颈在搬运缓存，这笔交换是划算的。
+还有两个工程细节。其一，论文在压缩隐向量后面加了额外的 RMSNorm，并在瓶颈处乘缩放因子，因为低秩压缩会改变层的输出尺度，这与 [EP.2](../llm-normalization/) 讲的归一化思路一脉相承。上面的教学代码省略了这些归一化、额外缩放以及长上下文 YaRN 配置，验证的是简化结构中朴素前向与吸收计算的等价性。其二，吸收形式下 logits 是在 $d_c$ 维的隐空间里算的，它换来的是显存与带宽，而不是更少的乘加。长上下文 decode 的瓶颈在搬运缓存，减少缓存搬运因此可能比减少乘加更有收益。
 
-MLA 此后成了 DeepSeek 的标志性设计：V3、R1 沿用同一结构，Kimi K2 等模型也采用了它。回头看整个方案，它把「压缩缓存」和「保住表达能力」这两个本来矛盾的目标，用「共享一个隐向量、各自做投影」的方式同时拿到了。
+MLA 此后成了 DeepSeek 的标志性设计：V3、R1 沿用同一结构，Kimi K2 等模型也采用了它。它通过共享隐向量、保留各头投影，在压缩缓存的同时保留了各头不同的 K/V。
 
 # 结语
 
 本文沿着一条问题的线索走到了 MLA：自回归生成让历史 K/V 可以缓存，缓存却成了显存和带宽的双重瓶颈；MQA/GQA 用共享换缓存，在上面的实验中付出了性能代价；MLA 改用低秩联合压缩，让每个头仍有自己的 K/V，只是共享同一个隐向量；矩阵吸收用结合律避免显式还原历史 K/V；解耦 RoPE 则把位置信息请出压缩通道，补上了最后一块拼图。
 
-注意力侧的改造故事不止这一种讲法，但 MLA 是目前最干净利落的一个：它不靠砍头来省显存，而是靠发现 K/V 里本就存在的冗余。下一篇我们继续在 LLM 的核心技术上拆小、拆透。
+MLA 的关键是压缩各头 K/V 的联合表示，再让注意力直接读取压缩后的缓存。理解这条计算路径，就能把低秩压缩、矩阵吸收和解耦 RoPE 连成一个完整方案。
+
+下图把内容压缩、矩阵吸收与解耦 RoPE 合成一条解码路径，只展开第 $i$ 个头。缓存中的 $\mathbf{c}_j^{KV}$ 同时参与内容打分与 value 聚合；位置分支单独缓存已经旋转的 $\mathbf{k}_j^R$。图中 $M_i=(W_i^{UQ})^{\top}W_i^{UK}$、$B_i=W_i^O W_i^{UV}$ 都可预先合并，因而不必显式还原历史内容 K/V。
+
+![MLA 吸收后的解码结构，内容与位置分支共同打分，隐向量缓存直接参与聚合](/img/posts/llm-mla/mla-overview.svg)
 
 # 参考资料
 

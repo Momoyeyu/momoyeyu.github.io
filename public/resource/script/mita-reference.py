@@ -1,5 +1,5 @@
 """MiTA learning reference, non-causal attention, s=1.
-Run on CPU or MPS with Python + PyTorch. Not a performance kernel.
+Run on CUDA, CPU or MPS with Python + PyTorch. Not a performance kernel.
 """
 import argparse
 import json
@@ -88,11 +88,15 @@ def direct_reference(q, k, v, landmarks, topk):
 
 
 def synchronize(device):
-    if device == 'mps':
+    if device.startswith('cuda'):
+        torch.cuda.synchronize(device)
+    elif device == 'mps':
         torch.mps.synchronize()
 
 
 def pick_device():
+    if torch.cuda.is_available():
+        return {}, 'cuda'
     torch.manual_seed(17)
     torch.set_num_threads(4)
     data = [torch.randn(1, 2, 512, 32) for _ in range(3)]
@@ -126,7 +130,8 @@ def verify(device):
                       q1_output=out[0, 0, 0].cpu().tolist())
     errors = []
     for b, h, n, d, m, topk in [(1, 1, 8, 2, 2, 2), (2, 3, 11, 4, 3, 4),
-                               (1, 2, 7, 4, 1, 1), (1, 1, 5, 4, 2, 5)]:
+                               (1, 2, 7, 4, 1, 1), (1, 1, 5, 4, 2, 5),
+                               (2, 4, 31, 32, 5, 8)]:
         q, k, v = [torch.randn(b, h, n, d, device=device) for _ in range(3)]
         l = pool_landmarks(q, m)
         actual, (_, _, sv, scores) = mita(q, k, v, l, topk)
@@ -158,26 +163,39 @@ def verify(device):
     actual, (_, route, _, _) = mita(q,k,v,l,3)
     assert (route == 0).all()
     torch.testing.assert_close(actual, direct_reference(q,k,v,l,3), atol=2e-5, rtol=2e-5)
-    # Backprop works on the continuous paths; hard Top-k/argmax indices are discrete.
+    # Compare continuous-path gradients too; Top-k/argmax indices are discrete.
     q,k,v = [torch.randn(1,2,9,4,device=device,requires_grad=True) for _ in range(3)]
-    mita(q,k,v,pool_landmarks(q,3),2)[0].square().mean().backward()
-    assert all(x.grad is not None and torch.isfinite(x.grad).all() for x in [q,k,v])
+    q_ref,k_ref,v_ref = [x.detach().clone().requires_grad_() for x in [q,k,v]]
+    upstream = torch.randn_like(q)
+    mita(q,k,v,pool_landmarks(q,3),2)[0].backward(upstream)
+    direct_reference(q_ref,k_ref,v_ref,pool_landmarks(q_ref,3),2).backward(upstream)
+    gradient_errors = []
+    for actual, expected in zip([q,k,v], [q_ref,k_ref,v_ref]):
+        assert actual.grad is not None and torch.isfinite(actual.grad).all()
+        torch.testing.assert_close(actual.grad, expected.grad, atol=2e-5, rtol=2e-5)
+        gradient_errors.append((actual.grad-expected.grad).abs().max().item())
     return dict(toy=toy_result, max_sdpa_error=max(errors),
+                max_gradient_error=max(gradient_errors),
                 checks=['literal SDPA concatenation', 'joint softmax / LSE merge',
                         'KV permutation', 'multi-batch / multi-head',
                         'k=1 / k=N / m=1', 'uneven pooling', 'empty experts',
-                        'finite backward gradients'])
+                        'backward gradients against SDPA'])
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--device', choices=['auto','cpu','mps'], default='auto')
+    parser.add_argument('--device', choices=['auto','cuda','cpu','mps'], default='auto')
     args = parser.parse_args()
     torch.set_num_threads(4)
+    torch.backends.cuda.matmul.allow_tf32 = False
+    torch.backends.cudnn.allow_tf32 = False
     if args.device == 'auto':
         timings, device = pick_device()
     else:
         timings, device = {}, args.device
-    report = dict(torch=torch.__version__, device=device, cpu_threads=4,
+    report = dict(torch=torch.__version__, device=device, dtype='float32',
+                  cuda=torch.version.cuda,
+                  gpu=torch.cuda.get_device_name() if device.startswith('cuda') else None,
+                  cpu_threads=4,
                   selection_ms=timings, **verify(device))
     print(json.dumps(report, ensure_ascii=False, indent=2))
