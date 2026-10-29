@@ -1,5 +1,273 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="820" height="555" viewBox="0 0 820 555" role="img" aria-label="FFN 使用训练权重，Attention 用当前输入的 key value 构造网络"><title>FFN 使用训练权重，Attention 用当前输入的 key value 构造网络</title><style>
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="675" viewBox="0 0 900 675" role="img" aria-labelledby="title desc">
+<title id="title">Attention 的快权重视角</title>
+<desc id="desc">左侧 FFN 的两层连线由训练参数 W1 和 W2 决定，中间层宽度固定，使用逐元素激活。右侧 Attention 的两层连线分别由当前上下文生成的 K 和 V 决定，中间层有 N 个节点，每个节点对应一对 KV，并在这些节点之间使用 softmax。两边的图都以少量节点示意网络结构。</desc>
+<style>
 :root{--fg:#29303b;--line:#657285;--bg:#f8fafc;--a:#e0eee6;--b:#e7e4f3;--c:#f7ead6;--accent:#508369;--muted:#667386}
 @media(prefers-color-scheme:dark){:root{--fg:#e0e5ec;--line:#a4afbd;--bg:#222731;--a:#283e35;--b:#353148;--c:#483b2b;--accent:#86b49b;--muted:#b2bdcb}}
-text{font-family:Helvetica,Arial,'PingFang SC',sans-serif;fill:var(--fg);font-size:18px}.small{font-size:15px;fill:var(--muted)}.title{font-size:23px;font-weight:600}.head{font-size:19px;font-weight:600}.math{font-family:'Times New Roman',serif;font-style:italic;font-size:21px}.box{fill:var(--bg);stroke:var(--line);stroke-width:1.5;rx:10}.a{fill:var(--a)}.b{fill:var(--b)}.c{fill:var(--c)}.arrow{fill:none;stroke:var(--line);stroke-width:1.7;marker-end:url(#arrow)}.dash{stroke-dasharray:5 5}.rule{stroke:var(--line);stroke-width:1;opacity:.35}
-</style><defs><marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="var(--line)"/></marker></defs><text x="410" y="35" class="title" text-anchor="middle">把注意力看作一个临时网络</text><text x="30" y="85" class="head" text-anchor="start">FFN</text><text x="790" y="85" class="small" text-anchor="end">网络宽度由模型配置决定</text><rect x="30" y="110" width="120" height="76" class="box "/><text x="90.0" y="154.0" class="" text-anchor="middle">输入</text><path d="M150 148 H190" class="arrow "/><rect x="190" y="110" width="120" height="76" class="box b"/><text x="250.0" y="154.0" class="" text-anchor="middle">第一层权重</text><path d="M310 148 H350" class="arrow "/><rect x="350" y="110" width="120" height="76" class="box "/><text x="410.0" y="154.0" class="" text-anchor="middle">激活响应</text><path d="M470 148 H510" class="arrow "/><rect x="510" y="110" width="120" height="76" class="box b"/><text x="570.0" y="154.0" class="" text-anchor="middle">第二层权重</text><path d="M630 148 H670" class="arrow "/><rect x="670" y="110" width="120" height="76" class="box "/><text x="730.0" y="154.0" class="" text-anchor="middle">输出</text><rect x="30" y="300" width="120" height="76" class="box "/><text x="90.0" y="344.0" class="" text-anchor="middle">query</text><path d="M150 338 H190" class="arrow "/><rect x="190" y="300" width="120" height="76" class="box a"/><text x="250.0" y="344.0" class="" text-anchor="middle">匹配 key</text><path d="M310 338 H350" class="arrow "/><rect x="350" y="300" width="120" height="76" class="box "/><text x="410.0" y="344.0" class="" text-anchor="middle">softmax</text><path d="M470 338 H510" class="arrow "/><rect x="510" y="300" width="120" height="76" class="box a"/><text x="570.0" y="344.0" class="" text-anchor="middle">汇总 value</text><path d="M630 338 H670" class="arrow "/><rect x="670" y="300" width="120" height="76" class="box "/><text x="730.0" y="344.0" class="" text-anchor="middle">输出</text><text x="410" y="220" class="small" text-anchor="middle">使用训练得到的权重</text><path d="M30 245 H790" class="rule"/><text x="30" y="278" class="head" text-anchor="start">Attention</text><text x="790" y="278" class="small" text-anchor="end">上下文越长，中间节点越多</text><text x="410" y="414" class="small" text-anchor="middle">key、value 由当前输入生成，充当快权重</text><rect x="110" y="455" width="600" height="70" class="box c"/><text x="410.0" y="483.5" class="" text-anchor="middle">每个 KV 对，对应一个中间节点</text><text x="410.0" y="508.5" class="small" text-anchor="middle">可以选择少量原始节点，也可以压缩成少量新节点</text></svg>
+text{font-family:Helvetica,Arial,'PingFang SC',sans-serif;fill:var(--fg);font-size:20px}
+.title{font-size:26px;font-weight:600}.head{font-size:22px;font-weight:600}.small{font-size:17px;fill:var(--muted)}.num{font-size:14px}.operator{font-size:22px;fill:var(--muted)}
+.box{fill:var(--bg);stroke:var(--line);stroke-width:1.4}.a{fill:var(--a)}.b{fill:var(--b)}.c{fill:var(--c)}.panel{stroke-opacity:.5}.selected{stroke-width:2.3}.faint{opacity:.4}
+.arrow{fill:none;stroke:var(--line);stroke-width:1.7;stroke-linejoin:round;marker-end:url(#arrow)}
+.route{fill:none;stroke:var(--line);stroke-width:2.2;stroke-linejoin:round;marker-end:url(#arrow)}
+.option{fill:none;stroke:var(--line);stroke-width:1.2;stroke-dasharray:3 4;opacity:.35;marker-end:url(#arrow)}
+.divider{fill:none;stroke:var(--line);stroke-width:1;opacity:.45}.glyph{fill:none;stroke:var(--line);stroke-width:1.4;stroke-linecap:round;opacity:.65}.score{fill:var(--accent)}
+
+.math{font-family:'Times New Roman',serif;font-style:italic;font-size:22px}
+.edge{fill:none;stroke:var(--line);stroke-width:1.15;opacity:.23}
+.edge-strong{fill:none;stroke:var(--line);stroke-width:2;opacity:.85}
+.annotation{fill:none;stroke:var(--line);stroke-width:1.4;stroke-dasharray:4 4;marker-end:url(#arrow)}
+.weight{fill:var(--accent)}.wire-a{stroke:var(--accent)}.rule{fill:none;stroke:var(--line);stroke-width:1;opacity:.3}
+</style>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="var(--line)"/></marker></defs>
+<text x="450.0" y="39" class="title" text-anchor="middle">Attention 的快权重视角</text>
+<rect x="25" y="79" width="400" height="574" rx="16" class="box panel" />
+<text x="225" y="119" class="head" text-anchor="middle">FFN</text>
+<text x="225" y="165" class="small" text-anchor="middle">训练参数</text>
+<path d="M155 231 V190 H300 V231" class="rule"/>
+<text x="155" y="316" class="math" text-anchor="middle">W₁</text>
+<rect x="121" y="236" width="68" height="48" rx="5" class="box b" />
+<rect x="128" y="243" width="7" height="5" rx="1" class="score" opacity="0.20"/>
+<rect x="139" y="243" width="7" height="5" rx="1" class="score" opacity="0.44"/>
+<rect x="150" y="243" width="7" height="5" rx="1" class="score" opacity="0.68"/>
+<rect x="161" y="243" width="7" height="5" rx="1" class="score" opacity="0.20"/>
+<rect x="172" y="243" width="7" height="5" rx="1" class="score" opacity="0.44"/>
+<rect x="128" y="252" width="7" height="5" rx="1" class="score" opacity="0.76"/>
+<rect x="139" y="252" width="7" height="5" rx="1" class="score" opacity="0.28"/>
+<rect x="150" y="252" width="7" height="5" rx="1" class="score" opacity="0.52"/>
+<rect x="161" y="252" width="7" height="5" rx="1" class="score" opacity="0.76"/>
+<rect x="172" y="252" width="7" height="5" rx="1" class="score" opacity="0.28"/>
+<rect x="128" y="261" width="7" height="5" rx="1" class="score" opacity="0.60"/>
+<rect x="139" y="261" width="7" height="5" rx="1" class="score" opacity="0.84"/>
+<rect x="150" y="261" width="7" height="5" rx="1" class="score" opacity="0.36"/>
+<rect x="161" y="261" width="7" height="5" rx="1" class="score" opacity="0.60"/>
+<rect x="172" y="261" width="7" height="5" rx="1" class="score" opacity="0.84"/>
+<rect x="128" y="270" width="7" height="5" rx="1" class="score" opacity="0.44"/>
+<rect x="139" y="270" width="7" height="5" rx="1" class="score" opacity="0.68"/>
+<rect x="150" y="270" width="7" height="5" rx="1" class="score" opacity="0.20"/>
+<rect x="161" y="270" width="7" height="5" rx="1" class="score" opacity="0.44"/>
+<rect x="172" y="270" width="7" height="5" rx="1" class="score" opacity="0.68"/>
+<path d="M155 284 V294" class="rule"/>
+<path d="M155 326 V372" class="annotation"/>
+<text x="300" y="316" class="math" text-anchor="middle">W₂</text>
+<rect x="266" y="236" width="68" height="48" rx="5" class="box b" />
+<rect x="273" y="243" width="7" height="5" rx="1" class="score" opacity="0.28"/>
+<rect x="284" y="243" width="7" height="5" rx="1" class="score" opacity="0.52"/>
+<rect x="295" y="243" width="7" height="5" rx="1" class="score" opacity="0.76"/>
+<rect x="306" y="243" width="7" height="5" rx="1" class="score" opacity="0.28"/>
+<rect x="317" y="243" width="7" height="5" rx="1" class="score" opacity="0.52"/>
+<rect x="273" y="252" width="7" height="5" rx="1" class="score" opacity="0.84"/>
+<rect x="284" y="252" width="7" height="5" rx="1" class="score" opacity="0.36"/>
+<rect x="295" y="252" width="7" height="5" rx="1" class="score" opacity="0.60"/>
+<rect x="306" y="252" width="7" height="5" rx="1" class="score" opacity="0.84"/>
+<rect x="317" y="252" width="7" height="5" rx="1" class="score" opacity="0.36"/>
+<rect x="273" y="261" width="7" height="5" rx="1" class="score" opacity="0.68"/>
+<rect x="284" y="261" width="7" height="5" rx="1" class="score" opacity="0.20"/>
+<rect x="295" y="261" width="7" height="5" rx="1" class="score" opacity="0.44"/>
+<rect x="306" y="261" width="7" height="5" rx="1" class="score" opacity="0.68"/>
+<rect x="317" y="261" width="7" height="5" rx="1" class="score" opacity="0.20"/>
+<rect x="273" y="270" width="7" height="5" rx="1" class="score" opacity="0.52"/>
+<rect x="284" y="270" width="7" height="5" rx="1" class="score" opacity="0.76"/>
+<rect x="295" y="270" width="7" height="5" rx="1" class="score" opacity="0.28"/>
+<rect x="306" y="270" width="7" height="5" rx="1" class="score" opacity="0.52"/>
+<rect x="317" y="270" width="7" height="5" rx="1" class="score" opacity="0.76"/>
+<path d="M300 284 V294" class="rule"/>
+<path d="M300 326 V372" class="annotation"/>
+<path d="M91.57 391.81 L212.47 358.46" class="edge"/>
+<path d="M91.99 395.41 L212.01 399.55" class="edge"/>
+<path d="M91.34 398.91 L212.71 440.76" class="edge"/>
+<path d="M90.04 401.58 L214.13 482.88" class="edge"/>
+<path d="M88.63 403.34 L215.65 525.97" class="edge"/>
+<path d="M90.20 438.67 L213.95 361.86" class="edge"/>
+<path d="M91.46 441.44 L212.58 403.85" class="edge"/>
+<path d="M92.00 445.00 L212.00 445.00" class="edge-strong"/>
+<path d="M91.46 448.56 L212.58 486.15" class="edge"/>
+<path d="M90.20 451.33 L213.95 528.14" class="edge"/>
+<path d="M88.63 486.66 L215.65 364.03" class="edge"/>
+<path d="M90.04 488.42 L214.13 407.12" class="edge"/>
+<path d="M91.34 491.09 L212.71 449.24" class="edge"/>
+<path d="M91.99 494.59 L212.01 490.45" class="edge"/>
+<path d="M91.57 498.19 L212.47 531.54" class="edge"/>
+<path d="M237.53 358.46 L358.43 391.81" class="edge"/>
+<path d="M236.05 361.86 L359.80 438.67" class="edge"/>
+<path d="M234.35 364.03 L361.37 486.66" class="edge"/>
+<path d="M237.99 399.55 L358.01 395.41" class="edge"/>
+<path d="M237.42 403.85 L358.54 441.44" class="edge"/>
+<path d="M235.87 407.12 L359.96 488.42" class="edge"/>
+<path d="M237.29 440.76 L358.66 398.91" class="edge"/>
+<path d="M238.00 445.00 L358.00 445.00" class="edge-strong"/>
+<path d="M237.29 449.24 L358.66 491.09" class="edge"/>
+<path d="M235.87 482.88 L359.96 401.58" class="edge"/>
+<path d="M237.42 486.15 L358.54 448.56" class="edge"/>
+<path d="M237.99 490.45 L358.01 494.59" class="edge"/>
+<path d="M234.35 525.97 L361.37 403.34" class="edge"/>
+<path d="M236.05 528.14 L359.80 451.33" class="edge"/>
+<path d="M237.53 531.54 L358.43 498.19" class="edge"/>
+<text x="225" y="316" class="small" text-anchor="middle">激活</text>
+<circle cx="80" cy="395" r="12" class="box c"/>
+<circle cx="370" cy="395" r="12" class="box c"/>
+<circle cx="80" cy="445" r="12" class="box c"/>
+<circle cx="370" cy="445" r="12" class="box c"/>
+<circle cx="80" cy="495" r="12" class="box c"/>
+<circle cx="370" cy="495" r="12" class="box c"/>
+<circle cx="225" cy="355" r="13" class="box"/>
+<circle cx="225" cy="400" r="13" class="box"/>
+<circle cx="225" cy="445" r="13" class="box b selected"/>
+<circle cx="225" cy="490" r="13" class="box"/>
+<circle cx="225" cy="535" r="13" class="box"/>
+<text x="80" y="596" class="small" text-anchor="middle">输入</text>
+<text x="370" y="596" class="small" text-anchor="middle">输出</text>
+<text x="225" y="629" class="small" text-anchor="middle">固定宽度</text>
+<rect x="475" y="79" width="400" height="574" rx="16" class="box panel" />
+<text x="675" y="119" class="head" text-anchor="middle">Attention</text>
+<text x="675" y="165" class="small" text-anchor="middle">当前上下文</text>
+<rect x="607" y="180" width="11" height="23" rx="4" class="box a" />
+<path d="M611.2 183 V200" class="divider"/>
+<path d="M612.4 187 h2.2" class="glyph"/>
+<path d="M612.4 198 h4.0" class="glyph"/>
+<rect x="621" y="180" width="11" height="23" rx="4" class="box a" />
+<path d="M625.2 183 V200" class="divider"/>
+<path d="M626.4 187 h2.8" class="glyph"/>
+<path d="M626.4 198 h4.6" class="glyph"/>
+<rect x="635" y="180" width="11" height="23" rx="4" class="box a" />
+<path d="M639.2 183 V200" class="divider"/>
+<path d="M640.4 187 h3.4" class="glyph"/>
+<path d="M640.4 198 h2.2" class="glyph"/>
+<rect x="649" y="180" width="11" height="23" rx="4" class="box a" />
+<path d="M653.2 183 V200" class="divider"/>
+<path d="M654.4 187 h4.0" class="glyph"/>
+<path d="M654.4 198 h2.8" class="glyph"/>
+<rect x="663" y="180" width="11" height="23" rx="4" class="box a" />
+<path d="M667.2 183 V200" class="divider"/>
+<path d="M668.4 187 h4.6" class="glyph"/>
+<path d="M668.4 198 h3.4" class="glyph"/>
+<rect x="677" y="180" width="11" height="23" rx="4" class="box a" />
+<path d="M681.2 183 V200" class="divider"/>
+<path d="M682.4 187 h2.2" class="glyph"/>
+<path d="M682.4 198 h4.0" class="glyph"/>
+<rect x="691" y="180" width="11" height="23" rx="4" class="box a" />
+<path d="M695.2 183 V200" class="divider"/>
+<path d="M696.4 187 h2.8" class="glyph"/>
+<path d="M696.4 198 h4.6" class="glyph"/>
+<rect x="705" y="180" width="11" height="23" rx="4" class="box a" />
+<path d="M709.2 183 V200" class="divider"/>
+<path d="M710.4 187 h3.4" class="glyph"/>
+<path d="M710.4 198 h2.2" class="glyph"/>
+<rect x="719" y="180" width="11" height="23" rx="4" class="box a" />
+<path d="M723.2 183 V200" class="divider"/>
+<path d="M724.4 187 h4.0" class="glyph"/>
+<path d="M724.4 198 h2.8" class="glyph"/>
+<rect x="733" y="180" width="11" height="23" rx="4" class="box a" />
+<path d="M737.2 183 V200" class="divider"/>
+<path d="M738.4 187 h4.6" class="glyph"/>
+<path d="M738.4 198 h3.4" class="glyph"/>
+<path d="M675 203 V215 H605 V231" class="arrow"/>
+<path d="M675 215 H750 V231" class="arrow"/>
+<text x="605" y="316" class="math" text-anchor="middle">K</text>
+<rect x="571" y="236" width="68" height="48" rx="5" class="box a" />
+<rect x="578" y="243" width="7" height="5" rx="1" class="score" opacity="0.20"/>
+<rect x="589" y="243" width="7" height="5" rx="1" class="score" opacity="0.44"/>
+<rect x="600" y="243" width="7" height="5" rx="1" class="score" opacity="0.68"/>
+<rect x="611" y="243" width="7" height="5" rx="1" class="score" opacity="0.20"/>
+<rect x="622" y="243" width="7" height="5" rx="1" class="score" opacity="0.44"/>
+<rect x="578" y="252" width="7" height="5" rx="1" class="score" opacity="0.76"/>
+<rect x="589" y="252" width="7" height="5" rx="1" class="score" opacity="0.28"/>
+<rect x="600" y="252" width="7" height="5" rx="1" class="score" opacity="0.52"/>
+<rect x="611" y="252" width="7" height="5" rx="1" class="score" opacity="0.76"/>
+<rect x="622" y="252" width="7" height="5" rx="1" class="score" opacity="0.28"/>
+<rect x="578" y="261" width="7" height="5" rx="1" class="score" opacity="0.60"/>
+<rect x="589" y="261" width="7" height="5" rx="1" class="score" opacity="0.84"/>
+<rect x="600" y="261" width="7" height="5" rx="1" class="score" opacity="0.36"/>
+<rect x="611" y="261" width="7" height="5" rx="1" class="score" opacity="0.60"/>
+<rect x="622" y="261" width="7" height="5" rx="1" class="score" opacity="0.84"/>
+<rect x="578" y="270" width="7" height="5" rx="1" class="score" opacity="0.44"/>
+<rect x="589" y="270" width="7" height="5" rx="1" class="score" opacity="0.68"/>
+<rect x="600" y="270" width="7" height="5" rx="1" class="score" opacity="0.20"/>
+<rect x="611" y="270" width="7" height="5" rx="1" class="score" opacity="0.44"/>
+<rect x="622" y="270" width="7" height="5" rx="1" class="score" opacity="0.68"/>
+<path d="M605 284 V294" class="rule"/>
+<path d="M605 326 V372" class="annotation"/>
+<text x="750" y="316" class="math" text-anchor="middle">V</text>
+<rect x="716" y="236" width="68" height="48" rx="5" class="box a" />
+<rect x="723" y="243" width="7" height="5" rx="1" class="score" opacity="0.28"/>
+<rect x="734" y="243" width="7" height="5" rx="1" class="score" opacity="0.52"/>
+<rect x="745" y="243" width="7" height="5" rx="1" class="score" opacity="0.76"/>
+<rect x="756" y="243" width="7" height="5" rx="1" class="score" opacity="0.28"/>
+<rect x="767" y="243" width="7" height="5" rx="1" class="score" opacity="0.52"/>
+<rect x="723" y="252" width="7" height="5" rx="1" class="score" opacity="0.84"/>
+<rect x="734" y="252" width="7" height="5" rx="1" class="score" opacity="0.36"/>
+<rect x="745" y="252" width="7" height="5" rx="1" class="score" opacity="0.60"/>
+<rect x="756" y="252" width="7" height="5" rx="1" class="score" opacity="0.84"/>
+<rect x="767" y="252" width="7" height="5" rx="1" class="score" opacity="0.36"/>
+<rect x="723" y="261" width="7" height="5" rx="1" class="score" opacity="0.68"/>
+<rect x="734" y="261" width="7" height="5" rx="1" class="score" opacity="0.20"/>
+<rect x="745" y="261" width="7" height="5" rx="1" class="score" opacity="0.44"/>
+<rect x="756" y="261" width="7" height="5" rx="1" class="score" opacity="0.68"/>
+<rect x="767" y="261" width="7" height="5" rx="1" class="score" opacity="0.20"/>
+<rect x="723" y="270" width="7" height="5" rx="1" class="score" opacity="0.52"/>
+<rect x="734" y="270" width="7" height="5" rx="1" class="score" opacity="0.76"/>
+<rect x="745" y="270" width="7" height="5" rx="1" class="score" opacity="0.28"/>
+<rect x="756" y="270" width="7" height="5" rx="1" class="score" opacity="0.52"/>
+<rect x="767" y="270" width="7" height="5" rx="1" class="score" opacity="0.76"/>
+<path d="M750 284 V294" class="rule"/>
+<path d="M750 326 V372" class="annotation"/>
+<path d="M541.42 391.30 L662.63 352.01" class="edge"/>
+<path d="M541.95 393.93 L662.05 383.16" class="edge"/>
+<path d="M541.88 396.72 L662.13 414.14" class="edge"/>
+<path d="M541.22 399.26 L662.85 445.39" class="edge"/>
+<path d="M540.23 401.28 L663.92 477.20" class="edge"/>
+<path d="M538.14 403.82 L666.18 542.45" class="edge"/>
+<path d="M539.97 438.33 L664.19 355.23" class="edge"/>
+<path d="M541.01 440.22 L663.08 387.18" class="edge"/>
+<path d="M541.77 442.65 L662.25 418.55" class="edge-strong"/>
+<path d="M541.99 445.41 L662.01 449.55" class="edge"/>
+<path d="M541.59 448.12 L662.45 480.62" class="edge"/>
+<path d="M539.66 452.13 L664.54 544.28" class="edge"/>
+<path d="M538.43 486.46 L665.87 357.26" class="edge"/>
+<path d="M539.47 487.62 L664.75 389.99" class="edge"/>
+<path d="M540.54 489.26 L663.58 422.22" class="edge"/>
+<path d="M541.46 491.44 L662.58 453.85" class="edge"/>
+<path d="M541.97 494.09 L662.04 484.98" class="edge"/>
+<path d="M541.17 499.39 L662.90 547.24" class="edge"/>
+<path d="M687.37 352.01 L808.58 391.30" class="edge"/>
+<path d="M685.81 355.23 L810.03 438.33" class="edge"/>
+<path d="M684.13 357.26 L811.57 486.46" class="edge"/>
+<path d="M687.95 383.16 L808.05 393.93" class="edge"/>
+<path d="M686.92 387.18 L808.99 440.22" class="edge"/>
+<path d="M685.25 389.99 L810.53 487.62" class="edge"/>
+<path d="M687.87 414.14 L808.12 396.72" class="edge"/>
+<path d="M687.75 418.55 L808.23 442.65" class="edge-strong"/>
+<path d="M686.42 422.22 L809.46 489.26" class="edge"/>
+<path d="M687.15 445.39 L808.78 399.26" class="edge"/>
+<path d="M687.99 449.55 L808.01 445.41" class="edge"/>
+<path d="M687.42 453.85 L808.54 491.44" class="edge"/>
+<path d="M686.08 477.20 L809.77 401.28" class="edge"/>
+<path d="M687.55 480.62 L808.41 448.12" class="edge"/>
+<path d="M687.96 484.98 L808.03 494.09" class="edge"/>
+<path d="M683.82 542.45 L811.86 403.82" class="edge"/>
+<path d="M685.46 544.28 L810.34 452.13" class="edge"/>
+<path d="M687.10 547.24 L808.83 499.39" class="edge"/>
+<rect x="652" y="325" width="46" height="248" rx="22" class="box soft" />
+<text x="675" y="316" class="small" text-anchor="middle">softmax</text>
+<text x="675" y="520" class="small" text-anchor="middle">⋮</text>
+<circle cx="530" cy="395" r="12" class="box c"/>
+<circle cx="820" cy="395" r="12" class="box c"/>
+<circle cx="530" cy="445" r="12" class="box c"/>
+<circle cx="820" cy="445" r="12" class="box c"/>
+<circle cx="530" cy="495" r="12" class="box c"/>
+<circle cx="820" cy="495" r="12" class="box c"/>
+<circle cx="675" cy="348" r="13" class="box a"/>
+<text x="675" y="353" class="num" text-anchor="middle">1</text>
+<circle cx="675" cy="382" r="13" class="box a"/>
+<text x="675" y="387" class="num" text-anchor="middle">2</text>
+<circle cx="675" cy="416" r="13" class="box a selected"/>
+<text x="675" y="421" class="num" text-anchor="middle">3</text>
+<circle cx="675" cy="450" r="13" class="box a"/>
+<text x="675" y="455" class="num" text-anchor="middle">4</text>
+<circle cx="675" cy="484" r="13" class="box a"/>
+<text x="675" y="489" class="num" text-anchor="middle">5</text>
+<circle cx="675" cy="552" r="13" class="box a"/>
+<text x="675" y="557" class="num" text-anchor="middle">N</text>
+<text x="530" y="596" class="small" text-anchor="middle">query</text>
+<text x="820" y="596" class="small" text-anchor="middle">输出</text>
+<text x="675" y="629" class="small" text-anchor="middle">N 个 KV</text>
+</svg>

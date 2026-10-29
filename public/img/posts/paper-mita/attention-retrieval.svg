@@ -1,5 +1,134 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="820" height="670" viewBox="0 0 820 670" role="img" aria-label="query 匹配各位置 key，通过 softmax 分配权重，再汇总 value"><title>query 匹配各位置 key，通过 softmax 分配权重，再汇总 value</title><style>
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="780" viewBox="0 0 900 780" role="img" aria-labelledby="title desc">
+<title id="title">一次注意力读取</title>
+<desc id="desc">鸟头位置的 query 分别匹配翅膀、树叶与天空的 key，示意分数为 2、1、0。softmax 将它们转换为约 0.67、0.24、0.09 的权重。每个权重乘以相应的 value，最后相加，得到鸟头位置的新表示。图中的短条代表向量。</desc>
+<style>
 :root{--fg:#29303b;--line:#657285;--bg:#f8fafc;--a:#e0eee6;--b:#e7e4f3;--c:#f7ead6;--accent:#508369;--muted:#667386}
 @media(prefers-color-scheme:dark){:root{--fg:#e0e5ec;--line:#a4afbd;--bg:#222731;--a:#283e35;--b:#353148;--c:#483b2b;--accent:#86b49b;--muted:#b2bdcb}}
-text{font-family:Helvetica,Arial,'PingFang SC',sans-serif;fill:var(--fg);font-size:18px}.small{font-size:15px;fill:var(--muted)}.title{font-size:23px;font-weight:600}.head{font-size:19px;font-weight:600}.math{font-family:'Times New Roman',serif;font-style:italic;font-size:21px}.box{fill:var(--bg);stroke:var(--line);stroke-width:1.5;rx:10}.a{fill:var(--a)}.b{fill:var(--b)}.c{fill:var(--c)}.arrow{fill:none;stroke:var(--line);stroke-width:1.7;marker-end:url(#arrow)}.dash{stroke-dasharray:5 5}.rule{stroke:var(--line);stroke-width:1;opacity:.35}
-</style><defs><marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="var(--line)"/></marker></defs><text x="410" y="35" class="title" text-anchor="middle">注意力先判断去哪里找，再读取内容</text><rect x="230" y="70" width="360" height="70" class="box c"/><text x="410.0" y="98.5" class="" text-anchor="middle">鸟头位置的 query</text><text x="410.0" y="123.5" class="small" text-anchor="middle">当前需要补充的特征</text><path d="M410 140 V175 H150 V210" class="arrow "/><path d="M410 140 V210" class="arrow "/><path d="M410 175 H670 V210" class="arrow "/><rect x="40" y="210" width="220" height="70" class="box "/><text x="150.0" y="238.5" class="" text-anchor="middle">翅膀位置的 key</text><text x="150.0" y="263.5" class="small" text-anchor="middle">用于与 query 匹配</text><path d="M150 280 V315" class="arrow "/><rect x="300" y="210" width="220" height="70" class="box "/><text x="410.0" y="238.5" class="" text-anchor="middle">树叶位置的 key</text><text x="410.0" y="263.5" class="small" text-anchor="middle">用于与 query 匹配</text><path d="M410 280 V315" class="arrow "/><rect x="560" y="210" width="220" height="70" class="box "/><text x="670.0" y="238.5" class="" text-anchor="middle">天空位置的 key</text><text x="670.0" y="263.5" class="small" text-anchor="middle">用于与 query 匹配</text><path d="M670 280 V315" class="arrow "/><rect x="40" y="315" width="740" height="60" class="box b"/><text x="410.0" y="351.0" class="" text-anchor="middle">匹配分数 → softmax → 各位置的读取权重</text><path d="M150 375 V410" class="arrow "/><rect x="40" y="410" width="220" height="70" class="box a"/><text x="150.0" y="438.5" class="" text-anchor="middle">翅膀位置的 value</text><text x="150.0" y="463.5" class="small" text-anchor="middle">被权重加权的实际内容</text><path d="M410 375 V410" class="arrow "/><rect x="300" y="410" width="220" height="70" class="box a"/><text x="410.0" y="438.5" class="" text-anchor="middle">树叶位置的 value</text><text x="410.0" y="463.5" class="small" text-anchor="middle">被权重加权的实际内容</text><path d="M670 375 V410" class="arrow "/><rect x="560" y="410" width="220" height="70" class="box a"/><text x="670.0" y="438.5" class="" text-anchor="middle">天空位置的 value</text><text x="670.0" y="463.5" class="small" text-anchor="middle">被权重加权的实际内容</text><path d="M150 480 V510 H310 V545" class="arrow "/><path d="M410 480 V545" class="arrow "/><path d="M670 480 V510 H510 V545" class="arrow "/><rect x="190" y="545" width="440" height="65" class="box c"/><text x="410.0" y="583.5" class="" text-anchor="middle">加权汇总 → 更新鸟头位置的表示</text><text x="410" y="643" class="small" text-anchor="middle">语义标签用于说明；模型实际比较和汇总的都是数值向量</text></svg>
+text{font-family:Helvetica,Arial,'PingFang SC',sans-serif;fill:var(--fg);font-size:20px}
+.title{font-size:26px;font-weight:600}.head{font-size:22px;font-weight:600}.small{font-size:17px;fill:var(--muted)}.num{font-size:14px}.operator{font-size:22px;fill:var(--muted)}
+.box{fill:var(--bg);stroke:var(--line);stroke-width:1.4}.a{fill:var(--a)}.b{fill:var(--b)}.c{fill:var(--c)}.panel{stroke-opacity:.5}.selected{stroke-width:2.3}.faint{opacity:.4}
+.arrow{fill:none;stroke:var(--line);stroke-width:1.7;stroke-linejoin:round;marker-end:url(#arrow)}
+.route{fill:none;stroke:var(--line);stroke-width:2.2;stroke-linejoin:round;marker-end:url(#arrow)}
+.option{fill:none;stroke:var(--line);stroke-width:1.2;stroke-dasharray:3 4;opacity:.35;marker-end:url(#arrow)}
+.divider{fill:none;stroke:var(--line);stroke-width:1;opacity:.45}.glyph{fill:none;stroke:var(--line);stroke-width:1.4;stroke-linecap:round;opacity:.65}.score{fill:var(--accent)}
+
+.math{font-family:'Times New Roman',serif;font-style:italic;font-size:22px}
+.edge{fill:none;stroke:var(--line);stroke-width:1.15;opacity:.23}
+.edge-strong{fill:none;stroke:var(--line);stroke-width:2;opacity:.85}
+.annotation{fill:none;stroke:var(--line);stroke-width:1.4;stroke-dasharray:4 4;marker-end:url(#arrow)}
+.weight{fill:var(--accent)}.wire-a{stroke:var(--accent)}.rule{fill:none;stroke:var(--line);stroke-width:1;opacity:.3}
+</style>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="var(--line)"/></marker></defs>
+<text x="450.0" y="39" class="title" text-anchor="middle">一次注意力读取</text>
+<text x="450" y="81" class="small" text-anchor="middle">query · 鸟头</text>
+<path d="M450 95 L473 118 L450 141 L427 118 Z" class="box c"/>
+<text x="450" y="125" class="math" text-anchor="middle">q</text>
+<path d="M450 141 V172 H235 V247" class="arrow"/>
+<path d="M450 172 V247" class="arrow"/>
+<path d="M450 172 H665 V247" class="arrow"/>
+<text x="76" y="268" class="small" text-anchor="middle">key</text>
+<text x="76" y="332" class="small" text-anchor="middle">分数</text>
+<text x="76" y="471" class="small" text-anchor="middle">权重</text>
+<text x="76" y="563" class="small" text-anchor="middle">value</text>
+<text x="157" y="232" class="small" text-anchor="middle">翅膀</text>
+<rect x="116" y="247" width="80" height="29" rx="5" class="box b" />
+<rect x="124.0" y="261.2783333333333" width="11.6" height="9.721666666666668" rx="1" class="weight" opacity="0.66"/>
+<rect x="137.2" y="266.0283333333333" width="11.6" height="4.971666666666667" rx="1" class="weight" opacity="0.53"/>
+<rect x="150.4" y="257.32" width="11.6" height="13.68" rx="1" class="weight" opacity="0.76"/>
+<rect x="163.6" y="262.07" width="11.6" height="8.93" rx="1" class="weight" opacity="0.64"/>
+<rect x="176.8" y="266.82" width="11.6" height="4.18" rx="1" class="weight" opacity="0.51"/>
+<path d="M196 261.5 H220" class="arrow"/>
+<circle cx="235" cy="262" r="15" class="box"/>
+<text x="235" y="267" class="num" text-anchor="middle">·</text>
+<path d="M235 277 V300" class="arrow"/>
+<rect x="210" y="300" width="50" height="54" rx="5" class="box" />
+<rect x="217" y="309" width="36" height="38" rx="2" class="score" />
+<text x="284" y="333" class="small" text-anchor="middle">2</text>
+<path d="M235 354 V384" class="arrow"/>
+<path d="M235 427 V449" class="arrow"/>
+<rect x="208" y="449" width="54" height="42" rx="5" class="box" />
+<rect x="214" y="458.2" width="42" height="26.8" rx="2" class="score" />
+<text x="291" y="477" class="small" text-anchor="middle">0.67</text>
+<path d="M235 491 V541" class="arrow"/>
+<rect x="116" y="541" width="80" height="29" rx="5" class="box a" />
+<rect x="124.0" y="560.0283333333333" width="11.6" height="4.971666666666667" rx="1" class="weight" opacity="0.53"/>
+<rect x="137.2" y="551.32" width="11.6" height="13.68" rx="1" class="weight" opacity="0.76"/>
+<rect x="150.4" y="556.07" width="11.6" height="8.93" rx="1" class="weight" opacity="0.64"/>
+<rect x="163.6" y="560.82" width="11.6" height="4.18" rx="1" class="weight" opacity="0.51"/>
+<rect x="176.8" y="552.1116666666667" width="11.6" height="12.888333333333334" rx="1" class="weight" opacity="0.74"/>
+<path d="M196 555.5 H220" class="arrow"/>
+<circle cx="235" cy="556" r="15" class="box"/>
+<text x="235" y="561" class="num" text-anchor="middle">×</text>
+<path d="M248.35 562.83 L429.52 655.52" class="arrow"/>
+<text x="372" y="232" class="small" text-anchor="middle">树叶</text>
+<rect x="331" y="247" width="80" height="29" rx="5" class="box b" />
+<rect x="339.0" y="255.73666666666668" width="11.6" height="15.263333333333334" rx="1" class="weight" opacity="0.80"/>
+<rect x="352.2" y="260.4866666666667" width="11.6" height="10.513333333333334" rx="1" class="weight" opacity="0.68"/>
+<rect x="365.4" y="265.2366666666667" width="11.6" height="5.763333333333334" rx="1" class="weight" opacity="0.55"/>
+<rect x="378.6" y="256.5283333333333" width="11.6" height="14.471666666666666" rx="1" class="weight" opacity="0.78"/>
+<rect x="391.8" y="261.2783333333333" width="11.6" height="9.721666666666668" rx="1" class="weight" opacity="0.66"/>
+<path d="M411 261.5 H435" class="arrow"/>
+<circle cx="450" cy="262" r="15" class="box"/>
+<text x="450" y="267" class="num" text-anchor="middle">·</text>
+<path d="M450 277 V300" class="arrow"/>
+<rect x="425" y="300" width="50" height="54" rx="5" class="box" />
+<rect x="432" y="328" width="36" height="19" rx="2" class="score" />
+<text x="499" y="333" class="small" text-anchor="middle">1</text>
+<path d="M450 354 V384" class="arrow"/>
+<path d="M450 427 V449" class="arrow"/>
+<rect x="423" y="449" width="54" height="42" rx="5" class="box" />
+<rect x="429" y="475.4" width="42" height="9.6" rx="2" class="score" />
+<text x="506" y="477" class="small" text-anchor="middle">0.24</text>
+<path d="M450 491 V541" class="arrow"/>
+<rect x="331" y="541" width="80" height="29" rx="5" class="box a" />
+<rect x="339.0" y="554.4866666666667" width="11.6" height="10.513333333333334" rx="1" class="weight" opacity="0.68"/>
+<rect x="352.2" y="559.2366666666667" width="11.6" height="5.763333333333334" rx="1" class="weight" opacity="0.55"/>
+<rect x="365.4" y="550.5283333333333" width="11.6" height="14.471666666666666" rx="1" class="weight" opacity="0.78"/>
+<rect x="378.6" y="555.2783333333333" width="11.6" height="9.721666666666668" rx="1" class="weight" opacity="0.66"/>
+<rect x="391.8" y="560.0283333333333" width="11.6" height="4.971666666666667" rx="1" class="weight" opacity="0.53"/>
+<path d="M411 555.5 H435" class="arrow"/>
+<circle cx="450" cy="556" r="15" class="box"/>
+<text x="450" y="561" class="num" text-anchor="middle">×</text>
+<path d="M450.00 571.00 L450.00 643.00" class="arrow"/>
+<text x="587" y="232" class="small" text-anchor="middle">天空</text>
+<rect x="546" y="247" width="80" height="29" rx="5" class="box b" />
+<rect x="554.0" y="263.6533333333333" width="11.6" height="7.346666666666667" rx="1" class="weight" opacity="0.59"/>
+<rect x="567.2" y="254.945" width="11.6" height="16.055" rx="1" class="weight" opacity="0.82"/>
+<rect x="580.4" y="259.695" width="11.6" height="11.305" rx="1" class="weight" opacity="0.70"/>
+<rect x="593.6" y="264.445" width="11.6" height="6.555" rx="1" class="weight" opacity="0.57"/>
+<rect x="606.8" y="255.73666666666668" width="11.6" height="15.263333333333334" rx="1" class="weight" opacity="0.80"/>
+<path d="M626 261.5 H650" class="arrow"/>
+<circle cx="665" cy="262" r="15" class="box"/>
+<text x="665" y="267" class="num" text-anchor="middle">·</text>
+<path d="M665 277 V300" class="arrow"/>
+<rect x="640" y="300" width="50" height="54" rx="5" class="box" />
+<text x="714" y="333" class="small" text-anchor="middle">0</text>
+<path d="M665 354 V384" class="arrow"/>
+<path d="M665 427 V449" class="arrow"/>
+<rect x="638" y="449" width="54" height="42" rx="5" class="box" />
+<rect x="644" y="481.4" width="42" height="3.5999999999999996" rx="2" class="score" />
+<text x="721" y="477" class="small" text-anchor="middle">0.09</text>
+<path d="M665 491 V541" class="arrow"/>
+<rect x="546" y="541" width="80" height="29" rx="5" class="box a" />
+<rect x="554.0" y="548.945" width="11.6" height="16.055" rx="1" class="weight" opacity="0.82"/>
+<rect x="567.2" y="553.695" width="11.6" height="11.305" rx="1" class="weight" opacity="0.70"/>
+<rect x="580.4" y="558.445" width="11.6" height="6.555" rx="1" class="weight" opacity="0.57"/>
+<rect x="593.6" y="549.7366666666667" width="11.6" height="15.263333333333334" rx="1" class="weight" opacity="0.80"/>
+<rect x="606.8" y="554.4866666666667" width="11.6" height="10.513333333333334" rx="1" class="weight" opacity="0.68"/>
+<path d="M626 555.5 H650" class="arrow"/>
+<circle cx="665" cy="556" r="15" class="box"/>
+<text x="665" y="561" class="num" text-anchor="middle">×</text>
+<path d="M651.65 562.83 L470.48 655.52" class="arrow"/>
+<rect x="160" y="384" width="580" height="43" rx="10" class="box b" />
+<text x="450" y="413" class="" text-anchor="middle">softmax</text>
+<circle cx="450" cy="666" r="23" class="box c"/>
+<text x="450" y="671" class="num" text-anchor="middle">Σ</text>
+<path d="M450 689 V715" class="arrow"/>
+<rect x="400" y="715" width="100" height="31" rx="5" class="box c" />
+<rect x="408.0" y="725.88" width="15.6" height="15.12" rx="1" class="weight" opacity="0.76"/>
+<rect x="425.2" y="731.13" width="15.6" height="9.87" rx="1" class="weight" opacity="0.64"/>
+<rect x="442.4" y="736.38" width="15.6" height="4.62" rx="1" class="weight" opacity="0.51"/>
+<rect x="459.6" y="726.755" width="15.6" height="14.245000000000001" rx="1" class="weight" opacity="0.74"/>
+<rect x="476.8" y="732.005" width="15.6" height="8.995000000000001" rx="1" class="weight" opacity="0.61"/>
+<text x="450" y="774" class="small" text-anchor="middle">鸟头的新表示</text>
+</svg>

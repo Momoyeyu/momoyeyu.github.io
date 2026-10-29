@@ -1,11 +1,12 @@
 ---
 title: How MiTA Works
 date: 2026-10-26
+updated: 2026-10-29
 description: 从快权重视角理解 MiTA，用地标查询共享 Top-k 选择，并结合压缩路径实现高效注意力。
 tags: [Attention, Transformer, MiTA]
 category: 论文精读
 episode: 0
-draft: true
+draft: false
 lang: zh_CN
 ---
 
@@ -49,7 +50,7 @@ lang: zh_CN
 
 这就是快权重（fast weights）的含义。“快”描述的是权重随输入变化；生成 Q、K、V 的投影参数仍然通过训练学习。下面对比两种网络的构成。
 
-![FFN 使用训练权重，Attention 使用当前上下文生成的快权重](/img/posts/paper-mita/fast-weights.svg)
+![FFN 的连线由训练参数决定，Attention 的连线由当前上下文中的 K、V 决定，每个 KV 对对应一个中间节点](/img/posts/paper-mita/fast-weights.svg)
 
 一个图片块提供一个 KV 对，也就提供一个中间节点。图片块越多，这个网络越宽。于是，高效注意力可以转化成一个网络设计问题：**怎样减少每次需要访问的中间节点，同时保留足够的信息？**
 
@@ -99,9 +100,9 @@ MiTA 的办法是再准备一份紧凑的全局信息。地标已经与全部 ke
 
 摘要是有侧重的加权汇总：不同地标关注的内容不同，形成的摘要也不同。它让未进入 Top-k 的位置仍有机会影响输出，但许多位置的信息会混合在少量向量里，无法像原始 KV 那样逐条区分。
 
-下图展示了两条路径保留信息的不同方式。
+下图沿用 100 个位置、4 个地标、每组 8 个候选的例子，展开两条路径的内部计算。从中间的分数表往下看：左边按分数选出原始 KV，右边把完整分数转成权重，汇总全部 value。
 
-![路由保留选中的原始条目，压缩汇总全局信息](/img/posts/paper-mita/routing-compression.svg)
+![同一份地标匹配分数用于 Top-k 选择和全局加权汇总，再由当前 query 读取一组原始 KV 与全部摘要](/img/posts/paper-mita/routing-compression.svg)
 
 路由路径提供少量原始细节，压缩路径提供全局摘要。MiTA 让每个 query 同时使用这两种信息，这组所有 query 都能访问的摘要，在论文中称为共享专家。
 
@@ -126,9 +127,9 @@ MiTA 的办法是再准备一份紧凑的全局信息。地标已经与全部 ke
 3. **选择候选**：每个 query 比较 4 个地标，选择其中一组原始 KV。
 4. **读取信息**：query 在那 8 个原始条目和全部 4 个摘要之间分配注意力，得到自己的输出。
 
-下面沿着一个 query 的路径看，地标搜索发生在上游，搜索结果则在下游反复使用。
+下图中，两个 query 选择同一组候选，却形成不同的读取权重。地标搜索发生在上游，搜索结果则在下游反复使用。
 
-![少量地标搜索全局，原始 query 读取一组候选和全部摘要](/img/posts/paper-mita/mita-flow.svg)
+![地标共享搜索得到候选与摘要，两个 query 复用同一组候选，各自分配注意力并得到输出](/img/posts/paper-mita/mita-flow.svg)
 
 与完整注意力相比，变化主要发生在“给 query 准备什么信息”这一步。最后的读取仍然是根据 query 匹配 key，再对 value 加权汇总。MiTA 用共享搜索和分层的信息表示，缩小了每次读取的范围。
 
