@@ -21,11 +21,9 @@ describe("post visibility", () => {
 		vi.stubEnv("PROD", prod);
 		collectionPosts.splice(0, collectionPosts.length,
 			...[
-				{ slug: "public", draft: false, private: false },
+				{ slug: "public", draft: false },
 				{ slug: "legacy" },
 				{ slug: "draft", draft: true },
-				{ slug: "private", private: true },
-				{ slug: "both", draft: true, private: true },
 			].map(({ slug, ...flags }, index) => ({
 				...makePost(slug, slug, index),
 				data: {
@@ -36,7 +34,7 @@ describe("post visibility", () => {
 				},
 			})),
 		);
-		const expected = prod ? ["legacy", "public"] : ["both", "private", "draft", "legacy", "public"];
+		const expected = prod ? ["legacy", "public"] : ["draft", "legacy", "public"];
 		const posts = await getSortedPosts();
 		expect(posts.map((post) => post.slug)).toEqual(expected);
 		expect((await getSortedPostsList()).map((post) => post.slug)).toEqual(expected);

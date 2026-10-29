@@ -100,7 +100,6 @@ export type BlogPostData = {
 	description: string;
 	tags: string[];
 	draft?: boolean;
-	private?: boolean;
 	image?: string;
 	category?: string;
 	prevTitle?: string;

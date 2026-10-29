@@ -17,7 +17,7 @@ help:
 	@echo "make commit   提交暂存区"
 	@echo "make push     推送到远端"
 	@echo "make deploy   检查、提交、推送"
-	@echo "make status   仓库、草稿与下架状态"
+	@echo "make status   仓库与草稿状态"
 
 new:
 	@$(NODE) scripts/new-post.js
@@ -89,8 +89,4 @@ status:
 	@echo ""
 	@echo "草稿 draft: true："
 	@files=$$(grep -rl "^draft: true" src/content/posts 2>/dev/null | sed 's|src/content/posts/||'); \
-	if [ -z "$$files" ]; then echo "  （无）"; else echo "$$files" | sed 's/^/  /'; fi
-	@echo ""
-	@echo "下架 private: true："
-	@files=$$(grep -rl "^private: true" src/content/posts 2>/dev/null | sed 's|src/content/posts/||'); \
 	if [ -z "$$files" ]; then echo "  （无）"; else echo "$$files" | sed 's/^/  /'; fi
