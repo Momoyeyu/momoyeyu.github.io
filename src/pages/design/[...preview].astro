@@ -1,13 +1,18 @@
 ---
 import type { GetStaticPaths } from "astro";
 import MainGridLayout from "../../layouts/MainGridLayout.astro";
+import PostDesignPreview from "../../components/PostDesignPreview.svelte";
+import { getSortedPosts } from "../../utils/content-utils";
+import library from "../../data/photo-library.json";
 import AlbumDesignPreview from "../../components/AlbumDesignPreview.svelte";
-export const getStaticPaths = (() => import.meta.env.DEV ? [{ params: { preview: "albums" } }] : []) satisfies GetStaticPaths;
+export const getStaticPaths = (() => import.meta.env.DEV ? ["albums", "posts"].map(preview => ({params:{preview}})) : []) satisfies GetStaticPaths;
+const postPreview = Astro.params.preview === "posts";
+const posts = postPreview ? (await getSortedPosts()).slice(0,8).map((p,index)=>({title:p.data.title,description:p.data.description || "",category:p.data.category || "",date:p.data.date.toISOString().slice(0,10),href:`/posts/${p.slug}/`,cover:library.photos[index].src})) : [];
 ---
-<MainGridLayout title="相册排布预览">
-    <AlbumDesignPreview client:load />
+<MainGridLayout title={postPreview ? "文章排布预览" : "相册排布预览"}>
+    {postPreview ? <PostDesignPreview posts={posts} client:load /> : <AlbumDesignPreview client:load />}
 </MainGridLayout>
 <style is:global>
-html:has(.album-prototype) #page-banner { display: none; }
-html:has(.album-prototype) #main-panel { margin-top: 7rem; }
+html:is(:has(.album-prototype),:has(.post-prototype)) #page-banner { display: none; }
+html:is(:has(.album-prototype),:has(.post-prototype)) #main-panel { margin-top: 7rem; }
 </style>

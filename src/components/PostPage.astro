@@ -26,7 +26,7 @@ const interval = 50;
             <PostLayoutSwitch labels={layoutLabels} client:load />
             <span class="flex-1 h-px bg-[var(--line-divider)] ml-2" aria-hidden="true"></span>
         </div>
-        <div class="post-feed pinned-feed transition grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div data-text-feed="true" class="post-feed pinned-feed transition grid grid-cols-1 md:grid-cols-2 gap-4">
             {pinned.map((entry) => (
                 <PostCardGrid
                     entry={entry}
@@ -57,7 +57,7 @@ const interval = 50;
     </div>
 )}
 
-<div class="post-feed recent-feed transition grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+<div data-text-feed="true" class="post-feed recent-feed transition grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
     {rest.map((entry) => (
         <PostCardGrid
             entry={entry}

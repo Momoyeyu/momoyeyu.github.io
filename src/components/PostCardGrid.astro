@@ -3,7 +3,7 @@ import type { CollectionEntry } from "astro:content";
 import path from "node:path";
 import I18nKey from "../i18n/i18nKey";
 import { i18n } from "../i18n/translation";
-import { getCover, getCoverAspect } from "../utils/cover-utils";
+import { getCover } from "../utils/cover-utils";
 import { formatDateToYYYYMMDD } from "../utils/date-utils";
 import { getCategoryUrl, getDir, getTagUrl } from "../utils/url-utils";
 import ImageWrapper from "./misc/ImageWrapper.astro";
@@ -36,26 +36,12 @@ const {
 const className = Astro.props.class;
 const coverSrc = await getCover(entry.id, image || undefined);
 const hasCover = coverSrc !== "";
-const coverAspect = await getCoverAspect(coverSrc);
 const { remarkPluginFrontmatter } = await entry.render();
 const dateLabel = formatDateToYYYYMMDD(date);
 ---
 
-<div data-layout-key={`card:${entry.slug}`} class:list={["grid-post-card card-base overflow-hidden relative flex flex-col", className]} style={`${style}; --cover-aspect: ${coverAspect}`}>
-    <a href={url} aria-label={title} class="post-card-cover block relative w-full overflow-hidden group" style="height: 11rem;">
-        {hasCover && (
-            <ImageWrapper
-                src={coverSrc}
-                basePath={path.join("content/posts/", getDir(entry.id))}
-                alt={title}
-                class="w-full h-full transition-transform duration-500 group-hover:scale-[1.025]"
-            />
-        )}
-        {!hasCover && (
-            <div class="w-full h-full bg-gradient-to-br from-[var(--primary)]/30 to-[var(--primary)]/10"></div>
-        )}
-    </a>
-
+<div data-layout-key={`card:${entry.slug}`} class:list={["grid-post-card card-base overflow-hidden relative flex flex-col", className]} style={style}>
+    {hasCover && <span class="post-card-hover-image" aria-hidden="true"><ImageWrapper src={coverSrc} basePath={path.join("content/posts/", getDir(entry.id))} alt="" class="w-full h-full" /></span>}
     <div class="post-card-content flex flex-col flex-1 px-5 pt-4 pb-5 gap-3 min-w-0">
         <div class="flex items-baseline justify-between gap-3 min-h-5 text-xs">
             {category ? (
@@ -88,14 +74,10 @@ const dateLabel = formatDateToYYYYMMDD(date);
 </div>
 
 <style>
-.grid-post-card {
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-.grid-post-card:hover {
-    border-color: color-mix(in srgb, var(--primary) 30%, var(--card-border));
-    box-shadow: 0 6px 12px -8px color-mix(in srgb, var(--palette-ink) 25%, transparent);
-}
-@media (prefers-reduced-motion: reduce) {
-    .post-card-cover :global(div) { transition: none; }
-}
+.post-card-hover-image { position:absolute;inset:0;z-index:0;pointer-events:none;opacity:0;overflow:hidden;transition:opacity 420ms cubic-bezier(.22,1,.36,1); }
+.post-card-hover-image :global(.image-wrapper),.post-card-hover-image :global(img) {width:100%;height:100%;object-fit:cover;}
+.post-card-hover-image::after { content:"";position:absolute;inset:0;background:linear-gradient(90deg,var(--page-bg) 0%,color-mix(in srgb,var(--page-bg) 96%,transparent) 22%,color-mix(in srgb,var(--page-bg) 90%,transparent) 50%,color-mix(in srgb,var(--page-bg) 50%,transparent) 82%,color-mix(in srgb,var(--page-bg) 32%,transparent)); }
+.grid-post-card:focus-within .post-card-hover-image {opacity:1}
+@media(hover:hover){.grid-post-card:hover .post-card-hover-image{opacity:1}}
+@media(prefers-reduced-motion:reduce){.post-card-hover-image{transition:none}}
 </style>

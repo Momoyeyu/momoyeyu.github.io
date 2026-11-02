@@ -9,7 +9,7 @@
             const enabled = desktop.matches && document.documentElement.dataset.postLayout !== "list";
             for (const feed of document.querySelectorAll<HTMLElement>(".post-feed")) {
                 const cards = [...feed.querySelectorAll<HTMLElement>(":scope > .grid-post-card")];
-                if (!enabled) {
+                if (!enabled || feed.dataset.textFeed === "true") {
                     delete feed.dataset.masonry;
                     cards.forEach(card => { card.style.removeProperty("grid-column"); card.style.removeProperty("grid-row"); });
                     continue;
