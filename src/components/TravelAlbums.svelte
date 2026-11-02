@@ -6,17 +6,24 @@
     import { i18n } from "../i18n/translation";
     import { url } from "../utils/url-utils";
     export let library: PhotoLibrary;
-    const albums = library.albums.filter(album => library.photos.some(photo => photo.album === album.slug));
+    const albums = library.albums.filter(album => library.photos.some(photo => photo.album === album.slug)).sort((a,b) => (a.location?.longitude ?? 180) - (b.location?.longitude ?? 180));
+    const slides = [...albums, ...albums, ...albums];
+    const wrap = (n: number) => ((n % albums.length) + albums.length) % albums.length;
+    let physical = albums.length;
     const albumPhotos = (slug: string) => library.photos.filter(photo => photo.album === slug);
     let current = 0;
     let carousel: HTMLDivElement;
-    let requested: number | null = null;
     let frame = 0;
+    let settle: ReturnType<typeof setTimeout>;
+    let step = 1;
     const position = (location: { longitude: number; latitude: number }) => ({ x: (location.longitude - 85) / 65 * 100, y: (50 - location.latitude) / 35 * 100 });
     function select(index: number) {
-        current = Math.max(0, Math.min(albums.length - 1, index));
-        requested = current;
-        carousel?.scrollTo({ left: current * carousel.clientWidth, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+        const target = wrap(index);
+        const origin = Math.round(carousel.scrollLeft / step);
+        const options = [target, target + albums.length, target + albums.length * 2];
+        physical = options.reduce((a,b) => Math.abs(b-origin) < Math.abs(a-origin) ? b : a);
+        current = target;
+        carousel.scrollTo({ left: physical * step, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
     }
     function keyboard(event: KeyboardEvent) {
         if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
@@ -24,32 +31,51 @@
         select(event.key === "Home" ? 0 : event.key === "End" ? albums.length - 1 : current + (event.key === "ArrowRight" ? 1 : -1));
     }
     onMount(() => {
-        const scroll = () => {
-            cancelAnimationFrame(frame);
-            frame = requestAnimationFrame(() => {
-                const progress = carousel.scrollLeft / Math.max(1, carousel.clientWidth);
-                if (requested !== null && Math.abs(progress - requested) < .02) requested = null;
-                if (requested === null) current = Math.max(0, Math.min(albums.length - 1, Math.round(progress)));
-            });
-        };
-        const interrupt = () => { requested = null; };
         let width = carousel.clientWidth;
+        let resizing = false;
+        let resizeFrame = 0;
+        const measure = () => {
+            const children = carousel.children;
+            step = children.length > 1 ? (children[1] as HTMLElement).offsetLeft - (children[0] as HTMLElement).offsetLeft : carousel.clientWidth;
+        };
+        const recenter = () => {
+            if (resizing || carousel.clientWidth !== width) return;
+            const position = carousel.scrollLeft / step;
+            const slot = Math.round(position);
+            if (Math.abs(position - slot) > .03) return;
+            current = wrap(slot);
+            physical = current + albums.length;
+            if (slot !== physical) carousel.scrollTo({ left: physical * step, behavior: "instant" });
+        };
+        const scroll = () => {
+            if (resizing || carousel.clientWidth !== width) return;
+            clearTimeout(settle); cancelAnimationFrame(frame);
+            frame = requestAnimationFrame(() => {
+                if (resizing || carousel.clientWidth !== width) return;
+                physical = Math.round(carousel.scrollLeft / step); current = wrap(physical);
+            });
+            settle = setTimeout(recenter, 180);
+        };
         const observer = new ResizeObserver(() => {
             if (carousel.clientWidth === width) return;
-            width = carousel.clientWidth;
-            carousel.scrollTo({ left: current * width, behavior: "instant" });
+            resizing = true; clearTimeout(settle); cancelAnimationFrame(frame); cancelAnimationFrame(resizeFrame);
+            width = carousel.clientWidth; measure();
+            physical = current + albums.length;
+            carousel.scrollTo({ left: physical * step, behavior: "instant" });
+            resizeFrame = requestAnimationFrame(() => {
+                carousel.scrollTo({left: physical * step, behavior:"instant"}); resizing = false;
+            });
         });
+        measure(); carousel.scrollTo({left: albums.length * step, behavior:"instant"});
         observer.observe(carousel);
         carousel.addEventListener("scroll", scroll, { passive: true });
-        carousel.addEventListener("pointerdown", interrupt);
-        carousel.addEventListener("wheel", interrupt, { passive: true });
+        carousel.addEventListener("scrollend", recenter);
         return () => {
-            cancelAnimationFrame(frame); observer.disconnect();
-            carousel.removeEventListener("scroll", scroll);
-            carousel.removeEventListener("pointerdown", interrupt);
-            carousel.removeEventListener("wheel", interrupt);
+            clearTimeout(settle);cancelAnimationFrame(frame); cancelAnimationFrame(resizeFrame); observer.disconnect();
+            carousel.removeEventListener("scroll", scroll);carousel.removeEventListener("scrollend", recenter);
         };
     });
+
 </script>
 
 <section class="travel-albums" aria-label={i18n(I18nKey.photography)}>
@@ -73,11 +99,11 @@
     </div>
     <div class="exhibition">
         <div class="album-rail" bind:this={carousel} tabindex="0" role="region" aria-label={i18n(I18nKey.photoAlbums)} on:keydown={keyboard}>
-            {#each albums as album, index}
+            {#each slides as album, index}
                 {@const photos = albumPhotos(album.slug)}
-                <article class="album-slide" inert={index !== current} aria-hidden={index !== current}>
+                <article class="album-slide" inert={index !== physical} aria-hidden={index !== physical}>
                     <a class="large-photo" href={url(`/photos/${album.slug}/`)} aria-label={`${i18n(I18nKey.enterAlbum)} · ${album.title}`}>
-                        <img src={album.cover} alt={album.title} width="800" height="600" loading={index === 0 ? "eager" : "lazy"} draggable="false" />
+                        <img src={album.cover} alt={album.title} width="800" height="600" loading={index === albums.length ? "eager" : "lazy"} draggable="false" />
                     </a>
                     <div class="album-label"><h2>{album.title}</h2><span>{photos.length} {i18n(I18nKey.photoCount)}</span></div>
                     {#if album.subtitle}<p class="album-description">{album.subtitle}</p>{/if}
@@ -88,7 +114,7 @@
         </div>
         <div class="exhibition-controls">
             <span aria-live="polite">{albums[current]?.title} <span class="slide-count">{current + 1} / {albums.length}</span></span>
-            <div><button disabled={current === 0} on:click={() => select(current - 1)} aria-label={i18n(I18nKey.previousAlbum)}>←</button><button disabled={current === albums.length - 1} on:click={() => select(current + 1)} aria-label={i18n(I18nKey.nextAlbum)}>→</button></div>
+            <div><button on:click={() => select(current - 1)} aria-label={i18n(I18nKey.previousAlbum)}>←</button><button on:click={() => select(current + 1)} aria-label={i18n(I18nKey.nextAlbum)}>→</button></div>
         </div>
     </div>
 </section>
@@ -108,7 +134,7 @@ h1 { font-family: var(--font-display); font-weight: 400; font-size: clamp(2.2rem
 .places button { padding: .55rem .75rem; border-radius: var(--radius-panel); font-size: .8rem; color: var(--text-secondary); transition: background-color 200ms,color 200ms; }
 .places button.active { background: var(--btn-regular-bg); color: var(--text-primary); }
 .exhibition { min-width: 0; }
-.album-rail { display: flex; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; }
+.album-rail { overflow-anchor: none; display: flex; position: relative; gap: clamp(1.5rem,3vw,3rem); overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; }
 .album-rail::-webkit-scrollbar { display: none; }
 .album-slide { flex: 0 0 100%; min-width: 0; scroll-snap-align: start; scroll-snap-stop: always; padding: 0 1px; }
 .large-photo { display: block; aspect-ratio: 4/3; overflow: hidden; }
