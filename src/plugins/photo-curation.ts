@@ -1,3 +1,5 @@
+import sharp from "sharp";
+import { randomUUID } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import type { IncomingMessage, ServerResponse } from "node:http";
@@ -60,6 +62,26 @@ export function photoCurationPlugin() {
                     if (req.method === "GET") { send(200, JSON.parse(fs.readFileSync(file, "utf8"))); return; }
                     if (req.method !== "POST") { send(405, { error: "请求方式不支持" }); return; }
                     if (req.headers.origin !== `http://${host}` && req.headers.origin !== `https://${host}`) { send(403, { error: "请求来源无效" }); return; }
+                    if (req.url?.split("?")[0] === "/upload") {
+                        if (!req.headers["content-type"]?.startsWith("image/")) throw new CurationError("请选择图片文件", 415);
+                        const albumSlug = text(req.headers["x-photo-album"], 64);
+                        const title = text(decodeURIComponent(String(req.headers["x-photo-title"] ?? "")), 100);
+                        const chunks: Buffer[] = []; let size = 0;
+                        for await (const chunk of req) { const bytes = Buffer.from(chunk); size += bytes.length; if (size > 30 * 1024 * 1024) throw new CurationError("单帧照片不能超过 30 MB", 413); chunks.push(bytes); }
+                        const id = `${albumSlug}-${new Date().toISOString().slice(0,10)}-${randomUUID().slice(0,8)}`;
+                        const image = await sharp(Buffer.concat(chunks), { limitInputPixels: 80000000 }).rotate().resize({ width: 2400, height: 2400, fit: "inside", withoutEnlargement: true }).webp({ quality: 88 }).toBuffer({ resolveWithObject: true });
+                        const library: PhotoLibrary = JSON.parse(fs.readFileSync(file, "utf8"));
+                        const album = library.albums.find(album => album.slug === albumSlug);
+                        if (!album) throw new CurationError("请先保存新地点，再上传照片");
+                        const src = `/img/covers/${id}.webp`;
+                        fs.mkdirSync(path.resolve("public/img/covers"), { recursive: true });
+                        fs.writeFileSync(path.resolve(`public${src}`), image.data);
+                        library.photos.push({ id, src, title, album: albumSlug, width: image.info.width, height: image.info.height, source: album.source || album.title, defaultCover: true });
+                        if (!album.cover) album.cover = src;
+                        const temp = `${file}.curation-tmp`;
+                        fs.writeFileSync(temp, JSON.stringify(library, null, 2) + "\n"); fs.renameSync(temp, file);
+                        send(200, library); return;
+                    }
                     if (!req.headers["content-type"]?.startsWith("application/json")) { send(415, { error: "归类内容需要 JSON 格式" }); return; }
                     let body = "";
                     for await (const chunk of req) { body += chunk.toString(); if (Buffer.byteLength(body) > 65536) throw new CurationError("归类内容过大", 413); }

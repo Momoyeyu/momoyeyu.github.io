@@ -33,7 +33,7 @@
         const index = queue.findIndex(photo => photo.id === id);
         currentId = queue[(index + 1) % queue.length]?.id ?? "";
         draft = { ...draft, assignments };
-        message = `已标记：${albums.find(place => place.slug === album)?.title ?? album}`;
+        message = `已标记：${[...albums, ...draft.albums].find(place => place.slug === album)?.title ?? album}`;
         error = ""; persist();
     }
     function undo() {
@@ -70,6 +70,22 @@
         } catch (cause) { error = cause instanceof Error ? cause.message : "保存失败，请重试"; }
         finally { busy = false; }
     }
+    let uploadAlbum = "travel-notes", uploadInput: HTMLInputElement;
+    async function upload(event: Event) {
+        const input = event.currentTarget as HTMLInputElement;
+        const files = Array.from(input.files ?? []); if (!files.length || busy) return;
+        busy = true; error = "";
+        try {
+            for (const [index, file] of files.entries()) {
+                message = `上传中 ${index + 1} / ${files.length}`;
+                const response = await fetch("/__photo-curation/upload", { method: "POST", headers: { "Content-Type": file.type || "image/jpeg", "x-photo-album": uploadAlbum, "x-photo-title": encodeURIComponent(file.name.replace(/\.[^.]+$/, "")) }, body: file });
+                const result = await response.json(); if (!response.ok) throw new Error(result.error || "上传失败");
+                library = result;
+            }
+            message = `已上传 ${files.length} 帧`; mode = uploadAlbum === "travel-notes" ? "pending" : "all";
+        } catch(cause) { error = cause instanceof Error ? cause.message : "上传失败"; }
+        finally { busy = false; input.value = ""; }
+    }
     onMount(() => {
         let disposed = false;
         void fetch("/__photo-curation").then(async response => {
@@ -94,6 +110,7 @@
         <div><a href="/photos/" data-no-swup>← 摄影</a><h1>照片归类</h1><p>选择地点后自动移到下一张；完成后保存到相册。草稿会保留在浏览器中。</p></div>
         <div class="curation-actions"><button on:click={undo} disabled={!undoStack.length || busy}>撤销上一张</button><button class="save" on:click={save} disabled={!changes || busy}>{busy ? "保存中…" : `保存到相册${changes ? ` · ${changes}` : ""}`}</button></div>
     </header>
+    <div class="upload-toolbar"><label>上传到<select bind:value={uploadAlbum}>{#each library?.albums ?? [] as album}<option value={album.slug}>{album.title}</option>{/each}</select></label><input class="upload-input" bind:this={uploadInput} type="file" accept="image/jpeg,image/png,image/webp,image/avif,image/heic,image/heif" multiple on:change={upload} disabled={busy} /><button on:click={() => uploadInput.click()} disabled={busy || !library}>＋ 上传照片</button><p>支持多选，每帧不超过 30 MB；自动命名并生成 WebP，也会加入文章封面库。</p></div>
     <div class="curation-toolbar"><div><button class:active={mode === "pending"} on:click={() => { mode = "pending"; currentId = ""; }}>待归类 {pending.length}</button><button class:active={mode === "all"} on:click={() => { mode = "all"; currentId = ""; }}>全部照片 {photos.length}</button></div><p aria-live="polite">{message}</p></div>
     {#if error}<p class="curation-error" role="alert">{error}</p>{/if}
     {#if current}
@@ -119,6 +136,11 @@
 </section>
 
 <style>
+.upload-toolbar { display:flex; align-items:center; gap:1rem; flex-wrap:wrap; margin-bottom:1.5rem; }
+.upload-toolbar label { display:flex; align-items:center; }
+.upload-toolbar select { background:var(--btn-regular-bg); color:var(--text-primary); padding:.5rem; border-radius:.4rem; }
+.upload-input { display:none; }
+
 .photo-curator { color: var(--text-primary); padding-bottom: 3rem; }
 .curation-header { display: flex; align-items: center; justify-content: space-between; gap: 2rem; margin-block: 1rem 2rem; }
 h1 { font-family: var(--font-display); font-size: 2rem; margin-block: .5rem; }
