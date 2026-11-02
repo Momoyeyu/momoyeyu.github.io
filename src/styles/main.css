@@ -543,3 +543,5 @@ series-widget > a:first-child {
     .archive-timeline { width: 100%; }
 }
 @media(prefers-reduced-motion: reduce) { .archive-tag-cloud a { transition: none; } }
+
+html[data-reading="true"] #sidebar .card-base { background: transparent; box-shadow: none; backdrop-filter: none; }

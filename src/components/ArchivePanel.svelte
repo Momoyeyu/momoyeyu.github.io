@@ -74,7 +74,7 @@ let isMenuOpen = false;
 let activePeriod = "";
 function monthKey(date: Date) { return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`; }
 function monthLabel(date: Date) { return new Intl.DateTimeFormat((document.documentElement.lang || "zh-CN").replace("_", "-"), { month: "short" }).format(date); }
-function monthsIn(group: Group) { return [...new Map(group.posts.map(post => [monthKey(post.data.date), post.data.date])).entries()]; }
+function monthsIn(group: Group) { return [...new Map(group.posts.map(post => [monthKey(post.data.date), post.data.date])).entries()].sort(([a], [b]) => b.localeCompare(a)); }
 function jumpToPeriod(event: MouseEvent, id: string) {
     const target = document.getElementById(id);
     if (!target) return;
@@ -234,8 +234,10 @@ onMount(() => {
     </section>
 </div>
 
+<div class="archive-browser with-index">
+    <nav class="archive-index" aria-label={i18n(I18nKey.archiveIndex)}>
 {#if mounted && filteredPosts.length > 1}
-    <div class="flex justify-end mb-3" use:clickOutside>
+    <div class="index-sort" use:clickOutside>
         <div class="relative">
             <button
                 type="button"
@@ -314,9 +316,7 @@ onMount(() => {
     </div>
 {/if}
 
-<div class="archive-browser" class:with-index={groups.some(group => !group.isSeries)}>
-{#if groups.some(group => !group.isSeries)}
-    <nav class="archive-index" aria-label={i18n(I18nKey.archiveIndex)}>
+        {#if groups.some(group => !group.isSeries)}
         <p>{i18n(I18nKey.archiveIndex)}</p>
         {#each groups.filter(group => !group.isSeries) as group}
             <div class="index-year">
@@ -326,8 +326,8 @@ onMount(() => {
                 {/each}</div>
             </div>
         {/each}
+        {/if}
     </nav>
-{/if}
 <div class="archive-timeline card-base px-6 md:px-8 py-6">
 
     {#each groups as group (group.isSeries ? "series" : group.year)}
@@ -400,6 +400,8 @@ onMount(() => {
 </div>
 
 <style>
+.index-sort { margin-bottom: 1.25rem; }
+
 .sort-trigger {
     display: inline-flex;
     align-items: center;
@@ -448,10 +450,10 @@ onMount(() => {
 }
 
 .sort-menu {
-    position: absolute;
-    top: calc(100% + 0.35rem);
+    position: relative;
+    margin-top: .5rem;
     left: 0;
-    min-width: 10.5rem;
+    min-width: 0;
     background: var(--card-bg);
     border: 1px solid var(--card-border);
     border-radius: var(--radius-panel);
