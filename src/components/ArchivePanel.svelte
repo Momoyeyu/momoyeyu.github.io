@@ -141,6 +141,22 @@ async function setSort(mode: SortMode) {
 	document.dispatchEvent(new Event("post-layout:after"));
 }
 
+function positionSortMenu(node: HTMLDivElement) {
+    const trigger = node.parentElement?.querySelector<HTMLButtonElement>(".sort-trigger");
+    if (!trigger) return;
+    const place = () => {
+        const rect = trigger.getBoundingClientRect();
+        node.style.width = `${rect.width}px`;
+        node.style.left = `${Math.max(8, Math.min(rect.left, innerWidth - rect.width - 8))}px`;
+        const height = node.offsetHeight;
+        node.style.top = `${rect.bottom + height + 6 <= innerHeight ? rect.bottom + 6 : Math.max(8, rect.top - height - 6)}px`;
+    };
+    node.showPopover(); place();
+    window.addEventListener("scroll", place, { capture: true, passive: true });
+    window.addEventListener("resize", place);
+    return { destroy() { window.removeEventListener("scroll", place, true); window.removeEventListener("resize", place); } };
+}
+
 function toggleMenu() {
 	isMenuOpen = !isMenuOpen;
 }
@@ -269,6 +285,8 @@ onMount(() => {
             {#if isMenuOpen}
                 <div
                     class="sort-menu"
+                    popover="manual"
+                    use:positionSortMenu
                     role="listbox"
                     transition:fly={{ y: -4, duration: 130 }}
                 >
@@ -326,7 +344,6 @@ onMount(() => {
 {/if}
 
         {#if groups.some(group => !group.isSeries)}
-        <p>{i18n(I18nKey.archiveIndex)}</p>
         {#each groups.filter(group => !group.isSeries) as group}
             <div class="index-year">
                 <a class:active={activePeriod === `archive-year-${group.year}`} href={`#archive-year-${group.year}`} data-no-swup on:click={event => jumpToPeriod(event, `archive-year-${group.year}`)}>{group.year}</a>
@@ -411,6 +428,7 @@ onMount(() => {
 <style>
 .index-sort { margin-bottom: 1.25rem; min-width: 0; width: 100%; }
 .index-sort > div { width: 100%; min-width: 0; }
+@media(max-width:767px) { .index-sort { flex: 0 0 8rem; } }
 
 .sort-trigger {
     display: flex;
@@ -468,9 +486,8 @@ onMount(() => {
     width: 100%;
     box-sizing: border-box;
     overflow: hidden;
-    position: relative;
-    margin-top: .5rem;
-    left: 0;
+    position: fixed;
+    margin: 0;
     min-width: 0;
     background: var(--card-bg);
     border: 0;
