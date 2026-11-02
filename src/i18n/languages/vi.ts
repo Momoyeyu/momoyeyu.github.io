@@ -2,6 +2,23 @@ import Key from "../i18nKey";
 import type { Translation } from "../translation";
 
 export const vi: Translation = {
+	[Key.articles]: "Bài viết",
+	[Key.photography]: "Nhiếp ảnh",
+	[Key.scripts]: "Tập lệnh",
+	[Key.photoMotto]: "Nơi đã qua. Khoảnh khắc còn lại.",
+	[Key.previousAlbum]: "Album trước",
+	[Key.nextAlbum]: "Album sau",
+	[Key.enterAlbum]: "Mở album",
+	[Key.photoCount]: "ảnh",
+	[Key.archiveIndex]: "Mục lục thời gian",
+	[Key.copyCommand]: "Sao chép",
+	[Key.commandCopied]: "Đã sao chép",
+	[Key.viewScript]: "Xem mã nguồn",
+
+	[Key.downloadPhoto]: "Tải ảnh xuống",
+	[Key.photoAlbums]: "Album ảnh",
+	[Key.allPosts]: "Tất cả bài viết",
+	[Key.readingProgress]: "Tiến độ đọc",
 	[Key.openingDescription]: "Giữa những dòng chữ, ý nghĩ dần sáng rõ.",
 	[Key.openingScrollHint]: "Cuộn xuống để đọc tiếp",
 

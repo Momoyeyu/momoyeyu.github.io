@@ -2,6 +2,23 @@ import Key from "../i18nKey";
 import type { Translation } from "../translation";
 
 export const id: Translation = {
+	[Key.articles]: "Artikel",
+	[Key.photography]: "Fotografi",
+	[Key.scripts]: "Skrip",
+	[Key.photoMotto]: "Tempat yang dilalui. Momen yang disimpan.",
+	[Key.previousAlbum]: "Album sebelumnya",
+	[Key.nextAlbum]: "Album berikutnya",
+	[Key.enterAlbum]: "Buka album",
+	[Key.photoCount]: "foto",
+	[Key.archiveIndex]: "Indeks tanggal",
+	[Key.copyCommand]: "Salin",
+	[Key.commandCopied]: "Disalin",
+	[Key.viewScript]: "Lihat sumber skrip",
+
+	[Key.downloadPhoto]: "Unduh foto",
+	[Key.photoAlbums]: "Album foto",
+	[Key.allPosts]: "Semua artikel",
+	[Key.readingProgress]: "Progres membaca",
 	[Key.openingDescription]: "Menjernihkan pikiran di antara baris.",
 	[Key.openingScrollHint]: "Gulir ke bawah",
 

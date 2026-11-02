@@ -2,6 +2,23 @@ import Key from "../i18nKey";
 import type { Translation } from "../translation";
 
 export const ko: Translation = {
+	[Key.articles]: "글",
+	[Key.photography]: "사진",
+	[Key.scripts]: "스크립트",
+	[Key.photoMotto]: "지나온 곳, 남겨진 순간.",
+	[Key.previousAlbum]: "이전 앨범",
+	[Key.nextAlbum]: "다음 앨범",
+	[Key.enterAlbum]: "앨범 열기",
+	[Key.photoCount]: "장",
+	[Key.archiveIndex]: "날짜 색인",
+	[Key.copyCommand]: "복사",
+	[Key.commandCopied]: "복사됨",
+	[Key.viewScript]: "스크립트 소스 보기",
+
+	[Key.downloadPhoto]: "사진 다운로드",
+	[Key.photoAlbums]: "사진 앨범",
+	[Key.allPosts]: "모든 글",
+	[Key.readingProgress]: "읽기 진행률",
 	[Key.openingDescription]: "글 사이에서 생각을 가다듬다.",
 	[Key.openingScrollHint]: "아래로 스크롤",
 

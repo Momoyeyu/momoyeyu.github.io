@@ -1,4 +1,5 @@
 import fs from "node:fs";
+import { photoCurationPlugin } from "./src/plugins/photo-curation.ts";
 import sitemap from "@astrojs/sitemap";
 import svelte from "@astrojs/svelte";
 import tailwind from "@astrojs/tailwind";
@@ -147,7 +148,7 @@ export default defineConfig({
 			},
 			styleOverrides: {
 				codeBackground: "var(--codeblock-bg)",
-				borderRadius: "0.75rem",
+				borderRadius: "0.25rem",
 				borderColor: "none",
 				codeFontSize: "0.875rem",
 				codeFontFamily:
@@ -246,6 +247,7 @@ export default defineConfig({
             ? "node_modules/.vite-tools"
             : "node_modules/.vite",
 		plugins: [
+            photoCurationPlugin(),
 			{
 				// dev server 内存中的 optimizeDeps hash 可能落后于磁盘上
 				// node_modules/.vite/deps 的重优化结果，此时所有 .vite/deps 请求

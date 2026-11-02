@@ -3,7 +3,7 @@ import type { CollectionEntry } from "astro:content";
 import path from "node:path";
 import I18nKey from "../i18n/i18nKey";
 import { i18n } from "../i18n/translation";
-import { getCover } from "../utils/cover-utils";
+import { getCover, getCoverAspect } from "../utils/cover-utils";
 import { formatDateToYYYYMMDD } from "../utils/date-utils";
 import { getCategoryUrl, getDir, getTagUrl } from "../utils/url-utils";
 import ImageWrapper from "./misc/ImageWrapper.astro";
@@ -34,13 +34,14 @@ const {
 	style,
 } = Astro.props;
 const className = Astro.props.class;
-const coverSrc = getCover(entry.id, image || undefined);
+const coverSrc = await getCover(entry.id, image || undefined);
 const hasCover = coverSrc !== "";
+const coverAspect = await getCoverAspect(coverSrc);
 const { remarkPluginFrontmatter } = await entry.render();
 const dateLabel = formatDateToYYYYMMDD(date);
 ---
 
-<div class:list={["grid-post-card card-base rounded-[var(--radius-large)] overflow-hidden relative flex flex-col", className]} style={style}>
+<div data-layout-key={`card:${entry.slug}`} class:list={["grid-post-card card-base overflow-hidden relative flex flex-col", className]} style={`${style}; --cover-aspect: ${coverAspect}`}>
     <a href={url} aria-label={title} class="post-card-cover block relative w-full overflow-hidden group" style="height: 11rem;">
         {hasCover && (
             <ImageWrapper
@@ -68,7 +69,7 @@ const dateLabel = formatDateToYYYYMMDD(date);
         <h2 class="post-card-title text-90 font-semibold text-lg leading-snug min-h-[2.75em]">
             <a href={url} class="line-clamp-2 hover:text-[var(--primary)]">{title}</a>
         </h2>
-        <p class="text-75 text-sm leading-relaxed line-clamp-2 flex-1 min-h-[3.25em]">
+        <p class="post-card-description text-75 text-sm leading-relaxed line-clamp-2 flex-1 min-h-[3.25em]">
             {description || remarkPluginFrontmatter.excerpt}
         </p>
         <div class="post-card-foot flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2 pt-3 border-t border-[var(--line-divider)] text-xs text-50">
@@ -92,7 +93,7 @@ const dateLabel = formatDateToYYYYMMDD(date);
 }
 .grid-post-card:hover {
     border-color: color-mix(in srgb, var(--primary) 30%, var(--card-border));
-    box-shadow: 0 5px 18px rgb(0 0 0 / 0.05);
+    box-shadow: 0 6px 12px -8px color-mix(in srgb, var(--palette-ink) 25%, transparent);
 }
 @media (prefers-reduced-motion: reduce) {
     .post-card-cover :global(div) { transition: none; }

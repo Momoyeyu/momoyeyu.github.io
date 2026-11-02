@@ -1,0 +1,39 @@
+---
+import { RESOURCE_CATEGORIES } from "../constants/resources";
+import CopyCommand from "./CopyCommand.svelte";
+import I18nKey from "../i18n/i18nKey";
+import { i18n } from "../i18n/translation";
+const category = RESOURCE_CATEGORIES.find(category => category.slug === "script")!;
+const origin = Astro.site ?? new URL("https://momoyeyu.github.io");
+---
+<section class="script-section">
+<h1 class="script-section-title">{i18n(I18nKey.scripts)}</h1>
+<div class="script-grid">
+    {category.items.map(item => {
+        const href = `/resource/script/${item.name}`;
+        const command = category.commandTemplate!.replace('{url}', new URL(href, origin).href);
+        return <article class="script-card card-base">
+            <h2>{item.title}</h2>
+            <p>{item.desc}</p>
+            <ul>{item.details.map(detail => <li>{detail}</li>)}</ul>
+            <div class="script-command"><CopyCommand command={command} client:load /></div>
+            <p class="script-note">{item.note}</p>
+            <a href={href} target="_blank" rel="noopener" data-no-swup>{i18n(I18nKey.viewScript)}</a>
+        </article>;
+    })}
+</div>
+</section>
+<style>
+.script-section { margin-block: 1.5rem; }
+.script-section-title { font-family: var(--font-display); font-size: 1.6rem; color: var(--text-primary); margin-bottom: 1.5rem; }
+.script-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 1.5rem; margin-block: 0; }
+.script-card { padding: 1.75rem; display: flex; flex-direction: column; min-width: 0; }
+h2 { font-family: var(--font-display); font-size: 1.4rem; color: var(--text-primary); margin-bottom: .75rem; }
+p,ul { color: var(--text-secondary); font-size: .85rem; line-height: 1.8; }
+ul { padding-left: 1rem; list-style: disc; margin-block: 1rem; }
+.script-command { margin-top: auto; padding-top: .5rem; }
+.script-note { font-size: .75rem; margin-top: .75rem; }
+.script-card > a { width: fit-content; color: var(--primary); font-size: .8rem; margin-top: 1rem; }
+.script-card > a:hover { text-decoration: underline; text-underline-offset: .25rem; }
+@media(max-width: 767px) { .script-grid { grid-template-columns: 1fr; } }
+</style>

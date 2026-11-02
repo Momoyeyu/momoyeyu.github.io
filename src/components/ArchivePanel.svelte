@@ -1,5 +1,5 @@
 <script lang="ts">
-import { onMount } from "svelte";
+import { onMount, tick } from "svelte";
 import { fly } from "svelte/transition";
 
 import I18nKey from "../i18n/i18nKey";
@@ -11,6 +11,19 @@ import { getPostUrlBySlug, getTagUrl, url } from "../utils/url-utils";
 export let tags: string[] = [];
 export let categories: string[] = [];
 export let sortedPosts: Post[] = [];
+
+const categoryOptions = [...new Set(sortedPosts.map(post => post.data.category).filter((category): category is string => !!category))].sort();
+const tagOptions = [...new Set(sortedPosts.flatMap(post => post.data.tags))].sort();
+const tagCount = (tag: string) => sortedPosts.filter(post => post.data.tags.includes(tag)).length;
+const categoryCount = (category: string) => sortedPosts.filter(post => post.data.category === category).length;
+function filterUrl(kind: "category" | "tag", value: string) {
+    const next = new URLSearchParams(window.location.search);
+    next.delete("uncategorized");
+    const active = next.getAll(kind).includes(value);
+    next.delete(kind);
+    if (!active) next.set(kind, value);
+    return url("/archive/") + (next.size ? `?${next}` : "");
+}
 
 const params = new URLSearchParams(window.location.search);
 tags = params.has("tag") ? params.getAll("tag") : [];
@@ -57,6 +70,18 @@ let canUseSeries = false;
 let sortMode: SortMode = "date-desc";
 let mounted = false;
 let isMenuOpen = false;
+
+let activePeriod = "";
+function monthKey(date: Date) { return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`; }
+function monthLabel(date: Date) { return new Intl.DateTimeFormat((document.documentElement.lang || "zh-CN").replace("_", "-"), { month: "short" }).format(date); }
+function monthsIn(group: Group) { return [...new Map(group.posts.map(post => [monthKey(post.data.date), post.data.date])).entries()]; }
+function jumpToPeriod(event: MouseEvent, id: string) {
+    const target = document.getElementById(id);
+    if (!target) return;
+    event.preventDefault(); activePeriod = id;
+    target.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+    target.focus({ preventScroll: true });
+}
 
 function formatDate(date: Date) {
 	const month = (date.getMonth() + 1).toString().padStart(2, "0");
@@ -106,10 +131,13 @@ function rebuildGroups() {
 	groups = arr;
 }
 
-function setSort(mode: SortMode) {
+async function setSort(mode: SortMode) {
+	document.dispatchEvent(new Event("post-layout:before"));
 	sortMode = mode;
 	isMenuOpen = false;
 	rebuildGroups();
+	await tick();
+	document.dispatchEvent(new Event("post-layout:after"));
 }
 
 function toggleMenu() {
@@ -180,19 +208,34 @@ onMount(() => {
 	sortMode = canUseSeries ? "episode-desc" : "date-desc";
 	rebuildGroups();
 	mounted = true;
+	void tick().then(() => document.dispatchEvent(new Event("post-layout:after")));
 });
 </script>
 
 <svelte:window on:keydown={handleKeydown} />
 
-{#if mounted && categories.length === 1 && tags.length === 0 && !uncategorized}
-    <a href={url('/archive/')} class="inline-flex items-center mb-3 text-sm text-50 hover:text-[var(--primary)] transition">
-        ← {i18n(I18nKey.archive)}
-    </a>
-{/if}
+<div class="archive-discovery">
+    <section class="archive-collections card-base">
+        <header><h2>{i18n(I18nKey.categories)}</h2><a class="archive-reset" href={url('/archive/')} aria-current={!categories.length && !tags.length && !uncategorized ? "true" : undefined}>{i18n(I18nKey.allPosts)} <span>{sortedPosts.length}</span></a></header>
+        <nav class="archive-categories" aria-label={i18n(I18nKey.categories)}>
+            {#each categoryOptions as category}
+                <a href={filterUrl("category", category)} class:active={categories.includes(category)} aria-current={categories.includes(category) ? "true" : undefined}>{category}<span>{categoryCount(category)}</span></a>
+            {/each}
+        </nav>
+    </section>
+    <section class="archive-tag-panel card-base">
+        <header><h2>{i18n(I18nKey.tags)}</h2><span>{tagOptions.length}</span></header>
+        <nav class="archive-tag-cloud" aria-label={i18n(I18nKey.tags)}>
+            {#each tagOptions as tag, index}
+                <a href={filterUrl("tag", tag)} class:active={tags.includes(tag)} aria-current={tags.includes(tag) ? "true" : undefined}
+                    style={`--tag-size: ${.78 + Math.min(.48, Math.log2(tagCount(tag) + 1) * .1)}rem; --tag-rise: ${(index % 3 - 1) * 3}px; --tag-turn: ${(index % 5 - 2) * .8}deg; --tag-delay: ${Math.min(index * 12, 240)}ms`}>#{tag}</a>
+            {/each}
+        </nav>
+    </section>
+</div>
 
 {#if mounted && filteredPosts.length > 1}
-    <div class="flex justify-start mb-3" use:clickOutside>
+    <div class="flex justify-end mb-3" use:clickOutside>
         <div class="relative">
             <button
                 type="button"
@@ -271,9 +314,24 @@ onMount(() => {
     </div>
 {/if}
 
-<div class="card-base px-6 md:px-8 py-6">
-    {#each groups as group}
-        <div>
+<div class="archive-browser" class:with-index={groups.some(group => !group.isSeries)}>
+{#if groups.some(group => !group.isSeries)}
+    <nav class="archive-index" aria-label={i18n(I18nKey.archiveIndex)}>
+        <p>{i18n(I18nKey.archiveIndex)}</p>
+        {#each groups.filter(group => !group.isSeries) as group}
+            <div class="index-year">
+                <a class:active={activePeriod === `archive-year-${group.year}`} href={`#archive-year-${group.year}`} data-no-swup on:click={event => jumpToPeriod(event, `archive-year-${group.year}`)}>{group.year}</a>
+                <div>{#each monthsIn(group) as [key, date]}
+                    <a class:active={activePeriod === `archive-month-${key}`} href={`#archive-month-${key}`} data-no-swup on:click={event => jumpToPeriod(event, `archive-month-${key}`)}>{monthLabel(date)}</a>
+                {/each}</div>
+            </div>
+        {/each}
+    </nav>
+{/if}
+<div class="archive-timeline card-base px-6 md:px-8 py-6">
+
+    {#each groups as group (group.isSeries ? "series" : group.year)}
+        <section id={`archive-year-${group.year}`} tabindex="-1" class="archive-period">
             <div class="flex flex-row w-full items-center h-[3.75rem]">
                 <div class="w-[15%] md:w-[10%] transition text-2xl font-bold text-right text-75 whitespace-nowrap overflow-hidden overflow-ellipsis">
                     {group.isSeries ? group.label : group.year}
@@ -289,8 +347,11 @@ onMount(() => {
                 </div>
             </div>
 
-            {#each group.posts as post}
-                <div class="flex items-center h-10 w-full rounded-lg hover:bg-[var(--btn-plain-bg-hover)] transition">
+            {#each group.posts as post, index (post.slug)}
+                {#if !group.isSeries && (index === 0 || monthKey(post.data.date) !== monthKey(group.posts[index - 1].data.date))}
+                    <div id={`archive-month-${monthKey(post.data.date)}`} tabindex="-1" class="archive-month archive-period">{monthLabel(post.data.date)}</div>
+                {/if}
+                <div data-layout-key={`archive:${post.slug}`} class="flex items-center h-10 w-full rounded-lg hover:bg-[var(--btn-plain-bg-hover)] transition">
                     <a href={getPostUrlBySlug(post.slug)} aria-label={post.data.title}
                        class="group flex items-center h-full w-full md:w-[85%] rounded-lg">
                         <!-- date or episode -->
@@ -332,8 +393,10 @@ onMount(() => {
                     </div>
                 </div>
             {/each}
-        </div>
+        </section>
     {/each}
+</div>
+
 </div>
 
 <style>
@@ -391,7 +454,7 @@ onMount(() => {
     min-width: 10.5rem;
     background: var(--card-bg);
     border: 1px solid var(--card-border);
-    border-radius: 0.7rem;
+    border-radius: var(--radius-panel);
     padding: 0.25rem;
     box-shadow:
         0 3px 10px rgba(0, 0, 0, 0.05),

@@ -8,15 +8,17 @@
 	let message = $state("");
 	let speaking = $state(false);
 	let dragging = $state(false);
+	let upperBoundary = $state(0);
 	let position = $state<{ x: number; y: number } | null>(null);
 	let gesture: { id: number; x: number; y: number; left: number; top: number } | null = null;
 	let suppressClick = false;
 	const positionKey = "komari-position:v1";
 
 	function moveTo(x: number, y: number) {
+		upperBoundary = Math.max(0, document.getElementById("top-row")?.getBoundingClientRect().bottom ?? 0);
 		position = {
-			x: Math.max(0, Math.min(x, window.innerWidth - widget.offsetWidth)),
-			y: Math.max(0, Math.min(y, window.innerHeight - widget.offsetHeight)),
+			x: Math.max(0, Math.min(x, innerWidth - widget.offsetWidth)),
+			y: Math.max(upperBoundary, Math.min(y, innerHeight - widget.offsetHeight)),
 		};
 	}
 
@@ -91,7 +93,13 @@
 		const resize = () => {
 			if (position && widget.offsetWidth) moveTo(position.x, position.y);
 		};
+		let boundsFrame = 0;
+		const scheduleBounds = () => {
+			if (!boundsFrame) boundsFrame = requestAnimationFrame(() => { boundsFrame = 0; resize(); });
+		};
 		window.addEventListener("resize", resize, { passive: true });
+		window.addEventListener("scroll", scheduleBounds, { passive: true });
+		document.addEventListener("swup:page:view", resize);
 		if (window.matchMedia("(min-width: 769px)").matches) {
 			for (const state of states) {
 				const image = new Image();
@@ -101,6 +109,9 @@
 		}
 		return () => {
 			window.removeEventListener("resize", resize);
+			window.removeEventListener("scroll", scheduleBounds);
+			cancelAnimationFrame(boundsFrame);
+			document.removeEventListener("swup:page:view", resize);
 			clearTimeout(resetTimer);
 			clearTimeout(greetingTimer);
 		};
@@ -109,7 +120,7 @@
 
 <aside bind:this={widget} class="mascot-widget" class:dragging
 	class:near-left={position !== null && position.x < 170}
-	class:near-top={position !== null && position.y < 140}
+	class:near-top={position !== null && position.y < upperBoundary + 140}
 	style:left={position ? `${position.x}px` : undefined}
 	style:top={position ? `${position.y}px` : undefined}
 	style:right={position ? "auto" : undefined}

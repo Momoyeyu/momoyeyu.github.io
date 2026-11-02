@@ -1,0 +1,11 @@
+---
+import type { GetStaticPaths } from "astro";
+import MainGridLayout from "../../layouts/MainGridLayout.astro";
+import PhotoCurator from "../../components/PhotoCurator.svelte";
+export const getStaticPaths = (() => import.meta.env.DEV ? [{ params: { tool: "photos" } }] : []) satisfies GetStaticPaths;
+---
+<MainGridLayout title="照片归类"><PhotoCurator client:load /></MainGridLayout>
+<style is:global>
+html:has(.photo-curator) #page-banner { display: none; }
+html:has(.photo-curator) #main-panel { margin-top: 7rem; }
+</style>

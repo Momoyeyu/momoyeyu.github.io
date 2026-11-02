@@ -18,6 +18,7 @@ const { class: className = "" }: { class?: string } = $props();
 
 const seq: LIGHT_DARK_MODE[] = [LIGHT_MODE, DARK_MODE, AUTO_MODE];
 let mode: LIGHT_DARK_MODE = $state(AUTO_MODE);
+let rotation = $state(0);
 
 onMount(() => {
 	mode = getStoredTheme();
@@ -25,7 +26,7 @@ onMount(() => {
 	const changeThemeWhenSchemeChanged: Parameters<
 		typeof darkModePreference.addEventListener<"change">
 	>[1] = (_e) => {
-		applyThemeToDocument(mode);
+		applyThemeToDocument(mode, true);
 	};
 	darkModePreference.addEventListener("change", changeThemeWhenSchemeChanged);
 	return () => {
@@ -37,6 +38,8 @@ onMount(() => {
 });
 
 function switchScheme(newMode: LIGHT_DARK_MODE) {
+	if (newMode === mode) return;
+	rotation += 360;
 	mode = newMode;
 	setTheme(newMode);
 }
@@ -65,15 +68,17 @@ function hidePanel() {
 <!-- z-50 make the panel higher than other float panels -->
 <div class={`relative z-50 ${className}`} role="menu" tabindex="-1" onmouseleave={hidePanel}>
     <button aria-label="Light/Dark Mode" role="menuitem" class="relative btn-plain scale-animation rounded-lg h-11 w-11 active:scale-90" id="scheme-switch" onclick={toggleScheme} onmouseenter={showPanel}>
-        <div class="absolute" class:opacity-0={mode !== LIGHT_MODE}>
+        <span class="theme-icons" style:transform={`rotate(${rotation}deg)`}>
+        <div class="theme-icon" class:active={mode === LIGHT_MODE}>
             <Icon icon="material-symbols:wb-sunny-outline-rounded" class="text-[1.25rem]"></Icon>
         </div>
-        <div class="absolute" class:opacity-0={mode !== DARK_MODE}>
+        <div class="theme-icon" class:active={mode === DARK_MODE}>
             <Icon icon="material-symbols:dark-mode-outline-rounded" class="text-[1.25rem]"></Icon>
         </div>
-        <div class="absolute" class:opacity-0={mode !== AUTO_MODE}>
+        <div class="theme-icon" class:active={mode === AUTO_MODE}>
             <Icon icon="material-symbols:radio-button-partial-outline" class="text-[1.25rem]"></Icon>
         </div>
+        </span>
     </button>
 
     <div id="light-dark-panel" class="hidden lg:block absolute transition float-panel-closed top-11 -right-2 pt-5" >
@@ -102,3 +107,12 @@ function hidePanel() {
         </div>
     </div>
 </div>
+
+<style>
+.theme-icons { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; transition: transform 480ms cubic-bezier(.22,1,.36,1); }
+.theme-icon { position: absolute; opacity: 0; transform: scale(.65); transition: opacity 220ms ease, transform 360ms ease; }
+.theme-icon.active { opacity: 1; transform: scale(1); }
+@media (prefers-reduced-motion: reduce) {
+    .theme-icons, .theme-icon { transition: none; }
+}
+</style>

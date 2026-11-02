@@ -5,7 +5,11 @@
   --palette-ink #29343e
   --palette-slate #536a80
   --palette-mist #b0c6db
-  --radius-large 0.625rem
+  /* Structural surfaces, inset content, and floating controls have distinct silhouettes. */
+  --radius-surface 0px
+  --radius-inset 4px
+  --radius-panel 8px
+  --radius-large var(--radius-panel)
   --content-delay 150ms
   --accent-chroma 0.055
   --surface-chroma 0.016

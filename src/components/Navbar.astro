@@ -6,6 +6,7 @@ import { LinkPreset, type NavBarLink } from "../types/config";
 import { url } from "../utils/url-utils";
 import LightDarkSwitch from "./LightDarkSwitch.svelte";
 import Search from "./Search.svelte";
+import HeaderScrollShadow from "./HeaderScrollShadow.svelte";
 import NavMenuPanel from "./widget/NavMenuPanel.astro";
 
 const className = Astro.props.class;
@@ -32,10 +33,11 @@ const isCurrentLink = (link: NavBarLink) => {
 };
 ---
 <div id="navbar" class="z-50 onload-animation">
+    <HeaderScrollShadow client:load />
     <div class="absolute h-8 left-0 right-0 -top-8 bg-[var(--card-bg)] transition"></div> <!-- used for onload animation -->
     <div class:list={[
         className,
-        "navbar-shell card-base !overflow-visible max-w-[var(--page-width)] h-[4.5rem] !rounded-t-none mx-auto"]}>
+        "navbar-shell card-base !overflow-visible w-full h-[4.5rem] !rounded-t-none"]}>
         <a href={url('/')} class="navbar-brand btn-plain scale-animation active:scale-95" title={siteConfig.title}>
             <span class="navbar-brand-name">{siteConfig.title}</span>
         </a>

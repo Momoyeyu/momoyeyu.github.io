@@ -1,5 +1,3 @@
-# About
-
 ## 嗨，我是墨末夜羽
 
 <div class="not-prose flex flex-wrap gap-2 my-4">

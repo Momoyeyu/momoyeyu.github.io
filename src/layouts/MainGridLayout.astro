@@ -3,6 +3,9 @@ import BackToTop from "@components/control/BackToTop.astro";
 import Footer from "@components/Footer.astro";
 import Mascot from "@components/Mascot.astro";
 import Navbar from "@components/Navbar.astro";
+import PostMasonry from "@components/PostMasonry.svelte";
+import PostLayoutMotion from "@components/PostLayoutMotion.svelte";
+import ReadingProgress from "@components/ReadingProgress.svelte";
 import HomeOpening from "@components/HomeOpening.svelte";
 import ReadingControls from "@components/ReadingControls.svelte";
 import SidebarToggle from "@components/SidebarToggle.svelte";
@@ -14,7 +17,7 @@ import type { MarkdownHeading } from "astro";
 import { Icon } from "astro-icon/components";
 import ImageWrapper from "../components/misc/ImageWrapper.astro";
 import RightSidebar from "../components/widget/RightSidebar.astro";
-import { siteConfig } from "../config";
+import { profileConfig, siteConfig } from "../config";
 import { pathsEqual, url } from "../utils/url-utils";
 import Layout from "./Layout.astro";
 
@@ -52,15 +55,28 @@ const bannerSrc = setOGTypeArticle && banner ? banner : siteConfig.banner.src;
 <Layout title={title} banner={banner} description={description} lang={lang} setOGTypeArticle={setOGTypeArticle}>
 
 <NavigationDust client:idle />
+<PostMasonry client:load />
+<PostLayoutMotion client:load />
+<ReadingProgress label={i18n(I18nKey.readingProgress)} client:load />
 
 <!-- Persistent navigation; the opening and page artwork follow Swup navigation. -->
 <slot slot="head" name="head"></slot>
-<div id="top-row" class="fixed inset-x-0 top-0 z-50 max-w-[var(--page-width)] px-0 md:px-4 mx-auto">
+<div id="top-row" class="fixed inset-x-0 top-0 z-50">
     <div id="navbar-wrapper"><Navbar /></div>
 </div>
 <div id="home-opening">
     {isHome && <HomeOpening client:load image={siteConfig.banner.src} readLabel={i18n(I18nKey.readArticles)}
-        copy={{ intro: i18n(I18nKey.openingDescription), scroll: i18n(I18nKey.openingScrollHint) }} />}
+        copy={{ intro: i18n(I18nKey.openingDescription), scroll: i18n(I18nKey.openingScrollHint) }}>
+        <div slot="identity" class="opening-identity">
+            <a href={url('/about/')} aria-label={profileConfig.name} class="opening-avatar">
+                <ImageWrapper src={profileConfig.avatar || ""} alt={profileConfig.name} class="w-full h-full" />
+            </a>
+            <a href={url('/about/')} class="opening-author">{profileConfig.name}</a>
+        </div>
+        <div slot="social" class="opening-social">
+            {profileConfig.links.map(item => <a href={item.url} target="_blank" rel="me noopener noreferrer" aria-label={item.name} title={item.name} class="btn-plain rounded-full h-10 w-10"><Icon name={item.icon} class="text-xl" /></a>)}
+        </div>
+    </HomeOpening>}
 </div>
 <div id="page-banner" class:list={{ "page-banner-empty": isHome }}>
     {!isHome && siteConfig.banner.enable && <>
@@ -120,9 +136,9 @@ const bannerSrc = setOGTypeArticle && banner ? banner : siteConfig.banner.src;
         </div>
 
         <BackToTop></BackToTop>
-<Mascot />
     </div>
 </div>
+<Mascot />
 
 <style is:global>
     #main-panel { margin-top: -2rem; padding-bottom: 1rem; }

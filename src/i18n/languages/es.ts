@@ -2,6 +2,23 @@ import Key from "../i18nKey";
 import type { Translation } from "../translation";
 
 export const es: Translation = {
+	[Key.articles]: "Artículos",
+	[Key.photography]: "Fotografía",
+	[Key.scripts]: "Scripts",
+	[Key.photoMotto]: "Lugares recorridos. Instantes guardados.",
+	[Key.previousAlbum]: "Álbum anterior",
+	[Key.nextAlbum]: "Álbum siguiente",
+	[Key.enterAlbum]: "Abrir álbum",
+	[Key.photoCount]: "fotos",
+	[Key.archiveIndex]: "Índice de fechas",
+	[Key.copyCommand]: "Copiar",
+	[Key.commandCopied]: "Copiado",
+	[Key.viewScript]: "Ver código del script",
+
+	[Key.downloadPhoto]: "Descargar foto",
+	[Key.photoAlbums]: "Álbumes de fotos",
+	[Key.allPosts]: "Todos los artículos",
+	[Key.readingProgress]: "Progreso de lectura",
 	[Key.openingDescription]: "Entre líneas, las ideas se aclaran.",
 	[Key.openingScrollHint]: "Desplázate para leer",
 

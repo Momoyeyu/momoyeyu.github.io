@@ -1,0 +1,16 @@
+---
+import PhotoAlbums from "../../components/PhotoAlbums.astro";
+import MainGridLayout from "../../layouts/MainGridLayout.astro";
+import I18nKey from "../../i18n/i18nKey";
+import { i18n } from "../../i18n/translation";
+---
+<MainGridLayout title={i18n(I18nKey.photography)}>
+    <PhotoAlbums />
+    {import.meta.env.DEV && <a class="photo-curation-link" href="/manage/photos/" data-no-swup>整理照片地点</a>}
+</MainGridLayout>
+<style is:global>
+html:has(.travel-albums) #page-banner { display: none; }
+html:has(.travel-albums) #main-panel { margin-top: 7rem; }
+.photo-curation-link { display: inline-block; color: var(--text-secondary); font-size: .8rem; padding-block: .75rem; margin-bottom: 2rem; }
+.photo-curation-link:hover { color: var(--primary); }
+</style>

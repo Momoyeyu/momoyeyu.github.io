@@ -2,6 +2,23 @@ import Key from "../i18nKey";
 import type { Translation } from "../translation";
 
 export const ja: Translation = {
+	[Key.articles]: "記事",
+	[Key.photography]: "写真",
+	[Key.scripts]: "スクリプト",
+	[Key.photoMotto]: "旅した場所、残した瞬間。",
+	[Key.previousAlbum]: "前のアルバム",
+	[Key.nextAlbum]: "次のアルバム",
+	[Key.enterAlbum]: "アルバムを開く",
+	[Key.photoCount]: "枚",
+	[Key.archiveIndex]: "日付索引",
+	[Key.copyCommand]: "コピー",
+	[Key.commandCopied]: "コピー済み",
+	[Key.viewScript]: "ソースを見る",
+
+	[Key.downloadPhoto]: "写真をダウンロード",
+	[Key.photoAlbums]: "アルバム",
+	[Key.allPosts]: "すべての記事",
+	[Key.readingProgress]: "読書の進捗",
 	[Key.openingDescription]: "行間で、思いを整える。",
 	[Key.openingScrollHint]: "スクロールして次へ",
 

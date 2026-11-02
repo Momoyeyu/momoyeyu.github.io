@@ -1,0 +1,29 @@
+---
+import type { GetStaticPaths } from "astro";
+import MainGridLayout from "../../layouts/MainGridLayout.astro";
+import PhotoGallery from "../../components/PhotoGallery.svelte";
+import library from "../../data/photo-library.json";
+import I18nKey from "../../i18n/i18nKey";
+import { i18n } from "../../i18n/translation";
+import { url } from "../../utils/url-utils";
+export const getStaticPaths = (() => library.albums.map(album => ({ params: { album: album.slug }, props: { album } }))) satisfies GetStaticPaths;
+const { album } = Astro.props;
+const photos = library.photos.filter(photo => photo.album === album.slug);
+---
+<MainGridLayout title={`${album.title} · ${i18n(I18nKey.photoAlbums)}`} description={album.subtitle}>
+    <header class="album-header">
+        <a href={url('/photos/')}>{i18n(I18nKey.photoAlbums)}</a>
+        <h1>{album.title} <span>{photos.length}</span></h1>
+        <p>{album.subtitle}</p>
+        <p class="album-source">{album.source}</p>
+    </header>
+    <PhotoGallery photos={photos} client:load />
+</MainGridLayout>
+<style>
+.album-header { margin-bottom: 2.5rem; padding-block: 1.5rem; }
+.album-header > a, .album-source { color: var(--text-secondary); font-size: .8rem; }
+h1 { font-family: var(--font-display); font-size: clamp(2rem,4vw,3rem); color: var(--text-primary); margin-block: .75rem; }
+h1 span { font-family: var(--font-ui); color: var(--text-secondary); font-size: 1rem; vertical-align: middle; margin-left: .5rem; }
+p { color: var(--text-secondary); line-height: 1.8; }
+.album-source { margin-top: .5rem; }
+</style>

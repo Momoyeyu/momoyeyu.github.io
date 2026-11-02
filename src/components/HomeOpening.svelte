@@ -37,6 +37,7 @@
             stage.style.setProperty("--orbit-opacity", String(1 - smoothBetween(.20, .85, raw)));
             stage.style.setProperty("--footer-opacity", String(1 - smoothBetween(.10, .42, raw)));
             intro.setAttribute("aria-hidden", String(raw > .75));
+            intro.inert = raw > .75;
             footer.setAttribute("aria-hidden", String(raw > .42));
             footer.inert = raw > .42;
             stage.dataset.progress = raw.toFixed(4);
@@ -72,7 +73,7 @@
         }
         function resetPresentation() {
             for (const key of ["--copy-opacity", "--orbit-opacity", "--footer-opacity"]) stage.style.removeProperty(key);
-            intro.removeAttribute("aria-hidden"); footer.removeAttribute("aria-hidden"); footer.inert = false;
+            intro.removeAttribute("aria-hidden"); intro.inert = false; footer.removeAttribute("aria-hidden"); footer.inert = false;
         }
         function preferences() {
             stop();
@@ -137,8 +138,10 @@
         <canvas bind:this={canvas} aria-hidden="true"></canvas>
         <div class="opening-copy">
             <div bind:this={intro} class="opening-intro">
+                <slot name="identity" />
                 <h1 class="hero-lettering">Code Is Elegant</h1>
                 <p class="opening-description">{copy.intro}</p>
+                <slot name="social" />
             </div>
         </div>
         <div bind:this={footer} class="opening-footer">
@@ -161,6 +164,10 @@
     .enhanced .opening-feather { opacity: 0; }
     .enhanced canvas { opacity: 1; }
     .opening-copy { position: absolute; left: max(var(--site-gutter), calc((100vw - var(--page-width))/2 + var(--site-gutter))); top: 50%; transform: translateY(-50%); width: 39%; opacity: var(--copy-opacity, 1); }
+    .opening-copy :global(.opening-identity) { display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem; }
+    .opening-copy :global(.opening-avatar) { display: block; width: 4rem; height: 4rem; border-radius: 50%; overflow: hidden; flex-shrink: 0; }
+    .opening-copy :global(.opening-author) { font-family: var(--font-display); font-size: 1.2rem; }
+    .opening-copy :global(.opening-social) { display: flex; gap: .5rem; margin-top: 1.4rem; }
     .hero-lettering { font-family: "Cormorant Motto", Georgia, serif; font-style: italic; font-weight: 500; font-size: clamp(4.5rem, 7.2vw, 7.5rem); letter-spacing: -.035em; line-height: .98; max-width: 6em; text-wrap: balance; text-shadow: none; color: var(--text-primary); }
     .opening-description { font-family: var(--font-display); font-size: 1rem; letter-spacing: .10em; line-height: 1.95; color: var(--text-secondary); margin-top: 2rem; max-width: 24em; }
     .opening-footer { position: absolute; left: max(var(--site-gutter), calc((100vw - var(--page-width))/2 + var(--site-gutter))); bottom: 2.75rem; right: max(var(--site-gutter), calc((100vw - var(--page-width))/2 + var(--site-gutter))); display: flex; align-items: center; justify-content: space-between; font-size: .8rem; color: var(--text-secondary); opacity: var(--footer-opacity, 1); }
@@ -176,9 +183,11 @@
     }
     @media(max-width: 767px) {
         .home-opening, .opening-stage { height: 100svh; min-height: 44rem; }
-        .opening-art { width: min(95vw, 27rem); right: -2vw; top: 57%; }
-        .opening-copy { width: 90%; top: 9.5rem; left: 7vw; transform: none; }
-        .hero-lettering { font-size: clamp(3.6rem, 14vw, 5rem); max-width: 6.5em; }
+        .opening-art { width: min(90vw, 25rem); right: -8vw; top: 67%; }
+        .opening-copy { width: 90%; top: 6.5rem; left: 7vw; transform: none; }
+        .opening-copy :global(.opening-identity) { margin-bottom: 1.25rem; }
+        .opening-copy :global(.opening-avatar) { width: 3rem; height: 3rem; }
+        .hero-lettering { font-size: clamp(3.3rem, 13vw, 5rem); max-width: 6.5em; }
         .opening-description { margin-top: 1.1rem; font-size: .85rem; }
         .opening-footer { bottom: 1.5rem; }
         .opening-scroll { font-size: .7rem; }

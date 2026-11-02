@@ -2,6 +2,23 @@ import Key from "../i18nKey";
 import type { Translation } from "../translation";
 
 export const th: Translation = {
+	[Key.articles]: "บทความ",
+	[Key.photography]: "ภาพถ่าย",
+	[Key.scripts]: "สคริปต์",
+	[Key.photoMotto]: "สถานที่ที่ผ่านไป ช่วงเวลาที่เก็บไว้",
+	[Key.previousAlbum]: "อัลบั้มก่อนหน้า",
+	[Key.nextAlbum]: "อัลบั้มถัดไป",
+	[Key.enterAlbum]: "เปิดอัลบั้ม",
+	[Key.photoCount]: "ภาพ",
+	[Key.archiveIndex]: "ดัชนีวันที่",
+	[Key.copyCommand]: "คัดลอก",
+	[Key.commandCopied]: "คัดลอกแล้ว",
+	[Key.viewScript]: "ดูซอร์สสคริปต์",
+
+	[Key.downloadPhoto]: "ดาวน์โหลดภาพ",
+	[Key.photoAlbums]: "อัลบั้มภาพ",
+	[Key.allPosts]: "บทความทั้งหมด",
+	[Key.readingProgress]: "ความคืบหน้าในการอ่าน",
 	[Key.openingDescription]: "เรียบเรียงความคิดระหว่างบรรทัด",
 	[Key.openingScrollHint]: "เลื่อนลงเพื่ออ่านต่อ",
 

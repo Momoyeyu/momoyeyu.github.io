@@ -17,7 +17,7 @@ let delay = 0;
 const interval = 50;
 ---
 {pinned.length > 0 && (
-    <section class="mb-8">
+    <section class="editorial-section mb-8">
         <div class="feed-section-heading flex items-center gap-2 mb-4 onload-animation" style={`animation-delay: calc(var(--content-delay) + ${delay * interval}ms);`}>
             <h2 class="text-sm font-semibold text-75">
                 {i18n(I18nKey.pinnedPosts)}
@@ -26,7 +26,7 @@ const interval = 50;
             <PostLayoutSwitch labels={layoutLabels} client:load />
             <span class="flex-1 h-px bg-[var(--line-divider)] ml-2" aria-hidden="true"></span>
         </div>
-        <div class="post-feed transition grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="post-feed pinned-feed transition grid grid-cols-1 md:grid-cols-2 gap-4">
             {pinned.map((entry) => (
                 <PostCardGrid
                     entry={entry}
@@ -57,7 +57,7 @@ const interval = 50;
     </div>
 )}
 
-<div class="post-feed transition grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+<div class="post-feed recent-feed transition grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
     {rest.map((entry) => (
         <PostCardGrid
             entry={entry}

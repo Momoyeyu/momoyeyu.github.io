@@ -1,0 +1,13 @@
+---
+import type { GetStaticPaths } from "astro";
+import MainGridLayout from "../../layouts/MainGridLayout.astro";
+import AlbumDesignPreview from "../../components/AlbumDesignPreview.svelte";
+export const getStaticPaths = (() => import.meta.env.DEV ? [{ params: { preview: "albums" } }] : []) satisfies GetStaticPaths;
+---
+<MainGridLayout title="相册排布预览">
+    <AlbumDesignPreview client:load />
+</MainGridLayout>
+<style is:global>
+html:has(.album-prototype) #page-banner { display: none; }
+html:has(.album-prototype) #main-panel { margin-top: 7rem; }
+</style>

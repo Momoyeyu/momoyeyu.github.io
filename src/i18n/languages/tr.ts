@@ -2,6 +2,23 @@ import Key from "../i18nKey";
 import type { Translation } from "../translation";
 
 export const tr: Translation = {
+	[Key.articles]: "Yazılar",
+	[Key.photography]: "Fotoğraf",
+	[Key.scripts]: "Betikler",
+	[Key.photoMotto]: "Geçilen yerler. Saklanan anlar.",
+	[Key.previousAlbum]: "Önceki albüm",
+	[Key.nextAlbum]: "Sonraki albüm",
+	[Key.enterAlbum]: "Albümü aç",
+	[Key.photoCount]: "fotoğraf",
+	[Key.archiveIndex]: "Tarih dizini",
+	[Key.copyCommand]: "Kopyala",
+	[Key.commandCopied]: "Kopyalandı",
+	[Key.viewScript]: "Betik kaynağını görüntüle",
+
+	[Key.downloadPhoto]: "Fotoğrafı indir",
+	[Key.photoAlbums]: "Fotoğraf albümleri",
+	[Key.allPosts]: "Tüm yazılar",
+	[Key.readingProgress]: "Okuma ilerlemesi",
 	[Key.openingDescription]: "Satır aralarında düşünceler berraklaşır.",
 	[Key.openingScrollHint]: "Okumak için aşağı kaydır",
 

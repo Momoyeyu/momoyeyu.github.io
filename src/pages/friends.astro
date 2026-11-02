@@ -16,7 +16,7 @@ interface FriendGroup {
 
 const groups: FriendGroup[] = [
 	{
-		title: "友情链接",
+		title: "朋友们",
 		desc: "常读的技术博客与朋友们",
 		links: [
 			{
@@ -93,8 +93,6 @@ const groups: FriendGroup[] = [
 
 <MainGridLayout title="友链">
 	<div class="card-base p-6 md:p-8 mb-4">
-		<div class="font-bold text-2xl mb-2 text-neutral-900 dark:text-neutral-100">友链</div>
-		<div class="text-sm text-50 mb-6">互换链接，广交朋友</div>
 
 		{groups.map((group) => (
 			<div class="mb-8 last:mb-0">
@@ -108,7 +106,7 @@ const groups: FriendGroup[] = [
 							href={link.url}
 							target="_blank"
 							rel="noopener noreferrer"
-							class="friend-card group flex items-center gap-4 p-4 rounded-xl transition-all duration-200 border border-[var(--line-divider)] hover:shadow-md hover:border-[var(--primary)] hover:-translate-y-0.5"
+							class="friend-card group flex items-center gap-4 p-4 rounded-[var(--radius-inset)] transition-all duration-200  hover:shadow-md  hover:-translate-y-0.5"
 						>
 							<img
 								src={link.avatar}
@@ -134,7 +132,7 @@ const groups: FriendGroup[] = [
 	<div class="card-base p-6 md:p-8 mb-4">
 		<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
 			<!-- Left: Application steps + requirements -->
-			<div class="rounded-2xl border border-[var(--line-divider)] overflow-hidden flex flex-col">
+			<div class="rounded-[var(--radius-surface)]  overflow-hidden flex flex-col">
 				<div class="p-5 sm:p-6 flex flex-col flex-1">
 					<h3 class="text-lg font-bold text-neutral-900 dark:text-neutral-100 mb-5 flex items-center gap-2">
 						<span class="w-7 h-7 rounded-lg bg-[var(--primary)]/10 flex items-center justify-center text-[var(--primary)] text-sm">
@@ -205,7 +203,7 @@ const groups: FriendGroup[] = [
 			</div>
 
 			<!-- Right: Site info card -->
-			<div class="rounded-2xl border border-[var(--line-divider)] overflow-hidden flex flex-col">
+			<div class="rounded-[var(--radius-surface)]  overflow-hidden flex flex-col">
 				<div class="p-5 sm:p-6 flex flex-col flex-1">
 					<!-- Avatar + identity block -->
 					<div class="flex flex-col items-center text-center mb-6">

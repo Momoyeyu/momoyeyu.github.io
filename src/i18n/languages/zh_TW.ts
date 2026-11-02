@@ -2,6 +2,23 @@ import Key from "../i18nKey";
 import type { Translation } from "../translation";
 
 export const zh_TW: Translation = {
+	[Key.articles]: "文章",
+	[Key.photography]: "攝影",
+	[Key.scripts]: "腳本",
+	[Key.photoMotto]: "走過的地方，留下的片刻。",
+	[Key.previousAlbum]: "上一本相簿",
+	[Key.nextAlbum]: "下一本相簿",
+	[Key.enterAlbum]: "進入相簿",
+	[Key.photoCount]: "張",
+	[Key.archiveIndex]: "日期索引",
+	[Key.copyCommand]: "複製",
+	[Key.commandCopied]: "已複製",
+	[Key.viewScript]: "檢視腳本原始碼",
+
+	[Key.downloadPhoto]: "下載相片",
+	[Key.photoAlbums]: "相簿",
+	[Key.allPosts]: "全部文章",
+	[Key.readingProgress]: "閱讀進度",
 	[Key.openingDescription]: "在字裡行間，理清思緒。",
 	[Key.openingScrollHint]: "向下翻頁",
 

@@ -25,14 +25,31 @@ export function getPostLayout(): POST_LAYOUT {
 
 export function setPostLayout(layout: POST_LAYOUT): void {
 	if (!browser) return;
+	const changed = document.documentElement.dataset.postLayout !== layout;
+	if (changed) document.dispatchEvent(new Event("post-layout:before"));
 	document.documentElement.dataset.postLayout = layout;
+	if (changed) document.dispatchEvent(new Event("post-layout:after"));
 	try { localStorage.setItem("postLayout", layout); } catch { /* Storage is optional. */ }
 }
 
-export function applyThemeToDocument(theme: LIGHT_DARK_MODE) {
+let themeTransitionTimer: ReturnType<typeof setTimeout> | undefined;
+
+export function applyThemeToDocument(theme: LIGHT_DARK_MODE, animate = false) {
 	if (!browser) {
 		return;
 	}
+
+	const root = document.documentElement;
+	const dark = theme === DARK_MODE || (theme === AUTO_MODE && window.matchMedia("(prefers-color-scheme: dark)").matches);
+	if (animate && dark !== root.classList.contains("dark") && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+		clearTimeout(themeTransitionTimer);
+		root.classList.add("theme-switching");
+		// Install transitions before changing the palette, without a white overlay.
+		getComputedStyle(root).backgroundColor;
+		themeTransitionTimer = setTimeout(() => root.classList.remove("theme-switching"), 500);
+	}
+	root.style.colorScheme = dark ? "dark" : "light";
+
 	switch (theme) {
 		case LIGHT_MODE:
 			document.documentElement.classList.remove("dark");
@@ -61,7 +78,7 @@ export function setTheme(theme: LIGHT_DARK_MODE): void {
 		return;
 	}
 	try { localStorage.setItem("theme", theme); } catch { /* Storage is optional. */ }
-	applyThemeToDocument(theme);
+	applyThemeToDocument(theme, true);
 }
 
 export function getStoredTheme(): LIGHT_DARK_MODE {
