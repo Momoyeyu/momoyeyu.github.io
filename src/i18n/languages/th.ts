@@ -2,6 +2,10 @@ import Key from "../i18nKey";
 import type { Translation } from "../translation";
 
 export const th: Translation = {
+	[Key.chapters]: "บท",
+	[Key.newestChapter]: "บทล่าสุดก่อน",
+	[Key.firstChapter]: "บทแรกก่อน",
+	[Key.timelineArchive]: "ลำดับเวลา",
 	[Key.friendOrbit]: "เมื่อวงโคจรของเรามาบรรจบ",
 	[Key.articles]: "บทความ",
 	[Key.photography]: "ภาพถ่าย",

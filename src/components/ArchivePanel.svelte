@@ -1,5 +1,6 @@
 <script lang="ts">
 import { onMount, tick } from "svelte";
+import SectionParticles from "./SectionParticles.svelte";
 import { fly } from "svelte/transition";
 
 import I18nKey from "../i18n/i18nKey";
@@ -52,8 +53,8 @@ interface Group {
 type SortMode = "episode-desc" | "episode-asc" | "date-desc" | "date-asc";
 
 const SORT_META: Record<SortMode, { label: string; hint: string }> = {
-	"episode-desc": { label: "EP 倒序", hint: "最新一集在前" },
-	"episode-asc": { label: "EP 正序", hint: "第一集在前" },
+	"episode-desc": { label: `${i18n(I18nKey.chapters)} ↓`, hint: i18n(I18nKey.newestChapter) },
+	"episode-asc": { label: `${i18n(I18nKey.chapters)} ↑`, hint: i18n(I18nKey.firstChapter) },
 	"date-desc": { label: "日期 倒序", hint: "最近发布在前" },
 	"date-asc": { label: "日期 正序", hint: "最早发布在前" },
 };
@@ -215,6 +216,7 @@ onMount(() => {
 
 <svelte:window on:keydown={handleKeydown} />
 
+{#if !categories.length && !tags.length && !uncategorized}
 <div class="archive-discovery">
     <section class="archive-collections card-base">
         <header><h2>{i18n(I18nKey.categories)}</h2><a class="archive-reset" href={url('/archive/')} aria-current={!categories.length && !tags.length && !uncategorized ? "true" : undefined}>{i18n(I18nKey.allPosts)} <span>{sortedPosts.length}</span></a></header>
@@ -224,6 +226,7 @@ onMount(() => {
             {/each}
         </nav>
     </section>
+    <SectionParticles />
     <section class="archive-tag-panel card-base">
         <header><h2>{i18n(I18nKey.tags)}</h2><span>{tagOptions.length}</span></header>
         <nav class="archive-tag-cloud" aria-label={i18n(I18nKey.tags)}>
@@ -234,6 +237,11 @@ onMount(() => {
         </nav>
     </section>
 </div>
+<SectionParticles />
+<header class="timeline-heading"><h2>{i18n(I18nKey.timelineArchive)}</h2><span>{sortedPosts.length} {i18n(I18nKey.postsCount)}</span></header>
+{:else}
+<header class="archive-selection"><a href={url('/archive/')}>{i18n(I18nKey.allPosts)} ↗</a><h1>{[...categories, ...tags.map(tag=>`#${tag}`)].join(' · ') || i18n(I18nKey.uncategorized)}</h1></header>
+{/if}
 
 <div class="archive-browser with-index">
     <nav class="archive-index" aria-label={i18n(I18nKey.archiveIndex)}>
@@ -358,7 +366,7 @@ onMount(() => {
                         <!-- date or episode -->
                         <div class="w-[15%] md:w-[11.765%] transition text-sm text-right text-50">
                             {#if group.isSeries && typeof post.data.seriesPosition === "number" && post.data.seriesPosition >= 0}
-                                EP.{post.data.seriesPosition}
+                                {i18n(I18nKey.chapters)} {post.data.seriesPosition + 1}
                             {:else}
                                 {formatDate(post.data.date)}
                             {/if}

@@ -2,6 +2,10 @@ import Key from "../i18nKey";
 import type { Translation } from "../translation";
 
 export const es: Translation = {
+	[Key.chapters]: "Capítulo",
+	[Key.newestChapter]: "Más reciente primero",
+	[Key.firstChapter]: "Primer capítulo primero",
+	[Key.timelineArchive]: "Cronología",
 	[Key.friendOrbit]: "Donde se cruzan nuestras órbitas",
 	[Key.articles]: "Artículos",
 	[Key.photography]: "Fotografía",

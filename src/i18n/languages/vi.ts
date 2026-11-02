@@ -2,6 +2,10 @@ import Key from "../i18nKey";
 import type { Translation } from "../translation";
 
 export const vi: Translation = {
+	[Key.chapters]: "Chương",
+	[Key.newestChapter]: "Chương mới nhất trước",
+	[Key.firstChapter]: "Chương đầu trước",
+	[Key.timelineArchive]: "Dòng thời gian",
 	[Key.friendOrbit]: "Nơi những quỹ đạo gặp nhau",
 	[Key.articles]: "Bài viết",
 	[Key.photography]: "Nhiếp ảnh",

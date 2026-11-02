@@ -2,6 +2,10 @@ import Key from "../i18nKey";
 import type { Translation } from "../translation";
 
 export const ja: Translation = {
+	[Key.chapters]: "章",
+	[Key.newestChapter]: "新しい章から",
+	[Key.firstChapter]: "最初の章から",
+	[Key.timelineArchive]: "時系列",
 	[Key.friendOrbit]: "星の軌道が交わる場所",
 	[Key.articles]: "記事",
 	[Key.photography]: "写真",

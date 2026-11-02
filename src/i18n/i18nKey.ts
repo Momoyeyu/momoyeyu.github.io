@@ -1,4 +1,8 @@
 enum I18nKey {
+    chapters = "chapters",
+    newestChapter = "newestChapter",
+    firstChapter = "firstChapter",
+    timelineArchive = "timelineArchive",
     friendOrbit = "friendOrbit",
 	articles = "articles",
 	photography = "photography",

@@ -2,6 +2,10 @@ import Key from "../i18nKey";
 import type { Translation } from "../translation";
 
 export const ko: Translation = {
+	[Key.chapters]: "장",
+	[Key.newestChapter]: "최신 장부터",
+	[Key.firstChapter]: "첫 장부터",
+	[Key.timelineArchive]: "타임라인",
 	[Key.friendOrbit]: "별의 궤도가 만나는 곳",
 	[Key.articles]: "글",
 	[Key.photography]: "사진",

@@ -2,6 +2,10 @@ import Key from "../i18nKey";
 import type { Translation } from "../translation";
 
 export const zh_CN: Translation = {
+	[Key.chapters]: "章节",
+	[Key.newestChapter]: "最新章节在前",
+	[Key.firstChapter]: "第一章在前",
+	[Key.timelineArchive]: "时间归档",
 	[Key.friendOrbit]: "让星轨相遇",
 	[Key.articles]: "文章",
 	[Key.photography]: "摄影",
