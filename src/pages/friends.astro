@@ -235,6 +235,7 @@ const groups: FriendGroup[] = [
 </MainGridLayout>
 
 <style is:global>
+html:has(.galaxy-scene) {overscroll-behavior-x:none}
 html:has(.galaxy-scene) #page-banner {display:none}
 html:has(.galaxy-scene) #main-panel {margin-top:6rem}
 .friend-contact {position:relative;background:radial-gradient(circle at 20% 30%,color-mix(in srgb,var(--primary) 8%,transparent),transparent 60%),var(--page-bg);padding-block:4rem;margin-bottom:3rem}
