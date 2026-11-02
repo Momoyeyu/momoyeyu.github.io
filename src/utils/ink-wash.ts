@@ -1,7 +1,7 @@
 export interface InkWash {
 	render(progress: number): void;
 	resize(width: number, height: number, ratio: number, artwork?: { left: number; top: number; width: number; height: number }): void;
-	setTheme(dark: boolean): void;
+	setTheme(dark: boolean | number): void;
 	dispose(): void;
 }
 
@@ -41,7 +41,12 @@ float fbm(vec2 p) {
 vec4 pigment(vec2 uv) {
     // The image has a transparent margin. Outside the sheet, keep it empty.
     vec2 inside = step(vec2(0.), uv) * step(uv, vec2(1.));
-    return texture2D(uImage, clamp(uv, 0., 1.)) * inside.x * inside.y;
+    vec4 value = texture2D(uImage, clamp(uv, 0., 1.)) * inside.x * inside.y;
+    vec3 straight = value.rgb / max(value.a, .0001);
+    float luminance = dot(straight, vec3(.2126, .7152, .0722));
+    vec3 silver = vec3((1. - luminance) * .94) * value.a;
+    value.rgb = mix(value.rgb, silver, uDark);
+    return value;
 }
 vec4 wetPigment(vec2 uv, vec2 radius) {
     vec4 value = pigment(uv) * .28;
@@ -133,8 +138,8 @@ void main() {
     density += inkDrop(vec2(.92, .37), .46, .33, 1.18, water, coarse, detail, p);
     float fade = 1. - smoothstep(.69, 1., p);
     float alpha = (1. - exp(-density * 2.6)) * fade;
-    vec3 ink = vec3(.160784, .203922, .243137);
-    vec3 color = ink * mix(.52, .24, uDark);
+    alpha *= mix(1., .72, uDark);
+    vec3 color = mix(vec3(.066667, .070588, .078431), vec3(.945098, .960784, .976471), uDark);
     vec4 cloud = vec4(color * alpha, alpha);
     gl_FragColor = cloud + art * (1. - alpha);
 }`;
@@ -224,7 +229,7 @@ export function createInkWash(
 				gl.uniform1f(progress, Math.min(1, Math.max(0, value)));
 				gl.drawArrays(gl.TRIANGLES, 0, 6);
 			},
-            setTheme(value) { if (!disposed) gl.uniform1f(dark, value ? 1 : 0); },
+            setTheme(value) { if (!disposed) gl.uniform1f(dark, typeof value === "number" ? Math.max(0, Math.min(1, value)) : value ? 1 : 0); },
 			resize(width, height, ratio, artwork) {
 				if (disposed) return;
 				const nextWidth = Math.max(1, Math.round(width * ratio));

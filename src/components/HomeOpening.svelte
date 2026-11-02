@@ -27,6 +27,7 @@
         let decoded = false, disposed = false, visible = true, frame = 0, previous = 0;
         let current = 0, target = 0;
         let dark = document.documentElement.classList.contains("dark");
+        let themeValue = dark ? 1 : 0, themeFrame = 0;
 
         function readProgress() {
             return clamp(-runway.getBoundingClientRect().top / Math.max(1, runway.offsetHeight - stage.offsetHeight));
@@ -102,8 +103,19 @@
         const themeObserver = new MutationObserver(() => {
             const next = document.documentElement.classList.contains("dark");
             if (next === dark) return;
-            dark = next; renderer?.setTheme(dark);
-            if (enhanced) draw(current);
+            dark = next;
+            cancelAnimationFrame(themeFrame);
+            const from = themeValue, to = dark ? 1 : 0;
+            if (motion.matches || !enhanced) { themeValue = to; renderer?.setTheme(to); if (enhanced) draw(current); return; }
+            const started = performance.now();
+            const animateTheme = (time: number) => {
+                if (disposed || !renderer) return;
+                const t = Math.min(1, (time - started) / 360);
+                themeValue = from + (to - from) * (t * t * (3 - 2 * t));
+                renderer.setTheme(themeValue); draw(current);
+                if (t < 1) themeFrame = requestAnimationFrame(animateTheme);
+            };
+            themeFrame = requestAnimationFrame(animateTheme);
         });
         themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
         window.addEventListener("scroll", scroll, { passive: true });
@@ -121,7 +133,7 @@
             decoded = true; preferences();
         }).catch(() => { fallback = true; });
         return () => {
-            disposed = true; stop(); intersection.disconnect(); observer.disconnect(); themeObserver.disconnect();
+            disposed = true; stop(); cancelAnimationFrame(themeFrame); intersection.disconnect(); observer.disconnect(); themeObserver.disconnect();
             window.removeEventListener("scroll", scroll); document.removeEventListener("visibilitychange", visibility);
             screen.removeEventListener("change", preferences); motion.removeEventListener("change", preferences);
             canvas.removeEventListener("webglcontextlost", contextLost); renderer?.dispose();
@@ -159,8 +171,9 @@
     .opening-stage { position: sticky; top: 0; height: 100svh; width: 100%; overflow: hidden; background: var(--page-bg); color: var(--text-primary); }
     .opening-orbit { position: absolute; width: 70vw; height: 70vw; top: 50%; right: -10vw; transform: translateY(-50%); border-radius: 50%; background: radial-gradient(ellipse, var(--art-halo), transparent 65%); pointer-events: none; opacity: var(--orbit-opacity, 1); }
     .opening-art { position: absolute; right: 1vw; top: 50%; transform: translateY(-50%); width: min(56vw, 80svh); aspect-ratio: 1; }
-    .opening-feather { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+    .opening-feather { transition: filter 360ms ease; position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
     canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; opacity: 0; }
+    :global(html.dark) .opening-feather { filter: grayscale(1) invert(1) brightness(.94); }
     .enhanced .opening-feather { opacity: 0; }
     .enhanced canvas { opacity: 1; }
     .opening-copy { position: absolute; left: max(var(--site-gutter), calc((100vw - var(--page-width))/2 + var(--site-gutter))); top: 50%; transform: translateY(-50%); width: 39%; opacity: var(--copy-opacity, 1); }

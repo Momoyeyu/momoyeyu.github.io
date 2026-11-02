@@ -99,7 +99,7 @@
 h1 { font-family: var(--font-display); font-weight: 400; font-size: clamp(2.2rem,3.6vw,3.6rem); line-height: 1.45; max-width: 9em; text-wrap: balance; margin-block: 1rem 2rem; }
 .travel-map { position: relative; aspect-ratio: 840/440; margin-block: 1rem 1.5rem; }
 .travel-map svg { width: 100%; height: 100%; overflow: hidden; }
-.travel-map path { fill: color-mix(in srgb,var(--palette-mist) 15%,var(--page-bg)); stroke: color-mix(in srgb,var(--primary) 28%,transparent); stroke-width: .9; }
+.travel-map path { fill: color-mix(in srgb,var(--primary) 6%,var(--page-bg)); stroke: color-mix(in srgb,var(--primary) 28%,transparent); stroke-width: .9; }
 .map-pin { position: absolute; transform: translate(-50%,-50%); width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; }
 .map-pin i { width: 5px; height: 5px; background: var(--primary); border-radius: 50%; transition: transform 200ms; }
 .map-pin.selected { background: color-mix(in srgb,var(--primary) 20%,transparent); }

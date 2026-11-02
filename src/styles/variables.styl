@@ -2,7 +2,7 @@
 :root
   --palette-paper #f1f5f9
   --palette-white #ffffff
-  --palette-ink #29343e
+  --palette-ink #111214
   --palette-slate #536a80
   --palette-mist #b0c6db
   /* Structural surfaces, inset content, and floating controls have distinct silhouettes. */
@@ -25,23 +25,23 @@ define(vars)
         {key}: value[1]
 
 define({
-  --primary: var(--palette-slate) var(--palette-mist)
+  --primary: var(--palette-slate) unquote("color-mix(in srgb, var(--palette-paper) 85%, var(--palette-ink))")
   --page-bg: var(--palette-paper) var(--palette-ink)
-  --card-bg: var(--palette-white) unquote("color-mix(in srgb, var(--palette-ink) 92%, var(--palette-paper))")
-  --card-border: unquote("color-mix(in srgb, var(--palette-slate) 20%, transparent)") unquote("color-mix(in srgb, var(--palette-mist) 20%, transparent)")
+  --card-bg: var(--palette-white) unquote("color-mix(in srgb, var(--palette-ink) 96%, var(--palette-paper))")
+  --card-border: unquote("color-mix(in srgb, var(--palette-slate) 20%, transparent)") unquote("color-mix(in srgb, var(--palette-paper) 14%, transparent)")
   --text-primary: var(--palette-ink) var(--palette-paper)
-  --text-secondary: var(--palette-slate) var(--palette-mist)
-  --text-muted: var(--palette-slate) var(--palette-mist)
-  --art-halo: unquote("color-mix(in srgb, var(--palette-mist) 24%, transparent)") unquote("color-mix(in srgb, var(--palette-slate) 35%, transparent)")
+  --text-secondary: var(--palette-slate) unquote("color-mix(in srgb, var(--palette-paper) 70%, var(--palette-ink))")
+  --text-muted: var(--palette-slate) unquote("color-mix(in srgb, var(--palette-paper) 55%, var(--palette-ink))")
+  --art-halo: unquote("color-mix(in srgb, var(--palette-mist) 24%, transparent)") unquote("color-mix(in srgb, var(--palette-paper) 6%, transparent)")
   --setting-track-bg: linear-gradient(to right, var(--palette-paper), var(--palette-mist)) linear-gradient(to right, var(--palette-ink), var(--palette-slate))
 
   --btn-content: var(--primary)
-  --btn-regular-bg: unquote("color-mix(in srgb, var(--palette-mist) 20%, var(--palette-white))") unquote("color-mix(in srgb, var(--palette-mist) 8%, var(--palette-ink))")
-  --btn-regular-bg-hover: unquote("color-mix(in srgb, var(--palette-mist) 35%, var(--palette-white))") unquote("color-mix(in srgb, var(--palette-mist) 14%, var(--palette-ink))")
-  --btn-regular-bg-active: unquote("color-mix(in srgb, var(--palette-mist) 50%, var(--palette-white))") unquote("color-mix(in srgb, var(--palette-mist) 20%, var(--palette-ink))")
+  --btn-regular-bg: unquote("color-mix(in srgb, var(--palette-mist) 20%, var(--palette-white))") unquote("color-mix(in srgb, var(--palette-paper) 7%, var(--palette-ink))")
+  --btn-regular-bg-hover: unquote("color-mix(in srgb, var(--palette-mist) 35%, var(--palette-white))") unquote("color-mix(in srgb, var(--palette-paper) 12%, var(--palette-ink))")
+  --btn-regular-bg-active: unquote("color-mix(in srgb, var(--palette-mist) 50%, var(--palette-white))") unquote("color-mix(in srgb, var(--palette-paper) 18%, var(--palette-ink))")
   --btn-plain-bg-hover: var(--btn-regular-bg)
   --btn-plain-bg-active: var(--btn-regular-bg-hover)
-  --btn-card-bg-hover: unquote("color-mix(in srgb, var(--palette-paper) 65%, var(--palette-white))") unquote("color-mix(in srgb, var(--palette-mist) 12%, var(--palette-ink))")
+  --btn-card-bg-hover: unquote("color-mix(in srgb, var(--palette-paper) 65%, var(--palette-white))") unquote("color-mix(in srgb, var(--palette-paper) 8%, var(--palette-ink))")
   --btn-card-bg-active: var(--btn-regular-bg-active)
   --enter-btn-bg: var(--btn-regular-bg)
   --enter-btn-bg-hover: var(--btn-regular-bg-hover)
@@ -49,22 +49,22 @@ define({
   --deep-text: var(--palette-ink)
   --title-active: var(--primary)
 
-  --line-divider: unquote("color-mix(in srgb, var(--palette-slate) 14%, transparent)") unquote("color-mix(in srgb, var(--palette-mist) 14%, transparent)")
+  --line-divider: unquote("color-mix(in srgb, var(--palette-slate) 14%, transparent)") unquote("color-mix(in srgb, var(--palette-paper) 12%, transparent)")
   --line-color: var(--card-border)
-  --meta-divider: unquote("color-mix(in srgb, var(--palette-slate) 35%, transparent)") unquote("color-mix(in srgb, var(--palette-mist) 35%, transparent)")
+  --meta-divider: unquote("color-mix(in srgb, var(--palette-slate) 35%, transparent)") unquote("color-mix(in srgb, var(--palette-paper) 35%, transparent)")
   --shadow-color: unquote("color-mix(in srgb, var(--palette-ink) 10%, transparent)")
 
   --inline-code-bg: var(--btn-regular-bg)
   --inline-code-color: var(--btn-content)
-  --selection-bg: unquote("color-mix(in srgb, var(--palette-mist) 40%, var(--palette-paper))") unquote("color-mix(in srgb, var(--palette-slate) 85%, var(--palette-ink))")
+  --selection-bg: unquote("color-mix(in srgb, var(--palette-mist) 40%, var(--palette-paper))") unquote("color-mix(in srgb, var(--palette-paper) 22%, var(--palette-ink))")
   --codeblock-selection: var(--palette-slate)
   --codeblock-bg: var(--palette-ink)
-  --codeblock-topbar-bg: unquote("color-mix(in srgb, var(--palette-ink) 85%, var(--palette-slate))")
+  --codeblock-topbar-bg: unquote("color-mix(in srgb, var(--palette-ink) 95%, var(--palette-paper))")
   --license-block-bg: unquote("color-mix(in srgb, var(--palette-mist) 12%, var(--palette-white))") var(--codeblock-bg)
-  --code-control-bg: var(--palette-slate)
-  --code-control-bg-hover: unquote("color-mix(in srgb, var(--palette-slate) 80%, var(--palette-mist))")
-  --code-control-bg-active: unquote("color-mix(in srgb, var(--palette-slate) 60%, var(--palette-mist))")
-  --link-underline: unquote("color-mix(in srgb, var(--palette-slate) 35%, transparent)") unquote("color-mix(in srgb, var(--palette-mist) 35%, transparent)")
+  --code-control-bg: var(--palette-slate) unquote("color-mix(in srgb, var(--palette-paper) 12%, var(--palette-ink))")
+  --code-control-bg-hover: unquote("color-mix(in srgb, var(--palette-slate) 80%, var(--palette-mist))") unquote("color-mix(in srgb, var(--palette-paper) 18%, var(--palette-ink))")
+  --code-control-bg-active: unquote("color-mix(in srgb, var(--palette-slate) 60%, var(--palette-mist))") unquote("color-mix(in srgb, var(--palette-paper) 24%, var(--palette-ink))")
+  --link-underline: unquote("color-mix(in srgb, var(--palette-slate) 35%, transparent)") unquote("color-mix(in srgb, var(--palette-paper) 35%, transparent)")
   --link-hover: var(--btn-regular-bg-hover)
   --link-active: var(--btn-regular-bg-active)
   --float-panel-bg: var(--card-bg)
@@ -72,9 +72,9 @@ define({
   --scrollbar-bg-light: unquote("color-mix(in srgb, var(--palette-slate) 55%, transparent)")
   --scrollbar-bg-hover-light: unquote("color-mix(in srgb, var(--palette-slate) 70%, transparent)")
   --scrollbar-bg-active-light: var(--palette-slate)
-  --scrollbar-bg-dark: unquote("color-mix(in srgb, var(--palette-mist) 55%, transparent)")
-  --scrollbar-bg-hover-dark: unquote("color-mix(in srgb, var(--palette-mist) 70%, transparent)")
-  --scrollbar-bg-active-dark: var(--palette-mist)
+  --scrollbar-bg-dark: unquote("color-mix(in srgb, var(--palette-paper) 35%, transparent)")
+  --scrollbar-bg-hover-dark: unquote("color-mix(in srgb, var(--palette-paper) 50%, transparent)")
+  --scrollbar-bg-active-dark: var(--palette-paper)
   --scrollbar-bg: var(--scrollbar-bg-light) var(--scrollbar-bg-dark)
   --scrollbar-bg-hover: var(--scrollbar-bg-hover-light) var(--scrollbar-bg-hover-dark)
   --scrollbar-bg-active: var(--scrollbar-bg-active-light) var(--scrollbar-bg-active-dark)

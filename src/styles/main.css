@@ -423,7 +423,7 @@ widget-layout > div:first-child::before, series-widget > a:first-child::before,
     html.theme-switching *,
     html.theme-switching *::before,
     html.theme-switching *::after {
-        transition-property: background-color, color, border-color, box-shadow, fill, stroke, text-decoration-color, opacity, transform !important;
+        transition-property: background-color, color, border-color, box-shadow, fill, stroke, filter, text-decoration-color, opacity, transform !important;
         transition-duration: 360ms !important;
         transition-timing-function: ease !important;
     }
