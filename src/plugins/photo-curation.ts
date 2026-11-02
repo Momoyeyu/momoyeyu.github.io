@@ -52,6 +52,11 @@ type Middleware = (request: IncomingMessage, response: ServerResponse, next: () 
 export function photoCurationPlugin() {
     return {
         name: "local-photo-curation", apply: "serve" as const,
+        // The curator applies the response itself. Reloading on every saved frame
+        // would interrupt a multi-file upload; other pages refresh on navigation.
+        handleHotUpdate(context: { file: string }) {
+            if (context.file === path.resolve("src/data/photo-library.json")) return [];
+        },
         configureServer(server: { middlewares: { use: (path: string, handler: Middleware) => void } }) {
             const file = path.resolve("src/data/photo-library.json");
             server.middlewares.use("/__photo-curation", (req, res) => {
