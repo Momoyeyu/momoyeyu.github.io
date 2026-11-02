@@ -1,6 +1,5 @@
 <script lang="ts">
 import { onMount, tick } from "svelte";
-import { fly } from "svelte/transition";
 
 import I18nKey from "../i18n/i18nKey";
 import { i18n } from "../i18n/translation";
@@ -69,7 +68,6 @@ let seriesPosts: Post[] = [];
 let canUseSeries = false;
 let sortMode: SortMode = "date-desc";
 let mounted = false;
-let isMenuOpen = false;
 
 let activePeriod = "";
 function monthKey(date: Date) { return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`; }
@@ -134,34 +132,9 @@ function rebuildGroups() {
 async function setSort(mode: SortMode) {
 	document.dispatchEvent(new Event("post-layout:before"));
 	sortMode = mode;
-	isMenuOpen = false;
 	rebuildGroups();
 	await tick();
 	document.dispatchEvent(new Event("post-layout:after"));
-}
-
-function toggleMenu() {
-	isMenuOpen = !isMenuOpen;
-}
-
-function handleKeydown(e: KeyboardEvent) {
-	if (e.key === "Escape" && isMenuOpen) {
-		isMenuOpen = false;
-	}
-}
-
-function clickOutside(node: HTMLElement) {
-	const handler = (event: MouseEvent) => {
-		if (isMenuOpen && !node.contains(event.target as Node)) {
-			isMenuOpen = false;
-		}
-	};
-	document.addEventListener("click", handler);
-	return {
-		destroy() {
-			document.removeEventListener("click", handler);
-		},
-	};
 }
 
 onMount(() => {
@@ -212,7 +185,6 @@ onMount(() => {
 });
 </script>
 
-<svelte:window on:keydown={handleKeydown} />
 
 <div class="archive-discovery">
     <section class="archive-collections card-base">
@@ -237,85 +209,13 @@ onMount(() => {
 <div class="archive-browser with-index">
     <nav class="archive-index" aria-label={i18n(I18nKey.archiveIndex)}>
 {#if mounted && filteredPosts.length > 1}
-    <div class="index-sort" use:clickOutside>
-        <div class="relative">
-            <button
-                type="button"
-                class="sort-trigger"
-                class:open={isMenuOpen}
-                aria-haspopup="listbox"
-                aria-expanded={isMenuOpen}
-                aria-label="切换排序方式"
-                on:click={toggleMenu}
-            >
-                <svg class="sort-icon" viewBox="0 0 24 24" aria-hidden="true">
-                    <path fill="currentColor" d="M3 7h13v2H3zm0 4h10v2H3zm0 4h7v2H3zm14-2v6l-3-3zm0-2V5l3 3z" />
-                </svg>
-                <span class="trigger-label">{SORT_META[sortMode].label}</span>
-                <svg class="chevron" class:flip={isMenuOpen} viewBox="0 0 24 24" aria-hidden="true">
-                    <path fill="currentColor" d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z" />
-                </svg>
-            </button>
-
-            {#if isMenuOpen}
-                <div
-                    class="sort-menu"
-                    role="listbox"
-                    transition:fly={{ y: -4, duration: 130 }}
-                >
-                    {#if canUseSeries}
-                        <button
-                            type="button"
-                            class="sort-item"
-                            class:selected={sortMode === "episode-desc"}
-                            role="option"
-                            aria-selected={sortMode === "episode-desc"}
-                            on:click={() => setSort("episode-desc")}
-                        >
-                            <span class="item-label">{SORT_META["episode-desc"].label}</span>
-                            <span class="item-hint">{SORT_META["episode-desc"].hint}</span>
-                        </button>
-                        <button
-                            type="button"
-                            class="sort-item"
-                            class:selected={sortMode === "episode-asc"}
-                            role="option"
-                            aria-selected={sortMode === "episode-asc"}
-                            on:click={() => setSort("episode-asc")}
-                        >
-                            <span class="item-label">{SORT_META["episode-asc"].label}</span>
-                            <span class="item-hint">{SORT_META["episode-asc"].hint}</span>
-                        </button>
-                        <div class="divider"></div>
-                    {/if}
-                    <button
-                        type="button"
-                        class="sort-item"
-                        class:selected={sortMode === "date-desc"}
-                        role="option"
-                        aria-selected={sortMode === "date-desc"}
-                        on:click={() => setSort("date-desc")}
-                    >
-                        <span class="item-label">{SORT_META["date-desc"].label}</span>
-                        <span class="item-hint">{SORT_META["date-desc"].hint}</span>
-                    </button>
-                    <button
-                        type="button"
-                        class="sort-item"
-                        class:selected={sortMode === "date-asc"}
-                        role="option"
-                        aria-selected={sortMode === "date-asc"}
-                        on:click={() => setSort("date-asc")}
-                    >
-                        <span class="item-label">{SORT_META["date-asc"].label}</span>
-                        <span class="item-hint">{SORT_META["date-asc"].hint}</span>
-                    </button>
-                </div>
-            {/if}
+        <div class="index-sort">
+            <select value={sortMode} aria-label="切换排序方式" on:change={event => setSort(event.currentTarget.value as SortMode)}>
+                {#if canUseSeries}<option value="episode-desc">{SORT_META['episode-desc'].label}</option><option value="episode-asc">{SORT_META['episode-asc'].label}</option>{/if}
+                <option value="date-desc">{SORT_META['date-desc'].label}</option><option value="date-asc">{SORT_META['date-asc'].label}</option>
+            </select>
         </div>
-    </div>
 {/if}
-
         {#if groups.some(group => !group.isSeries)}
         <p>{i18n(I18nKey.archiveIndex)}</p>
         {#each groups.filter(group => !group.isSeries) as group}
@@ -400,123 +300,7 @@ onMount(() => {
 </div>
 
 <style>
-.index-sort { margin-bottom: 1.25rem; }
-
-.sort-trigger {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    padding: 0.3rem 0.65rem 0.3rem 0.55rem;
-    font-size: 0.75rem;
-    font-weight: 500;
-    border-radius: 9999px;
-    background: var(--btn-regular-bg);
-    color: var(--btn-content);
-    transition:
-        background 0.18s ease,
-        color 0.18s ease;
-    cursor: pointer;
-    border: none;
-    line-height: 1;
-}
-.sort-trigger:hover {
-    background: var(--btn-regular-bg-hover);
-    color: var(--primary);
-}
-.sort-trigger.open {
-    background: var(--btn-regular-bg-active);
-    color: var(--primary);
-}
-.sort-trigger .sort-icon {
-    width: 0.85rem;
-    height: 0.85rem;
-    opacity: 0.7;
-}
-.sort-trigger:hover .sort-icon,
-.sort-trigger.open .sort-icon {
-    opacity: 1;
-}
-.sort-trigger .trigger-label {
-    line-height: 1;
-}
-.sort-trigger .chevron {
-    width: 0.65rem;
-    height: 0.65rem;
-    opacity: 0.6;
-    transition: transform 0.2s ease;
-}
-.sort-trigger .chevron.flip {
-    transform: rotate(180deg);
-}
-
-.sort-menu {
-    position: relative;
-    margin-top: .5rem;
-    left: 0;
-    min-width: 0;
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: var(--radius-panel);
-    padding: 0.25rem;
-    box-shadow:
-        0 3px 10px rgba(0, 0, 0, 0.05),
-        0 10px 24px rgba(0, 0, 0, 0.08);
-    z-index: 50;
-    display: flex;
-    flex-direction: column;
-    gap: 0.05rem;
-}
-:global([data-theme="dark"]) .sort-menu {
-    box-shadow:
-        0 3px 10px rgba(0, 0, 0, 0.3),
-        0 10px 24px rgba(0, 0, 0, 0.45);
-}
-
-.sort-item {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.05rem;
-    padding: 0.35rem 0.55rem;
-    background: transparent;
-    border: none;
-    border-radius: 0.45rem;
-    color: var(--btn-content);
-    text-align: left;
-    cursor: pointer;
-    transition:
-        background 0.15s ease,
-        color 0.15s ease;
-    width: 100%;
-}
-.sort-item:hover {
-    background: var(--btn-regular-bg);
-    color: var(--primary);
-}
-.sort-item.selected {
-    background: var(--primary);
-    color: white;
-}
-:global([data-theme="dark"]) .sort-item.selected {
-    color: rgba(0, 0, 0, 0.85);
-}
-.sort-item .item-label {
-    font-size: 0.75rem;
-    font-weight: 500;
-    line-height: 1.1;
-}
-.sort-item .item-hint {
-    font-size: 0.625rem;
-    opacity: 0.7;
-    line-height: 1.2;
-}
-
-.divider {
-    height: 1px;
-    background: rgba(0, 0, 0, 0.08);
-    margin: 0.2rem 0.35rem;
-}
-:global([data-theme="dark"]) .divider {
-    background: rgba(255, 255, 255, 0.1);
-}
+.index-sort { margin-bottom: 1.25rem; width: 100%; min-width: 0; }
+.index-sort select { display: block; width: 100%; min-width: 0; max-width: 100%; font: inherit; font-size: .75rem; line-height: 1.4; white-space: nowrap; color: var(--text-primary); background: var(--btn-regular-bg); border: 0; border-radius: .5rem; padding: .6rem .4rem; cursor: pointer; color-scheme: light dark; }
+.index-sort select:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
 </style>
