@@ -1,4 +1,5 @@
 enum I18nKey {
+    friendOrbit = "friendOrbit",
 	articles = "articles",
 	photography = "photography",
 	scripts = "scripts",

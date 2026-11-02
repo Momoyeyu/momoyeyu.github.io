@@ -2,6 +2,7 @@ import Key from "../i18nKey";
 import type { Translation } from "../translation";
 
 export const tr: Translation = {
+	[Key.friendOrbit]: "Yörüngelerimiz buluşsun",
 	[Key.articles]: "Yazılar",
 	[Key.photography]: "Fotoğraf",
 	[Key.scripts]: "Betikler",

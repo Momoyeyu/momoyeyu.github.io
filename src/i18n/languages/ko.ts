@@ -2,6 +2,7 @@ import Key from "../i18nKey";
 import type { Translation } from "../translation";
 
 export const ko: Translation = {
+	[Key.friendOrbit]: "별의 궤도가 만나는 곳",
 	[Key.articles]: "글",
 	[Key.photography]: "사진",
 	[Key.scripts]: "스크립트",

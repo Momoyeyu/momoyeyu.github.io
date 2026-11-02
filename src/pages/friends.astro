@@ -1,4 +1,7 @@
 ---
+import I18nKey from "../i18n/i18nKey";
+import { i18n } from "../i18n/translation";
+import FriendGalaxies from "../components/FriendGalaxies.svelte";
 import MainGridLayout from "@layouts/MainGridLayout.astro";
 
 interface FriendLink {
@@ -92,44 +95,9 @@ const groups: FriendGroup[] = [
 ---
 
 <MainGridLayout title="友链">
-	<div class="card-base p-6 md:p-8 mb-4">
+	<FriendGalaxies groups={groups} client:load />
 
-		{groups.map((group) => (
-			<div class="mb-8 last:mb-0">
-				<div class="flex items-center gap-2 mb-1">
-					<div class="font-bold text-lg text-neutral-900 dark:text-neutral-100">{group.title}</div>
-				</div>
-				<div class="text-sm text-50 mb-4">{group.desc}</div>
-				<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-					{group.links.map((link) => (
-						<a
-							href={link.url}
-							target="_blank"
-							rel="noopener noreferrer"
-							class="friend-card group flex items-center gap-4 p-4 rounded-[var(--radius-inset)] transition-all duration-200  hover:shadow-md  hover:-translate-y-0.5"
-						>
-							<img
-								src={link.avatar}
-								alt={link.name}
-								class="w-12 h-12 rounded-full object-cover shrink-0 ring-2 ring-black/5 dark:ring-white/10 group-hover:ring-[var(--primary)] transition"
-								loading="lazy"
-								onerror="this.setAttribute('src','data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔗</text></svg>')"
-							/>
-							<div class="overflow-hidden">
-								<div class="font-semibold text-neutral-900 dark:text-neutral-100 group-hover:text-[var(--primary)] transition truncate">
-									{link.name}
-								</div>
-								<div class="text-sm text-50 leading-relaxed line-clamp-2" title={link.descr}>{link.descr}</div>
-							</div>
-						</a>
-					))}
-				</div>
-			</div>
-		))}
-
-	</div>
-
-	<div class="card-base p-6 md:p-8 mb-4">
+	<div class="friend-contact card-base p-6 md:p-8 mb-4">
 		<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
 			<!-- Left: Application steps + requirements -->
 			<div class="rounded-[var(--radius-surface)]  overflow-hidden flex flex-col">
@@ -138,7 +106,7 @@ const groups: FriendGroup[] = [
 						<span class="w-7 h-7 rounded-lg bg-[var(--primary)]/10 flex items-center justify-center text-[var(--primary)] text-sm">
 							<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
 						</span>
-						申请友链
+						{i18n(I18nKey.friendOrbit)}
 					</h3>
 					<div class="space-y-0">
 						<div class="flex gap-3.5">
@@ -265,3 +233,11 @@ const groups: FriendGroup[] = [
 		</div>
 	</div>
 </MainGridLayout>
+
+<style is:global>
+html:has(.galaxy-scene) #page-banner {display:none}
+html:has(.galaxy-scene) #main-panel {margin-top:6rem}
+.friend-contact {position:relative;background:radial-gradient(circle at 20% 30%,color-mix(in srgb,var(--primary) 8%,transparent),transparent 60%),var(--page-bg);padding-block:4rem;margin-bottom:3rem}
+.friend-contact::before {content:"";position:absolute;inset:0;pointer-events:none;background-image:radial-gradient(var(--primary) .7px,transparent .9px),radial-gradient(var(--primary) .6px,transparent .9px);background-size:113px 137px,173px 109px;background-position:20px 40px,70px 10px;opacity:.2}
+.friend-contact > * {position:relative}
+</style>

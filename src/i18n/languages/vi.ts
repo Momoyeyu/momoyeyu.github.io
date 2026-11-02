@@ -2,6 +2,7 @@ import Key from "../i18nKey";
 import type { Translation } from "../translation";
 
 export const vi: Translation = {
+	[Key.friendOrbit]: "Nơi những quỹ đạo gặp nhau",
 	[Key.articles]: "Bài viết",
 	[Key.photography]: "Nhiếp ảnh",
 	[Key.scripts]: "Tập lệnh",

@@ -2,6 +2,7 @@ import Key from "../i18nKey";
 import type { Translation } from "../translation";
 
 export const ja: Translation = {
+	[Key.friendOrbit]: "星の軌道が交わる場所",
 	[Key.articles]: "記事",
 	[Key.photography]: "写真",
 	[Key.scripts]: "スクリプト",

@@ -2,6 +2,7 @@ import Key from "../i18nKey";
 import type { Translation } from "../translation";
 
 export const zh_CN: Translation = {
+	[Key.friendOrbit]: "让星轨相遇",
 	[Key.articles]: "文章",
 	[Key.photography]: "摄影",
 	[Key.scripts]: "脚本",
@@ -9,7 +10,7 @@ export const zh_CN: Translation = {
 	[Key.previousAlbum]: "上一本相册",
 	[Key.nextAlbum]: "下一本相册",
 	[Key.enterAlbum]: "进入相册",
-	[Key.photoCount]: "张",
+	[Key.photoCount]: "帧",
 	[Key.archiveIndex]: "日期索引",
 	[Key.copyCommand]: "复制",
 	[Key.commandCopied]: "已复制",
