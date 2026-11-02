@@ -517,7 +517,7 @@ series-widget > a:first-child {
 .archive-tag-cloud a { display: inline-block; color: var(--text-secondary); font-size: var(--tag-size); transform: translateY(var(--tag-rise)); transition: transform 240ms cubic-bezier(.22,1,.36,1), color 180ms; }
 .archive-tag-cloud a:hover, .archive-tag-cloud a:focus-visible { transform: translateY(calc(var(--tag-rise) - 4px)) rotate(var(--tag-turn)); color: var(--text-primary); }
 .archive-tag-cloud a.active { color: var(--text-primary); text-decoration: underline; text-underline-offset: .3rem; }
-.archive-browser.with-index { display: grid; grid-template-columns: 8rem minmax(0,1fr); gap: 1.5rem; align-items: start; }
+.archive-browser.with-index { display: grid; grid-template-columns: 10rem minmax(0,1fr); gap: 1.5rem; align-items: start; }
 .archive-index { position: sticky; top: 6rem; max-height: calc(100svh - 7rem); overflow-y: auto; font-size: .75rem; color: var(--text-secondary); padding: .75rem; }
 .archive-index > p { margin-bottom: 1.25rem; }
 .index-year { margin-bottom: 1.5rem; }
