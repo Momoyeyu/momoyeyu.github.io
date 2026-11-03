@@ -3,7 +3,7 @@ title: 奇异值分解
 date: 2026-10-10
 updated: 2026-10-21
 description: 从三个连续的几何动作理解 SVD，弄清奇异值、秩一分量与低秩近似，并用真实图像重建观察截断带来的取舍。
-tags: [Math, 线性代数, SVD]
+tags: [Math, 线性代数, SVD, 降维]
 category: Math
 episode: 2
 draft: false

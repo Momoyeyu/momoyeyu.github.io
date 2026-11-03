@@ -3,7 +3,7 @@ title: Transformer 的数学表示与代码实现
 date: 2026-09-14
 updated: 2026-10-29
 description: '从 Transformer 开始的 LLM 之旅'
-tags: [LLM, 深度学习, Transformer]
+tags: [LLM, 深度学习, Transformer, Attention]
 category: LLM
 episode: 0
 draft: false

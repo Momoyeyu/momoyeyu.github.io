@@ -3,7 +3,7 @@ title: GPU 选型
 date: 2026-10-03
 updated: 2026-10-21
 description: 从模型权重、KV cache、推理吞吐和训练通信量出发，比较单卡、多卡、改装卡与云租赁的适用条件。
-tags: [AI Infra, GPU, LLM]
+tags: [AI Infra, GPU, LLM, 推理]
 category: AI Infra
 episode: 7
 draft: false

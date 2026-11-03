@@ -3,7 +3,7 @@ title: GPU 访存延迟
 date: 2026-05-20
 updated: 2026-10-21
 description: '从 Grid-Stride Loop 入手，解释 warp 切换、SM 并发与 L1/L2 cache 对 GPU 访存延迟的影响，并复盘一次向量化反而变慢的原因。'
-tags: [AI Infra, CUDA, GPU]
+tags: [AI Infra, CUDA, GPU, 性能]
 category: AI Infra
 episode: 3
 draft: false

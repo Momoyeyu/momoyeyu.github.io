@@ -3,7 +3,7 @@ title: MoE 技术原理
 date: 2026-09-23
 updated: 2026-10-29
 description: 本文将介绍 MoE 技术，解释其如何在扩大模型参数容量的同时控制计算成本，并逐渐成为现代 LLM 的核心技术。
-tags: [LLM, MoE, Deepseek]
+tags: [LLM, MoE, DeepSeek]
 category: LLM
 episode: 1
 draft: false

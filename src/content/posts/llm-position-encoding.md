@@ -3,7 +3,7 @@ title: 位置编码技术的演进
 date: 2026-10-07
 updated: 2026-10-29
 description: 本文梳理 Transformer 的位置编码演进：为什么注意力需要位置信息，正弦编码、可学习编码、相对位置编码、ALiBi 与 RoPE 各自的设计取舍与长度外推。
-tags: [LLM, RoPE]
+tags: [LLM, RoPE, Transformer, Attention]
 category: LLM
 episode: 3
 draft: false

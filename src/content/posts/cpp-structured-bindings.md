@@ -2,7 +2,7 @@
 title: C++ 结构化绑定
 date: 2023-06-03
 description: 'tuple、pair、结构化绑定（C++17）以及返回多个值的各种方式对比。'
-tags: [C++]
+tags: [C++, STL]
 category: C++ 进阶
 episode: 3
 draft: false

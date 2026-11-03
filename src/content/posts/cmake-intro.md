@@ -2,7 +2,7 @@
 title: C++ CMake 入门
 date: 2023-01-22
 description: 'CMake 是什么、CMakeLists.txt 怎么写、target 机制，以及多文件项目的构建配置。'
-tags: [C++, 工具链]
+tags: [C++, 工具链, 编译]
 category: C++ 入门
 episode: 2
 draft: false

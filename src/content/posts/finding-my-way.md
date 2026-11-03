@@ -2,7 +2,7 @@
 title: Finding My Way
 date: 2025-03-31
 description: '在科研与工程之间反复摇摆后，想清楚自己真正想走哪条路的心路历程。'
-tags: [随笔, 生活]
+tags: [随笔, 生活, 职业]
 category: 随笔
 episode: 0
 draft: false

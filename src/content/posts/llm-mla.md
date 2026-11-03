@@ -3,7 +3,7 @@ title: 从零理解 MLA
 date: 2026-10-20
 updated: 2026-10-29
 description: 本文从 KV cache 的推理开销讲起，经过 MQA 与 GQA 的共享方案，理解 DeepSeek-V2 提出的多头潜在注意力：低秩联合压缩、矩阵吸收与解耦 RoPE。
-tags: [LLM, Deepseek, MLA, KV Cache, AI Infra]
+tags: [LLM, DeepSeek, MLA, KV Cache, AI Infra, Attention, RoPE, 推理]
 category: LLM
 episode: 5
 draft: false

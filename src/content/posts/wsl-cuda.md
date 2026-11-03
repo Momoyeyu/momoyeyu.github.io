@@ -3,7 +3,7 @@ title: 通过 WSL 使用 CUDA
 date: 2026-05-22
 updated: 2026-09-29
 description: 'SSH 直连 WSL2：AI 一键配置，或手动配置 portproxy、sshd 与防火墙，验证 CUDA。'
-tags: [WSL, CUDA]
+tags: [WSL, CUDA, Linux]
 category: 环境搭建
 episode: 2
 draft: false

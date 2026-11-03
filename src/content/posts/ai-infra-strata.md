@@ -3,7 +3,7 @@ title: How Strata Works
 date: 2026-10-21
 updated: 2026-10-26
 description: 从稀疏激活、权重分层、CPU/GPU 并行与投机解码出发，结合源码与 RTX 4090D 实测理解 Strata 的推理设计。
-tags: [LLM, 推理, Strata]
+tags: [LLM, 推理, Strata, AI Infra, MoE]
 category: AI Infra
 episode: 9
 draft: false

@@ -3,7 +3,7 @@ title: GPU 性能评估
 date: 2026-10-02
 updated: 2026-10-21
 description: 读懂 GPU 规格表：显存容量决定能不能跑，带宽决定推理多快，算力决定训练和 prefill，互联决定多卡效率。附可在任意 N 卡上运行的实测代码。
-tags: [AI Infra, GPU, LLM]
+tags: [AI Infra, GPU, LLM, 性能]
 category: AI Infra
 episode: 6
 draft: false
