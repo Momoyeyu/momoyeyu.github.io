@@ -37,20 +37,26 @@
     {#if variant === "rail"}
         <span class="rail-grip" aria-hidden="true"></span>
     {:else}
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-            <rect x="3" y="4.5" width="18" height="15" rx="3" />
-            <path d={side === "left" ? "M9 4.5v15m6-10-3 3 3 3" : "M15 4.5v15M9 9l3 3-3 3"} />
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path class="edge" d={side === "left" ? "M6 5v14" : "M18 5v14"} />
+            <path class="direction" d={side === "left" ? "m14 8-4 4 4 4" : "m10 8 4 4-4 4"} />
+
         </svg>
     {/if}
 </button>
 
 <style>
-    .sidebar-toggle { display: none; color: var(--btn-content); border: 1px solid var(--line-color); background: var(--card-bg); cursor: pointer; transition: background .18s ease, border-color .18s ease, opacity .22s ease; }
+    .sidebar-toggle { display: none; color: var(--btn-content); border: 0; background: transparent; cursor: pointer; transition: background .18s ease, color .18s ease, opacity .22s ease; }
     .sidebar-toggle:not(.ready) { visibility: hidden; }
-    .sidebar-toggle:hover { background: var(--btn-plain-bg-hover); border-color: color-mix(in srgb, var(--primary) 40%, var(--line-color)); }
+    .sidebar-toggle:hover { background: var(--btn-plain-bg-hover); color: var(--primary); }
     .sidebar-toggle:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
-    .sidebar-toggle[data-variant="icon"] { width: 1.875rem; height: 1.875rem; border-radius: .7rem; align-items: center; justify-content: center; flex-shrink: 0; }
-    svg { width: 1.1rem; height: 1.1rem; }
+    .sidebar-toggle[data-variant="icon"] { width: 2rem; height: 2rem; border-radius: 50%; align-items: center; justify-content: center; flex-shrink: 0; }
+    svg { width: 1.125rem; height: 1.125rem; }
+    .edge { opacity: .4; transition: opacity .2s ease; }
+    .direction { transition: transform .2s ease; }
+    .sidebar-toggle:hover .edge { opacity: .75; }
+    .sidebar-toggle-left:hover .direction { transform: translateX(-2px); }
+    .sidebar-toggle-right:hover .direction { transform: translateX(2px); }
     .sidebar-toggle[data-variant="rail"] { position: sticky; top: 5.5rem; width: 100%; height: calc(100svh - 7rem); min-height: 12rem; border-radius: .75rem; align-items: center; justify-content: center; opacity: 0; visibility: hidden; pointer-events: none; }
     .rail-grip { display: block; width: 3px; height: 2.25rem; border-radius: 2px; background: var(--text-muted); opacity: .6; }
     .sidebar-toggle[data-variant="rail"]:hover .rail-grip { opacity: 1; background: var(--primary); }
@@ -62,5 +68,5 @@
         :global(html[data-reading="true"]) .sidebar-toggle-right { display: flex; }
         :global(html[data-reading="true"][data-right-collapsed="true"]) .sidebar-toggle-right[data-variant="rail"] { opacity: 1; visibility: visible; pointer-events: auto; }
     }
-    @media(prefers-reduced-motion: reduce) { .sidebar-toggle { transition: none; } }
+    @media(prefers-reduced-motion: reduce) { .sidebar-toggle, .edge, .direction { transition: none; } }
 </style>
