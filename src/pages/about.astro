@@ -1,6 +1,7 @@
 ---
 
 import { getEntry, render } from "astro:content";
+import AboutPortrait from "../components/AboutPortrait.svelte";
 import Markdown from "@components/misc/Markdown.astro";
 import I18nKey from "../i18n/i18nKey";
 import { i18n } from "../i18n/translation";
@@ -15,6 +16,7 @@ if (!aboutPost) {
 const { Content } = await render(aboutPost);
 ---
 <MainGridLayout title={i18n(I18nKey.about)} description={i18n(I18nKey.about)}>
+    <AboutPortrait client:load />
     <div class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative min-h-32">
         <div class="card-base z-10 px-9 py-6 relative w-full ">
             <Markdown class="mt-2">
@@ -22,4 +24,21 @@ const { Content } = await render(aboutPost);
             </Markdown>
         </div>
     </div>
+    <footer class="afterword">
+        <p>谢谢你读到这里。</p>
+        <span class="tea">请我喝杯茶</span>
+            <figure>
+                <div class="code"><img src="/img/resources/wechat-support.jpg" alt="墨末夜羽的微信收款码" loading="lazy" /></div>
+                <figcaption>微信扫一扫</figcaption>
+            </figure>
+    </footer>
 </MainGridLayout>
+<style>
+    .afterword { margin: clamp(4rem,10vh,8rem) auto; text-align: center; color: var(--text-muted); }
+    .afterword p { font-family: serif; font-size: 1.2rem; margin-bottom: .65rem; }
+    .tea { font-size: .875rem; }
+    figure { margin: 1.5rem auto; }
+    .code { width: 204px; height: 204px; margin: auto; overflow: hidden; position: relative; background: white; }
+    .code img { position: absolute; width: 414px; max-width: none; height: 562px; left: -105px; top: -132px; }
+    figcaption { margin-top: .65rem; font-size: .8rem; }
+</style>
