@@ -20,8 +20,20 @@
     const select = (n:number) => { current=n; selectedPlanet=-1; };
     const jump = (index:number) => {const delta=wrap(index-wrap(current)+1)-1;select(current+delta);};
     function keys(e:KeyboardEvent) {if(e.key==='ArrowRight'||e.key==='ArrowLeft'){e.preventDefault();e.stopPropagation();select(current+(e.key==='ArrowRight'?1:-1));}}
-    let touchX=0, lastWheel=0;
-    function wheel(e:WheelEvent) { if(Math.abs(e.deltaX)<=Math.abs(e.deltaY)||e.deltaX===0)return; e.preventDefault();e.stopPropagation();if(Math.abs(e.deltaX)<10)return;if(performance.now()-lastWheel>850){select(current+(e.deltaX>0?1:-1));lastWheel=performance.now();} }
+    let touchX=0, lastWheel=-Infinity, wheelDistance=0, wheelUpdatedAt=0;
+    function wheel(e:WheelEvent) {
+        if(Math.abs(e.deltaX)<=Math.abs(e.deltaY)||e.deltaX===0)return;
+        e.preventDefault(); e.stopPropagation();
+        const now=performance.now();
+        if(now-wheelUpdatedAt>180 || Math.sign(e.deltaX)!==Math.sign(wheelDistance))wheelDistance=0;
+        wheelUpdatedAt=now;
+        if(now-lastWheel<850){wheelDistance=0;return;}
+        const unit=e.deltaMode===1?16:e.deltaMode===2?innerWidth:1;
+        wheelDistance+=e.deltaX*unit;
+        if(Math.abs(wheelDistance)<48)return;
+        select(current+(wheelDistance>0?1:-1));
+        lastWheel=now; wheelDistance=0;
+    }
 
     onMount(()=>{
         const reduced=matchMedia('(prefers-reduced-motion: reduce)'); animate=!reduced.matches;
