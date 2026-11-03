@@ -2,6 +2,11 @@ import Key from "../i18nKey";
 import type { Translation } from "../translation";
 
 export const id: Translation = {
+	[Key.sortBasis]: "Urutkan menurut",
+	[Key.sortByTime]: "Tanggal",
+	[Key.sortAscending]: "Menaik",
+	[Key.sortDescending]: "Menurun",
+	[Key.chapterNumber]: "Bab {n}",
 	[Key.chapters]: "Bab",
 	[Key.newestChapter]: "Bab terbaru dahulu",
 	[Key.firstChapter]: "Bab pertama dahulu",

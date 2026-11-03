@@ -2,6 +2,11 @@ import Key from "../i18nKey";
 import type { Translation } from "../translation";
 
 export const ko: Translation = {
+	[Key.sortBasis]: "정렬 기준",
+	[Key.sortByTime]: "날짜",
+	[Key.sortAscending]: "오름차순",
+	[Key.sortDescending]: "내림차순",
+	[Key.chapterNumber]: "제{n}장",
 	[Key.chapters]: "장",
 	[Key.newestChapter]: "최신 장부터",
 	[Key.firstChapter]: "첫 장부터",

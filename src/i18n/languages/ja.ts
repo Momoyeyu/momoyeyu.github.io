@@ -2,6 +2,11 @@ import Key from "../i18nKey";
 import type { Translation } from "../translation";
 
 export const ja: Translation = {
+	[Key.sortBasis]: "並び替え基準",
+	[Key.sortByTime]: "日付",
+	[Key.sortAscending]: "昇順",
+	[Key.sortDescending]: "降順",
+	[Key.chapterNumber]: "第{n}章",
 	[Key.chapters]: "章",
 	[Key.newestChapter]: "新しい章から",
 	[Key.firstChapter]: "最初の章から",

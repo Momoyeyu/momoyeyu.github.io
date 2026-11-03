@@ -2,6 +2,11 @@ import Key from "../i18nKey";
 import type { Translation } from "../translation";
 
 export const zh_CN: Translation = {
+	[Key.sortBasis]: "排序依据",
+	[Key.sortByTime]: "时间",
+	[Key.sortAscending]: "升序",
+	[Key.sortDescending]: "降序",
+	[Key.chapterNumber]: "第 {n} 章",
 	[Key.chapters]: "章节",
 	[Key.newestChapter]: "最新章节在前",
 	[Key.firstChapter]: "第一章在前",

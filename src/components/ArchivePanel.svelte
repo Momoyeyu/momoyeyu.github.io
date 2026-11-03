@@ -52,12 +52,13 @@ interface Group {
 
 type SortMode = "episode-desc" | "episode-asc" | "date-desc" | "date-asc";
 
-const SORT_META: Record<SortMode, { label: string; hint: string }> = {
-	"episode-desc": { label: `${i18n(I18nKey.chapters)} ↓`, hint: i18n(I18nKey.newestChapter) },
-	"episode-asc": { label: `${i18n(I18nKey.chapters)} ↑`, hint: i18n(I18nKey.firstChapter) },
-	"date-desc": { label: "日期 倒序", hint: "最近发布在前" },
-	"date-asc": { label: "日期 正序", hint: "最早发布在前" },
-};
+function setSortBasis(basis: "episode" | "date") {
+    void setSort(`${basis}-${sortMode.endsWith("asc") ? "asc" : "desc"}` as SortMode);
+}
+function reverseSort() {
+    void setSort(`${sortMode.startsWith("episode") ? "episode" : "date"}-${sortMode.endsWith("asc") ? "desc" : "asc"}` as SortMode);
+}
+function chapterLabel(position: number) { return i18n(I18nKey.chapterNumber).replace("{n}", String(position + 1)); }
 
 // In dev, astro:data-layer-content can transiently resolve to an empty store
 // (cache invalidation race while content files are being saved). The empty
@@ -259,90 +260,34 @@ onMount(() => {
 <header class="archive-selection"><a href={url('/archive/')}>{i18n(I18nKey.allPosts)} ↗</a><h1>{[...categories, ...tags.map(tag=>`#${tag}`)].join(' · ') || i18n(I18nKey.uncategorized)}</h1></header>
 {/if}
 
-<div class="archive-browser with-index">
-    <nav class="archive-index" aria-label={i18n(I18nKey.archiveIndex)}>
 {#if mounted && filteredPosts.length > 1}
-    <div class="index-sort" use:clickOutside>
-        <div class="relative">
-            <button
-                type="button"
-                class="sort-trigger"
-                class:open={isMenuOpen}
-                aria-haspopup="listbox"
-                aria-expanded={isMenuOpen}
-                aria-label="切换排序方式"
-                on:click={toggleMenu}
-            >
-                <svg class="sort-icon" viewBox="0 0 24 24" aria-hidden="true">
-                    <path fill="currentColor" d="M3 7h13v2H3zm0 4h10v2H3zm0 4h7v2H3zm14-2v6l-3-3zm0-2V5l3 3z" />
+    <div class="archive-sort-toolbar" use:clickOutside>
+        <div class="sort-basis">
+            <button type="button" class="sort-trigger" class:open={isMenuOpen} disabled={!canUseSeries}
+                aria-haspopup={canUseSeries ? "listbox" : undefined} aria-expanded={canUseSeries ? isMenuOpen : undefined}
+                aria-label={i18n(I18nKey.sortBasis)} on:click={toggleMenu}>
+                <svg class="sort-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                    {#if sortMode.startsWith("episode")}<path d="M4 4h6a3 3 0 0 1 3 3v14a4 4 0 0 0-4-3H4zM13 7a3 3 0 0 1 3-3h4v14h-3a4 4 0 0 0-4 3" />{:else}<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4m8-4v4M4 10h16" />{/if}
                 </svg>
-                <span class="trigger-label">{SORT_META[sortMode].label}</span>
-                <svg class="chevron" class:flip={isMenuOpen} viewBox="0 0 24 24" aria-hidden="true">
-                    <path fill="currentColor" d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z" />
-                </svg>
+                <span>{i18n(sortMode.startsWith("episode") ? I18nKey.chapters : I18nKey.sortByTime)}</span>
+                {#if canUseSeries}<svg class="chevron" class:flip={isMenuOpen} viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="m7 10 5 5 5-5" /></svg>{/if}
             </button>
-
-            {#if isMenuOpen}
-                <div
-                    class="sort-menu"
-                    popover="manual"
-                    use:positionSortMenu
-                    role="listbox"
-                    transition:fly={{ y: -4, duration: 130 }}
-                >
-                    {#if canUseSeries}
-                        <button
-                            type="button"
-                            class="sort-item"
-                            class:selected={sortMode === "episode-desc"}
-                            role="option"
-                            aria-selected={sortMode === "episode-desc"}
-                            on:click={() => setSort("episode-desc")}
-                        >
-                            <span class="item-label">{SORT_META["episode-desc"].label}</span>
-                            <span class="item-hint">{SORT_META["episode-desc"].hint}</span>
-                        </button>
-                        <button
-                            type="button"
-                            class="sort-item"
-                            class:selected={sortMode === "episode-asc"}
-                            role="option"
-                            aria-selected={sortMode === "episode-asc"}
-                            on:click={() => setSort("episode-asc")}
-                        >
-                            <span class="item-label">{SORT_META["episode-asc"].label}</span>
-                            <span class="item-hint">{SORT_META["episode-asc"].hint}</span>
-                        </button>
-                        <div class="divider"></div>
-                    {/if}
-                    <button
-                        type="button"
-                        class="sort-item"
-                        class:selected={sortMode === "date-desc"}
-                        role="option"
-                        aria-selected={sortMode === "date-desc"}
-                        on:click={() => setSort("date-desc")}
-                    >
-                        <span class="item-label">{SORT_META["date-desc"].label}</span>
-                        <span class="item-hint">{SORT_META["date-desc"].hint}</span>
-                    </button>
-                    <button
-                        type="button"
-                        class="sort-item"
-                        class:selected={sortMode === "date-asc"}
-                        role="option"
-                        aria-selected={sortMode === "date-asc"}
-                        on:click={() => setSort("date-asc")}
-                    >
-                        <span class="item-label">{SORT_META["date-asc"].label}</span>
-                        <span class="item-hint">{SORT_META["date-asc"].hint}</span>
-                    </button>
+            {#if isMenuOpen && canUseSeries}
+                <div class="sort-menu" popover="manual" use:positionSortMenu role="listbox" aria-label={i18n(I18nKey.sortBasis)} transition:fly={{ y: -4, duration: 130 }}>
+                    <button type="button" class="sort-item" class:selected={sortMode.startsWith("episode")} role="option" aria-selected={sortMode.startsWith("episode")} on:click={() => setSortBasis("episode")}>{i18n(I18nKey.chapters)}</button>
+                    <button type="button" class="sort-item" class:selected={sortMode.startsWith("date")} role="option" aria-selected={sortMode.startsWith("date")} on:click={() => setSortBasis("date")}>{i18n(I18nKey.sortByTime)}</button>
                 </div>
             {/if}
         </div>
+        <button type="button" class="sort-direction" on:click={reverseSort}
+            aria-label={i18n(sortMode.endsWith("asc") ? I18nKey.sortDescending : I18nKey.sortAscending)}
+            title={i18n(sortMode.endsWith("asc") ? I18nKey.sortAscending : I18nKey.sortDescending)}>
+            <svg class:ascending={sortMode.endsWith("asc")} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 4v16m-5-5 5 5 5-5" /></svg>
+        </button>
     </div>
 {/if}
-
+<div class="archive-browser" class:with-index={sortMode.startsWith("date")}>
+    <nav class="archive-index" aria-label={i18n(I18nKey.archiveIndex)} aria-hidden={sortMode.startsWith("episode")} inert={sortMode.startsWith("episode")}>
         {#if groups.some(group => !group.isSeries)}
         {#each groups.filter(group => !group.isSeries) as group}
             <div class="index-year">
@@ -383,7 +328,7 @@ onMount(() => {
                         <!-- date or episode -->
                         <div class="w-[15%] md:w-[11.765%] transition text-sm text-right text-50">
                             {#if group.isSeries && typeof post.data.seriesPosition === "number" && post.data.seriesPosition >= 0}
-                                {i18n(I18nKey.chapters)} {post.data.seriesPosition + 1}
+                                {chapterLabel(post.data.seriesPosition)}
                             {:else}
                                 {formatDate(post.data.date)}
                             {/if}
@@ -426,136 +371,18 @@ onMount(() => {
 </div>
 
 <style>
-.index-sort { margin-bottom: 1.25rem; min-width: 0; width: 100%; }
-.index-sort > div { width: 100%; min-width: 0; }
-@media(max-width:767px) { .index-sort { flex: 0 0 8rem; } }
-
-.sort-trigger {
-    display: flex;
-    width: 100%;
-    white-space: nowrap;
-    align-items: center;
-    gap: 0.35rem;
-    padding: 0.3rem 0.65rem 0.3rem 0.55rem;
-    font-size: 0.75rem;
-    font-weight: 500;
-    border-radius: 9999px;
-    background: var(--btn-regular-bg);
-    color: var(--btn-content);
-    transition:
-        background 0.18s ease,
-        color 0.18s ease;
-    cursor: pointer;
-    border: none;
-    line-height: 1.4;
-}
-.sort-trigger:hover {
-    background: var(--btn-regular-bg-hover);
-    color: var(--primary);
-}
-.sort-trigger.open {
-    background: var(--btn-regular-bg-active);
-    color: var(--primary);
-}
-.sort-trigger .sort-icon {
-    flex: 0 0 auto;
-    width: 0.85rem;
-    height: 0.85rem;
-    opacity: 0.7;
-}
-.sort-trigger:hover .sort-icon,
-.sort-trigger.open .sort-icon {
-    opacity: 1;
-}
-.sort-trigger .trigger-label {
-    line-height: 1;
-}
-.sort-trigger .chevron {
-    flex: 0 0 auto;
-    margin-left: auto;
-    width: 0.65rem;
-    height: 0.65rem;
-    opacity: 0.6;
-    transition: transform 0.2s ease;
-}
-.sort-trigger .chevron.flip {
-    transform: rotate(180deg);
-}
-
-.sort-menu {
-    width: 100%;
-    box-sizing: border-box;
-    overflow: hidden;
-    position: fixed;
-    margin: 0;
-    min-width: 0;
-    background: var(--card-bg);
-    border: 0;
-    border-radius: var(--radius-panel);
-    padding: 0.25rem;
-    box-shadow:
-        0 3px 10px rgba(0, 0, 0, 0.05),
-        0 10px 24px rgba(0, 0, 0, 0.08);
-    z-index: 50;
-    display: flex;
-    flex-direction: column;
-    gap: 0.05rem;
-}
-:global([data-theme="dark"]) .sort-menu {
-    width: 100%;
-    box-sizing: border-box;
-    overflow: hidden;
-    box-shadow:
-        0 3px 10px rgba(0, 0, 0, 0.3),
-        0 10px 24px rgba(0, 0, 0, 0.45);
-}
-
-.sort-item {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.05rem;
-    padding: 0.35rem 0.55rem;
-    background: transparent;
-    border: none;
-    border-radius: 0.45rem;
-    color: var(--btn-content);
-    text-align: left;
-    cursor: pointer;
-    transition:
-        background 0.15s ease,
-        color 0.15s ease;
-    width: 100%;
-}
-.sort-item:hover {
-    background: var(--btn-regular-bg);
-    color: var(--primary);
-}
-.sort-item.selected {
-    background: var(--primary);
-    color: white;
-}
-:global([data-theme="dark"]) .sort-item.selected {
-    color: rgba(0, 0, 0, 0.85);
-}
-.sort-item .item-label {
-    white-space: nowrap;
-    font-size: 0.75rem;
-    font-weight: 500;
-    line-height: 1.1;
-}
-.sort-item .item-hint {
-    font-size: 0.625rem;
-    opacity: 0.7;
-    line-height: 1.2;
-}
-
-.divider {
-    height: 1px;
-    background: rgba(0, 0, 0, 0.08);
-    margin: 0.2rem 0.35rem;
-}
-:global([data-theme="dark"]) .divider {
-    background: rgba(255, 255, 255, 0.1);
-}
+.archive-sort-toolbar {display:flex;align-items:center;gap:.4rem;margin-bottom:1.25rem;width:max-content;max-width:100%;color:var(--text-primary);}
+.sort-basis {position:relative;min-width:7rem;}
+.sort-trigger,.sort-direction {display:flex;align-items:center;justify-content:center;gap:.6rem;background:var(--btn-regular-bg);color:var(--text-secondary);height:2.4rem;border:0;border-radius:.7rem;font-size:.8rem;white-space:nowrap;transition:background-color 180ms,color 180ms;}
+.sort-trigger {width:100%;padding-inline:.75rem;}
+.sort-trigger:disabled {cursor:default;}
+.sort-trigger:not(:disabled):hover,.sort-trigger.open,.sort-direction:hover {background:var(--btn-regular-bg-hover);color:var(--text-primary);}
+.sort-icon {width:1rem;height:1rem;flex-shrink:0;}
+.chevron {width:.8rem;height:.8rem;margin-left:auto;transition:transform 180ms;}.chevron.flip{transform:rotate(180deg)}
+.sort-direction {width:2.4rem;flex-shrink:0;}
+.sort-direction svg {width:1.1rem;height:1.1rem;transition:transform 220ms;}.sort-direction svg.ascending{transform:rotate(180deg)}
+.sort-menu {box-sizing:border-box;position:fixed;margin:0;min-width:0;padding:.25rem;display:flex;flex-direction:column;gap:.15rem;background:var(--card-bg);color:var(--text-primary);border:0;border-radius:.7rem;box-shadow:0 8px 24px color-mix(in srgb,var(--palette-ink) 20%,transparent);}
+.sort-item {width:100%;padding:.7rem .55rem;border:0;border-radius:.45rem;text-align:left;font-size:.8rem;white-space:nowrap;cursor:pointer;color:var(--text-secondary);transition:background-color 150ms,color 150ms;}
+.sort-item:hover {background:var(--btn-regular-bg);color:var(--text-primary)}.sort-item.selected{background:var(--primary);color:var(--page-bg)}
+@media(prefers-reduced-motion:reduce){.sort-trigger,.sort-direction,.sort-direction svg,.chevron,.sort-item{transition:none}}
 </style>

@@ -505,8 +505,11 @@ series-widget > a:first-child {
 .timeline-heading {display:flex;justify-content:space-between;align-items:baseline;margin-block:0 3rem;padding-inline:1rem}
 html:has(.archive-browser) #page-banner {display:none}
 html:has(.archive-browser) #main-panel {margin-top:7rem}
-.archive-browser.with-index { display: grid; grid-template-columns: 10rem minmax(0,1fr); gap: 1.5rem; align-items: start; }
-.archive-index { position: sticky; top: 6rem; max-height: calc(100svh - 7rem); overflow-y: auto; font-size: .75rem; color: var(--text-secondary); padding: .75rem; }
+.archive-browser { display:grid;grid-template-columns:0rem minmax(0,1fr);gap:0;align-items:start;transition:grid-template-columns 320ms cubic-bezier(.22,1,.36,1),gap 320ms cubic-bezier(.22,1,.36,1); }
+.archive-browser.with-index {grid-template-columns:10rem minmax(0,1fr);gap:1.5rem;}
+.archive-browser:not(.with-index) > .archive-index {padding:0;visibility:hidden;pointer-events:none;}
+.archive-timeline {min-width:0;}
+.archive-index { min-width:0;position: sticky; top: 6rem; max-height: calc(100svh - 7rem); overflow-y: auto; font-size: .75rem; color: var(--text-secondary); padding: .75rem; }
 .archive-index > p { margin-bottom: 1.25rem; }
 .index-year { margin-bottom: 1.5rem; }
 .index-year > a { display: block; font-size: 1rem; color: var(--text-primary); margin-bottom: .65rem; }
@@ -523,7 +526,8 @@ html:has(.archive-browser) #main-panel {margin-top:7rem}
 @media(max-width: 900px) { .archive-discovery { grid-template-columns: 1fr; } }
 @media(max-width: 767px) {
     .archive-discovery section { padding: 1.25rem; }
-    .archive-browser.with-index { display: flex; flex-direction: column; }
+    .archive-browser {display:flex;flex-direction:column;}
+    .archive-browser:not(.with-index) > .archive-index {display:none;}
     .archive-index { position: sticky; top: 4rem; z-index: 25; max-height: 10rem; display: flex; gap: 1.5rem; width: 100%; overflow: auto; white-space: nowrap; background: var(--page-bg); }
     .archive-index > p { display: none; }
     .index-year { margin-bottom: 0; flex-shrink:0; }
@@ -533,3 +537,5 @@ html:has(.archive-browser) #main-panel {margin-top:7rem}
 @media(prefers-reduced-motion: reduce) { .archive-tag-cloud a { transition: none; } }
 
 html[data-reading="true"] #sidebar .card-base { background: transparent; box-shadow: none; backdrop-filter: none; }
+
+@media(prefers-reduced-motion:reduce){.archive-browser{transition:none}}

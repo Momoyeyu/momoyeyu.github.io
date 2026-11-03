@@ -1,4 +1,9 @@
 enum I18nKey {
+    sortBasis = "sortBasis",
+    sortByTime = "sortByTime",
+    sortAscending = "sortAscending",
+    sortDescending = "sortDescending",
+    chapterNumber = "chapterNumber",
     chapters = "chapters",
     newestChapter = "newestChapter",
     firstChapter = "firstChapter",

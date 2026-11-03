@@ -2,6 +2,11 @@ import Key from "../i18nKey";
 import type { Translation } from "../translation";
 
 export const es: Translation = {
+	[Key.sortBasis]: "Ordenar por",
+	[Key.sortByTime]: "Fecha",
+	[Key.sortAscending]: "Ascendente",
+	[Key.sortDescending]: "Descendente",
+	[Key.chapterNumber]: "Capítulo {n}",
 	[Key.chapters]: "Capítulo",
 	[Key.newestChapter]: "Más reciente primero",
 	[Key.firstChapter]: "Primer capítulo primero",

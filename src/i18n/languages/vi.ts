@@ -2,6 +2,11 @@ import Key from "../i18nKey";
 import type { Translation } from "../translation";
 
 export const vi: Translation = {
+	[Key.sortBasis]: "Sắp xếp theo",
+	[Key.sortByTime]: "Ngày",
+	[Key.sortAscending]: "Tăng dần",
+	[Key.sortDescending]: "Giảm dần",
+	[Key.chapterNumber]: "Chương {n}",
 	[Key.chapters]: "Chương",
 	[Key.newestChapter]: "Chương mới nhất trước",
 	[Key.firstChapter]: "Chương đầu trước",

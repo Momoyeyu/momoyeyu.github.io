@@ -2,6 +2,11 @@ import Key from "../i18nKey";
 import type { Translation } from "../translation";
 
 export const tr: Translation = {
+	[Key.sortBasis]: "Sıralama ölçütü",
+	[Key.sortByTime]: "Tarih",
+	[Key.sortAscending]: "Artan",
+	[Key.sortDescending]: "Azalan",
+	[Key.chapterNumber]: "Bölüm {n}",
 	[Key.chapters]: "Bölüm",
 	[Key.newestChapter]: "En yeni bölüm önce",
 	[Key.firstChapter]: "İlk bölüm önce",
