@@ -1,3 +1,4 @@
+export const UNASSIGNED_PHOTOS = "__unassigned";
 export interface PhotoAlbum {
     slug: string;
     title: string;

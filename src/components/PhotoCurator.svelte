@@ -5,7 +5,7 @@
     import Select from "./ui/Select.svelte";
     import Field from "./ui/Field.svelte";
     import { onMount } from "svelte";
-    import type { PhotoAlbum, PhotoLibrary } from "../types/photos";
+    import { UNASSIGNED_PHOTOS, type PhotoAlbum, type PhotoLibrary } from "../types/photos";
     type Assignment = { album: string; previousAlbum: string; title?: string; note?: string; previousTitle?: string; previousNote?: string };
     type Draft = { assignments: Record<string, Assignment>; albums: PhotoAlbum[] };
     const storageKey = "blog-photo-classification:v1";
@@ -20,11 +20,11 @@
     let undoStack: { id: string; previous?: Assignment }[] = [];
     $: albums = [...(library?.albums ?? []), ...draft.albums.filter(album => !library?.albums.some(existing => existing.slug === album.slug))];
     $: photos = (library?.photos ?? []).map(photo => ({ ...photo, ...draft.assignments[photo.id] }));
-    $: pending = photos.filter(photo => photo.album === "travel-notes");
+    $: pending = photos.filter(photo => photo.album === UNASSIGNED_PHOTOS);
     $: queue = (mode === "pending" ? pending : photos).filter(photo => (!albumFilter || photo.album === albumFilter) && `${photo.assetCode} ${photo.title} ${photo.note ?? ""} ${photo.originalFilename ?? ""}`.toLowerCase().includes(search.toLowerCase()));
     $: current = photos.find(photo => photo.id === currentId);
     $: selectedAlbum = albums.find(album => album.slug === albumFilter);
-    $: albumOptions = albums.map(album => ({value:album.slug,label:album.title}));
+    $: albumOptions = [{value:UNASSIGNED_PHOTOS,label:"待归类"}, ...albums.map(album => ({value:album.slug,label:album.title}))];
     $: changes = Object.keys(draft.assignments).length + draft.albums.length;
     function persist() {
         try { localStorage.setItem(storageKey, JSON.stringify(draft)); }
@@ -78,7 +78,7 @@
         finally {busy = false;}
     }
     async function deleteAlbum() {
-        if (!selectedAlbum || busy || selectedAlbum.slug === 'travel-notes') return;
+        if (!selectedAlbum || busy) return;
         const slug = selectedAlbum.slug;
         busy = true; error = '';
         try {
@@ -87,7 +87,7 @@
             if (!response.ok || result.albums?.some((album:PhotoAlbum)=>album.slug===slug) || result.photos?.some((photo:{album:string})=>photo.album===slug)) throw new Error(result.error || '删除相册失败');
             library = result;
             // Preserve text drafts while rebasing album assignments after deletion.
-            draft = {...draft, assignments:Object.fromEntries(Object.entries(draft.assignments).map(([id,change])=>[id,{...change, album:change.album===slug?'travel-notes':change.album,previousAlbum:change.previousAlbum===slug?'travel-notes':change.previousAlbum}]))};
+            draft = {...draft, assignments:Object.fromEntries(Object.entries(draft.assignments).map(([id,change])=>[id,{...change, album:change.album===slug?UNASSIGNED_PHOTOS:change.album,previousAlbum:change.previousAlbum===slug?UNASSIGNED_PHOTOS:change.previousAlbum}]))};
             undoStack = []; persist(); localStorage.removeItem(`album-editor:v1:${slug}`);
             albumFilter = ''; mode = 'pending'; panel = null; message = '相册已删除，照片已移到待归类';
         } catch(cause) {error = cause instanceof Error ? cause.message : '删除相册失败';}
@@ -119,7 +119,7 @@
         } catch (cause) { error = cause instanceof Error ? cause.message : "保存失败，请重试"; }
         finally { busy = false; }
     }
-    let uploadAlbum = "travel-notes", uploadInput: HTMLInputElement;
+    let uploadAlbum = UNASSIGNED_PHOTOS, uploadInput: HTMLInputElement;
     async function upload(event: Event) {
         const input = event.currentTarget as HTMLInputElement;
         const files = Array.from(input.files ?? []); if (!files.length || busy) return;
@@ -132,9 +132,13 @@
                 const result = await response.json(); if (!response.ok) throw new Error(result.error || "上传失败");
                 library = result;
             }
-            message = `已上传 ${files.length} 帧`; albumFilter = targetAlbum; search = ""; panel = null; mode = targetAlbum === "travel-notes" ? "pending" : "all";
+            message = `已上传 ${files.length} 帧`; albumFilter = targetAlbum; search = ""; panel = null; mode = targetAlbum === UNASSIGNED_PHOTOS ? "pending" : "all";
         } catch(cause) { error = cause instanceof Error ? cause.message : "上传失败"; }
         finally { busy = false; input.value = ""; }
+    }
+    function openUpload() {
+        uploadAlbum = albumFilter && library?.albums.some(album=>album.slug===albumFilter) ? albumFilter : UNASSIGNED_PHOTOS;
+        error = ''; panel = 'upload';
     }
     function openPhoto(id:string) {currentId=id;panel="photo";}
     function adjacentPhoto(direction:number) {
@@ -166,8 +170,7 @@
   <div><a href="/photos/" data-no-swup>返回摄影</a><h1>相册工作台</h1></div>
   <div class="curation-actions">
    {#if changes}<span class="save-state">{changes} 项未保存</span><Button on:click={undo} disabled={!undoStack.length || busy}>撤销</Button><Button variant="primary" on:click={save} disabled={busy}>保存全部修改</Button>{/if}
-   <Button on:click={()=>{error="";panel="create";}} disabled={busy}>＋ 新增相册</Button>
-   <Button on:click={()=>{uploadAlbum=albumFilter && library?.albums.some(a=>a.slug===albumFilter)?albumFilter:'travel-notes';panel='upload';}} disabled={busy}>导入照片</Button>
+   <Button on:click={openUpload} disabled={busy}>导入照片</Button>
   </div>
  </header>
  <div class="workspace">
@@ -177,12 +180,12 @@
    <nav>{#each albums as album}<button class:active={albumFilter===album.slug} on:click={()=>{mode='all';albumFilter=album.slug;search='';}}>{album.title}<span>{photos.filter(photo=>photo.album===album.slug).length}</span></button>{/each}</nav>
   </aside>
   <div class="collection">
-   <header class="collection-header"><div><h2>{selectedAlbum?.title ?? (mode==='pending'?'待归类':'全部照片')}<span>{queue.length} 帧</span></h2>{#if selectedAlbum?.subtitle}<p>{selectedAlbum.subtitle}</p>{/if}</div>{#if selectedAlbum && library?.albums.some(a=>a.slug===selectedAlbum.slug)}<div class="album-actions"><Button on:click={()=>panel='album'}>编辑相册</Button>{#if selectedAlbum.slug!=='travel-notes'}<Button on:click={()=>{error='';panel='delete';}}>删除相册</Button>{/if}</div>{/if}</header>
+   <header class="collection-header"><div><h2>{selectedAlbum?.title ?? (mode==='pending'?'待归类':'全部照片')}<span>{queue.length} 帧</span></h2>{#if selectedAlbum?.subtitle}<p>{selectedAlbum.subtitle}</p>{/if}</div>{#if selectedAlbum && library?.albums.some(a=>a.slug===selectedAlbum.slug)}<div class="album-actions"><Button on:click={()=>panel='album'}>编辑相册</Button><Button on:click={()=>{error='';panel='delete';}}>删除相册</Button></div>{/if}</header>
    <div class="search-row"><Field label="查找照片" bind:value={search} placeholder="搜索标题、编号或备注"/></div>
    {#if message}<p class="status" role="status">{message}</p>{/if}
    {#if error}<p class="notice" role="alert">{error}</p>{/if}
    {#if queue.length}<div class="photo-grid" aria-label="照片列表">{#each queue as photo (photo.id)}<button class="photo-tile" on:click={()=>openPhoto(photo.id)} aria-label={`编辑照片：${photo.title}`}><div class="tile-image"><img src={photo.src} alt="" width={photo.width} height={photo.height} loading="lazy"/>{#if draft.assignments[photo.id]}<span class="changed">未保存</span>{/if}</div><span class="tile-title">{photo.title}</span><span class="tile-code">{photo.assetCode}</span></button>{/each}</div>
-   {:else}<div class="empty"><h2>{library?'这里还没有照片':'正在读取照片…'}</h2><p>{search?'换个关键词，或清除筛选。':'导入照片，或在照片编辑中调整所属相册。'}</p><Button on:click={resetFilters}>查看全部照片</Button></div>{/if}
+   {:else}<div class="empty">{#if !library}<h2>正在读取照片…</h2>{:else if search}<h2>没有找到匹配的照片</h2><p>换个关键词，或清除搜索。</p><Button on:click={()=>search=''}>清除搜索</Button>{:else}<h2>{selectedAlbum?'这个相册还没有照片':'这里还没有照片'}</h2><p>{selectedAlbum?`直接导入照片到“${selectedAlbum.title}”，无需再分配相册。`:'导入照片后，可以在这里继续整理。'}</p><Button variant="primary" on:click={openUpload} disabled={busy}>{selectedAlbum?'导入照片到此相册':'导入照片'}</Button>{/if}</div>{/if}
   </div>
  </div>
 </section>
@@ -204,7 +207,7 @@
 {:else if panel==='album' && selectedAlbum && library}
  <Dialog title="相册设置" busy={albumBusy} on:close={()=>panel=null}><AlbumEditor album={library.albums.find(album=>album.slug===albumFilter)!} disabled={busy} on:busy={event=>albumBusy=event.detail} on:saved={event=>{library=event.detail;message='相册信息已保存';}}/></Dialog>
 {:else if panel==='upload'}
- <Dialog title="导入照片" {busy} on:close={()=>panel=null}><div class="upload-panel"><p>选择相册，然后添加照片。</p><Select label="上传到相册" bind:value={uploadAlbum} options={(library?.albums ?? []).map(album=>({value:album.slug,label:album.title}))} disabled={busy}/><input class="upload-input" bind:this={uploadInput} type="file" accept="image/jpeg,image/png,image/webp,image/avif,image/heic,image/heif" multiple on:change={upload} disabled={busy}/><Button variant="primary" on:click={()=>uploadInput.click()} disabled={busy||!library}>{busy?'正在导入…':'选择照片并导入'}</Button><p class="hint">支持多选，每帧最多 30 MB。照片会自动编号并保存为 WebP。</p><p role="status">{busy?message:''}</p>{#if error}<p role="alert">{error}</p>{/if}</div></Dialog>
+ <Dialog title="导入照片" {busy} on:close={()=>panel=null}><div class="upload-panel"><p>选择相册，然后添加照片。</p><Select label="上传到相册" bind:value={uploadAlbum} options={[{value:UNASSIGNED_PHOTOS,label:'待归类'},...(library?.albums ?? []).map(album=>({value:album.slug,label:album.title}))]} disabled={busy}/><input class="upload-input" bind:this={uploadInput} type="file" accept="image/jpeg,image/png,image/webp,image/avif,image/heic,image/heif" multiple on:change={upload} disabled={busy}/><Button variant="primary" on:click={()=>uploadInput.click()} disabled={busy||!library}>{busy?'正在导入…':'选择照片并导入'}</Button><p class="hint">支持多选，每帧最多 30 MB。照片会自动编号并保存为 WebP。</p><p role="status">{busy?message:''}</p>{#if error}<p role="alert">{error}</p>{/if}</div></Dialog>
 {:else if panel==='delete' && selectedAlbum}
  <Dialog title="删除相册" {busy} on:close={()=>panel=null}><div class="delete-panel"><h3>删除“{selectedAlbum.title}”？</h3><p>其中的 {library?.photos.filter(photo=>photo.album===selectedAlbum.slug).length ?? 0} 帧照片会移到“待归类”。图片文件、标题和备注都会保留。</p><div class="album-actions"><Button on:click={()=>panel=null} disabled={busy}>取消</Button><Button variant="primary" on:click={deleteAlbum} disabled={busy}>{busy?'正在删除…':'删除相册并保留照片'}</Button></div>{#if error}<p role="alert">{error}</p>{/if}</div></Dialog>
 {:else if panel==='create'}

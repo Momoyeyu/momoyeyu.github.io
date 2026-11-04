@@ -2,7 +2,7 @@ import sharp from "sharp";
 import fs from "node:fs";
 import path from "node:path";
 import type { IncomingMessage, ServerResponse } from "node:http";
-import type { PhotoLibrary } from "../types/photos";
+import { UNASSIGNED_PHOTOS, type PhotoLibrary } from "../types/photos";
 
 export class CurationError extends Error { constructor(message: string, public status = 400) { super(message); } }
 const fail = (message: string): never => { throw new CurationError(message); };
@@ -55,7 +55,7 @@ export function applyPhotoClassification(library: PhotoLibrary, input: unknown):
         seen.add(id);
         const photo = next.photos.find(photo => photo.id === id);
         if (!photo) throw new CurationError("照片不存在");
-        if (!next.albums.some(album => album.slug === slug)) fail("地点不存在");
+        if (slug !== UNASSIGNED_PHOTOS && !next.albums.some(album => album.slug === slug)) fail("地点不存在");
         if (photo.album !== previous && photo.album !== slug) throw new CurationError("照片已被修改，请刷新后重试", 409);
         for (const field of ["title", "note"] as const) {
             if (raw[field] === undefined) continue;
@@ -70,11 +70,9 @@ export function applyPhotoClassification(library: PhotoLibrary, input: unknown):
     if (payload.deleteAlbums !== undefined) {
         if (!Array.isArray(payload.deleteAlbums) || payload.deleteAlbums.length > 100) fail("删除相册格式无效");
         const slugs = (payload.deleteAlbums as unknown[]).map(slug => text(slug, 64));
-        if (slugs.includes("travel-notes")) fail("待归类不能删除");
         for (const slug of slugs) if (!next.albums.some(album => album.slug === slug)) fail("相册不存在，请刷新后重试");
-        if (slugs.length && !next.albums.some(album => album.slug === "travel-notes")) next.albums.push({slug:"travel-notes",title:"待归类",subtitle:"",source:"",cover:""});
         next.albums = next.albums.filter(album => !slugs.includes(album.slug));
-        for (const photo of next.photos) if (slugs.includes(photo.album)) photo.album = "travel-notes";
+        for (const photo of next.photos) if (slugs.includes(photo.album)) photo.album = UNASSIGNED_PHOTOS;
     }
     for (const album of next.albums) {
         const photos = next.photos.filter(photo => photo.album === album.slug);
@@ -127,7 +125,7 @@ export function photoCurationPlugin() {
                         const image = await sharp(Buffer.concat(chunks), { limitInputPixels: 80000000 }).rotate().resize({ width: 2400, height: 2400, fit: "inside", withoutEnlargement: true }).webp({ quality: 88 }).toBuffer({ resolveWithObject: true });
                         const library: PhotoLibrary = readLibrary();
                         const album = library.albums.find(album => album.slug === albumSlug);
-                        if (!album) throw new CurationError("请先保存新地点，再上传照片");
+                        if (!album && albumSlug !== UNASSIGNED_PHOTOS) throw new CurationError("请先保存新地点，再上传照片");
                         let number = Math.max(0, ...library.photos.map(photo => Number(photo.assetCode?.match(/^MY_PH_(\d+)$/)?.[1] ?? 0))) + 1;
                         while (fs.existsSync(path.resolve(`public/img/covers/MY_PH_${String(number).padStart(6, "0")}.webp`))) number++;
                         const id = `MY_PH_${String(number).padStart(6, "0")}`;
@@ -135,8 +133,8 @@ export function photoCurationPlugin() {
                         const originalFilename = text(decodeURIComponent(String(req.headers["x-photo-filename"] ?? title)), 255);
                         fs.mkdirSync(path.resolve("public/img/covers"), { recursive: true });
                         fs.writeFileSync(path.resolve(`public${src}`), image.data);
-                        library.photos.push({ id, assetCode: id, originalFilename, note: "", src, title, album: albumSlug, width: image.info.width, height: image.info.height, source: album.source || album.title, defaultCover: true });
-                        if (!album.cover) album.cover = src;
+                        library.photos.push({ id, assetCode: id, originalFilename, note: "", src, title, album: albumSlug, width: image.info.width, height: image.info.height, source: album?.source || album?.title || "", defaultCover: true });
+                        if (album && !album.cover) album.cover = src;
                         writeLibrary(library);
                         send(200, library); return;
                     }

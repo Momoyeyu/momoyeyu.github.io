@@ -43,9 +43,20 @@ it("deletes only album metadata and reassigns every photo without losing asset o
  const result=applyPhotoClassification(library,{assignments:[],deleteAlbums:['tokyo']});
  expect(result.albums.some(album=>album.slug==='tokyo')).toBe(false);
  expect(result.photos).toHaveLength(library.photos.length);
- expect(result.photos[1]).toEqual({...library.photos[1],album:'travel-notes'});
- expect(result.albums.find(album=>album.slug==='travel-notes')?.cover).toBe('/img/b.webp');
+ expect(result.photos[1]).toEqual({...library.photos[1],album:'__unassigned'});
+ expect(result.albums.some(album=>album.slug==='__unassigned')).toBe(false);
  expect(library.photos[1].album).toBe('tokyo');
- expect(()=>applyPhotoClassification(result,{assignments:[],deleteAlbums:['travel-notes']})).toThrow('待归类不能删除');
+
  expect(()=>applyPhotoClassification(result,{assignments:[],deleteAlbums:['missing']})).toThrow('相册不存在');
+});
+
+it("treats travel notes as a deletable regular album, separate from unassigned photos", () => {
+ const input=structuredClone(library);
+ input.albums[1].slug='travel-notes';input.photos[1].album='travel-notes';
+ const result=applyPhotoClassification(input,{assignments:[],deleteAlbums:['travel-notes']});
+ expect(result.albums.map(album=>album.slug)).not.toContain('travel-notes');
+ expect(result.photos[1]).toEqual({...input.photos[1],album:'__unassigned'});
+ const reassigned=applyPhotoClassification(result,{assignments:[{photoId:'b',album:'unassigned',previousAlbum:'__unassigned'}]});
+ expect(reassigned.photos[1].album).toBe('unassigned');
+ expect(applyPhotoClassification(library,{assignments:[{photoId:'b',album:'__unassigned',previousAlbum:'tokyo'}]}).photos[1].album).toBe('__unassigned');
 });
