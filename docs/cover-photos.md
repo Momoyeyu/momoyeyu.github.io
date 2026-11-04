@@ -6,7 +6,7 @@
 
 相册按已知来源分为云南、关西、丰桥、东京、广州和旅途片段。地点不能确认的照片归入旅途片段，不补写具体地点。
 
-完整目录在 `src/data/photo-library.json`，记录照片标题、来源文件名、相册、尺寸和封面用途。资源入口为 `/resource/`，相册页面位于 `/resource/photos/<album>/`。
+图片文件保存在 `public/img/covers/`；`src/data/photo-assets.json` 管理素材编号、路径、尺寸和原文件名；`src/data/photo-library.json` 管理相册及照片标题、备注、归属和封面用途。通过 `src/data/photo-library.ts` 合并供前台使用。摄影入口为 `/photos/`，相册页面位于 `/photos/<album>/`。删除相册只更新 metadata，将照片移到待归类，不删除图片资产。
 
 | 相册 | 照片数 |
 | --- | --- |

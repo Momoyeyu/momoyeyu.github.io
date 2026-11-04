@@ -1,6 +1,6 @@
 ---
 import type { GetStaticPaths } from "astro";
-import library from "../../../data/photo-library.json";
+import library from "../../../data/photo-library";
 export const getStaticPaths = (() => library.albums.map(album => ({ params: { album: album.slug } }))) satisfies GetStaticPaths;
 return Astro.redirect(`/photos/${Astro.params.album}/`, 301);
 ---

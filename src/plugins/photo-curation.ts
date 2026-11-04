@@ -26,7 +26,7 @@ export function applyPhotoClassification(library: PhotoLibrary, input: unknown):
         if (!album) fail("相册不存在");
         const previous = raw.previous as Record<string, unknown>;
         if (!previous || typeof previous !== "object") fail("缺少相册原始信息");
-        for (const field of ["title", "subtitle", "source"] as const) {
+        for (const field of ["title", "subtitle"] as const) {
             const value = raw[field];
             if (typeof value !== "string" || value.length > (field === "title" ? 60 : 500) || (field === "title" && !value.trim())) fail("相册文字格式无效");
             if (album![field] !== previous[field] && album![field] !== value) throw new CurationError("相册已被修改，请刷新后重试", 409);
@@ -67,6 +67,15 @@ export function applyPhotoClassification(library: PhotoLibrary, input: unknown):
         }
         photo.album = slug;
     }
+    if (payload.deleteAlbums !== undefined) {
+        if (!Array.isArray(payload.deleteAlbums) || payload.deleteAlbums.length > 100) fail("删除相册格式无效");
+        const slugs = (payload.deleteAlbums as unknown[]).map(slug => text(slug, 64));
+        if (slugs.includes("travel-notes")) fail("待归类不能删除");
+        for (const slug of slugs) if (!next.albums.some(album => album.slug === slug)) fail("相册不存在，请刷新后重试");
+        if (slugs.length && !next.albums.some(album => album.slug === "travel-notes")) next.albums.push({slug:"travel-notes",title:"待归类",subtitle:"",source:"",cover:""});
+        next.albums = next.albums.filter(album => !slugs.includes(album.slug));
+        for (const photo of next.photos) if (slugs.includes(photo.album)) photo.album = "travel-notes";
+    }
     for (const album of next.albums) {
         const photos = next.photos.filter(photo => photo.album === album.slug);
         if (!photos.some(photo => photo.src === album.cover)) album.cover = photos[0]?.src ?? "";
@@ -81,16 +90,31 @@ export function photoCurationPlugin() {
         // The curator applies the response itself. Reloading on every saved frame
         // would interrupt a multi-file upload; other pages refresh on navigation.
         handleHotUpdate(context: { file: string }) {
-            if (context.file === path.resolve("src/data/photo-library.json")) return [];
+            if (["photo-library.json", "photo-assets.json"].some(file => context.file === path.resolve(`src/data/${file}`))) return [];
         },
         configureServer(server: { middlewares: { use: (path: string, handler: Middleware) => void } }) {
             const file = path.resolve("src/data/photo-library.json");
+            const assetFile = path.resolve("src/data/photo-assets.json");
+            const readLibrary = (): PhotoLibrary => {
+                const metadata = JSON.parse(fs.readFileSync(file, "utf8"));
+                const assets = new Map(JSON.parse(fs.readFileSync(assetFile, "utf8")).map((asset: {id: string}) => [asset.id, asset]));
+                return {...metadata, photos: metadata.photos.map((photo: {id: string}) => ({...assets.get(photo.id) as object, ...photo}))};
+            };
+            const writeLibrary = (library: PhotoLibrary) => {
+                const assets = library.photos.map(({id,src,width,height,assetCode,originalFilename}) => ({id,src,width,height,assetCode,originalFilename}));
+                const metadata = {...library, photos: library.photos.map(({src,width,height,assetCode,originalFilename,...photo}) => photo)};
+                for (const [target, data] of [[assetFile,assets],[file,metadata]] as const) {
+                    const serialized = JSON.stringify(data, null, 2) + "\n";
+                    if (fs.readFileSync(target,"utf8") === serialized) continue;
+                    fs.writeFileSync(`${target}.curation-tmp`,serialized); fs.renameSync(`${target}.curation-tmp`,target);
+                }
+            };
             server.middlewares.use("/__photo-curation", (req, res) => {
                 const send = (status: number, data: unknown) => { res.writeHead(status, { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" }); res.end(JSON.stringify(data)); };
                 void (async () => {
                     const host = req.headers.host ?? "";
                     if (!/^(localhost|127\.0\.0\.1|\[::1\])(?::\d+)?$/.test(host)) { send(403, { error: "仅供本地照片归类" }); return; }
-                    if (req.method === "GET") { send(200, JSON.parse(fs.readFileSync(file, "utf8"))); return; }
+                    if (req.method === "GET") { send(200, readLibrary()); return; }
                     if (req.method !== "POST") { send(405, { error: "请求方式不支持" }); return; }
                     if (req.headers.origin !== `http://${host}` && req.headers.origin !== `https://${host}`) { send(403, { error: "请求来源无效" }); return; }
                     if (req.url?.split("?")[0] === "/upload") {
@@ -101,7 +125,7 @@ export function photoCurationPlugin() {
                         for await (const chunk of req) { const bytes = Buffer.from(chunk); size += bytes.length; if (size > 30 * 1024 * 1024) throw new CurationError("单帧照片不能超过 30 MB", 413); chunks.push(bytes); }
 
                         const image = await sharp(Buffer.concat(chunks), { limitInputPixels: 80000000 }).rotate().resize({ width: 2400, height: 2400, fit: "inside", withoutEnlargement: true }).webp({ quality: 88 }).toBuffer({ resolveWithObject: true });
-                        const library: PhotoLibrary = JSON.parse(fs.readFileSync(file, "utf8"));
+                        const library: PhotoLibrary = readLibrary();
                         const album = library.albums.find(album => album.slug === albumSlug);
                         if (!album) throw new CurationError("请先保存新地点，再上传照片");
                         let number = Math.max(0, ...library.photos.map(photo => Number(photo.assetCode?.match(/^MY_PH_(\d+)$/)?.[1] ?? 0))) + 1;
@@ -113,17 +137,14 @@ export function photoCurationPlugin() {
                         fs.writeFileSync(path.resolve(`public${src}`), image.data);
                         library.photos.push({ id, assetCode: id, originalFilename, note: "", src, title, album: albumSlug, width: image.info.width, height: image.info.height, source: album.source || album.title, defaultCover: true });
                         if (!album.cover) album.cover = src;
-                        const temp = `${file}.curation-tmp`;
-                        fs.writeFileSync(temp, JSON.stringify(library, null, 2) + "\n"); fs.renameSync(temp, file);
+                        writeLibrary(library);
                         send(200, library); return;
                     }
                     if (!req.headers["content-type"]?.startsWith("application/json")) { send(415, { error: "归类内容需要 JSON 格式" }); return; }
                     let body = "";
                     for await (const chunk of req) { body += chunk.toString(); if (Buffer.byteLength(body) > 1024 * 1024) throw new CurationError("归类内容过大", 413); }
-                    const next = applyPhotoClassification(JSON.parse(fs.readFileSync(file, "utf8")), JSON.parse(body));
-                    const temp = `${file}.curation-tmp`;
-                    fs.writeFileSync(temp, JSON.stringify(next, null, 2) + "\n");
-                    fs.renameSync(temp, file);
+                    const next = applyPhotoClassification(readLibrary(), JSON.parse(body));
+                    writeLibrary(next);
                     send(200, next);
                 })().catch(error => send(error instanceof CurationError ? error.status : 500, { error: error instanceof CurationError ? error.message : "保存失败，请重试" }));
             });

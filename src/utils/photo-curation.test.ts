@@ -31,10 +31,21 @@ it("saves title and notes without losing metadata and rejects stale text edits",
 });
 
 it("edits album descriptions without changing photos and rejects stale updates", () => {
- const update={slug:"tokyo",title:"东京",subtitle:"沿河的灯火",source:"夏日旅行",previous:{title:"东京",subtitle:"",source:""}};
+ const update={slug:"tokyo",title:"东京",subtitle:"沿河的灯火",previous:{title:"东京",subtitle:"",source:""}};
  const result=applyPhotoClassification(library,{assignments:[],albumUpdates:[update]});
- expect(result.albums[1]).toMatchObject({title:"东京",subtitle:"沿河的灯火",source:"夏日旅行"});
+ expect(result.albums[1]).toMatchObject({title:"东京",subtitle:"沿河的灯火"});
  expect(result.photos).toEqual(library.photos);
  expect(()=>applyPhotoClassification(result,{assignments:[],albumUpdates:[{...update,subtitle:"另一个描述"}]})).toThrow("相册已被修改");
  expect(()=>applyPhotoClassification(library,{assignments:[],albumUpdates:[{...update,title:""}]})).toThrow();
+});
+
+it("deletes only album metadata and reassigns every photo without losing asset or text data", () => {
+ const result=applyPhotoClassification(library,{assignments:[],deleteAlbums:['tokyo']});
+ expect(result.albums.some(album=>album.slug==='tokyo')).toBe(false);
+ expect(result.photos).toHaveLength(library.photos.length);
+ expect(result.photos[1]).toEqual({...library.photos[1],album:'travel-notes'});
+ expect(result.albums.find(album=>album.slug==='travel-notes')?.cover).toBe('/img/b.webp');
+ expect(library.photos[1].album).toBe('tokyo');
+ expect(()=>applyPhotoClassification(result,{assignments:[],deleteAlbums:['travel-notes']})).toThrow('待归类不能删除');
+ expect(()=>applyPhotoClassification(result,{assignments:[],deleteAlbums:['missing']})).toThrow('相册不存在');
 });

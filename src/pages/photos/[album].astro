@@ -2,7 +2,7 @@
 import type { GetStaticPaths } from "astro";
 import MainGridLayout from "../../layouts/MainGridLayout.astro";
 import PhotoGallery from "../../components/PhotoGallery.svelte";
-import library from "../../data/photo-library.json";
+import library from "../../data/photo-library";
 import I18nKey from "../../i18n/i18nKey";
 import { i18n } from "../../i18n/translation";
 import { url } from "../../utils/url-utils";
@@ -15,7 +15,6 @@ const photos = library.photos.filter(photo => photo.album === album.slug);
         <a class="album-back" href={url('/photos/')}><span class="back-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m10 5-7 7 7 7M3 12h18" /></svg></span><span>{i18n(I18nKey.photoAlbums)}</span></a>
         <h1>{album.title} <span>{photos.length}</span></h1>
         <p>{album.subtitle}</p>
-        <p class="album-source">{album.source}</p>
     </header>
     <PhotoGallery photos={photos} client:load />
 </MainGridLayout>
@@ -25,11 +24,9 @@ const photos = library.photos.filter(photo => photo.album === album.slug);
 .album-back:hover { background:var(--btn-regular-bg); }
 .album-back:focus-visible { outline:2px solid var(--primary); outline-offset:4px; }
 .back-icon { display:grid; place-items:center; width:2.3rem; height:2.3rem; border-radius:50%; background:var(--btn-regular-bg); }
-.album-source { color:var(--text-secondary); font-size:.8rem; }
 .album-header p { max-width:48rem; }
 @media(prefers-reduced-motion:reduce) { .album-back { transition:none; } }
 h1 { font-family: var(--font-display); font-size: clamp(2rem,4vw,3rem); color: var(--text-primary); margin-block: .75rem; }
 h1 span { font-family: var(--font-ui); color: var(--text-secondary); font-size: 1rem; vertical-align: middle; margin-left: .5rem; }
 p { color: var(--text-secondary); line-height: 1.8; }
-.album-source { margin-top: .5rem; }
 </style>

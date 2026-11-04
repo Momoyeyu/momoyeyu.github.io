@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import library from "../data/photo-library.json";
+    import library from "../data/photo-library";
     import mapPaths from "../data/travel-map.json";
     type View = "map" | "gallery" | "index";
     let view: View = "map";
@@ -69,7 +69,7 @@
                         <div class="exhibition-image"><img src={place.cover} alt={place.title} draggable="false" /></div>
                         <div class="album-label"><h2>{place.title}</h2><span>{count(place.slug)} 帧</span></div>
                         <p>{place.subtitle}</p>
-                        <small>{place.source}</small>
+
                     </a>
                 {/each}
             </div>
@@ -79,7 +79,7 @@
                 <div class="contact-index">
                     <p class="section-caption">行旅相册</p><h1>沿途的片刻。</h1>
                     <nav aria-label="相册目录">{#each library.albums as place}<button class:active={selected === place.slug} on:click={() => selected = place.slug}><span>{place.title}</span><small>{count(place.slug)} 帧</small></button>{/each}</nav>
-                    <p class="index-source">{album.source}</p>
+
                     <a class="enter-album" href={`/photos/${album.slug}/`}>进入相册 ↗</a>
                 </div>
                 <div class="contact-images">

@@ -3,7 +3,7 @@ import type { GetStaticPaths } from "astro";
 import MainGridLayout from "../../layouts/MainGridLayout.astro";
 import PostDesignPreview from "../../components/PostDesignPreview.svelte";
 import { getSortedPosts } from "../../utils/content-utils";
-import library from "../../data/photo-library.json";
+import library from "../../data/photo-library";
 import AlbumDesignPreview from "../../components/AlbumDesignPreview.svelte";
 export const getStaticPaths = (() => import.meta.env.DEV ? ["albums", "posts"].map(preview => ({params:{preview}})) : []) satisfies GetStaticPaths;
 const postPreview = Astro.params.preview === "posts";
