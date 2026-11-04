@@ -19,3 +19,13 @@ describe("photo classification", () => {
         expect(applyPhotoClassification(library,{assignments:[{photoId:"b",album:"tokyo",previousAlbum:"unassigned"}]}).photos[1].album).toBe("tokyo");
     });
 });
+
+it("saves title and notes without losing metadata and rejects stale text edits", () => {
+    const update = { photoId: "a", album: "tokyo", previousAlbum: "unassigned", title: "新标题", previousTitle: "a", note: "旅行记录", previousNote: "" };
+    const result = applyPhotoClassification(library, { assignments: [update] });
+    expect(result.photos[0]).toMatchObject({ title: "新标题", note: "旅行记录", album: "tokyo", src: "/img/a.webp" });
+    expect(result.albums[0].cover).toBe("");
+    expect(() => applyPhotoClassification(result, { assignments: [{ ...update, title: "覆盖" }] })).toThrow("照片文字已被修改");
+    expect(() => applyPhotoClassification(library, { assignments: [{ ...update, note: "x".repeat(2001) }] })).toThrow();
+    expect(library.photos[0].title).toBe("a");
+});

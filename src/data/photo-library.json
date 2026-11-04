@@ -5,7 +5,7 @@
       "title": "云南",
       "subtitle": "湖水、雪山与高原草甸",
       "source": "202606云南毕业之旅",
-      "cover": "/img/covers/yunnan-azure-lake.webp",
+      "cover": "/img/covers/MY_PH_000046.webp",
       "location": {
         "longitude": 100.2,
         "latitude": 26.8
@@ -16,7 +16,7 @@
       "title": "关西",
       "subtitle": "从大阪的街巷走到京都的竹林",
       "source": "202607日本旅行 · 大阪、京都、神户、姬路、丰乡、山崎",
-      "cover": "/img/covers/arashiyama-bamboo-grove.webp",
+      "cover": "/img/covers/MY_PH_000044.webp",
       "location": {
         "longitude": 135.5,
         "latitude": 34.7
@@ -27,7 +27,7 @@
       "title": "丰桥",
       "subtitle": "铁道、暮色与夏日的云",
       "source": "202607丰桥市区与校园巡礼",
-      "cover": "/img/covers/toyohashi-evening-clouds.webp",
+      "cover": "/img/covers/MY_PH_000033.webp",
       "location": {
         "longitude": 137.4,
         "latitude": 34.8
@@ -38,7 +38,7 @@
       "title": "东京",
       "subtitle": "塔与城市的夜色",
       "source": "202608东京旅行",
-      "cover": "/img/covers/tokyo-skytree-temple-night.webp",
+      "cover": "/img/covers/MY_PH_000028.webp",
       "location": {
         "longitude": 139.7,
         "latitude": 35.7
@@ -49,7 +49,7 @@
       "title": "广州",
       "subtitle": "夜里的街道",
       "source": "202607广州之旅",
-      "cover": "/img/covers/guangzhou-night-street.webp",
+      "cover": "/img/covers/MY_PH_000038.webp",
       "location": {
         "longitude": 113.3,
         "latitude": 23.1
@@ -60,14 +60,14 @@
       "title": "旅途片段",
       "subtitle": "街角、室内与沿途的小事",
       "source": "本地选片 · 旅行随拍",
-      "cover": "/img/covers/lantern-lit-alley.webp"
+      "cover": "/img/covers/MY_PH_000020.webp"
     },
     {
       "slug": "place-01d1d958",
       "title": "北京",
       "subtitle": "",
       "source": "北京",
-      "cover": "/img/materials/no-genre-cinema.webp",
+      "cover": "/img/covers/MY_PH_000003.webp",
       "location": {
         "longitude": 116.4,
         "latitude": 39.9
@@ -78,7 +78,7 @@
       "title": "成都",
       "subtitle": "",
       "source": "成都",
-      "cover": "/img/covers/illuminated-garden-at-night.webp",
+      "cover": "/img/covers/MY_PH_000021.webp",
       "location": {
         "longitude": 104.07,
         "latitude": 30.67
@@ -88,653 +88,848 @@
   "photos": [
     {
       "id": "lantern-lined-street",
-      "src": "/img/covers/lantern-lined-street.webp",
+      "src": "/img/covers/MY_PH_000001.webp",
       "title": "灯笼街巷",
       "album": "yunnan",
       "width": 1200,
       "height": 1600,
       "source": "street.jpg",
-      "defaultCover": true
+      "defaultCover": true,
+      "assetCode": "MY_PH_000001",
+      "originalFilename": "street.jpg",
+      "note": ""
     },
     {
       "id": "osaka-tenjin-festival",
-      "src": "/img/materials/osaka-tenjin-festival.webp",
+      "src": "/img/covers/MY_PH_000002.webp",
       "title": "大阪天神祭",
       "album": "kansai",
       "width": 1440,
       "height": 960,
       "source": "tensinnmaturi.jpg",
-      "defaultCover": false
+      "defaultCover": false,
+      "assetCode": "MY_PH_000002",
+      "originalFilename": "tensinnmaturi.jpg",
+      "note": ""
     },
     {
       "id": "no-genre-cinema",
-      "src": "/img/materials/no-genre-cinema.webp",
+      "src": "/img/covers/MY_PH_000003.webp",
       "title": "No Genre",
       "album": "place-01d1d958",
       "width": 1440,
       "height": 960,
       "source": "no genre.jpg",
-      "defaultCover": false
+      "defaultCover": false,
+      "assetCode": "MY_PH_000003",
+      "originalFilename": "no genre.jpg",
+      "note": ""
     },
     {
       "id": "railway-at-sunset",
-      "src": "/img/covers/railway-at-sunset.webp",
+      "src": "/img/covers/MY_PH_000004.webp",
       "title": "日落时的铁道",
       "album": "toyohashi",
       "width": 1440,
       "height": 960,
       "source": "railway.jpg",
-      "defaultCover": true
+      "defaultCover": true,
+      "assetCode": "MY_PH_000004",
+      "originalFilename": "railway.jpg",
+      "note": ""
     },
     {
       "id": "coffee-by-the-lake",
-      "src": "/img/materials/coffee-by-the-lake.webp",
+      "src": "/img/covers/MY_PH_000005.webp",
       "title": "湖边咖啡",
       "album": "yunnan",
       "width": 1600,
       "height": 1200,
       "source": "coffee.jpg",
-      "defaultCover": false
+      "defaultCover": false,
+      "assetCode": "MY_PH_000005",
+      "originalFilename": "coffee.jpg",
+      "note": ""
     },
     {
       "id": "kimi-cafe-dessert",
-      "src": "/img/materials/kimi-cafe-dessert.webp",
+      "src": "/img/covers/MY_PH_000006.webp",
       "title": "咖啡店的小憩",
       "album": "place-01d1d958",
       "width": 1200,
       "height": 1600,
       "source": "kimi.jpg",
-      "defaultCover": false
+      "defaultCover": false,
+      "assetCode": "MY_PH_000006",
+      "originalFilename": "kimi.jpg",
+      "note": ""
     },
     {
       "id": "forest-stone-lanterns",
-      "src": "/img/covers/forest-stone-lanterns.webp",
+      "src": "/img/covers/MY_PH_000007.webp",
       "title": "林间石灯笼",
       "album": "kansai",
       "width": 1440,
       "height": 960,
       "source": "temple.jpg",
-      "defaultCover": true
+      "defaultCover": true,
+      "assetCode": "MY_PH_000007",
+      "originalFilename": "temple.jpg",
+      "note": ""
     },
     {
       "id": "yamazaki-night-facade",
-      "src": "/img/covers/yamazaki-night-facade.webp",
+      "src": "/img/covers/MY_PH_000008.webp",
       "title": "山崎的夜",
       "album": "kansai",
       "width": 1440,
       "height": 960,
       "source": "yamazaki.jpg",
-      "defaultCover": true
+      "defaultCover": true,
+      "assetCode": "MY_PH_000008",
+      "originalFilename": "yamazaki.jpg",
+      "note": ""
     },
     {
       "id": "kobe-waterfront",
-      "src": "/img/covers/kobe-waterfront.webp",
+      "src": "/img/covers/MY_PH_000009.webp",
       "title": "神户海滨",
       "album": "kansai",
       "width": 1440,
       "height": 960,
       "source": "kobe.jpg",
-      "defaultCover": true
+      "defaultCover": true,
+      "assetCode": "MY_PH_000009",
+      "originalFilename": "kobe.jpg",
+      "note": ""
     },
     {
       "id": "himeji-castle",
-      "src": "/img/covers/himeji-castle.webp",
+      "src": "/img/covers/MY_PH_000010.webp",
       "title": "姬路城",
       "album": "kansai",
       "width": 1440,
       "height": 960,
       "source": "himeji.jpg",
-      "defaultCover": true
+      "defaultCover": true,
+      "assetCode": "MY_PH_000010",
+      "originalFilename": "himeji.jpg",
+      "note": ""
     },
     {
       "id": "monochrome-street-photographer",
-      "src": "/img/materials/monochrome-street-photographer.webp",
+      "src": "/img/covers/MY_PH_000011.webp",
       "title": "街头摄影师",
       "album": "guangzhou",
       "width": 1067,
       "height": 1600,
       "source": "photographer.jpg",
-      "defaultCover": false
+      "defaultCover": false,
+      "assetCode": "MY_PH_000011",
+      "originalFilename": "photographer.jpg",
+      "note": ""
     },
     {
       "id": "osaka-dotonbori-night",
-      "src": "/img/covers/osaka-dotonbori-night.webp",
+      "src": "/img/covers/MY_PH_000012.webp",
       "title": "道顿堀的夜",
       "album": "kansai",
       "width": 1067,
       "height": 1600,
       "source": "daodunku.jpg",
-      "defaultCover": true
+      "defaultCover": true,
+      "assetCode": "MY_PH_000012",
+      "originalFilename": "daodunku.jpg",
+      "note": ""
     },
     {
       "id": "woodland-path",
-      "src": "/img/covers/woodland-path.webp",
+      "src": "/img/covers/MY_PH_000013.webp",
       "title": "林间小路",
       "album": "kansai",
       "width": 1440,
       "height": 960,
       "source": "road.jpg",
-      "defaultCover": true
+      "defaultCover": true,
+      "assetCode": "MY_PH_000013",
+      "originalFilename": "road.jpg",
+      "note": ""
     },
     {
       "id": "osaka-tsutenkaku-street",
-      "src": "/img/covers/osaka-tsutenkaku-street.webp",
+      "src": "/img/covers/MY_PH_000014.webp",
       "title": "通天阁与街巷",
       "album": "kansai",
       "width": 1067,
       "height": 1600,
       "source": "osaka_tower.jpg",
-      "defaultCover": true
+      "defaultCover": true,
+      "assetCode": "MY_PH_000014",
+      "originalFilename": "osaka_tower.jpg",
+      "note": ""
     },
     {
       "id": "blue-sky-and-statue",
-      "src": "/img/covers/blue-sky-and-statue.webp",
+      "src": "/img/covers/MY_PH_000015.webp",
       "title": "晴空下的雕像",
       "album": "toyohashi",
       "width": 1440,
       "height": 960,
       "source": "usa.jpg",
-      "defaultCover": true
+      "defaultCover": true,
+      "assetCode": "MY_PH_000015",
+      "originalFilename": "usa.jpg",
+      "note": ""
     },
     {
       "id": "yunnan-azure-lake-portrait",
-      "src": "/img/covers/yunnan-azure-lake-portrait.webp",
+      "src": "/img/covers/MY_PH_000016.webp",
       "title": "蓝色湖水",
       "album": "yunnan",
       "width": 1200,
       "height": 1600,
       "source": "blue.jpg",
-      "defaultCover": true
+      "defaultCover": true,
+      "assetCode": "MY_PH_000016",
+      "originalFilename": "blue.jpg",
+      "note": ""
     },
     {
       "id": "monochrome-church",
-      "src": "/img/covers/monochrome-church.webp",
+      "src": "/img/covers/MY_PH_000017.webp",
       "title": "黑白教堂",
       "album": "guangzhou",
       "width": 1067,
       "height": 1600,
       "source": "church.jpg",
-      "defaultCover": true
+      "defaultCover": true,
+      "assetCode": "MY_PH_000017",
+      "originalFilename": "church.jpg",
+      "note": ""
     },
     {
       "id": "katsuoji-forest-steps",
-      "src": "/img/covers/katsuoji-forest-steps.webp",
+      "src": "/img/covers/MY_PH_000018.webp",
       "title": "胜尾寺的林间石阶",
       "album": "kansai",
       "width": 1067,
       "height": 1600,
       "source": "shengweisi.jpg",
-      "defaultCover": true
+      "defaultCover": true,
+      "assetCode": "MY_PH_000018",
+      "originalFilename": "shengweisi.jpg",
+      "note": ""
     },
     {
       "id": "toyohashi-station-at-dusk",
-      "src": "/img/covers/toyohashi-station-at-dusk.webp",
+      "src": "/img/covers/MY_PH_000019.webp",
       "title": "丰桥站的暮色",
       "album": "toyohashi",
       "width": 1440,
       "height": 960,
       "source": "toyohashi.jpg",
-      "defaultCover": true
+      "defaultCover": true,
+      "assetCode": "MY_PH_000019",
+      "originalFilename": "toyohashi.jpg",
+      "note": ""
     },
     {
       "id": "lantern-lit-alley",
-      "src": "/img/covers/lantern-lit-alley.webp",
+      "src": "/img/covers/MY_PH_000020.webp",
       "title": "灯笼照亮的小巷",
       "album": "place-01d1d958",
       "width": 1440,
       "height": 960,
       "source": "shot.jpg",
-      "defaultCover": true
+      "defaultCover": true,
+      "assetCode": "MY_PH_000020",
+      "originalFilename": "shot.jpg",
+      "note": ""
     },
     {
       "id": "illuminated-garden-at-night",
-      "src": "/img/covers/illuminated-garden-at-night.webp",
+      "src": "/img/covers/MY_PH_000021.webp",
       "title": "夜里的灯光庭院",
       "album": "place-3b110480",
       "width": 1440,
       "height": 1080,
       "source": "researcher.jpg",
-      "defaultCover": true
+      "defaultCover": true,
+      "assetCode": "MY_PH_000021",
+      "originalFilename": "researcher.jpg",
+      "note": ""
     },
     {
       "id": "osaka-shinsaibashi-street",
-      "src": "/img/covers/osaka-shinsaibashi-street.webp",
+      "src": "/img/covers/MY_PH_000022.webp",
       "title": "心斋桥街景",
       "album": "kansai",
       "width": 1067,
       "height": 1600,
       "source": "xinzaiqiao.jpg",
-      "defaultCover": true
+      "defaultCover": true,
+      "assetCode": "MY_PH_000022",
+      "originalFilename": "xinzaiqiao.jpg",
+      "note": ""
     },
     {
       "id": "streetlamp-at-dusk",
-      "src": "/img/covers/streetlamp-at-dusk.webp",
+      "src": "/img/covers/MY_PH_000023.webp",
       "title": "暮色里的路灯",
       "album": "toyohashi",
       "width": 1440,
       "height": 960,
       "source": "light.jpg",
-      "defaultCover": true
+      "defaultCover": true,
+      "assetCode": "MY_PH_000023",
+      "originalFilename": "light.jpg",
+      "note": ""
     },
     {
       "id": "tokyo-tower-at-night",
-      "src": "/img/covers/tokyo-tower-at-night.webp",
-      "title": "夜色中的东京塔",
-      "album": "tokyo",
+      "src": "/img/covers/MY_PH_000024.webp",
+      "title": "广州塔夜景",
+      "album": "guangzhou",
       "width": 1200,
       "height": 1600,
       "source": "tower.jpg",
-      "defaultCover": true
+      "defaultCover": true,
+      "assetCode": "MY_PH_000024",
+      "originalFilename": "tower.jpg",
+      "note": ""
     },
     {
       "id": "city-twin-towers-storm",
-      "src": "/img/covers/city-twin-towers-storm.webp",
+      "src": "/img/covers/MY_PH_000025.webp",
       "title": "夜云与双塔",
       "album": "guangzhou",
       "width": 1440,
       "height": 1080,
       "source": "building.jpg",
-      "defaultCover": true
+      "defaultCover": true,
+      "assetCode": "MY_PH_000025",
+      "originalFilename": "building.jpg",
+      "note": ""
     },
     {
       "id": "sleeping-cat",
-      "src": "/img/materials/sleeping-cat.webp",
+      "src": "/img/covers/MY_PH_000026.webp",
       "title": "熟睡的猫",
       "album": "yunnan",
       "width": 1200,
       "height": 1600,
       "source": "cat.jpg",
-      "defaultCover": false
+      "defaultCover": false,
+      "assetCode": "MY_PH_000026",
+      "originalFilename": "cat.jpg",
+      "note": ""
     },
     {
       "id": "japan-shopping-lane",
-      "src": "/img/covers/japan-shopping-lane.webp",
+      "src": "/img/covers/MY_PH_000027.webp",
       "title": "沿街漫步",
       "album": "yunnan",
       "width": 1200,
       "height": 1600,
       "source": "street_road.jpg",
-      "defaultCover": true
+      "defaultCover": true,
+      "assetCode": "MY_PH_000027",
+      "originalFilename": "street_road.jpg",
+      "note": ""
     },
     {
       "id": "tokyo-skytree-temple-night",
-      "src": "/img/covers/tokyo-skytree-temple-night.webp",
+      "src": "/img/covers/MY_PH_000028.webp",
       "title": "寺檐与晴空塔",
       "album": "tokyo",
       "width": 1440,
       "height": 960,
       "source": "skytree.jpg",
-      "defaultCover": true
+      "defaultCover": true,
+      "assetCode": "MY_PH_000028",
+      "originalFilename": "skytree.jpg",
+      "note": ""
     },
     {
       "id": "tokyo-night-panorama",
-      "src": "/img/covers/tokyo-night-panorama.webp",
+      "src": "/img/covers/MY_PH_000029.webp",
       "title": "东京夜景",
       "album": "tokyo",
       "width": 1440,
       "height": 960,
       "source": "tokyo.jpg",
-      "defaultCover": true
+      "defaultCover": true,
+      "assetCode": "MY_PH_000029",
+      "originalFilename": "tokyo.jpg",
+      "note": ""
     },
     {
       "id": "summer-clouds-overpass",
-      "src": "/img/covers/summer-clouds-overpass.webp",
+      "src": "/img/covers/MY_PH_000030.webp",
       "title": "天桥上的夏云",
       "album": "kansai",
       "width": 1440,
       "height": 960,
       "source": "cloud.jpg",
-      "defaultCover": true
+      "defaultCover": true,
+      "assetCode": "MY_PH_000030",
+      "originalFilename": "cloud.jpg",
+      "note": ""
     },
     {
       "id": "city-crossing-at-night",
-      "src": "/img/covers/city-crossing-at-night.webp",
+      "src": "/img/covers/MY_PH_000031.webp",
       "title": "楼间的夜色",
       "album": "guangzhou",
       "width": 1200,
       "height": 1600,
       "source": "cross.jpg",
-      "defaultCover": true
+      "defaultCover": true,
+      "assetCode": "MY_PH_000031",
+      "originalFilename": "cross.jpg",
+      "note": ""
     },
     {
       "id": "shangri-la-pasture-village",
-      "src": "/img/covers/shangri-la-pasture-village.webp",
+      "src": "/img/covers/MY_PH_000032.webp",
       "title": "香格里拉的草甸与村落",
       "album": "yunnan",
       "width": 1440,
       "height": 1080,
       "source": "shangri-la.jpg",
-      "defaultCover": true
+      "defaultCover": true,
+      "assetCode": "MY_PH_000032",
+      "originalFilename": "shangri-la.jpg",
+      "note": ""
     },
     {
       "id": "toyohashi-evening-clouds",
-      "src": "/img/covers/toyohashi-evening-clouds.webp",
+      "src": "/img/covers/MY_PH_000033.webp",
       "title": "丰桥的晚云",
       "album": "toyohashi",
       "width": 1440,
       "height": 960,
       "source": "toyohashi_cloud.jpg",
-      "defaultCover": true
+      "defaultCover": true,
+      "assetCode": "MY_PH_000033",
+      "originalFilename": "toyohashi_cloud.jpg",
+      "note": ""
     },
     {
       "id": "kobe-harbor-ferris-wheel",
-      "src": "/img/covers/kobe-harbor-ferris-wheel.webp",
+      "src": "/img/covers/MY_PH_000034.webp",
       "title": "神户港与摩天轮",
       "album": "kansai",
       "width": 1440,
       "height": 960,
       "source": "harber.jpg",
-      "defaultCover": true
+      "defaultCover": true,
+      "assetCode": "MY_PH_000034",
+      "originalFilename": "harber.jpg",
+      "note": ""
     },
     {
       "id": "saxophone-bar",
-      "src": "/img/materials/saxophone-bar.webp",
+      "src": "/img/covers/MY_PH_000035.webp",
       "title": "萨克斯与酒吧",
       "album": "kansai",
       "width": 1067,
       "height": 1600,
       "source": "sachs.jpg",
-      "defaultCover": false
+      "defaultCover": false,
+      "assetCode": "MY_PH_000035",
+      "originalFilename": "sachs.jpg",
+      "note": ""
     },
     {
       "id": "osaka-glico-sign",
-      "src": "/img/covers/osaka-glico-sign.webp",
+      "src": "/img/covers/MY_PH_000036.webp",
       "title": "格力高招牌",
       "album": "kansai",
       "width": 1067,
       "height": 1600,
       "source": "guriko.jpg",
-      "defaultCover": true
+      "defaultCover": true,
+      "assetCode": "MY_PH_000036",
+      "originalFilename": "guriko.jpg",
+      "note": ""
     },
     {
       "id": "yunnan-golden-peaks-portrait",
-      "src": "/img/covers/yunnan-golden-peaks-portrait.webp",
+      "src": "/img/covers/MY_PH_000037.webp",
       "title": "日照山峰",
       "album": "yunnan",
       "width": 1200,
       "height": 1600,
       "source": "gold_mountain.jpg",
-      "defaultCover": true
+      "defaultCover": true,
+      "assetCode": "MY_PH_000037",
+      "originalFilename": "gold_mountain.jpg",
+      "note": ""
     },
     {
       "id": "guangzhou-night-street",
-      "src": "/img/covers/guangzhou-night-street.webp",
+      "src": "/img/covers/MY_PH_000038.webp",
       "title": "广州的夜街",
       "album": "guangzhou",
       "width": 1067,
       "height": 1600,
       "source": "广州.jpg",
-      "defaultCover": true
+      "defaultCover": true,
+      "assetCode": "MY_PH_000038",
+      "originalFilename": "广州.jpg",
+      "note": ""
     },
     {
       "id": "lake-clouds-and-sunbeams-portrait",
-      "src": "/img/covers/lake-clouds-and-sunbeams-portrait.webp",
+      "src": "/img/covers/MY_PH_000039.webp",
       "title": "湖面云隙光",
       "album": "yunnan",
       "width": 1200,
       "height": 1600,
       "source": "heaven.jpg",
-      "defaultCover": true
+      "defaultCover": true,
+      "assetCode": "MY_PH_000039",
+      "originalFilename": "heaven.jpg",
+      "note": ""
     },
     {
       "id": "lanterns-over-water",
-      "src": "/img/covers/lanterns-over-water.webp",
+      "src": "/img/covers/MY_PH_000040.webp",
       "title": "水边灯笼",
       "album": "kansai",
       "width": 1067,
       "height": 1600,
       "source": "denglong.jpg",
-      "defaultCover": true
+      "defaultCover": true,
+      "assetCode": "MY_PH_000040",
+      "originalFilename": "denglong.jpg",
+      "note": ""
     },
     {
       "id": "toyohashi-tower-evening-sky",
-      "src": "/img/covers/toyohashi-tower-evening-sky.webp",
+      "src": "/img/covers/MY_PH_000041.webp",
       "title": "塔与晚霞",
       "album": "toyohashi",
       "width": 1440,
       "height": 960,
       "source": "toyohasi_tower.jpg",
-      "defaultCover": true
+      "defaultCover": true,
+      "assetCode": "MY_PH_000041",
+      "originalFilename": "toyohasi_tower.jpg",
+      "note": ""
     },
     {
       "id": "sunset-city-silhouette",
-      "src": "/img/covers/sunset-city-silhouette.webp",
+      "src": "/img/covers/MY_PH_000042.webp",
       "title": "城市剪影与晚霞",
       "album": "toyohashi",
       "width": 1440,
       "height": 960,
       "source": "sunset.jpg",
-      "defaultCover": true
+      "defaultCover": true,
+      "assetCode": "MY_PH_000042",
+      "originalFilename": "sunset.jpg",
+      "note": ""
     },
     {
       "id": "vintage-film-projector",
-      "src": "/img/materials/vintage-film-projector.webp",
+      "src": "/img/covers/MY_PH_000043.webp",
       "title": "旧放映机",
       "album": "guangzhou",
       "width": 1440,
       "height": 1080,
       "source": "player.jpg",
-      "defaultCover": false
+      "defaultCover": false,
+      "assetCode": "MY_PH_000043",
+      "originalFilename": "player.jpg",
+      "note": ""
     },
     {
       "id": "arashiyama-bamboo-grove",
-      "src": "/img/covers/arashiyama-bamboo-grove.webp",
+      "src": "/img/covers/MY_PH_000044.webp",
       "title": "竹林",
       "album": "kansai",
       "width": 1440,
       "height": 954,
       "source": "bamboo.jpg",
-      "defaultCover": true
+      "defaultCover": true,
+      "assetCode": "MY_PH_000044",
+      "originalFilename": "bamboo.jpg",
+      "note": ""
     },
     {
       "id": "toyosato-music-room",
-      "src": "/img/materials/toyosato-music-room.webp",
+      "src": "/img/covers/MY_PH_000045.webp",
       "title": "丰乡的音乐教室",
       "album": "kansai",
       "width": 1440,
       "height": 960,
       "source": "k-on.jpg",
-      "defaultCover": false
+      "defaultCover": false,
+      "assetCode": "MY_PH_000045",
+      "originalFilename": "k-on.jpg",
+      "note": ""
     },
     {
       "id": "yunnan-azure-lake",
-      "src": "/img/covers/yunnan-azure-lake.webp",
+      "src": "/img/covers/MY_PH_000046.webp",
       "title": "蓝色湖水",
       "album": "yunnan",
       "width": 1600,
       "height": 1200,
       "source": "1780815554845.heic",
-      "defaultCover": true
+      "defaultCover": true,
+      "assetCode": "MY_PH_000046",
+      "originalFilename": "1780815554845.heic",
+      "note": ""
     },
     {
       "id": "yunnan-lake-sunbeams",
-      "src": "/img/covers/yunnan-lake-sunbeams.webp",
+      "src": "/img/covers/MY_PH_000047.webp",
       "title": "云隙光",
       "album": "yunnan",
       "width": 1600,
       "height": 900,
       "source": "1780651674983.heic",
-      "defaultCover": true
+      "defaultCover": true,
+      "assetCode": "MY_PH_000047",
+      "originalFilename": "1780651674983.heic",
+      "note": ""
     },
     {
       "id": "yunnan-snow-and-cloud",
-      "src": "/img/covers/yunnan-snow-and-cloud.webp",
+      "src": "/img/covers/MY_PH_000048.webp",
       "title": "云中的雪山",
       "album": "yunnan",
       "width": 1600,
       "height": 1200,
       "source": "1780823592964.heic",
-      "defaultCover": true
+      "defaultCover": true,
+      "assetCode": "MY_PH_000048",
+      "originalFilename": "1780823592964.heic",
+      "note": ""
     },
     {
       "id": "yunnan-mountain-valley",
-      "src": "/img/covers/yunnan-mountain-valley.webp",
+      "src": "/img/covers/MY_PH_000049.webp",
       "title": "层叠山谷",
       "album": "yunnan",
       "width": 1600,
       "height": 1200,
       "source": "1780820619146.heic",
-      "defaultCover": true
+      "defaultCover": true,
+      "assetCode": "MY_PH_000049",
+      "originalFilename": "1780820619146.heic",
+      "note": ""
     },
     {
       "id": "yunnan-forest-ridges",
-      "src": "/img/covers/yunnan-forest-ridges.webp",
+      "src": "/img/covers/MY_PH_000050.webp",
       "title": "森林与山脊",
       "album": "yunnan",
       "width": 1600,
       "height": 900,
       "source": "1780806965653.heic",
-      "defaultCover": true
+      "defaultCover": true,
+      "assetCode": "MY_PH_000050",
+      "originalFilename": "1780806965653.heic",
+      "note": ""
     },
     {
       "id": "yunnan-lakeside-path",
-      "src": "/img/covers/yunnan-lakeside-path.webp",
+      "src": "/img/covers/MY_PH_000051.webp",
       "title": "湖岸步道",
       "album": "yunnan",
       "width": 1600,
       "height": 1200,
       "source": "1780906060780.heic",
-      "defaultCover": true
+      "defaultCover": true,
+      "assetCode": "MY_PH_000051",
+      "originalFilename": "1780906060780.heic",
+      "note": ""
     },
     {
       "id": "yunnan-highland-pasture",
-      "src": "/img/covers/yunnan-highland-pasture.webp",
+      "src": "/img/covers/MY_PH_000052.webp",
       "title": "高原草甸",
       "album": "yunnan",
       "width": 1600,
       "height": 1200,
       "source": "1780915423033.heic",
-      "defaultCover": true
+      "defaultCover": true,
+      "assetCode": "MY_PH_000052",
+      "originalFilename": "1780915423033.heic",
+      "note": ""
     },
     {
       "id": "yunnan-mountain-dusk",
-      "src": "/img/covers/yunnan-mountain-dusk.webp",
+      "src": "/img/covers/MY_PH_000053.webp",
       "title": "暮色雪山",
       "album": "yunnan",
       "width": 1600,
       "height": 1200,
       "source": "1780785161007.livp",
-      "defaultCover": true
+      "defaultCover": true,
+      "assetCode": "MY_PH_000053",
+      "originalFilename": "1780785161007.livp",
+      "note": ""
     },
     {
       "id": "yunnan-mossy-woodland",
-      "src": "/img/covers/yunnan-mossy-woodland.webp",
+      "src": "/img/covers/MY_PH_000054.webp",
       "title": "苔石与林木",
       "album": "yunnan",
       "width": 1600,
       "height": 1200,
       "source": "1780808286975.heic",
-      "defaultCover": true
+      "defaultCover": true,
+      "assetCode": "MY_PH_000054",
+      "originalFilename": "1780808286975.heic",
+      "note": ""
     },
     {
       "id": "yunnan-lake-ripples",
-      "src": "/img/covers/yunnan-lake-ripples.webp",
+      "src": "/img/covers/MY_PH_000055.webp",
       "title": "山边的湖水涟漪",
       "album": "yunnan",
       "width": 1600,
       "height": 1200,
       "source": "1780814440784.heic",
-      "defaultCover": true
+      "defaultCover": true,
+      "assetCode": "MY_PH_000055",
+      "originalFilename": "1780814440784.heic",
+      "note": ""
     },
     {
       "id": "yunnan-forested-lakeshore",
-      "src": "/img/covers/yunnan-forested-lakeshore.webp",
+      "src": "/img/covers/MY_PH_000056.webp",
       "title": "森林环绕的湖岸",
       "album": "yunnan",
       "width": 1600,
       "height": 1200,
       "source": "1780908528069.heic",
-      "defaultCover": true
+      "defaultCover": true,
+      "assetCode": "MY_PH_000056",
+      "originalFilename": "1780908528069.heic",
+      "note": ""
     },
     {
       "id": "yunnan-cloud-reflections",
-      "src": "/img/covers/yunnan-cloud-reflections.webp",
+      "src": "/img/covers/MY_PH_000057.webp",
       "title": "云的倒影",
       "album": "yunnan",
       "width": 1600,
       "height": 1200,
       "source": "1780909873926.heic",
-      "defaultCover": true
+      "defaultCover": true,
+      "assetCode": "MY_PH_000057",
+      "originalFilename": "1780909873926.heic",
+      "note": ""
     },
     {
       "id": "yunnan-green-wetland",
-      "src": "/img/covers/yunnan-green-wetland.webp",
+      "src": "/img/covers/MY_PH_000058.webp",
       "title": "高原湿地",
       "album": "yunnan",
       "width": 1600,
       "height": 1200,
       "source": "1780908078370.heic",
-      "defaultCover": true
+      "defaultCover": true,
+      "assetCode": "MY_PH_000058",
+      "originalFilename": "1780908078370.heic",
+      "note": ""
     },
     {
       "id": "yunnan-clouds-over-pasture",
-      "src": "/img/covers/yunnan-clouds-over-pasture.webp",
+      "src": "/img/covers/MY_PH_000059.webp",
       "title": "草甸上的层云",
       "album": "yunnan",
       "width": 1600,
       "height": 1200,
       "source": "1780915873794.heic",
-      "defaultCover": true
+      "defaultCover": true,
+      "assetCode": "MY_PH_000059",
+      "originalFilename": "1780915873794.heic",
+      "note": ""
     },
     {
       "id": "yunnan-blue-sky-pasture",
-      "src": "/img/covers/yunnan-blue-sky-pasture.webp",
+      "src": "/img/covers/MY_PH_000060.webp",
       "title": "蓝天下的草甸",
       "album": "yunnan",
       "width": 1600,
       "height": 1200,
       "source": "1780916161814.heic",
-      "defaultCover": true
+      "defaultCover": true,
+      "assetCode": "MY_PH_000060",
+      "originalFilename": "1780916161814.heic",
+      "note": ""
     },
     {
       "id": "yunnan-road-to-the-highlands",
-      "src": "/img/covers/yunnan-road-to-the-highlands.webp",
+      "src": "/img/covers/MY_PH_000061.webp",
       "title": "通往高原的路",
       "album": "yunnan",
       "width": 1600,
       "height": 1200,
       "source": "1780911849600.heic",
-      "defaultCover": true
+      "defaultCover": true,
+      "assetCode": "MY_PH_000061",
+      "originalFilename": "1780911849600.heic",
+      "note": ""
     },
     {
       "id": "yunnan-turquoise-ripples",
-      "src": "/img/covers/yunnan-turquoise-ripples.webp",
+      "src": "/img/covers/MY_PH_000062.webp",
       "title": "碧水细波",
       "album": "yunnan",
       "width": 1600,
       "height": 1200,
       "source": "1780815189346.heic",
-      "defaultCover": true
+      "defaultCover": true,
+      "assetCode": "MY_PH_000062",
+      "originalFilename": "1780815189346.heic",
+      "note": ""
     },
     {
       "id": "yunnan-alpine-forest",
-      "src": "/img/covers/yunnan-alpine-forest.webp",
+      "src": "/img/covers/MY_PH_000063.webp",
       "title": "山麓森林",
       "album": "yunnan",
       "width": 1600,
       "height": 1200,
       "source": "1780811165032.livp",
-      "defaultCover": true
+      "defaultCover": true,
+      "assetCode": "MY_PH_000063",
+      "originalFilename": "1780811165032.livp",
+      "note": ""
     },
     {
       "id": "yunnan-high-mountain-panorama",
-      "src": "/img/covers/yunnan-high-mountain-panorama.webp",
+      "src": "/img/covers/MY_PH_000064.webp",
       "title": "高山远眺",
       "album": "yunnan",
       "width": 1600,
       "height": 1200,
       "source": "1780820167761.heic",
-      "defaultCover": true
+      "defaultCover": true,
+      "assetCode": "MY_PH_000064",
+      "originalFilename": "1780820167761.heic",
+      "note": ""
     },
     {
       "id": "yunnan-mountain-evening",
-      "src": "/img/covers/yunnan-mountain-evening.webp",
+      "src": "/img/covers/MY_PH_000065.webp",
       "title": "远山暮色",
       "album": "yunnan",
       "width": 1600,
       "height": 2133,
       "source": "1780783625304.livp",
-      "defaultCover": true
+      "defaultCover": true,
+      "assetCode": "MY_PH_000065",
+      "originalFilename": "1780783625304.livp",
+      "note": ""
     }
   ]
 }

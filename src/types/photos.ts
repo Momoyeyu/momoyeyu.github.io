@@ -15,5 +15,8 @@ export interface LibraryPhoto {
     height: number;
     source: string;
     defaultCover: boolean;
+    assetCode?: string;
+    originalFilename?: string;
+    note?: string;
 }
 export interface PhotoLibrary { albums: PhotoAlbum[]; photos: LibraryPhoto[] }

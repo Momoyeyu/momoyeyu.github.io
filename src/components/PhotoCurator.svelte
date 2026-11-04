@@ -1,21 +1,21 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import type { PhotoAlbum, PhotoLibrary } from "../types/photos";
-    type Assignment = { album: string; previousAlbum: string };
+    type Assignment = { album: string; previousAlbum: string; title?: string; note?: string; previousTitle?: string; previousNote?: string };
     type Draft = { assignments: Record<string, Assignment>; albums: PhotoAlbum[] };
     const storageKey = "blog-photo-classification:v1";
     let library: PhotoLibrary | null = null;
     let draft: Draft = { assignments: {}, albums: [] };
-    let mode: "pending" | "all" = "pending";
-    let currentId = "";
+    let mode: "pending" | "all" = "all";
+    let currentId = "", albumFilter = "", search = "";
     let busy = false, message = "", error = "";
     let newTitle = "", latitude: number | undefined, longitude: number | undefined;
     let creating = false;
     let undoStack: { id: string; previous?: Assignment }[] = [];
     $: albums = [...(library?.albums ?? []), ...draft.albums.filter(album => !library?.albums.some(existing => existing.slug === album.slug))];
-    $: photos = (library?.photos ?? []).map(photo => ({ ...photo, album: draft.assignments[photo.id]?.album ?? photo.album }));
+    $: photos = (library?.photos ?? []).map(photo => ({ ...photo, ...draft.assignments[photo.id] }));
     $: pending = photos.filter(photo => photo.album === "travel-notes");
-    $: queue = mode === "pending" ? pending : photos;
+    $: queue = (mode === "pending" ? pending : photos).filter(photo => (!albumFilter || photo.album === albumFilter) && `${photo.assetCode} ${photo.title} ${photo.note ?? ""} ${photo.originalFilename ?? ""}`.toLowerCase().includes(search.toLowerCase()));
     $: current = queue.find(photo => photo.id === currentId) ?? queue[0];
     $: changes = Object.keys(draft.assignments).length;
     function persist() {
@@ -28,13 +28,21 @@
         const original = library.photos.find(photo => photo.id === id)!;
         undoStack = [...undoStack, { id, previous: draft.assignments[id] }];
         const assignments = { ...draft.assignments };
-        if (album === original.album) delete assignments[id];
-        else assignments[id] = { album, previousAlbum: original.album };
-        const index = queue.findIndex(photo => photo.id === id);
-        currentId = queue[(index + 1) % queue.length]?.id ?? "";
+        assignments[id] = { ...assignments[id], album, previousAlbum: assignments[id]?.previousAlbum ?? original.album };
         draft = { ...draft, assignments };
         message = `已标记：${[...albums, ...draft.albums].find(place => place.slug === album)?.title ?? album}`;
         error = ""; persist();
+    }
+    function edit(field: "title" | "note", value: string) {
+        if (!current || !library || busy) return;
+        const original = library.photos.find(photo => photo.id === current.id)!;
+        const previous = draft.assignments[current.id];
+        undoStack = [...undoStack, { id: current.id, previous }];
+        const entry: Assignment = { album: original.album, previousAlbum: original.album, ...previous, [field]: value };
+        if (field === "title") entry.previousTitle = previous?.previousTitle ?? original.title;
+        else entry.previousNote = previous?.previousNote ?? original.note ?? "";
+        draft = { ...draft, assignments: { ...draft.assignments, [current.id]: entry } };
+        persist();
     }
     function undo() {
         const last = undoStack.at(-1);
@@ -43,7 +51,7 @@
         if (last.previous) assignments[last.id] = last.previous;
         else delete assignments[last.id];
         draft = { ...draft, assignments }; undoStack = undoStack.slice(0, -1);
-        currentId = last.id; message = "已撤销上一张的归类"; persist();
+        currentId = last.id; message = "已撤销修改的归类"; persist();
     }
     function addPlace(event: SubmitEvent) {
         event.preventDefault();
@@ -79,7 +87,7 @@
         try {
             for (const [index, file] of files.entries()) {
                 message = `上传中 ${index + 1} / ${files.length}`;
-                const response = await fetch("/__photo-curation/upload", { method: "POST", headers: { "Content-Type": file.type || "image/jpeg", "x-photo-album": targetAlbum, "x-photo-title": encodeURIComponent(file.name.replace(/\.[^.]+$/, "")) }, body: file });
+                const response = await fetch("/__photo-curation/upload", { method: "POST", headers: { "Content-Type": file.type || "image/jpeg", "x-photo-album": targetAlbum, "x-photo-filename": encodeURIComponent(file.name), "x-photo-title": encodeURIComponent(file.name.replace(/\.[^.]+$/, "")) }, body: file });
                 const result = await response.json(); if (!response.ok) throw new Error(result.error || "上传失败");
                 library = result;
             }
@@ -96,7 +104,7 @@
             try {
                 const saved: Draft = JSON.parse(localStorage.getItem(storageKey) || "null");
                 if (saved && saved.assignments && Array.isArray(saved.albums)) {
-                    const assignments = Object.fromEntries(Object.entries(saved.assignments).filter(([id, value]) => result.photos.some(photo => photo.id === id && photo.album !== value.album)));
+                    const assignments = Object.fromEntries(Object.entries(saved.assignments).filter(([id, value]) => result.photos.some(photo => photo.id === id && (photo.album !== value.album || (value.title !== undefined && photo.title !== value.title) || (value.note !== undefined && (photo.note ?? "") !== value.note)))));
                     draft = { assignments, albums: saved.albums.filter(album => !result.albums.some(existing => existing.slug === album.slug)) };
                     persist();
                 }
@@ -108,11 +116,12 @@
 
 <section class="photo-curator">
     <header class="curation-header">
-        <div><a href="/photos/" data-no-swup>← 摄影</a><h1>照片归类</h1><p>选择地点后自动移到下一张；完成后保存到相册。草稿会保留在浏览器中。</p></div>
-        <div class="curation-actions"><button on:click={undo} disabled={!undoStack.length || busy}>撤销上一张</button><button class="save" on:click={save} disabled={!changes || busy}>{busy ? "保存中…" : `保存到相册${changes ? ` · ${changes}` : ""}`}</button></div>
+        <div><a href="/photos/" data-no-swup>← 摄影</a><h1>相册后台</h1><p>管理全部照片的归属、标题和备注。修改暂存在浏览器，点击保存后写入相册。</p></div>
+        <div class="curation-actions"><button on:click={undo} disabled={!undoStack.length || busy}>撤销修改</button><button class="save" on:click={save} disabled={!changes || busy}>{busy ? "保存中…" : `保存到相册${changes ? ` · ${changes}` : ""}`}</button></div>
     </header>
     <div class="upload-toolbar"><label>上传到<select bind:value={uploadAlbum} disabled={busy}>{#each library?.albums ?? [] as album}<option value={album.slug}>{album.title}</option>{/each}</select></label><input class="upload-input" bind:this={uploadInput} type="file" accept="image/jpeg,image/png,image/webp,image/avif,image/heic,image/heif" multiple on:change={upload} disabled={busy} /><button on:click={() => uploadInput.click()} disabled={busy || !library}>＋ 上传照片</button><p>支持多选，每帧不超过 30 MB；自动命名并生成 WebP，也会加入文章封面库。</p></div>
-    <div class="curation-toolbar"><div><button class:active={mode === "pending"} on:click={() => { mode = "pending"; currentId = ""; }}>待归类 {pending.length}</button><button class:active={mode === "all"} on:click={() => { mode = "all"; currentId = ""; }}>全部照片 {photos.length}</button></div><p aria-live="polite">{message}</p></div>
+    <div class="curation-toolbar"><div><button class:active={mode === "pending"} on:click={() => { mode = "all"; currentId = ""; }}>待归类 {pending.length}</button><button class:active={mode === "all"} on:click={() => { mode = "all"; currentId = ""; }}>全部照片 {photos.length}</button></div><p aria-live="polite">{message}</p></div>
+    <div class="filters"><label>相册<select bind:value={albumFilter}><option value="">全部相册</option>{#each albums as album}<option value={album.slug}>{album.title}</option>{/each}</select></label><label>查找素材<input bind:value={search} placeholder="编号、标题、备注、原始文件名" type="search" /></label><span>{queue.length} 帧</span></div>
     {#if error}<p class="curation-error" role="alert">{error}</p>{/if}
     {#if current}
         <div class="curation-body">
@@ -122,8 +131,12 @@
                 <div class="photo-queue" aria-label="待整理照片">{#each queue as photo}<button class:selected={current.id === photo.id} on:click={() => currentId = photo.id} title={photo.title} aria-label={photo.title}><img src={photo.src} alt="" width="80" height="80" loading="lazy" />{#if draft.assignments[photo.id]}<span>✓</span>{/if}</button>{/each}</div>
             </div>
             <aside class="place-choices card-base">
-                <h2>这张照片在哪里？</h2>
-                <div class="place-buttons">{#each albums.filter(album => album.slug !== "travel-notes") as album}<button class:active={current.album === album.slug} on:click={() => stage(album.slug)} disabled={busy}>{album.title}</button>{/each}</div>
+                <h2>{current.assetCode ?? current.id}</h2>
+                <p>{current.width} × {current.height} · {current.originalFilename ?? current.source}</p>
+                <label>标题<input value={current.title} maxlength="100" disabled={busy} on:input={event => edit("title", event.currentTarget.value)} /></label>
+                <label>文字备注<textarea value={current.note ?? ""} maxlength="2000" rows="5" disabled={busy} placeholder="拍摄地点、当时的故事，或留给自己的素材笔记" on:input={event => edit("note", event.currentTarget.value)} /></label>
+                <h2 class="album-heading">所属相册</h2>
+                <div class="place-buttons">{#each albums as album}<button class:active={current.album === album.slug} on:click={() => stage(album.slug)} disabled={busy}>{album.title}</button>{/each}</div>
                 <button class="new-place" on:click={() => creating = !creating} disabled={busy}>{creating ? "收起" : "＋ 新建地点"}</button>
                 {#if creating}<form on:submit={addPlace}>
                     <label>地点名称<input bind:value={newTitle} required maxlength="60" placeholder="例如：大阪、丽江" /></label>
@@ -132,11 +145,19 @@
                 </form>{/if}
             </aside>
         </div>
-    {:else if library}<div class="curation-done"><h2>待归类照片已整理完</h2><p>{changes ? "点击上方“保存到相册”应用这些归类。" : "可以切换到全部照片，继续调整其他照片的地点。"}</p><button on:click={() => mode = "all"}>查看全部照片</button></div>
+    {:else if library}<div class="curation-done"><h2>当前筛选没有照片</h2><p>{changes ? "点击上方“保存到相册”应用这些归类。" : "可以切换到全部照片，继续调整其他照片的地点。"}</p><button on:click={() => mode = "all"}>查看全部照片</button></div>
     {:else if !error}<p>正在读取照片…</p>{/if}
 </section>
 
 <style>
+.filters { display:flex; flex-wrap:wrap; align-items:end; gap:1rem; margin-bottom:1.5rem; }
+.filters label:last-of-type { flex:1; min-width:12rem; }
+select,textarea { background:var(--btn-regular-bg); color:var(--text-primary); padding:.65rem; border-radius:.4rem; max-width:100%; }
+textarea { resize:vertical; width:100%; }
+.place-choices > label { margin-top:1rem; }
+.place-choices > p { overflow-wrap:anywhere; }
+.album-heading { margin-top:1.5rem; }
+
 .upload-toolbar { display:flex; align-items:center; gap:1rem; flex-wrap:wrap; margin-bottom:1.5rem; }
 .upload-toolbar label { display:flex; align-items:center; }
 .upload-toolbar select { background:var(--btn-regular-bg); color:var(--text-primary); padding:.5rem; border-radius:.4rem; }
