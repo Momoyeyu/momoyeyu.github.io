@@ -77,6 +77,14 @@
             }) });
             const result = await response.json();
             if (!response.ok) throw new Error(result.error || "保存失败");
+            for (const [id, change] of Object.entries(draft.assignments)) {
+                const saved = (result as PhotoLibrary).photos?.find(photo => photo.id === id);
+                if (!saved || saved.album !== change.album ||
+                    (change.title !== undefined && saved.title !== change.title) ||
+                    (change.note !== undefined && (saved.note ?? "") !== change.note)) {
+                    throw new Error("保存结果与修改不一致，草稿已保留。请重启 dev 服务后重试。");
+                }
+            }
             library = result; draft = { assignments: {}, albums: [] }; undoStack = [];
             localStorage.removeItem(storageKey); message = "已保存到相册";
         } catch (cause) { error = cause instanceof Error ? cause.message : "保存失败，请重试"; }
