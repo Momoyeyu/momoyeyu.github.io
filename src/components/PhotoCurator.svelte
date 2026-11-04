@@ -1,4 +1,5 @@
 <script lang="ts">
+    import AlbumEditor from "./AlbumEditor.svelte";
     import Button from "./ui/Button.svelte";
     import Select from "./ui/Select.svelte";
     import Field from "./ui/Field.svelte";
@@ -134,6 +135,9 @@
  </header>
  {#if error}<p class="notice" role="alert">{error}</p>{/if}
  <p class="status" aria-live="polite">{message || '选择照片，编辑标题、备注与所属相册。'}</p>
+ {#if albumFilter && library?.albums.find(album=>album.slug===albumFilter)}
+  {#key albumFilter}<AlbumEditor album={library.albums.find(album=>album.slug===albumFilter)!} disabled={busy} on:saved={event=>{library=event.detail;}}/>{/key}
+ {/if}
  <div class="workspace">
   <aside class="library-nav" aria-label="相册导航">
    <h2>素材库 <span>{photos.length}</span></h2>

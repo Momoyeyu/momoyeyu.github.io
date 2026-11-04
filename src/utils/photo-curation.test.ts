@@ -29,3 +29,12 @@ it("saves title and notes without losing metadata and rejects stale text edits",
     expect(() => applyPhotoClassification(library, { assignments: [{ ...update, note: "x".repeat(2001) }] })).toThrow();
     expect(library.photos[0].title).toBe("a");
 });
+
+it("edits album descriptions without changing photos and rejects stale updates", () => {
+ const update={slug:"tokyo",title:"东京",subtitle:"沿河的灯火",source:"夏日旅行",previous:{title:"东京",subtitle:"",source:""}};
+ const result=applyPhotoClassification(library,{assignments:[],albumUpdates:[update]});
+ expect(result.albums[1]).toMatchObject({title:"东京",subtitle:"沿河的灯火",source:"夏日旅行"});
+ expect(result.photos).toEqual(library.photos);
+ expect(()=>applyPhotoClassification(result,{assignments:[],albumUpdates:[{...update,subtitle:"另一个描述"}]})).toThrow("相册已被修改");
+ expect(()=>applyPhotoClassification(library,{assignments:[],albumUpdates:[{...update,title:""}]})).toThrow();
+});

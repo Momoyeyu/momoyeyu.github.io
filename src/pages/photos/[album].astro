@@ -12,7 +12,7 @@ const photos = library.photos.filter(photo => photo.album === album.slug);
 ---
 <MainGridLayout title={`${album.title} · ${i18n(I18nKey.photoAlbums)}`} description={album.subtitle}>
     <header class="album-header">
-        <a href={url('/photos/')}>{i18n(I18nKey.photoAlbums)}</a>
+        <a class="album-back" href={url('/photos/')}><span class="back-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m10 5-7 7 7 7M3 12h18" /></svg></span><span>{i18n(I18nKey.photoAlbums)}</span></a>
         <h1>{album.title} <span>{photos.length}</span></h1>
         <p>{album.subtitle}</p>
         <p class="album-source">{album.source}</p>
@@ -21,7 +21,13 @@ const photos = library.photos.filter(photo => photo.album === album.slug);
 </MainGridLayout>
 <style>
 .album-header { margin-bottom: 2.5rem; padding-block: 1.5rem; }
-.album-header > a, .album-source { color: var(--text-secondary); font-size: .8rem; }
+.album-back { display:inline-flex; align-items:center; gap:.75rem; color:var(--text-primary); font-size:1rem; padding:.4rem .8rem .4rem .4rem; margin-bottom:1.4rem; border-radius:6px; transition:background .2s; }
+.album-back:hover { background:var(--btn-regular-bg); }
+.album-back:focus-visible { outline:2px solid var(--primary); outline-offset:4px; }
+.back-icon { display:grid; place-items:center; width:2.3rem; height:2.3rem; border-radius:50%; background:var(--btn-regular-bg); }
+.album-source { color:var(--text-secondary); font-size:.8rem; }
+.album-header p { max-width:48rem; }
+@media(prefers-reduced-motion:reduce) { .album-back { transition:none; } }
 h1 { font-family: var(--font-display); font-size: clamp(2rem,4vw,3rem); color: var(--text-primary); margin-block: .75rem; }
 h1 span { font-family: var(--font-ui); color: var(--text-secondary); font-size: 1rem; vertical-align: middle; margin-left: .5rem; }
 p { color: var(--text-secondary); line-height: 1.8; }

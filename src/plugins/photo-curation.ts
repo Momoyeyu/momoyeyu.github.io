@@ -15,6 +15,25 @@ export function applyPhotoClassification(library: PhotoLibrary, input: unknown):
     if (payload.albums !== undefined && (!Array.isArray(payload.albums) || payload.albums.length > 32)) fail("地点内容无效");
     const next = structuredClone(library);
     const seen = new Set<string>();
+    if (payload.albumUpdates !== undefined && (!Array.isArray(payload.albumUpdates) || payload.albumUpdates.length > 100)) fail("相册修改格式无效");
+    const editedAlbums = new Set<string>();
+    for (const raw of (payload.albumUpdates ?? []) as Record<string, unknown>[]) {
+        if (!raw || typeof raw !== "object") fail("相册修改格式无效");
+        const slug = text(raw.slug, 64);
+        if (editedAlbums.has(slug)) fail("相册修改重复");
+        editedAlbums.add(slug);
+        const album = next.albums.find(item => item.slug === slug);
+        if (!album) fail("相册不存在");
+        const previous = raw.previous as Record<string, unknown>;
+        if (!previous || typeof previous !== "object") fail("缺少相册原始信息");
+        for (const field of ["title", "subtitle", "source"] as const) {
+            const value = raw[field];
+            if (typeof value !== "string" || value.length > (field === "title" ? 60 : 500) || (field === "title" && !value.trim())) fail("相册文字格式无效");
+            if (album![field] !== previous[field] && album![field] !== value) throw new CurationError("相册已被修改，请刷新后重试", 409);
+            album![field] = value as string;
+        }
+    }
+
     for (const raw of (payload.albums ?? []) as Record<string, unknown>[]) {
         if (!raw || typeof raw !== "object") fail("地点内容无效");
         const slug = text(raw.slug, 64), title = text(raw.title, 60);
