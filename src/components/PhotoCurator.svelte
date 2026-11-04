@@ -1,4 +1,5 @@
 <script lang="ts">
+    import Dialog from "./ui/Dialog.svelte";
     import AlbumEditor from "./AlbumEditor.svelte";
     import Button from "./ui/Button.svelte";
     import Select from "./ui/Select.svelte";
@@ -14,15 +15,17 @@
     let currentId = "", albumFilter = "", search = "";
     let busy = false, message = "", error = "";
     let newTitle = "", latitude: number | undefined, longitude: number | undefined;
-    let creating = false;
+    let panel: "photo" | "album" | "upload" | "create" | null = null;
+    let albumBusy = false;
     let undoStack: { id: string; previous?: Assignment }[] = [];
     $: albums = [...(library?.albums ?? []), ...draft.albums.filter(album => !library?.albums.some(existing => existing.slug === album.slug))];
     $: photos = (library?.photos ?? []).map(photo => ({ ...photo, ...draft.assignments[photo.id] }));
     $: pending = photos.filter(photo => photo.album === "travel-notes");
     $: queue = (mode === "pending" ? pending : photos).filter(photo => (!albumFilter || photo.album === albumFilter) && `${photo.assetCode} ${photo.title} ${photo.note ?? ""} ${photo.originalFilename ?? ""}`.toLowerCase().includes(search.toLowerCase()));
-    $: current = queue.find(photo => photo.id === currentId) ?? queue[0];
+    $: current = photos.find(photo => photo.id === currentId);
+    $: selectedAlbum = albums.find(album => album.slug === albumFilter);
     $: albumOptions = albums.map(album => ({value:album.slug,label:album.title}));
-    $: changes = Object.keys(draft.assignments).length;
+    $: changes = Object.keys(draft.assignments).length + draft.albums.length;
     function persist() {
         try { localStorage.setItem(storageKey, JSON.stringify(draft)); }
         catch { error = "浏览器未能保存草稿，请及时保存到相册。"; }
@@ -60,13 +63,13 @@
     }
     function addPlace(event: SubmitEvent) {
         event.preventDefault();
-        const title = newTitle.trim(); if (!title || !current) return;
+        const title = newTitle.trim(); if (!title) return;
         const existing = albums.find(album => album.title === title);
-        if (existing) { stage(existing.slug); creating = false; return; }
-        const album: PhotoAlbum = { slug: `place-${crypto.randomUUID().slice(0,8)}`, title, subtitle: "", source: title, cover: current.src };
+        if (existing) { albumFilter = existing.slug; panel = null; return; }
+        const album: PhotoAlbum = { slug: `place-${crypto.randomUUID().slice(0,8)}`, title, subtitle: "", source: title, cover: "" };
         if (latitude !== undefined && longitude !== undefined) album.location = { latitude, longitude };
         draft = { ...draft, albums: [...draft.albums, album] };
-        stage(album.slug); newTitle = ""; latitude = undefined; longitude = undefined; creating = false;
+        albumFilter = album.slug; mode = "all"; search = ""; newTitle = ""; latitude = undefined; longitude = undefined; panel = null; persist();
     }
     async function save() {
         if (busy || !changes) return;
@@ -74,7 +77,7 @@
         try {
             const response = await fetch("/__photo-curation", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({
                 assignments: Object.entries(draft.assignments).map(([photoId, value]) => ({ photoId, ...value })),
-                albums: draft.albums.filter(album => Object.values(draft.assignments).some(value => value.album === album.slug)),
+                albums: draft.albums,
             }) });
             const result = await response.json();
             if (!response.ok) throw new Error(result.error || "保存失败");
@@ -85,6 +88,9 @@
                     (change.note !== undefined && (saved.note ?? "") !== change.note)) {
                     throw new Error("保存结果与修改不一致，草稿已保留。请重启 dev 服务后重试。");
                 }
+            }
+            for (const album of draft.albums) {
+                if (!(result as PhotoLibrary).albums?.some(saved => saved.slug === album.slug && saved.title === album.title)) throw new Error("新相册未保存，请重试。");
             }
             library = result; draft = { assignments: {}, albums: [] }; undoStack = [];
             localStorage.removeItem(storageKey); message = "已保存到相册";
@@ -104,9 +110,14 @@
                 const result = await response.json(); if (!response.ok) throw new Error(result.error || "上传失败");
                 library = result;
             }
-            message = `已上传 ${files.length} 帧`; mode = targetAlbum === "travel-notes" ? "pending" : "all";
+            message = `已上传 ${files.length} 帧`; albumFilter = targetAlbum; search = ""; panel = null; mode = targetAlbum === "travel-notes" ? "pending" : "all";
         } catch(cause) { error = cause instanceof Error ? cause.message : "上传失败"; }
         finally { busy = false; input.value = ""; }
+    }
+    function openPhoto(id:string) {currentId=id;panel="photo";}
+    function adjacentPhoto(direction:number) {
+        const index=queue.findIndex(photo=>photo.id===currentId);
+        const next=queue[index+direction];if(next)currentId=next.id;
     }
     function resetFilters() { mode = "all"; albumFilter = ""; search = ""; }
     onMount(() => {
@@ -130,44 +141,50 @@
 
 <section class="photo-curator">
  <header class="curation-header">
-  <div><a href="/photos/" data-no-swup>← 返回摄影</a><h1>相册工作台</h1></div>
-  <div class="curation-actions"><span class="save-state">{changes ? `${changes} 帧待保存` : '所有修改已保存'}</span><Button on:click={undo} disabled={!undoStack.length || busy}>撤销</Button><Button variant="primary" on:click={save} disabled={!changes || busy}>{busy ? '处理中…' : '保存修改'}</Button></div>
+  <div><a href="/photos/" data-no-swup>返回摄影</a><h1>相册工作台</h1></div>
+  <div class="curation-actions">
+   {#if changes}<span class="save-state">{changes} 项未保存</span><Button on:click={undo} disabled={!undoStack.length || busy}>撤销</Button><Button variant="primary" on:click={save} disabled={busy}>保存全部修改</Button>{/if}
+   <Button on:click={()=>{uploadAlbum=albumFilter && library?.albums.some(a=>a.slug===albumFilter)?albumFilter:'travel-notes';panel='upload';}} disabled={busy}>导入照片</Button>
+  </div>
  </header>
- {#if error}<p class="notice" role="alert">{error}</p>{/if}
- <p class="status" aria-live="polite">{message || '选择照片，编辑标题、备注与所属相册。'}</p>
- {#if albumFilter && library?.albums.find(album=>album.slug===albumFilter)}
-  {#key albumFilter}<AlbumEditor album={library.albums.find(album=>album.slug===albumFilter)!} disabled={busy} on:saved={event=>{library=event.detail;}}/>{/key}
- {/if}
  <div class="workspace">
   <aside class="library-nav" aria-label="相册导航">
-   <h2>素材库 <span>{photos.length}</span></h2>
    <nav><button class:active={mode==='all' && !albumFilter} on:click={resetFilters}>全部照片<span>{photos.length}</span></button><button class:active={mode==='pending'} on:click={()=>{mode='pending';albumFilter='';search='';}}>待归类<span>{pending.length}</span></button></nav>
-   <h2 class="section-label">相册</h2>
-   <nav>{#each albums.filter(album=>album.slug!=='travel-notes') as album}<button class:active={albumFilter===album.slug} on:click={()=>{mode='all';albumFilter=album.slug;search='';}}>{album.title}<span>{photos.filter(photo=>photo.album===album.slug).length}</span></button>{/each}</nav>
-   <div class="import-panel"><h2>导入照片</h2><Select label="上传到相册" bind:value={uploadAlbum} options={(library?.albums ?? []).map(album=>({value:album.slug,label:album.title}))} disabled={busy}/><input class="upload-input" bind:this={uploadInput} type="file" accept="image/jpeg,image/png,image/webp,image/avif,image/heic,image/heif" multiple on:change={upload} disabled={busy}/><Button on:click={()=>uploadInput.click()} disabled={busy || !library}>＋ 选择照片</Button><p>可多选，每帧最多 30 MB<br/>自动编号并生成 WebP</p></div>
+   <div class="nav-heading"><h2>相册</h2><button on:click={()=>panel='create'} aria-label="新建相册">新建</button></div>
+   <nav>{#each albums as album}<button class:active={albumFilter===album.slug} on:click={()=>{mode='all';albumFilter=album.slug;search='';}}>{album.title}<span>{photos.filter(photo=>photo.album===album.slug).length}</span></button>{/each}</nav>
   </aside>
-  <main class="contact-sheet">
-   <div class="search-row"><Field label="查找素材" bind:value={search} placeholder="编号、标题、备注或原始文件名"/><span>{queue.length} 帧</span></div>
-   {#if current}
-    <a class="photo-stage" href={current.src} target="_blank" rel="noopener" data-no-swup aria-label={`查看原图：${current.title}`}><img src={current.src} alt={current.title} width={current.width} height={current.height}/></a>
-    <div class="photo-caption"><span>{current.title}</span><span>{queue.findIndex(photo=>photo.id===current.id)+1} / {queue.length}</span></div>
-    <div class="photo-queue" aria-label="照片列表">{#each queue as photo (photo.id)}<button class:selected={current.id===photo.id} on:click={()=>currentId=photo.id} aria-label={photo.title} aria-pressed={current.id===photo.id}><img src={photo.src} alt="" width="100" height="80" loading="lazy"/><small>{photo.assetCode?.slice(-6)}</small>{#if draft.assignments[photo.id]}<span class="changed" title="未保存">•</span>{/if}</button>{/each}</div>
-   {:else}<div class="empty"><h2>{library?'没有匹配的照片':'正在读取照片…'}</h2>{#if library}<Button on:click={resetFilters}>清除筛选</Button>{/if}</div>{/if}
-  </main>
-  <aside class="inspector" aria-label="照片信息">
-   {#if current}
-    <header><h2>照片信息</h2><span class="asset-code">{current.assetCode ?? current.id}</span></header>
-    <dl><div><dt>尺寸</dt><dd>{current.width} × {current.height}</dd></div><div><dt>原文件</dt><dd>{current.originalFilename ?? current.source}</dd></div></dl>
-    <Field label="标题" value={current.title} maxlength={100} disabled={busy} on:input={event=>edit('title',event.detail)}/>
-    <div class="album-field"><span>所属相册</span><Select label="所属相册" value={current.album} options={albumOptions} disabled={busy} on:change={event=>stage(event.detail)}/></div>
-    <Field label="文字备注" value={current.note ?? ''} multiline disabled={busy} placeholder="记录拍摄地点、故事或素材用途…" on:input={event=>edit('note',event.detail)}/>
-    <p class="draft-hint">切换照片会保留修改，点击顶部保存写入相册。</p>
-    <Button on:click={()=>creating=!creating} disabled={busy}>{creating?'取消新建':'＋ 新建相册'}</Button>
-    {#if creating}<form on:submit={addPlace}><label>相册名称<input bind:value={newTitle} required maxlength="60" placeholder="例如：大阪、丽江"/></label><div class="coordinates"><label>纬度<input type="number" step="any" min="-90" max="90" bind:value={latitude}/></label><label>经度<input type="number" step="any" min="-180" max="180" bind:value={longitude}/></label></div><p>经纬度可选，用于摄影地图定位。</p><Button type="submit" variant="primary">创建并移入</Button></form>{/if}
-   {:else}<p>选择一帧照片查看信息。</p>{/if}
-  </aside>
+  <div class="collection">
+   <header class="collection-header"><div><h2>{selectedAlbum?.title ?? (mode==='pending'?'待归类':'全部照片')}<span>{queue.length} 帧</span></h2>{#if selectedAlbum?.subtitle}<p>{selectedAlbum.subtitle}</p>{/if}</div>{#if selectedAlbum && library?.albums.some(a=>a.slug===selectedAlbum.slug)}<Button on:click={()=>panel='album'}>相册设置</Button>{/if}</header>
+   <div class="search-row"><Field label="查找照片" bind:value={search} placeholder="搜索标题、编号或备注"/></div>
+   {#if message}<p class="status" role="status">{message}</p>{/if}
+   {#if error}<p class="notice" role="alert">{error}</p>{/if}
+   {#if queue.length}<div class="photo-grid" aria-label="照片列表">{#each queue as photo (photo.id)}<button class="photo-tile" on:click={()=>openPhoto(photo.id)} aria-label={`编辑照片：${photo.title}`}><div class="tile-image"><img src={photo.src} alt="" width={photo.width} height={photo.height} loading="lazy"/>{#if draft.assignments[photo.id]}<span class="changed">未保存</span>{/if}</div><span class="tile-title">{photo.title}</span><span class="tile-code">{photo.assetCode}</span></button>{/each}</div>
+   {:else}<div class="empty"><h2>{library?'这里还没有照片':'正在读取照片…'}</h2><p>{search?'换个关键词，或清除筛选。':'导入照片，或在照片编辑中调整所属相册。'}</p><Button on:click={resetFilters}>查看全部照片</Button></div>{/if}
+  </div>
  </div>
 </section>
+
+{#if panel==='photo' && current}
+ <Dialog title="编辑照片" wide {busy} on:close={()=>panel=null}>
+  <div class="photo-editor">
+   <div class="preview-column"><a class="photo-stage" href={current.src} target="_blank" rel="noopener" data-no-swup aria-label={`查看原图：${current.title}`}><img src={current.src} alt={current.title} width={current.width} height={current.height}/></a><div class="photo-navigation"><Button on:click={()=>adjacentPhoto(-1)} disabled={busy||queue.findIndex(p=>p.id===currentId)<=0}>上一帧</Button><span>{queue.findIndex(p=>p.id===currentId)>=0?`${queue.findIndex(p=>p.id===currentId)+1} / ${queue.length}`:'已移出当前筛选'}</span><Button on:click={()=>adjacentPhoto(1)} disabled={busy||queue.findIndex(p=>p.id===currentId)<0||queue.findIndex(p=>p.id===currentId)>=queue.length-1}>下一帧</Button></div></div>
+   <div class="inspector">
+    <Field label="标题" value={current.title} maxlength={100} disabled={busy} on:input={event=>edit('title',event.detail)}/>
+    <div class="album-field"><span>所属相册</span><Select label="所属相册" value={current.album} options={albumOptions} disabled={busy} on:change={event=>stage(event.detail)}/></div>
+    <Field label="文字备注" value={current.note ?? ''} multiline disabled={busy} placeholder="拍摄地点、故事或素材用途" on:input={event=>edit('note',event.detail)}/>
+    <details class="file-details"><summary>文件信息</summary><dl><div><dt>编号</dt><dd>{current.assetCode ?? current.id}</dd></div><div><dt>尺寸</dt><dd>{current.width} × {current.height}</dd></div><div><dt>原文件</dt><dd>{current.originalFilename ?? current.source}</dd></div></dl></details>
+    {#if error}<p class="notice" role="alert">{error}</p>{/if}
+    <div class="editor-actions"><span role="status">{busy?'正在保存…':changes?`${changes} 项修改暂存中`:'已保存'}</span><Button variant="primary" on:click={save} disabled={!changes||busy}>保存全部修改</Button></div><p class="draft-hint">关闭窗口或切换照片，未保存的修改会继续保留。</p>
+   </div>
+  </div>
+ </Dialog>
+{:else if panel==='album' && selectedAlbum && library}
+ <Dialog title="相册设置" busy={albumBusy} on:close={()=>panel=null}><AlbumEditor album={library.albums.find(album=>album.slug===albumFilter)!} disabled={busy} on:busy={event=>albumBusy=event.detail} on:saved={event=>{library=event.detail;message='相册信息已保存';}}/></Dialog>
+{:else if panel==='upload'}
+ <Dialog title="导入照片" {busy} on:close={()=>panel=null}><div class="upload-panel"><p>选择相册，然后添加照片。</p><Select label="上传到相册" bind:value={uploadAlbum} options={(library?.albums ?? []).map(album=>({value:album.slug,label:album.title}))} disabled={busy}/><input class="upload-input" bind:this={uploadInput} type="file" accept="image/jpeg,image/png,image/webp,image/avif,image/heic,image/heif" multiple on:change={upload} disabled={busy}/><Button variant="primary" on:click={()=>uploadInput.click()} disabled={busy||!library}>{busy?'正在导入…':'选择照片并导入'}</Button><p class="hint">支持多选，每帧最多 30 MB。照片会自动编号并保存为 WebP。</p><p role="status">{busy?message:''}</p>{#if error}<p role="alert">{error}</p>{/if}</div></Dialog>
+{:else if panel==='create'}
+ <Dialog title="新建相册" {busy} on:close={()=>panel=null}><form on:submit={addPlace}><label>相册名称<input bind:value={newTitle} required maxlength="60" placeholder="例如：大阪、丽江"/></label><details class="file-details"><summary>地图位置，可选</summary><div class="coordinates"><label>纬度<input type="number" step="any" min="-90" max="90" bind:value={latitude}/></label><label>经度<input type="number" step="any" min="-180" max="180" bind:value={longitude}/></label></div></details><Button type="submit" variant="primary">添加相册草稿</Button><p class="hint">添加后点击“保存全部修改”写入相册库。</p></form></Dialog>
+{/if}
 <style>
-.photo-curator{color:var(--text-primary);padding:0 0 3rem;--workspace-gap:1.5rem}.curation-header{position:sticky;top:4.5rem;z-index:35;background:var(--page-bg);padding:.5rem 0;display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-bottom:.8rem}.curation-header a{font-size:.8rem;color:var(--text-secondary)}h1{font:1.9rem var(--font-display);margin:.6rem 0}.curation-actions{display:flex;align-items:center;gap:.65rem}.save-state{font-size:.75rem;color:var(--text-secondary);margin-right:.5rem}.status{min-height:1.5rem;font-size:.8rem;color:var(--text-secondary);margin-bottom:1.6rem}.workspace{display:grid;grid-template-columns:180px minmax(0,1fr) 290px;gap:var(--workspace-gap);align-items:start}.library-nav,.inspector{position:sticky;top:12rem;min-width:0}h2{font-size:.9rem;font-weight:600}h2 span{font-size:.75rem;color:var(--text-secondary);font-weight:400;float:right}nav{display:grid;gap:4px;margin-top:.8rem}nav button{display:flex;justify-content:space-between;text-align:left;font-size:.85rem;padding:.7rem .8rem;border-radius:5px;color:var(--text-secondary)}nav button span{font-size:.75rem;opacity:.7}nav button:hover,nav button.active{background:var(--btn-regular-bg);color:var(--text-primary)}.section-label{margin-top:1.8rem}.import-panel{display:grid;gap:.8rem;margin-top:2rem;padding:1rem;background:var(--card-bg)}p{line-height:1.7}.import-panel p,.draft-hint,form p{font-size:.72rem;color:var(--text-secondary)}.upload-input{display:none}.contact-sheet{min-width:0}.search-row{display:flex;align-items:end;gap:1rem;margin-bottom:1rem}.search-row :global(label){flex:1}.search-row>span{font-size:.75rem;white-space:nowrap;color:var(--text-secondary);padding-bottom:.8rem}.photo-stage{height:clamp(280px,48vh,620px);display:grid;place-items:center;background:var(--card-bg);padding:1rem}.photo-stage img{width:100%;height:100%;min-height:0;object-fit:contain}.photo-caption{display:flex;justify-content:space-between;gap:1rem;font-size:.8rem;margin:1rem 0;color:var(--text-secondary)}.photo-queue{display:grid;grid-template-columns:repeat(auto-fill,minmax(85px,1fr));gap:10px;max-height:270px;overflow:auto;padding:4px;overscroll-behavior:contain}.photo-queue button{position:relative;min-width:0;opacity:.7;background:var(--card-bg);text-align:left}.photo-queue button.selected{opacity:1;outline:2px solid var(--primary);outline-offset:2px}.photo-queue button:hover{opacity:1}.photo-queue img{width:100%;height:70px;object-fit:cover}.photo-queue small{display:block;padding:5px 7px;font-size:.65rem;color:var(--text-secondary);font-variant-numeric:tabular-nums}.changed{position:absolute;bottom:0;right:6px;color:var(--primary)}.inspector{display:grid;gap:1.25rem;background:var(--card-bg);padding:1.25rem}.inspector header{display:grid;gap:.6rem}.asset-code{font-size:.8rem;font-variant-numeric:tabular-nums;color:var(--text-secondary)}dl{display:grid;gap:.6rem;font-size:.73rem;color:var(--text-secondary)}dl div{display:grid;grid-template-columns:3rem 1fr;gap:.5rem}dd{overflow-wrap:anywhere}.album-field{display:grid;gap:.55rem;font-size:.8rem;color:var(--text-secondary)}form{display:grid;gap:.8rem}form label{display:grid;gap:.5rem;font-size:.8rem;color:var(--text-secondary)}form input{width:100%;min-width:0;border-radius:6px;padding:.7rem;background:var(--btn-regular-bg);color:var(--text-primary)}.coordinates{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}.notice{padding:1rem;background:var(--card-bg);margin-bottom:1rem}.empty{min-height:350px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem}button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(--primary);outline-offset:3px}@media(min-width:1700px){.workspace{grid-template-columns:210px minmax(0,1fr) 320px;--workspace-gap:2rem}}@media(max-width:1100px){.workspace{grid-template-columns:150px minmax(0,1fr)}.inspector{position:static;grid-column:2}.library-nav{grid-row:span 2}}@media(max-width:650px){.curation-header{align-items:start;flex-direction:column}.curation-actions{width:100%;flex-wrap:wrap}.save-state{flex:1}.workspace{display:flex;flex-direction:column}.library-nav,.contact-sheet,.inspector{position:static;width:100%}.library-nav nav{display:flex;flex-wrap:wrap}.library-nav nav button{gap:.6rem}.import-panel{margin-top:1rem}.section-label{margin-top:1rem}.photo-stage{height:40vh}.inspector{box-sizing:border-box}.photo-queue{max-height:210px}}
+.photo-curator{color:var(--text-primary);padding-bottom:3rem}.curation-header{display:flex;justify-content:space-between;align-items:center;gap:1rem;margin:0 0 2.5rem}.curation-header a{font-size:.8rem;color:var(--text-secondary)}h1{font:1.9rem var(--font-display);margin:.6rem 0}.curation-actions{display:flex;align-items:center;gap:.65rem;flex-wrap:wrap}.save-state{font-size:.75rem;color:var(--text-secondary)}.workspace{display:grid;grid-template-columns:180px minmax(0,1fr);gap:2.5rem;align-items:start}.library-nav{position:sticky;top:6rem;max-height:calc(100dvh - 7rem);overflow:auto}.nav-heading{display:flex;justify-content:space-between;align-items:center;margin:2rem .7rem .7rem}.nav-heading h2{font-size:.75rem;color:var(--text-secondary)}.nav-heading button{font-size:.75rem;padding:.35rem;color:var(--text-primary)}nav{display:grid;gap:4px}nav button{display:flex;justify-content:space-between;text-align:left;font-size:.85rem;padding:.7rem .8rem;border-radius:5px;color:var(--text-secondary);gap:.5rem}nav button span{font-size:.75rem;opacity:.7}nav button:hover,nav button.active{background:var(--btn-regular-bg);color:var(--text-primary)}.collection{min-width:0}.collection-header{display:flex;justify-content:space-between;align-items:start;gap:1rem;margin-bottom:1.5rem}.collection-header h2{font:1.65rem var(--font-display);display:flex;align-items:baseline;gap:1rem}.collection-header h2 span{font: .8rem var(--font-ui);color:var(--text-secondary)}.collection-header p{font-size:.82rem;line-height:1.7;color:var(--text-secondary);margin-top:.6rem}.search-row{max-width:27rem;margin-bottom:1.6rem}.photo-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.8rem 1.3rem}.photo-tile{text-align:left;min-width:0;display:block}.tile-image{position:relative;background:var(--card-bg);aspect-ratio:4/3;overflow:hidden}.tile-image img{width:100%;height:100%;object-fit:cover;transition:transform .2s}.photo-tile:hover img{transform:scale(1.025)}.tile-title{display:block;margin-top:.7rem;font-size:.9rem;line-height:1.5;color:var(--text-primary)}.tile-code{display:block;margin-top:.3rem;font-size:.65rem;color:var(--text-secondary);font-variant-numeric:tabular-nums}.changed{position:absolute;right:.5rem;bottom:.5rem;font-size:.65rem;background:var(--page-bg);padding:.3rem .5rem;border-radius:4px}.status,.notice{font-size:.8rem;padding:.8rem;background:var(--card-bg);margin-bottom:1rem}.empty{min-height:350px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem}.empty p{font-size:.85rem;color:var(--text-secondary)}.photo-editor{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:1.5rem}.preview-column{min-width:0}.photo-stage{height:min(65dvh,640px);display:grid;place-items:center;background:var(--card-bg)}.photo-stage img{width:100%;height:100%;min-height:0;object-fit:contain}.photo-navigation{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-top:1rem}.photo-navigation span{font-size:.75rem;color:var(--text-secondary)}.inspector{display:grid;align-content:start;gap:1.2rem;min-width:0}.album-field{display:grid;gap:.55rem;font-size:.8rem;color:var(--text-secondary)}.file-details{font-size:.78rem;color:var(--text-secondary)}summary{cursor:pointer;padding:.5rem 0}dl{display:grid;gap:.6rem;margin-top:.6rem}dl div{display:grid;grid-template-columns:3rem 1fr;gap:.5rem}dd{overflow-wrap:anywhere}.editor-actions{display:grid;gap:.8rem}.editor-actions span,.draft-hint,.hint{font-size:.73rem;color:var(--text-secondary);line-height:1.7}.upload-panel,form{display:grid;gap:1.2rem}.upload-input{display:none}.upload-panel>p{font-size:.85rem;color:var(--text-secondary)}form label{display:grid;gap:.5rem;font-size:.8rem;color:var(--text-secondary)}form input{width:100%;min-width:0;border-radius:6px;padding:.7rem;background:var(--btn-regular-bg);color:var(--text-primary)}.coordinates{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}button:focus-visible,a:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--primary);outline-offset:3px}@media(min-width:1800px){.photo-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}@media(max-width:1000px){.photo-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.workspace{grid-template-columns:145px minmax(0,1fr);gap:1.5rem}}@media(max-width:700px){.curation-header{align-items:start;flex-direction:column;gap:1rem}.workspace{grid-template-columns:1fr}.library-nav{position:static;max-height:none}.library-nav nav{display:flex;overflow:auto;gap:.5rem}.library-nav nav button{flex:none}.nav-heading{margin:1rem 0 .5rem}.photo-editor{grid-template-columns:1fr}.photo-stage{height:38dvh}.collection-header{margin-top:1rem}.tile-title{font-size:.8rem}.photo-grid{gap:1.3rem .8rem}.search-row{max-width:none}.file-details{margin-block:.5rem}}@media(prefers-reduced-motion:reduce){.tile-image img{transition:none}}
 </style>
