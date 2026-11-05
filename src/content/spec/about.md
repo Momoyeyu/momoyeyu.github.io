@@ -15,7 +15,7 @@
   <img src="https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white" alt="Git" />
 </div>
 
-在古法编程时期，我写过 Java 和 Go，现在主要是 Python 和 C++。然而在 AI 时代，语言已经没那么重要了，更多时候是用自然语言。
+在古法编程时期，我写过 C++、Java 和 Go，现在主要是 Python。然而在 AI 时代，语言已经没那么重要了，更多时候是用自然语言。
 我目前主要关注 AI 的**成本** & **性能**，这是我认为在 AI 时代最核心的问题。
 目前我的工作主要在 **Agent Harness**、**AI Infra**、**Post-training** 这三个板块。
 
