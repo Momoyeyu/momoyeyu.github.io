@@ -104,7 +104,7 @@ if [[ "$OS_TYPE" == macos ]]; then
   hash -r 2>/dev/null || true
   if ! command -v brew >/dev/null 2>&1; then
     info "Installing Homebrew ..."
-    local brew_installer
+    brew_installer=
     brew_installer="$(fetch_url "${BREW_INSTALL_URLS[@]}")" || die "Homebrew installer unreachable on all sources."
     NONINTERACTIVE=1 /bin/bash -c "$brew_installer" || die "Homebrew installation failed."
   fi
