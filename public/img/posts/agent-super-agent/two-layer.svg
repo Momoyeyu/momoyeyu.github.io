@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="500" viewBox="0 0 900 500" role="img" aria-labelledby="title desc">
+<title id="title">两层架构</title>
+<desc id="desc">外部渠道的消息全部进入 Router。Router 只做交互、派活与全局记忆，不执行任务。Worker 各自在隔离的上下文中执行，只把结论汇报回 Router，彼此不直接通信，也不直接对用户说话。</desc>
+<style>
+:root{--fg:#29303b;--line:#657285;--bg:#f8fafc;--a:#e0eee6;--b:#e7e4f3;--c:#f7ead6;--accent:#508369;--muted:#667386}
+@media(prefers-color-scheme:dark){:root{--fg:#e0e5ec;--line:#a4afbd;--bg:#222731;--a:#283e35;--b:#353148;--c:#483b2b;--accent:#86b49b;--muted:#b2bdcb}}
+text{font-family:Helvetica,Arial,'PingFang SC',sans-serif;fill:var(--fg);font-size:20px}
+.title{font-size:25px;font-weight:600}.head{font-size:21px;font-weight:600}.small{font-size:17px;fill:var(--muted)}
+.box{fill:var(--bg);stroke:var(--line);stroke-width:1.4}.a{fill:var(--a)}.b{fill:var(--b)}.c{fill:var(--c)}
+.arrow{fill:none;stroke:var(--line);stroke-width:1.7;stroke-linejoin:round;marker-end:url(#arrow)}
+.back{fill:none;stroke:var(--line);stroke-width:1.5;stroke-dasharray:5 4;stroke-linejoin:round;marker-end:url(#arrow)}
+</style>
+<defs>
+<marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="var(--line)"/></marker>
+</defs>
+
+<text x="450" y="34" class="title" text-anchor="middle">Router 只派活，Worker 只干活</text>
+<text x="450" y="62" class="small" text-anchor="middle">Worker 看不到彼此的上下文，也不直接对用户说话</text>
+
+<rect x="112" y="90" width="150" height="44" rx="6" class="box"/>
+<text x="187" y="119" text-anchor="middle">群聊</text>
+<rect x="287" y="90" width="150" height="44" rx="6" class="box"/>
+<text x="362" y="119" text-anchor="middle">GitHub 评论</text>
+<rect x="462" y="90" width="150" height="44" rx="6" class="box"/>
+<text x="537" y="119" text-anchor="middle">邮件</text>
+<rect x="637" y="90" width="150" height="44" rx="6" class="box"/>
+<text x="712" y="119" text-anchor="middle">CI 结果</text>
+
+<path d="M187 134 V166" class="arrow"/>
+<path d="M362 134 V166" class="arrow"/>
+<path d="M537 134 V166" class="arrow"/>
+<path d="M712 134 V166" class="arrow"/>
+
+<rect x="112" y="170" width="675" height="88" rx="7" class="box c"/>
+<text x="449" y="207" class="head" text-anchor="middle">Router</text>
+<text x="449" y="236" class="small" text-anchor="middle">交互 · 派活 · 全局记忆，不执行具体任务</text>
+
+<path d="M190 258 V306" class="arrow"/>
+<path d="M450 258 V306" class="arrow"/>
+<path d="M710 258 V306" class="arrow"/>
+
+<rect x="90" y="310" width="200" height="80" rx="6" class="box a"/>
+<text x="190" y="344" class="head" text-anchor="middle">Worker A</text>
+<text x="190" y="372" class="small" text-anchor="middle">修 PR #42</text>
+
+<rect x="350" y="310" width="200" height="80" rx="6" class="box a"/>
+<text x="450" y="344" class="head" text-anchor="middle">Worker B</text>
+<text x="450" y="372" class="small" text-anchor="middle">复现白屏</text>
+
+<rect x="610" y="310" width="200" height="80" rx="6" class="box a"/>
+<text x="710" y="344" class="head" text-anchor="middle">Worker C</text>
+<text x="710" y="372" class="small" text-anchor="middle">起草回复</text>
+
+<path d="M88 350 V214 H106" class="back"/>
+<text x="62" y="286" class="small" text-anchor="middle" transform="rotate(-90 62 286)">汇报</text>
+
+<text x="450" y="440" class="small" text-anchor="middle">每个 Worker 拥有独立上下文与全套工具，任务质量由它决定</text>
+<text x="450" y="468" class="small" text-anchor="middle">用户始终只跟 Router 打交道，会话之间的边界不外露</text>
+</svg>

@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="430" viewBox="0 0 900 430" role="img" aria-labelledby="title desc">
+<title id="title">召回链</title>
+<desc id="desc">从当前消息出发，沿着窗口里内联的对象 ID，依次找到它所属的话题、处理过这个话题的 Worker 会话，以及该会话关联的另一个评审话题。完整内容留在窗口外，需要时再读取。</desc>
+<style>
+:root{--fg:#29303b;--line:#657285;--bg:#f8fafc;--a:#e0eee6;--b:#e7e4f3;--c:#f7ead6;--accent:#508369;--muted:#667386}
+@media(prefers-color-scheme:dark){:root{--fg:#e0e5ec;--line:#a4afbd;--bg:#222731;--a:#283e35;--b:#353148;--c:#483b2b;--accent:#86b49b;--muted:#b2bdcb}}
+text{font-family:Helvetica,Arial,'PingFang SC',sans-serif;fill:var(--fg);font-size:20px}
+.title{font-size:25px;font-weight:600}.head{font-size:20px;font-weight:600}.small{font-size:17px;fill:var(--muted)}
+.box{fill:var(--bg);stroke:var(--line);stroke-width:1.4}.a{fill:var(--a)}.b{fill:var(--b)}.c{fill:var(--c)}
+.arrow{fill:none;stroke:var(--line);stroke-width:1.7;stroke-linejoin:round;marker-end:url(#arrow)}
+.ext{fill:none;stroke:var(--line);stroke-width:1.2;stroke-dasharray:5 4;opacity:.55}
+.link{stroke:var(--line);stroke-width:1.1;stroke-dasharray:3 4;opacity:.45}
+</style>
+<defs>
+<marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="var(--line)"/></marker>
+</defs>
+
+<text x="450" y="34" class="title" text-anchor="middle">沿内联的 ID 一跳一跳往回找</text>
+<text x="450" y="62" class="small" text-anchor="middle">窗口里只有 ID 与摘要，完整内容留在外面</text>
+
+<rect x="40" y="140" width="150" height="76" rx="6" class="box"/>
+<text x="115" y="172" class="head" text-anchor="middle">当前消息</text>
+<text x="115" y="198" class="small" text-anchor="middle">IM 私聊</text>
+
+<rect x="235" y="140" width="160" height="76" rx="6" class="box c"/>
+<text x="315" y="172" class="head" text-anchor="middle">#T-812</text>
+<text x="315" y="198" class="small" text-anchor="middle">Safari 白屏</text>
+
+<rect x="440" y="140" width="150" height="76" rx="6" class="box a"/>
+<text x="515" y="172" class="head" text-anchor="middle">W-3</text>
+<text x="515" y="198" class="small" text-anchor="middle">复现与修复</text>
+
+<rect x="635" y="140" width="165" height="76" rx="6" class="box b"/>
+<text x="717" y="172" class="head" text-anchor="middle">PR #42</text>
+<text x="717" y="198" class="small" text-anchor="middle">评审讨论</text>
+
+<path d="M192 178 H231" class="arrow"/>
+<path d="M397 178 H436" class="arrow"/>
+<path d="M592 178 H631" class="arrow"/>
+
+<path d="M115 218 V296" class="link"/>
+<path d="M315 218 V296" class="link"/>
+<path d="M515 218 V296" class="link"/>
+<path d="M717 218 V296" class="link"/>
+
+<rect x="40" y="300" width="760" height="60" rx="6" class="ext"/>
+<text x="420" y="336" class="small" text-anchor="middle">完整正文、历史评论与工具结果，需要时才读取</text>
+
+<text x="450" y="392" class="small" text-anchor="middle">每一条边都是一次工具调用带回来的下一跳 ID</text>
+<text x="450" y="418" class="small" text-anchor="middle">引用图只连接系统见过的关系，跨渠道的联想仍要靠检索和追问</text>
+</svg>

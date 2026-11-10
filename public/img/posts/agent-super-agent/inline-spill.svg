@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="480" viewBox="0 0 900 480" role="img" aria-labelledby="title desc">
+<title id="title">内联与溢出</title>
+<desc id="desc">上下文窗口当作缓存：先只放对象的 ID 与摘要，再按局部性把邻近内容逐层内联进来；超过预算的长内容留在窗口外，窗口里只保留一个指针，模型需要时再通过工具读取。</desc>
+<style>
+:root{--fg:#29303b;--line:#657285;--bg:#f8fafc;--a:#e0eee6;--b:#e7e4f3;--c:#f7ead6;--accent:#508369;--muted:#667386}
+@media(prefers-color-scheme:dark){:root{--fg:#e0e5ec;--line:#a4afbd;--bg:#222731;--a:#283e35;--b:#353148;--c:#483b2b;--accent:#86b49b;--muted:#b2bdcb}}
+text{font-family:Helvetica,Arial,'PingFang SC',sans-serif;fill:var(--fg);font-size:20px}
+.title{font-size:25px;font-weight:600}.head{font-size:21px;font-weight:600}.small{font-size:17px;fill:var(--muted)}
+.box{fill:var(--bg);stroke:var(--line);stroke-width:1.4}.a{fill:var(--a)}.b{fill:var(--b)}.c{fill:var(--c)}
+.arrow{fill:none;stroke:var(--line);stroke-width:1.7;stroke-linejoin:round;marker-end:url(#arrow)}
+.budget{stroke:var(--line);stroke-width:1;stroke-dasharray:5 5;opacity:.5}
+</style>
+<defs>
+<marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="var(--line)"/></marker>
+</defs>
+
+<text x="450" y="34" class="title" text-anchor="middle">窗口当缓存用：先摘要，再内联，超限外置</text>
+<text x="450" y="62" class="small" text-anchor="middle">放进窗口的信息有预算，超出的部分只留一个指针</text>
+
+<rect x="60" y="92" width="400" height="270" rx="7" class="box"/>
+<text x="80" y="124" class="small">上下文窗口</text>
+
+<rect x="80" y="142" width="360" height="56" rx="5" class="box a"/>
+<text x="260" y="176" text-anchor="middle">① ID 与摘要</text>
+
+<rect x="80" y="210" width="360" height="56" rx="5" class="box b"/>
+<text x="260" y="244" text-anchor="middle">② 邻近消息与关键背景</text>
+
+<rect x="80" y="278" width="360" height="56" rx="5" class="box c"/>
+<text x="260" y="312" text-anchor="middle">③ 截断后的指针</text>
+
+
+<rect x="580" y="142" width="260" height="192" rx="7" class="box"/>
+<text x="710" y="176" class="head" text-anchor="middle">外部存储</text>
+<text x="710" y="208" class="small" text-anchor="middle">完整正文</text>
+<text x="710" y="234" class="small" text-anchor="middle">历史评论</text>
+<text x="710" y="260" class="small" text-anchor="middle">整段代码评审</text>
+
+<path d="M440 296 H576" class="arrow"/>
+<text x="510" y="284" class="small" text-anchor="middle">指针</text>
+
+<path d="M576 320 H444" class="arrow"/>
+<text x="512" y="344" class="small" text-anchor="middle">读取</text>
+
+<text x="450" y="430" class="small" text-anchor="middle">局部性决定先内联谁：先同类对象，再时间或空间上相邻的内容</text>
+<text x="450" y="458" class="small" text-anchor="middle">注入过多会稀释注意力，注入过少则要多走几次工具调用</text>
+</svg>

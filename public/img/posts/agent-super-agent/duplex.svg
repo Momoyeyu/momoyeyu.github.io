@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="480" viewBox="0 0 900 480" role="img" aria-labelledby="title desc">
+<title id="title">同步调用与异步调用</title>
+<desc id="desc">上半部分是 run 的同步调用：工具跑十分钟期间会话被阻塞，新来的消息只能排队。下半部分是 start 的异步调用：start 立即返回 Started，会话可以继续响应用户，工具跑完后结果作为一条新事件回到会话。</desc>
+<style>
+:root{--fg:#29303b;--line:#657285;--bg:#f8fafc;--a:#e0eee6;--b:#e7e4f3;--c:#f7ead6;--accent:#508369;--muted:#667386}
+@media(prefers-color-scheme:dark){:root{--fg:#e0e5ec;--line:#a4afbd;--bg:#222731;--a:#283e35;--b:#353148;--c:#483b2b;--accent:#86b49b;--muted:#b2bdcb}}
+text{font-family:Helvetica,Arial,'PingFang SC',sans-serif;fill:var(--fg);font-size:20px}
+.title{font-size:25px;font-weight:600}.head{font-size:21px;font-weight:600}.small{font-size:17px;fill:var(--muted)}
+.box{fill:var(--bg);stroke:var(--line);stroke-width:1.4}.a{fill:var(--a)}.b{fill:var(--b)}.c{fill:var(--c)}
+.arrow{fill:none;stroke:var(--line);stroke-width:1.7;stroke-linejoin:round;marker-end:url(#arrow)}
+.mark{stroke:var(--line);stroke-width:1;stroke-dasharray:4 4;opacity:.55}
+</style>
+<defs>
+<marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="var(--line)"/></marker>
+</defs>
+
+<text x="450" y="34" class="title" text-anchor="middle">同步调用占住入口，异步调用把结果变成事件</text>
+<text x="450" y="62" class="small" text-anchor="middle">工具在后台跑，会话在前后台之间解耦</text>
+
+<text x="60" y="118" class="head">run()</text>
+<text x="60" y="144" class="small">同步</text>
+
+<path d="M300 100 V190" class="mark"/>
+<text x="300" y="94" class="small" text-anchor="middle">新消息</text>
+
+<rect x="140" y="110" width="700" height="32" rx="4" class="box"/>
+<rect x="140" y="110" width="64" height="32" rx="4" class="box a"/>
+<text x="172" y="131" class="small" text-anchor="middle">推理</text>
+<text x="452" y="131" class="small" text-anchor="middle">阻塞，收不进新输入</text>
+
+<rect x="204" y="156" width="496" height="26" rx="4" class="box c"/>
+<rect x="700" y="110" width="140" height="32" rx="4" class="box a"/>
+<text x="770" y="131" class="small" text-anchor="middle">回应</text>
+<text x="452" y="174" class="small" text-anchor="middle">跑测试</text>
+
+<text x="450" y="212" class="small" text-anchor="middle">工具返回之前，新消息只能排队</text>
+
+<text x="60" y="300" class="head">start()</text>
+<text x="60" y="326" class="small">异步</text>
+
+<path d="M300 280 V370" class="mark"/>
+<text x="300" y="274" class="small" text-anchor="middle">新消息</text>
+
+<rect x="140" y="290" width="700" height="32" rx="4" class="box"/>
+<rect x="140" y="290" width="64" height="32" rx="4" class="box a"/>
+<text x="172" y="311" class="small" text-anchor="middle">推理</text>
+<rect x="204" y="290" width="66" height="32" rx="4" class="box b"/>
+<text x="237" y="311" class="small" text-anchor="middle">Started</text>
+<rect x="300" y="290" width="110" height="32" rx="4" class="box a"/>
+<text x="355" y="311" class="small" text-anchor="middle">回应新消息</text>
+<rect x="704" y="290" width="136" height="32" rx="4" class="box c"/>
+<text x="772" y="311" class="small" text-anchor="middle">收到结果</text>
+
+<rect x="204" y="336" width="496" height="26" rx="4" class="box c"/>
+<text x="452" y="354" class="small" text-anchor="middle">跑测试</text>
+
+<path d="M704 362 V326" class="arrow"/>
+<text x="450" y="394" class="small" text-anchor="middle">工具结束时，结果以一条新事件回到会话</text>
+
+<text x="450" y="440" class="small" text-anchor="middle">半双工轮流进行，全双工允许任务在后台跑的同时继续交互</text>
+</svg>

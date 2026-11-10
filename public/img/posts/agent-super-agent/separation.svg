@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="560" viewBox="0 0 900 560" role="img" aria-labelledby="title desc">
+<title id="title">计算、状态与执行环境分离</title>
+<desc id="desc">上：在线时，无状态的 Agent 循环跑在云端，会话状态存在数据库，执行环境留在原处，端点只运行一个不保存会话状态的守护进程。下：设备离线时，云端继续接收消息并保存状态，依赖该设备的任务挂起，等待重连。</desc>
+<style>
+:root{--fg:#29303b;--line:#657285;--bg:#f8fafc;--a:#e0eee6;--b:#e7e4f3;--c:#f7ead6;--accent:#508369;--muted:#667386}
+@media(prefers-color-scheme:dark){:root{--fg:#e0e5ec;--line:#a4afbd;--bg:#222731;--a:#283e35;--b:#353148;--c:#483b2b;--accent:#86b49b;--muted:#b2bdcb}}
+text{font-family:Helvetica,Arial,'PingFang SC',sans-serif;fill:var(--fg);font-size:20px}
+.title{font-size:25px;font-weight:600}.head{font-size:21px;font-weight:600}.small{font-size:17px;fill:var(--muted)}
+.box{fill:var(--bg);stroke:var(--line);stroke-width:1.4}.a{fill:var(--a)}.b{fill:var(--b)}.c{fill:var(--c)}
+.arrow{fill:none;stroke:var(--line);stroke-width:1.7;stroke-linejoin:round;marker-end:url(#arrow)}
+.broken{fill:none;stroke:var(--line);stroke-width:1.4;stroke-dasharray:5 5;opacity:.5;stroke-linejoin:round}
+.panel{fill:none;stroke:var(--line);stroke-width:1.2;stroke-dasharray:6 5;opacity:.45}
+.off{opacity:.42}
+.cross{stroke:var(--line);stroke-width:1.6;opacity:.55}
+</style>
+<defs>
+<marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="var(--line)"/></marker>
+</defs>
+
+<text x="450" y="34" class="title" text-anchor="middle">循环、状态与环境分开放</text>
+<text x="450" y="62" class="small" text-anchor="middle">云端无状态，会话落数据库，执行环境留在原处</text>
+
+<text x="50" y="82" class="small">设备在线</text>
+
+<rect x="50" y="92" width="350" height="164" rx="8" class="panel"/>
+<rect x="75" y="116" width="300" height="48" rx="5" class="box a"/>
+<text x="225" y="147" class="head" text-anchor="middle">Agent 循环</text>
+<rect x="75" y="182" width="300" height="48" rx="5" class="box b"/>
+<text x="225" y="213" class="head" text-anchor="middle">会话状态</text>
+<text x="225" y="248" class="small" text-anchor="middle">云端容器加数据库</text>
+
+<rect x="550" y="92" width="300" height="164" rx="8" class="panel"/>
+<rect x="575" y="116" width="250" height="48" rx="5" class="box"/>
+<text x="700" y="147" class="head" text-anchor="middle">守护进程</text>
+<rect x="575" y="182" width="250" height="48" rx="5" class="box c"/>
+<text x="700" y="213" class="head" text-anchor="middle">本地环境</text>
+<text x="700" y="248" class="small" text-anchor="middle">未提交改动 · 凭据 · 内网</text>
+
+<path d="M404 140 H546" class="arrow"/>
+<text x="475" y="130" class="small" text-anchor="middle">下发命令</text>
+<path d="M546 204 H408" class="arrow"/>
+<text x="475" y="228" class="small" text-anchor="middle">返回结果</text>
+
+<text x="50" y="302" class="small">设备离线</text>
+
+<rect x="50" y="312" width="350" height="164" rx="8" class="panel"/>
+<rect x="75" y="336" width="300" height="48" rx="5" class="box a"/>
+<text x="225" y="367" class="head" text-anchor="middle">Agent 循环</text>
+<rect x="75" y="402" width="300" height="48" rx="5" class="box b"/>
+<text x="225" y="433" class="head" text-anchor="middle">会话状态</text>
+<text x="225" y="468" class="small" text-anchor="middle">继续接收消息，状态照常保存</text>
+
+<g class="off">
+<rect x="550" y="312" width="300" height="164" rx="8" class="panel"/>
+<rect x="575" y="336" width="250" height="48" rx="5" class="box"/>
+<text x="700" y="367" class="head" text-anchor="middle">守护进程</text>
+<rect x="575" y="402" width="250" height="48" rx="5" class="box c"/>
+<text x="700" y="433" class="head" text-anchor="middle">本地环境</text>
+</g>
+<text x="700" y="468" class="small" text-anchor="middle">等待重新连接</text>
+
+<path d="M404 360 H470" class="broken"/>
+<path d="M484 348 L512 372 M512 348 L484 372" class="cross"/>
+<path d="M526 360 H546" class="broken"/>
+<text x="475" y="336" class="small" text-anchor="middle">连接中断</text>
+
+<text x="450" y="524" class="small" text-anchor="middle">依赖本地未提交代码的操作暂停，其他任务照常推进</text>
+</svg>
