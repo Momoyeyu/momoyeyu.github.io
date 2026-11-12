@@ -12,6 +12,7 @@
 - Markdown 与代码块渲染（Admonition、Mermaid、KaTeX、Expressive Code）→ `astro.config.mjs` + `src/plugins/`
 - 系列、排序、上一集/下一集 → `src/utils/content-utils.ts`；由 `content-utils.test.ts` 覆盖，改逻辑要连测试一起改
 - URL 规则 → `src/utils/url-utils.ts`
+- 整页刷新恢复滚动位置 → `src/utils/scroll-restoration.ts`，由 `Layout.astro` 初始化；只在同一 URL 的 reload 导航中恢复，站内切页和前进后退仍交给 Swup；由 `scroll-restoration.test.ts` 覆盖
 - sitemap 的 `lastmod` → `astro.config.mjs` 的 `getPostLastmodByPath()`（读 `updated`，回退 `date`）
 - 样式与 CSS 变量 → `src/styles/`；主题色、Banner 高度等全局 CSS 变量在 `src/layouts/Layout.astro` 里由 `siteConfig.themeColor` / `src/constants/constants.ts` 注入
 - 内容实体 → `src/content/posts/`（文章）、`src/content/spec/about.md`（关于页正文）

@@ -231,6 +231,7 @@ import {
 } from 'overlayscrollbars';
 import { getPostLayout, getStoredTheme, setPostLayout, setTheme } from "../utils/setting-utils";
 import {pathsEqual, url} from "../utils/url-utils";
+import { initReloadScrollRestoration } from "../utils/scroll-restoration";
 import {
 	BANNER_HEIGHT,
 	BANNER_HEIGHT_HOME,
@@ -240,6 +241,7 @@ import {
 
 
 const bannerEnabled = false;
+initReloadScrollRestoration();
 
 function setClickOutsideToClose(panel: string, ignores: string[]) {
 	document.addEventListener("click", event => {
