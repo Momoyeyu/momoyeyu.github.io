@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="690" viewBox="0 0 900 690" role="img" aria-labelledby="title desc">
+<title id="title">只更新循环区，不反复扩张 KV 缓存</title>
+<desc id="desc">教学缓存中，前两个槽保留 token 1 和 2，后四个槽循环存放最近 KV。写入 token 9 时覆盖 token 5，物理槽位为 1、2、9、6、7、8，逻辑上保留的最近区为 6、7、8、9。下一次写入覆盖 token 6，容量不变。</desc>
+<style>
+:root{--fg:#29303b;--line:#657285;--bg:#f8fafc;--a:#e0eee6;--b:#e7e4f3;--c:#f7ead6;--accent:#508369;--muted:#667386;--error:#aa5653;--grid:#dce2e9}
+@media(prefers-color-scheme:dark){:root{--fg:#e0e5ec;--line:#a4afbd;--bg:#222731;--a:#283e35;--b:#353148;--c:#483b2b;--accent:#86b49b;--muted:#b2bdcb;--error:#d99087;--grid:#3c4450}}
+text{font-family:Helvetica,Arial,'PingFang SC',sans-serif;fill:var(--fg);font-size:22px}
+.title{font-size:28px;font-weight:600}.head{font-size:24px;font-weight:600}.small{font-size:19px;fill:var(--muted)}.tiny{font-size:16px}.math{font-family:Times,'Times New Roman',serif;font-style:italic;font-size:25px}.box{fill:var(--bg);stroke:var(--line);stroke-width:1.5}.a{fill:var(--a)}.b{fill:var(--b)}.c{fill:var(--c)}.faint{opacity:.35}.cut{fill:var(--bg);stroke:var(--error);stroke-width:1.5;stroke-dasharray:5 4}.line{fill:none;stroke:var(--line);stroke-width:1.6}.grid{fill:none;stroke:var(--grid);stroke-width:1}.arrow{fill:none;stroke:var(--line);stroke-width:1.8;stroke-linejoin:round;marker-end:url(#arrow)}.accent{fill:var(--accent)}.red{fill:var(--error)}
+</style>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="var(--line)"/></marker></defs>
+<rect width="900" height="690" rx="14" fill="var(--bg)"/>
+<text x="450" y="43" class="title" text-anchor="middle">只更新循环区，不反复扩张 KV 缓存</text>
+<text x="450" y="82" class="small" text-anchor="middle">教学缓存：开头保留 2 项，循环区容量 4 项</text>
+<text x="251" y="143" class="small" text-anchor="middle">槽 1</text>
+<text x="351" y="143" class="small" text-anchor="middle">槽 2</text>
+<text x="451" y="143" class="small" text-anchor="middle">槽 3</text>
+<text x="551" y="143" class="small" text-anchor="middle">槽 4</text>
+<text x="651" y="143" class="small" text-anchor="middle">槽 5</text>
+<text x="751" y="143" class="small" text-anchor="middle">槽 6</text>
+<text x="105" y="224" class="" text-anchor="middle">写入前</text>
+<rect x="210" y="185" width="82" height="62" rx="8" class="box c"/>
+<text x="251" y="226" class="math" text-anchor="middle">1</text>
+<rect x="310" y="185" width="82" height="62" rx="8" class="box c"/>
+<text x="351" y="226" class="math" text-anchor="middle">2</text>
+<rect x="410" y="185" width="82" height="62" rx="8" class="box a"/>
+<text x="451" y="226" class="math" text-anchor="middle">5</text>
+<rect x="510" y="185" width="82" height="62" rx="8" class="box a"/>
+<text x="551" y="226" class="math" text-anchor="middle">6</text>
+<rect x="610" y="185" width="82" height="62" rx="8" class="box a"/>
+<text x="651" y="226" class="math" text-anchor="middle">7</text>
+<rect x="710" y="185" width="82" height="62" rx="8" class="box a"/>
+<text x="751" y="226" class="math" text-anchor="middle">8</text>
+<text x="105" y="424" class="" text-anchor="middle">写入 9 后</text>
+<rect x="210" y="385" width="82" height="62" rx="8" class="box c"/>
+<text x="251" y="426" class="math" text-anchor="middle">1</text>
+<rect x="310" y="385" width="82" height="62" rx="8" class="box c"/>
+<text x="351" y="426" class="math" text-anchor="middle">2</text>
+<rect x="410" y="385" width="82" height="62" rx="8" class="box b"/>
+<text x="451" y="426" class="math" text-anchor="middle">9</text>
+<rect x="510" y="385" width="82" height="62" rx="8" class="box a"/>
+<text x="551" y="426" class="math" text-anchor="middle">6</text>
+<rect x="610" y="385" width="82" height="62" rx="8" class="box a"/>
+<text x="651" y="426" class="math" text-anchor="middle">7</text>
+<rect x="710" y="385" width="82" height="62" rx="8" class="box a"/>
+<text x="751" y="426" class="math" text-anchor="middle">8</text>
+<path d="M451 247 V385" class="arrow"/>
+<text x="480" y="304" class="small" text-anchor="start">新 KV 覆盖最旧的 5</text>
+<path d="M410 161 H792" class="line"/>
+<text x="646" y="172" class="small" text-anchor="middle">循环区</text>
+<text x="290" y="280" class="small" text-anchor="middle">开头保留区不动</text>
+<text x="500" y="485" class="small" text-anchor="middle">下一次写入指向槽 4，覆盖 6</text>
+<rect x="110" y="527" width="680" height="85" rx="8" class="box"/>
+<text x="450" y="560" class="small" text-anchor="middle">此时逻辑上保留的历史</text>
+<text x="450" y="595" class="head" text-anchor="middle">1、2 以及最近的 6、7、8、9</text>
+<text x="450" y="658" class="small" text-anchor="middle">物理槽位不必按时间排序；本次生成的容量保持固定</text>
+</svg>

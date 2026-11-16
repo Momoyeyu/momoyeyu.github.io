@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="665" viewBox="0 0 900 665" role="img" aria-labelledby="title desc">
+<title id="title">相同预算，不必平均分给每个头</title>
+<desc id="desc">四个头的统一跨度都是 4096；异构配置为 2048、2048、4096、8192，两者总跨度均为 16384。在同样平均密度下，异构配置保留了一个可读完整历史的头。数字为教学配置，不是实测。</desc>
+<style>
+:root{--fg:#29303b;--line:#657285;--bg:#f8fafc;--a:#e0eee6;--b:#e7e4f3;--c:#f7ead6;--accent:#508369;--muted:#667386;--error:#aa5653;--grid:#dce2e9}
+@media(prefers-color-scheme:dark){:root{--fg:#e0e5ec;--line:#a4afbd;--bg:#222731;--a:#283e35;--b:#353148;--c:#483b2b;--accent:#86b49b;--muted:#b2bdcb;--error:#d99087;--grid:#3c4450}}
+text{font-family:Helvetica,Arial,'PingFang SC',sans-serif;fill:var(--fg);font-size:22px}
+.title{font-size:28px;font-weight:600}.head{font-size:24px;font-weight:600}.small{font-size:19px;fill:var(--muted)}.tiny{font-size:16px}.math{font-family:Times,'Times New Roman',serif;font-style:italic;font-size:25px}.box{fill:var(--bg);stroke:var(--line);stroke-width:1.5}.a{fill:var(--a)}.b{fill:var(--b)}.c{fill:var(--c)}.faint{opacity:.35}.cut{fill:var(--bg);stroke:var(--error);stroke-width:1.5;stroke-dasharray:5 4}.line{fill:none;stroke:var(--line);stroke-width:1.6}.grid{fill:none;stroke:var(--grid);stroke-width:1}.arrow{fill:none;stroke:var(--line);stroke-width:1.8;stroke-linejoin:round;marker-end:url(#arrow)}.accent{fill:var(--accent)}.red{fill:var(--error)}
+</style>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="var(--line)"/></marker></defs>
+<rect width="900" height="665" rx="14" fill="var(--bg)"/>
+<text x="450" y="43" class="title" text-anchor="middle">相同预算，不必平均分给每个头</text>
+<text x="450" y="82" class="small" text-anchor="middle">教学配置：输入 8192 token；总跨度都为 16384</text>
+<rect x="35" y="115" width="400" height="435" rx="12" class="box"/>
+<text x="235" y="157" class="head" text-anchor="middle">统一分配</text>
+<text x="63" y="231" class="small" text-anchor="start">头 1</text>
+<rect x="128" y="208" width="268" height="30" rx="3" class="box faint"/>
+<rect x="128" y="208" width="134" height="30" rx="3" class="box a"/>
+<text x="396" y="262" class="small" text-anchor="end">4096</text>
+<text x="63" y="309" class="small" text-anchor="start">头 2</text>
+<rect x="128" y="286" width="268" height="30" rx="3" class="box faint"/>
+<rect x="128" y="286" width="134" height="30" rx="3" class="box a"/>
+<text x="396" y="340" class="small" text-anchor="end">4096</text>
+<text x="63" y="387" class="small" text-anchor="start">头 3</text>
+<rect x="128" y="364" width="268" height="30" rx="3" class="box faint"/>
+<rect x="128" y="364" width="134" height="30" rx="3" class="box a"/>
+<text x="396" y="418" class="small" text-anchor="end">4096</text>
+<text x="63" y="465" class="small" text-anchor="start">头 4</text>
+<rect x="128" y="442" width="268" height="30" rx="3" class="box faint"/>
+<rect x="128" y="442" width="134" height="30" rx="3" class="box a"/>
+<text x="396" y="496" class="small" text-anchor="end">4096</text>
+<text x="235" y="523" class="small" text-anchor="middle">平均跨度 4096；平均密度 50%</text>
+<rect x="465" y="115" width="400" height="435" rx="12" class="box"/>
+<text x="665" y="157" class="head" text-anchor="middle">异构分配</text>
+<text x="493" y="231" class="small" text-anchor="start">头 1</text>
+<rect x="558" y="208" width="268" height="30" rx="3" class="box faint"/>
+<rect x="558" y="208" width="67" height="30" rx="3" class="box a"/>
+<text x="826" y="262" class="small" text-anchor="end">2048</text>
+<text x="493" y="309" class="small" text-anchor="start">头 2</text>
+<rect x="558" y="286" width="268" height="30" rx="3" class="box faint"/>
+<rect x="558" y="286" width="67" height="30" rx="3" class="box a"/>
+<text x="826" y="340" class="small" text-anchor="end">2048</text>
+<text x="493" y="387" class="small" text-anchor="start">头 3</text>
+<rect x="558" y="364" width="268" height="30" rx="3" class="box faint"/>
+<rect x="558" y="364" width="134" height="30" rx="3" class="box a"/>
+<text x="826" y="418" class="small" text-anchor="end">4096</text>
+<text x="493" y="465" class="small" text-anchor="start">头 4</text>
+<rect x="558" y="442" width="268" height="30" rx="3" class="box faint"/>
+<rect x="558" y="442" width="268" height="30" rx="3" class="box b"/>
+<text x="826" y="496" class="small" text-anchor="end">8192</text>
+<text x="665" y="523" class="small" text-anchor="middle">平均跨度 4096；平均密度 50%</text>
+<text x="450" y="594" class="head" text-anchor="middle">从缩短损失较小的头，挪出预算给长距离读取</text>
+<text x="450" y="631" class="small" text-anchor="middle">不是新增预算，也不是预先认定第 4 个头最重要</text>
+</svg>

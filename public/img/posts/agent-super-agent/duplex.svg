@@ -1,61 +1,59 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="900" height="480" viewBox="0 0 900 480" role="img" aria-labelledby="title desc">
-<title id="title">同步调用与异步调用</title>
-<desc id="desc">上半部分是 run 的同步调用：工具跑十分钟期间会话被阻塞，新来的消息只能排队。下半部分是 start 的异步调用：start 立即返回 Started，会话可以继续响应用户，工具跑完后结果作为一条新事件回到会话。</desc>
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="615" viewBox="0 0 960 615" role="img" aria-labelledby="title desc">
+<title id="title">测试在后台跑，补充要求也能及时处理</title><desc id="desc">上下两组使用相同时间轴。同步调用期间，新消息排队直到工具返回；异步调用立即返回，模型可以在测试结束前处理新消息。示意图不表示实际耗时比例。</desc>
 <style>
-:root{--fg:#29303b;--line:#657285;--bg:#f8fafc;--a:#e0eee6;--b:#e7e4f3;--c:#f7ead6;--accent:#508369;--muted:#667386}
-@media(prefers-color-scheme:dark){:root{--fg:#e0e5ec;--line:#a4afbd;--bg:#222731;--a:#283e35;--b:#353148;--c:#483b2b;--accent:#86b49b;--muted:#b2bdcb}}
-text{font-family:Helvetica,Arial,'PingFang SC',sans-serif;fill:var(--fg);font-size:20px}
-.title{font-size:25px;font-weight:600}.head{font-size:21px;font-weight:600}.small{font-size:17px;fill:var(--muted)}
-.box{fill:var(--bg);stroke:var(--line);stroke-width:1.4}.a{fill:var(--a)}.b{fill:var(--b)}.c{fill:var(--c)}
-.arrow{fill:none;stroke:var(--line);stroke-width:1.7;stroke-linejoin:round;marker-end:url(#arrow)}
-.mark{stroke:var(--line);stroke-width:1;stroke-dasharray:4 4;opacity:.55}
+:root{color-scheme:light dark;--paper:#fcfcfa;--ink:#29333d;--muted:#677580;--line:#84918f;--grid:#dde3df;--soft:#f0f3f0;--green:#e1eee5;--green-ink:#417558;--purple:#ece8f5;--purple-ink:#776395;--amber:#f6ecd9;--amber-ink:#956e32}
+@media(prefers-color-scheme:dark){:root{--paper:#20262d;--ink:#e7ecec;--muted:#acb9bf;--line:#8b9e9c;--grid:#3e4b52;--soft:#29333a;--green:#2c443a;--green-ink:#9bc8ab;--purple:#3c354e;--purple-ink:#c1b0df;--amber:#463e2e;--amber-ink:#d9bc85}}
+text{font-family:'PingFang SC','Microsoft YaHei',Arial,sans-serif;fill:var(--ink);font-size:21px}
+.title{font-size:29px;font-weight:600;letter-spacing:.3px}.eyebrow{font-size:16px;font-weight:600;fill:var(--muted);letter-spacing:1.6px}.head{font-size:23px;font-weight:600}.small{font-size:18px;fill:var(--muted)}.mono{font-family:'SFMono-Regular',Consolas,monospace;font-size:18px}.label{font-size:19px}.green-text{fill:var(--green-ink)}.purple-text{fill:var(--purple-ink)}
+.box{fill:var(--paper);stroke:var(--line);stroke-width:1.4}.soft{fill:var(--soft)}.green{fill:var(--green)}.purple{fill:var(--purple)}.amber{fill:var(--amber)}.panel{fill:var(--soft);stroke:var(--grid);stroke-width:1.2}.dash{stroke-dasharray:6 5}.wire{fill:none;stroke:var(--line);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}.arrow{fill:none;stroke:var(--line);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#arrow)}.return{stroke-dasharray:5 5;stroke:var(--purple-ink);marker-end:url(#back)}.fast{stroke:var(--green-ink);stroke-width:2.5;marker-end:url(#fast)}.grid{stroke:var(--grid);stroke-width:1}.dot{fill:var(--green-ink)}
 </style>
 <defs>
-<marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="var(--line)"/></marker>
+<marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9Z" fill="var(--line)"/></marker>
+<marker id="back" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9Z" fill="var(--purple-ink)"/></marker>
+<marker id="fast" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9Z" fill="var(--green-ink)"/></marker>
+<pattern id="hatch" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M0 10L10 0" stroke="var(--line)" stroke-opacity=".15"/></pattern>
 </defs>
-
-<text x="450" y="34" class="title" text-anchor="middle">同步调用占住入口，异步调用把结果变成事件</text>
-<text x="450" y="62" class="small" text-anchor="middle">工具在后台跑，会话在前后台之间解耦</text>
-
-<text x="60" y="118" class="head">run()</text>
-<text x="60" y="144" class="small">同步</text>
-
-<path d="M300 100 V190" class="mark"/>
-<text x="300" y="94" class="small" text-anchor="middle">新消息</text>
-
-<rect x="140" y="110" width="700" height="32" rx="4" class="box"/>
-<rect x="140" y="110" width="64" height="32" rx="4" class="box a"/>
-<text x="172" y="131" class="small" text-anchor="middle">推理</text>
-<text x="452" y="131" class="small" text-anchor="middle">阻塞，收不进新输入</text>
-
-<rect x="204" y="156" width="496" height="26" rx="4" class="box c"/>
-<rect x="700" y="110" width="140" height="32" rx="4" class="box a"/>
-<text x="770" y="131" class="small" text-anchor="middle">回应</text>
-<text x="452" y="174" class="small" text-anchor="middle">跑测试</text>
-
-<text x="450" y="212" class="small" text-anchor="middle">工具返回之前，新消息只能排队</text>
-
-<text x="60" y="300" class="head">start()</text>
-<text x="60" y="326" class="small">异步</text>
-
-<path d="M300 280 V370" class="mark"/>
-<text x="300" y="274" class="small" text-anchor="middle">新消息</text>
-
-<rect x="140" y="290" width="700" height="32" rx="4" class="box"/>
-<rect x="140" y="290" width="64" height="32" rx="4" class="box a"/>
-<text x="172" y="311" class="small" text-anchor="middle">推理</text>
-<rect x="204" y="290" width="66" height="32" rx="4" class="box b"/>
-<text x="237" y="311" class="small" text-anchor="middle">Started</text>
-<rect x="300" y="290" width="110" height="32" rx="4" class="box a"/>
-<text x="355" y="311" class="small" text-anchor="middle">回应新消息</text>
-<rect x="704" y="290" width="136" height="32" rx="4" class="box c"/>
-<text x="772" y="311" class="small" text-anchor="middle">收到结果</text>
-
-<rect x="204" y="336" width="496" height="26" rx="4" class="box c"/>
-<text x="452" y="354" class="small" text-anchor="middle">跑测试</text>
-
-<path d="M704 362 V326" class="arrow"/>
-<text x="450" y="394" class="small" text-anchor="middle">工具结束时，结果以一条新事件回到会话</text>
-
-<text x="450" y="440" class="small" text-anchor="middle">半双工轮流进行，全双工允许任务在后台跑的同时继续交互</text>
+<rect width="960" height="615" rx="12" fill="var(--paper)"/>
+<text x="32" y="29" class="eyebrow" text-anchor="start">05 / 异步执行</text>
+<text x="32" y="71" class="title" text-anchor="start">测试在后台跑，补充要求也能及时处理</text>
+<rect x="32" y="124" width="896" height="184" rx="9" class="panel"/>
+<rect x="32" y="344" width="896" height="184" rx="9" class="panel"/>
+<text x="50" y="154" class="head" text-anchor="start">同步 run()</text>
+<text x="50" y="374" class="head" text-anchor="start">异步 start()</text>
+<text x="146" y="200" class="small" text-anchor="end">会话</text>
+<text x="146" y="269" class="small" text-anchor="end">工具</text>
+<text x="146" y="420" class="small" text-anchor="end">会话</text>
+<text x="146" y="489" class="small" text-anchor="end">工具</text>
+<path d="M416 157 V301" class="wire dash" />
+<path d="M416 377 V521" class="wire dash" />
+<text x="416" y="112" class="small" text-anchor="middle">补充要求到达</text>
+<rect x="180" y="173" width="112" height="42" rx="9" class="box purple"/>
+<text x="236" y="201" class="" text-anchor="middle">调用</text>
+<rect x="292" y="173" width="490" height="42" rx="9" class="box soft"/>
+<rect x="292" y="173" width="490" height="42" rx="9" fill="url(#hatch)"/>
+<text x="537" y="201" class="small" text-anchor="middle">等待工具返回</text>
+<rect x="782" y="173" width="130" height="42" rx="9" class="box green"/>
+<text x="847" y="201" class="label" text-anchor="middle">处理消息</text>
+<rect x="292" y="244" width="490" height="36" rx="9" class="box amber"/>
+<text x="537" y="269" class="small" text-anchor="middle">运行测试</text>
+<path d="M782 244 V218" class="arrow" />
+<path d="M416 225 H776" class="arrow dash" />
+<text x="592" y="240" class="small" text-anchor="middle">新消息排队</text>
+<rect x="180" y="393" width="112" height="42" rx="9" class="box purple"/>
+<text x="236" y="421" class="" text-anchor="middle">启动</text>
+<path d="M292 414 H410" class="arrow" />
+<text x="354" y="391" class="small" text-anchor="middle">立即返回</text>
+<rect x="416" y="393" width="186" height="42" rx="9" class="box green"/>
+<text x="509" y="421" class="label" text-anchor="middle">处理补充要求</text>
+<path d="M602 414 H776" class="wire dash" />
+<rect x="782" y="393" width="130" height="42" rx="9" class="box purple"/>
+<text x="847" y="421" class="label" text-anchor="middle">接收结果</text>
+<rect x="292" y="464" width="490" height="36" rx="9" class="box amber"/>
+<text x="537" y="489" class="small" text-anchor="middle">运行测试</text>
+<path d="M782 464 V438" class="arrow" />
+<text x="799" y="456" class="small" text-anchor="start">结果事件</text>
+<path d="M180 557 H912" class="arrow" />
+<text x="180" y="585" class="small" text-anchor="start">开始</text>
+<text x="912" y="585" class="small" text-anchor="end">时间 →</text>
+<text x="528" y="585" class="small" text-anchor="middle">示意，不按实际耗时比例</text>
 </svg>

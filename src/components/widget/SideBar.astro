@@ -33,7 +33,6 @@ if (category) {
 		.filter(
 			(p) => p.data.category === category && typeof p.data.episode === "number",
 		)
-		.slice()
 		.sort((a, b) => (a.data.episode as number) - (b.data.episode as number));
 
 	seriesPosts = filtered.map((p, i) => ({

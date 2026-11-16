@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="595" viewBox="0 0 900 595" role="img" aria-labelledby="title desc">
+<title id="title">有些头看固定距离，有些随输入增长</title>
+<desc id="desc">横轴为请求输入长度，纵轴为单头跨度。固定 1024 的跨度在历史不足时截断；半长跨度随输入按 0.5 倍增长；完整历史跨度随输入等比例增长。三条规则均为教学示意。</desc>
+<style>
+:root{--fg:#29303b;--line:#657285;--bg:#f8fafc;--a:#e0eee6;--b:#e7e4f3;--c:#f7ead6;--accent:#508369;--muted:#667386;--error:#aa5653;--grid:#dce2e9}
+@media(prefers-color-scheme:dark){:root{--fg:#e0e5ec;--line:#a4afbd;--bg:#222731;--a:#283e35;--b:#353148;--c:#483b2b;--accent:#86b49b;--muted:#b2bdcb;--error:#d99087;--grid:#3c4450}}
+text{font-family:Helvetica,Arial,'PingFang SC',sans-serif;fill:var(--fg);font-size:22px}
+.title{font-size:28px;font-weight:600}.head{font-size:24px;font-weight:600}.small{font-size:19px;fill:var(--muted)}.tiny{font-size:16px}.math{font-family:Times,'Times New Roman',serif;font-style:italic;font-size:25px}.box{fill:var(--bg);stroke:var(--line);stroke-width:1.5}.a{fill:var(--a)}.b{fill:var(--b)}.c{fill:var(--c)}.faint{opacity:.35}.cut{fill:var(--bg);stroke:var(--error);stroke-width:1.5;stroke-dasharray:5 4}.line{fill:none;stroke:var(--line);stroke-width:1.6}.grid{fill:none;stroke:var(--grid);stroke-width:1}.arrow{fill:none;stroke:var(--line);stroke-width:1.8;stroke-linejoin:round;marker-end:url(#arrow)}.accent{fill:var(--accent)}.red{fill:var(--error)}
+</style>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="var(--line)"/></marker></defs>
+<rect width="900" height="595" rx="14" fill="var(--bg)"/>
+<text x="450" y="43" class="title" text-anchor="middle">有些头看固定距离，有些随输入增长</text>
+<text x="450" y="82" class="small" text-anchor="middle">同一条规则，可用于不同长度的请求</text>
+<path d="M110 407.5 H540" class="grid"/>
+<text x="93" y="413.5" class="small" text-anchor="end">1024</text>
+<path d="M110 295 H540" class="grid"/>
+<text x="93" y="301" class="small" text-anchor="end">4096</text>
+<path d="M110 145 H540" class="grid"/>
+<text x="93" y="151" class="small" text-anchor="end">8192</text>
+<path d="M217.5 445 V145" class="grid"/>
+<text x="217.5" y="474" class="small" text-anchor="middle">2048</text>
+<path d="M325 445 V145" class="grid"/>
+<text x="325" y="474" class="small" text-anchor="middle">4096</text>
+<path d="M540 445 V145" class="grid"/>
+<text x="540" y="474" class="small" text-anchor="middle">8192</text>
+<path d="M110 445 H555" class="arrow"/>
+<path d="M110 445 V125" class="arrow"/>
+<text x="110" y="113" class="math" text-anchor="middle">跨度 S</text>
+<text x="362" y="517" class="math" text-anchor="middle">输入长度 N</text>
+<path d="M110 445 L163.75 407.5 L217.5 407.5 L325 407.5 L540 407.5" fill="none" stroke="var(--accent)" stroke-width="3"/>
+<path d="M110 445 L163.75 426.25 L217.5 407.5 L325 370 L540 295" fill="none" stroke="var(--line)" stroke-width="3" stroke-dasharray="8 5"/>
+<path d="M110 445 L163.75 407.5 L217.5 370 L325 295 L540 145" fill="none" stroke="var(--error)" stroke-width="3"/>
+<path d="M590 163 H630" stroke="var(--accent)" stroke-width="3"/>
+<text x="650" y="170" class="head" text-anchor="start">固定跨度</text>
+<text x="650" y="203" class="math" text-anchor="start">S = 1024</text>
+<text x="650" y="233" class="small" text-anchor="start">α = 1024，β = 0</text>
+<path d="M590 283 H630" stroke="var(--line)" stroke-width="3"/>
+<text x="650" y="290" class="head" text-anchor="start">按比例增长</text>
+<text x="650" y="323" class="math" text-anchor="start">S = 0.5N</text>
+<text x="650" y="353" class="small" text-anchor="start">α = 0，β = 0.5</text>
+<path d="M590 403 H630" stroke="var(--error)" stroke-width="3"/>
+<text x="650" y="410" class="head" text-anchor="start">完整历史</text>
+<text x="650" y="443" class="math" text-anchor="start">S = N</text>
+<text x="650" y="473" class="small" text-anchor="start">α = 0，β = 1</text>
+<text x="450" y="562" class="small" text-anchor="middle">教学规则；跨度超过已有历史时截断，图中未画计算块取整</text>
+</svg>

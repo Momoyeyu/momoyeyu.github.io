@@ -1,61 +1,65 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="900" height="420" viewBox="0 0 900 420" role="img" aria-labelledby="title desc">
-<title id="title">四种设计的完成时间分布</title>
-<desc id="desc">同一组合成负载下四种设计的完成时间。Super-agent 的中位数 12.4 分钟、p95 15.7 分钟；关闭直通后为 12.6 与 15.5；单会话配中性提示词为 20.4 与 29.5；单会话配优先委派提示词为 13.8 与 29.0。</desc>
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="544" viewBox="0 0 960 544" role="img" aria-labelledby="title desc">
+<title id="title">完成时间的中位数与长尾</title><desc id="desc">四种设计的 p50 和 p95 完成时间，单位为分钟。Super-agent 12.4 与 15.7；关闭直通 12.6 与 15.5；单会话中性提示词 20.4 与 29.5；单会话优先委派 13.8 与 29.0。点之间的连线仅连接两个分位数，不表示完整分布。</desc>
 <style>
-:root{--fg:#29303b;--line:#657285;--bg:#f8fafc;--a:#e0eee6;--b:#e7e4f3;--c:#f7ead6;--accent:#508369;--muted:#667386}
-@media(prefers-color-scheme:dark){:root{--fg:#e0e5ec;--line:#a4afbd;--bg:#222731;--a:#283e35;--b:#353148;--c:#483b2b;--accent:#86b49b;--muted:#b2bdcb}}
-text{font-family:Helvetica,Arial,'PingFang SC',sans-serif;fill:var(--fg);font-size:19px}
-.title{font-size:25px;font-weight:600}.small{font-size:17px;fill:var(--muted)}
-.range{stroke:var(--line);stroke-width:3;stroke-linecap:round;opacity:.45}
-.p50{fill:var(--accent)}
-.p95{fill:var(--bg);stroke:var(--accent);stroke-width:2}
-.tick{stroke:var(--line);stroke-width:1;opacity:.4}
-.val{font-size:17px}
+:root{color-scheme:light dark;--paper:#fcfcfa;--ink:#29333d;--muted:#677580;--line:#84918f;--grid:#dde3df;--soft:#f0f3f0;--green:#e1eee5;--green-ink:#417558;--purple:#ece8f5;--purple-ink:#776395;--amber:#f6ecd9;--amber-ink:#956e32}
+@media(prefers-color-scheme:dark){:root{--paper:#20262d;--ink:#e7ecec;--muted:#acb9bf;--line:#8b9e9c;--grid:#3e4b52;--soft:#29333a;--green:#2c443a;--green-ink:#9bc8ab;--purple:#3c354e;--purple-ink:#c1b0df;--amber:#463e2e;--amber-ink:#d9bc85}}
+text{font-family:'PingFang SC','Microsoft YaHei',Arial,sans-serif;fill:var(--ink);font-size:21px}
+.title{font-size:29px;font-weight:600;letter-spacing:.3px}.eyebrow{font-size:16px;font-weight:600;fill:var(--muted);letter-spacing:1.6px}.head{font-size:23px;font-weight:600}.small{font-size:18px;fill:var(--muted)}.mono{font-family:'SFMono-Regular',Consolas,monospace;font-size:18px}.label{font-size:19px}.green-text{fill:var(--green-ink)}.purple-text{fill:var(--purple-ink)}
+.box{fill:var(--paper);stroke:var(--line);stroke-width:1.4}.soft{fill:var(--soft)}.green{fill:var(--green)}.purple{fill:var(--purple)}.amber{fill:var(--amber)}.panel{fill:var(--soft);stroke:var(--grid);stroke-width:1.2}.dash{stroke-dasharray:6 5}.wire{fill:none;stroke:var(--line);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}.arrow{fill:none;stroke:var(--line);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#arrow)}.return{stroke-dasharray:5 5;stroke:var(--purple-ink);marker-end:url(#back)}.fast{stroke:var(--green-ink);stroke-width:2.5;marker-end:url(#fast)}.grid{stroke:var(--grid);stroke-width:1}.dot{fill:var(--green-ink)}
 </style>
-
-<text x="450" y="34" class="title" text-anchor="middle">完成时间的分布，线段越长长尾越重</text>
-<text x="450" y="62" class="small" text-anchor="middle">同一组合成负载，每种设计跑 5 次</text>
-
-<text x="285" y="115" text-anchor="end">Super-agent</text>
-<path d="M367 110 H460" class="range"/>
-<circle cx="367" cy="110" r="5.5" class="p50"/>
-<circle cx="460" cy="110" r="5.5" class="p95"/>
-<text x="367" y="96" class="val" text-anchor="middle">12.4</text>
-<text x="460" y="96" class="val" text-anchor="middle">15.7</text>
-
-<text x="285" y="170" text-anchor="end">关闭直通</text>
-<path d="M373 165 H454" class="range"/>
-<circle cx="373" cy="165" r="5.5" class="p50"/>
-<circle cx="454" cy="165" r="5.5" class="p95"/>
-<text x="373" y="151" class="val" text-anchor="middle">12.6</text>
-<text x="454" y="151" class="val" text-anchor="middle">15.5</text>
-
-<text x="285" y="225" text-anchor="end">单会话 · 中性提示词</text>
-<path d="M591 220 H846" class="range"/>
-<circle cx="591" cy="220" r="5.5" class="p50"/>
-<circle cx="846" cy="220" r="5.5" class="p95"/>
-<text x="591" y="206" class="val" text-anchor="middle">20.4</text>
-<text x="846" y="206" class="val" text-anchor="middle">29.5</text>
-
-<text x="285" y="280" text-anchor="end">单会话 · 优先委派</text>
-<path d="M406 275 H832" class="range"/>
-<circle cx="406" cy="275" r="5.5" class="p50"/>
-<circle cx="832" cy="275" r="5.5" class="p95"/>
-<text x="406" y="261" class="val" text-anchor="middle">13.8</text>
-<text x="832" y="261" class="val" text-anchor="middle">29.0</text>
-
-<path d="M300 320 H860" class="tick"/>
-<path d="M300 314 V326" class="tick"/>
-<path d="M440 314 V326" class="tick"/>
-<path d="M580 314 V326" class="tick"/>
-<path d="M720 314 V326" class="tick"/>
-<path d="M860 314 V326" class="tick"/>
-<text x="300" y="344" class="small" text-anchor="middle">10</text>
-<text x="440" y="344" class="small" text-anchor="middle">15</text>
-<text x="580" y="344" class="small" text-anchor="middle">20</text>
-<text x="720" y="344" class="small" text-anchor="middle">25</text>
-<text x="860" y="344" class="small" text-anchor="middle">30</text>
-<text x="580" y="374" class="small" text-anchor="middle">完成时间 / 分钟</text>
-
-<text x="450" y="404" class="small" text-anchor="middle">实心点 p50，空心点 p95</text>
+<defs>
+<marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9Z" fill="var(--line)"/></marker>
+<marker id="back" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9Z" fill="var(--purple-ink)"/></marker>
+<marker id="fast" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9Z" fill="var(--green-ink)"/></marker>
+<pattern id="hatch" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M0 10L10 0" stroke="var(--line)" stroke-opacity=".15"/></pattern>
+</defs>
+<rect width="960" height="544" rx="12" fill="var(--paper)"/>
+<text x="32" y="29" class="eyebrow" text-anchor="start">07 / 合成负载实验</text>
+<text x="32" y="71" class="title" text-anchor="start">完成时间的中位数与长尾</text>
+<text x="32" y="105" class="small" text-anchor="start">每种设计运行 5 次 · 编码工作由耗时工具模拟</text>
+<circle cx="702" cy="100" r="6" class="dot"/>
+<text x="716" y="106" class="small" text-anchor="start">p50</text>
+<circle cx="816" cy="100" r="6" class="box"/>
+<text x="830" y="106" class="small" text-anchor="start">p95</text>
+<rect x="24" y="127" width="912" height="160" rx="8" class="green"/>
+<path d="M310 139 V449" class="grid" />
+<text x="310" y="480" class="small" text-anchor="middle">0</text>
+<path d="M395 139 V449" class="grid" />
+<text x="395" y="480" class="small" text-anchor="middle">5</text>
+<path d="M480 139 V449" class="grid" />
+<text x="480" y="480" class="small" text-anchor="middle">10</text>
+<path d="M565 139 V449" class="grid" />
+<text x="565" y="480" class="small" text-anchor="middle">15</text>
+<path d="M650 139 V449" class="grid" />
+<text x="650" y="480" class="small" text-anchor="middle">20</text>
+<path d="M735 139 V449" class="grid" />
+<text x="735" y="480" class="small" text-anchor="middle">25</text>
+<path d="M820 139 V449" class="grid" />
+<text x="820" y="480" class="small" text-anchor="middle">30</text>
+<path d="M905 139 V449" class="grid" />
+<text x="905" y="480" class="small" text-anchor="middle">35</text>
+<text x="48" y="183" class="head" text-anchor="start">Super-agent</text>
+<path d="M520.8 177 H576.9" stroke="var(--green-ink)" stroke-width="4" stroke-linecap="round"/>
+<circle cx="520.8" cy="177" r="7" fill="var(--green-ink)"/><circle cx="576.9" cy="177" r="7" fill="var(--paper)" stroke="var(--green-ink)" stroke-width="2.5"/>
+<text x="520.8" y="161" class="mono" text-anchor="middle">12.4</text>
+<text x="576.9" y="161" class="mono" text-anchor="middle">15.7</text>
+<text x="48" y="259" class="head" text-anchor="start">关闭直通</text>
+<path d="M524.2 253 H573.5" stroke="var(--green-ink)" stroke-width="4" stroke-linecap="round"/>
+<circle cx="524.2" cy="253" r="7" fill="var(--green-ink)"/><circle cx="573.5" cy="253" r="7" fill="var(--paper)" stroke="var(--green-ink)" stroke-width="2.5"/>
+<text x="524.2" y="237" class="mono" text-anchor="middle">12.6</text>
+<text x="573.5" y="237" class="mono" text-anchor="middle">15.5</text>
+<text x="48" y="339" class="" text-anchor="start">单会话 + subagent</text>
+<text x="48" y="366" class="small" text-anchor="start">中性提示词</text>
+<path d="M656.8 342 H811.5" stroke="var(--purple-ink)" stroke-width="4" stroke-linecap="round"/>
+<circle cx="656.8" cy="342" r="7" fill="var(--purple-ink)"/><circle cx="811.5" cy="342" r="7" fill="var(--paper)" stroke="var(--purple-ink)" stroke-width="2.5"/>
+<text x="656.8" y="326" class="mono" text-anchor="middle">20.4</text>
+<text x="811.5" y="326" class="mono" text-anchor="middle">29.5</text>
+<text x="48" y="417" class="" text-anchor="start">单会话 + subagent</text>
+<text x="48" y="444" class="small" text-anchor="start">优先委派</text>
+<path d="M544.6 420 H803.0" stroke="var(--purple-ink)" stroke-width="4" stroke-linecap="round"/>
+<circle cx="544.6" cy="420" r="7" fill="var(--purple-ink)"/><circle cx="803.0" cy="420" r="7" fill="var(--paper)" stroke="var(--purple-ink)" stroke-width="2.5"/>
+<text x="544.6" y="404" class="mono" text-anchor="middle">13.8</text>
+<text x="803.0" y="404" class="mono" text-anchor="middle">29.0</text>
+<path d="M310 449 H905" class="wire" />
+<text x="607.5" y="518" class="small" text-anchor="middle">完成时间 / 分钟</text>
 </svg>

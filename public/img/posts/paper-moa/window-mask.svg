@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="575" viewBox="0 0 900 575" role="img" aria-labelledby="title desc">
+<title id="title">远处的事实，可能落在窗口之外</title>
+<desc id="desc">当前位置为 12。完整因果注意力可读位置 1 到 12。教学短窗只读位置 1、2 与最近的 7 到 12，包含项目代号的第 4 个位置被屏蔽。13 到 16 是未来，两者都不可读。</desc>
+<style>
+:root{--fg:#29303b;--line:#657285;--bg:#f8fafc;--a:#e0eee6;--b:#e7e4f3;--c:#f7ead6;--accent:#508369;--muted:#667386;--error:#aa5653;--grid:#dce2e9}
+@media(prefers-color-scheme:dark){:root{--fg:#e0e5ec;--line:#a4afbd;--bg:#222731;--a:#283e35;--b:#353148;--c:#483b2b;--accent:#86b49b;--muted:#b2bdcb;--error:#d99087;--grid:#3c4450}}
+text{font-family:Helvetica,Arial,'PingFang SC',sans-serif;fill:var(--fg);font-size:22px}
+.title{font-size:28px;font-weight:600}.head{font-size:24px;font-weight:600}.small{font-size:19px;fill:var(--muted)}.tiny{font-size:16px}.math{font-family:Times,'Times New Roman',serif;font-style:italic;font-size:25px}.box{fill:var(--bg);stroke:var(--line);stroke-width:1.5}.a{fill:var(--a)}.b{fill:var(--b)}.c{fill:var(--c)}.faint{opacity:.35}.cut{fill:var(--bg);stroke:var(--error);stroke-width:1.5;stroke-dasharray:5 4}.line{fill:none;stroke:var(--line);stroke-width:1.6}.grid{fill:none;stroke:var(--grid);stroke-width:1}.arrow{fill:none;stroke:var(--line);stroke-width:1.8;stroke-linejoin:round;marker-end:url(#arrow)}.accent{fill:var(--accent)}.red{fill:var(--error)}
+</style>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="var(--line)"/></marker></defs>
+<rect width="900" height="575" rx="14" fill="var(--bg)"/>
+<text x="450" y="43" class="title" text-anchor="middle">远处的事实，可能落在窗口之外</text>
+<text x="450" y="79" class="small" text-anchor="middle">窗口决定可读位置，softmax 决定其中的读取权重</text>
+<text x="201.5" y="141" class="tiny" text-anchor="middle">1</text>
+<text x="242.5" y="141" class="tiny" text-anchor="middle">2</text>
+<text x="283.5" y="141" class="tiny" text-anchor="middle">3</text>
+<text x="324.5" y="141" class="tiny" text-anchor="middle">4</text>
+<text x="365.5" y="141" class="tiny" text-anchor="middle">5</text>
+<text x="406.5" y="141" class="tiny" text-anchor="middle">6</text>
+<text x="447.5" y="141" class="tiny" text-anchor="middle">7</text>
+<text x="488.5" y="141" class="tiny" text-anchor="middle">8</text>
+<text x="529.5" y="141" class="tiny" text-anchor="middle">9</text>
+<text x="570.5" y="141" class="tiny" text-anchor="middle">10</text>
+<text x="611.5" y="141" class="tiny" text-anchor="middle">11</text>
+<text x="652.5" y="141" class="tiny" text-anchor="middle">12</text>
+<text x="693.5" y="141" class="tiny" text-anchor="middle">13</text>
+<text x="734.5" y="141" class="tiny" text-anchor="middle">14</text>
+<text x="775.5" y="141" class="tiny" text-anchor="middle">15</text>
+<text x="816.5" y="141" class="tiny" text-anchor="middle">16</text>
+<text x="505" y="117" class="small" text-anchor="middle">历史位置</text>
+<path d="M184 150 H670" class="line"/>
+<text x="775" y="117" class="small" text-anchor="middle">未来</text>
+<text x="96" y="217" class="" text-anchor="middle">完整注意力</text>
+<rect x="184" y="185" width="35" height="52" rx="4" class="box c"/>
+<rect x="225" y="185" width="35" height="52" rx="4" class="box c"/>
+<rect x="266" y="185" width="35" height="52" rx="4" class="box a"/>
+<rect x="307" y="185" width="35" height="52" rx="4" class="box a"/>
+<text x="324.5" y="217" class="tiny" text-anchor="middle">青鸟</text>
+<rect x="348" y="185" width="35" height="52" rx="4" class="box a"/>
+<rect x="389" y="185" width="35" height="52" rx="4" class="box a"/>
+<rect x="430" y="185" width="35" height="52" rx="4" class="box a"/>
+<rect x="471" y="185" width="35" height="52" rx="4" class="box a"/>
+<rect x="512" y="185" width="35" height="52" rx="4" class="box a"/>
+<rect x="553" y="185" width="35" height="52" rx="4" class="box a"/>
+<rect x="594" y="185" width="35" height="52" rx="4" class="box a"/>
+<rect x="635" y="185" width="35" height="52" rx="4" class="box b"/>
+<text x="652.5" y="217" class="math" text-anchor="middle">Q</text>
+<rect x="676" y="185" width="35" height="52" rx="4" class="box faint"/>
+<rect x="717" y="185" width="35" height="52" rx="4" class="box faint"/>
+<rect x="758" y="185" width="35" height="52" rx="4" class="box faint"/>
+<rect x="799" y="185" width="35" height="52" rx="4" class="box faint"/>
+<text x="512" y="272" class="small" text-anchor="middle">读到远处的项目代号</text>
+<text x="96" y="359" class="" text-anchor="middle">滑动窗口</text>
+<rect x="184" y="327" width="35" height="52" rx="4" class="box c"/>
+<rect x="225" y="327" width="35" height="52" rx="4" class="box c"/>
+<rect x="266" y="327" width="35" height="52" rx="4" class="cut"/>
+<rect x="307" y="327" width="35" height="52" rx="4" class="cut"/>
+<text x="324.5" y="359" class="tiny" text-anchor="middle">青鸟</text>
+<rect x="348" y="327" width="35" height="52" rx="4" class="cut"/>
+<rect x="389" y="327" width="35" height="52" rx="4" class="cut"/>
+<rect x="430" y="327" width="35" height="52" rx="4" class="box a"/>
+<rect x="471" y="327" width="35" height="52" rx="4" class="box a"/>
+<rect x="512" y="327" width="35" height="52" rx="4" class="box a"/>
+<rect x="553" y="327" width="35" height="52" rx="4" class="box a"/>
+<rect x="594" y="327" width="35" height="52" rx="4" class="box a"/>
+<rect x="635" y="327" width="35" height="52" rx="4" class="box b"/>
+<text x="652.5" y="359" class="math" text-anchor="middle">Q</text>
+<rect x="676" y="327" width="35" height="52" rx="4" class="box faint"/>
+<rect x="717" y="327" width="35" height="52" rx="4" class="box faint"/>
+<rect x="758" y="327" width="35" height="52" rx="4" class="box faint"/>
+<rect x="799" y="327" width="35" height="52" rx="4" class="box faint"/>
+<text x="512" y="414" class="small" text-anchor="middle">开头 2 项 + 最近 6 项；中间事实不直接参与</text>
+<rect x="184" y="470" width="24" height="24" rx="3" class="box c"/>
+<text x="220" y="489" class="small" text-anchor="start">开头保留区</text>
+<rect x="400" y="470" width="24" height="24" rx="3" class="box a"/>
+<text x="436" y="489" class="small" text-anchor="start">可读历史</text>
+<rect x="610" y="470" width="24" height="24" rx="3" class="cut"/>
+<text x="646" y="489" class="small" text-anchor="start">被窗口排除</text>
+<text x="450" y="542" class="small" text-anchor="middle">教学示意：当前位置为 12；开头区仅画 2 项，论文默认保留 64 token</text>
+</svg>

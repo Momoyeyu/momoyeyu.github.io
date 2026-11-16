@@ -11,6 +11,8 @@
 - 图标 → `astro.config.mjs` 的 `icon({ include })`；按清单打包，新增图标必须登记，否则不渲染
 - Markdown 与代码块渲染（Admonition、Mermaid、KaTeX、Expressive Code）→ `astro.config.mjs` + `src/plugins/`
 - 系列、排序、上一集/下一集 → `src/utils/content-utils.ts`；由 `content-utils.test.ts` 覆盖，改逻辑要连测试一起改
+- 归档分类与标签计数 → `src/utils/archive-utils.ts`，由 `ArchivePanel.svelte` 使用；按文章计数，同篇重复标签只计一次，由 `archive-utils.test.ts` 覆盖
+- 本地图片导入 → `src/components/misc/ImageWrapper.astro`；动态导入只匹配 Astro 支持的图片格式，不要扩回整个源码目录
 - URL 规则 → `src/utils/url-utils.ts`
 - 整页刷新恢复滚动位置 → `src/utils/scroll-restoration.ts`，由 `Layout.astro` 初始化；只在同一 URL 的 reload 导航中恢复，站内切页和前进后退仍交给 Swup；由 `scroll-restoration.test.ts` 覆盖
 - sitemap 的 `lastmod` → `astro.config.mjs` 的 `getPostLastmodByPath()`（读 `updated`，回退 `date`）

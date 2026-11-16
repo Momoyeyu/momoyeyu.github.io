@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="635" viewBox="0 0 900 635" role="img" aria-labelledby="title desc">
+<title id="title">删掉一条连接，其余权重也会变</title>
+<desc id="desc">三个权重从 0.5、0.3、0.2 变为 0.625、0.375、0，变化为正 0.125、正 0.075、负 0.2。损失的一阶变化同时计算直接删除与剩余位置重分配。g 为相应权重上的损失梯度。</desc>
+<style>
+:root{--fg:#29303b;--line:#657285;--bg:#f8fafc;--a:#e0eee6;--b:#e7e4f3;--c:#f7ead6;--accent:#508369;--muted:#667386;--error:#aa5653;--grid:#dce2e9}
+@media(prefers-color-scheme:dark){:root{--fg:#e0e5ec;--line:#a4afbd;--bg:#222731;--a:#283e35;--b:#353148;--c:#483b2b;--accent:#86b49b;--muted:#b2bdcb;--error:#d99087;--grid:#3c4450}}
+text{font-family:Helvetica,Arial,'PingFang SC',sans-serif;fill:var(--fg);font-size:22px}
+.title{font-size:28px;font-weight:600}.head{font-size:24px;font-weight:600}.small{font-size:19px;fill:var(--muted)}.tiny{font-size:16px}.math{font-family:Times,'Times New Roman',serif;font-style:italic;font-size:25px}.box{fill:var(--bg);stroke:var(--line);stroke-width:1.5}.a{fill:var(--a)}.b{fill:var(--b)}.c{fill:var(--c)}.faint{opacity:.35}.cut{fill:var(--bg);stroke:var(--error);stroke-width:1.5;stroke-dasharray:5 4}.line{fill:none;stroke:var(--line);stroke-width:1.6}.grid{fill:none;stroke:var(--grid);stroke-width:1}.arrow{fill:none;stroke:var(--line);stroke-width:1.8;stroke-linejoin:round;marker-end:url(#arrow)}.accent{fill:var(--accent)}.red{fill:var(--error)}
+</style>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="var(--line)"/></marker></defs>
+<rect width="900" height="635" rx="14" fill="var(--bg)"/>
+<text x="450" y="43" class="title" text-anchor="middle">删掉一条连接，其余权重也会变</text>
+<text x="450" y="82" class="small" text-anchor="middle">屏蔽第三条连接，不只是把 0.2 改成 0</text>
+<text x="65" y="171" class="small" text-anchor="middle">原权重</text>
+<rect x="150" y="126" width="200" height="80" rx="8" class="box a"/>
+<text x="250" y="177" class="math" text-anchor="middle">0.5</text>
+<rect x="400" y="126" width="200" height="80" rx="8" class="box a"/>
+<text x="500" y="177" class="math" text-anchor="middle">0.3</text>
+<rect x="650" y="126" width="200" height="80" rx="8" class="box a"/>
+<text x="750" y="177" class="math" text-anchor="middle">0.2</text>
+<text x="65" y="367" class="small" text-anchor="middle">屏蔽后</text>
+<rect x="150" y="321" width="200" height="80" rx="8" class="box b"/>
+<text x="250" y="372" class="math" text-anchor="middle">0.625</text>
+<rect x="400" y="321" width="200" height="80" rx="8" class="box b"/>
+<text x="500" y="372" class="math" text-anchor="middle">0.375</text>
+<rect x="650" y="321" width="200" height="80" rx="8" class="cut"/>
+<text x="750" y="372" class="math" text-anchor="middle">0</text>
+<path d="M250 206 V321" class="arrow"/>
+<text x="270" y="268" class="small" text-anchor="start">÷ 0.8</text>
+<path d="M500 206 V321" class="arrow"/>
+<text x="520" y="268" class="small" text-anchor="start">÷ 0.8</text>
+<path d="M750 206 V321" class="arrow"/>
+<text x="770" y="268" class="small" text-anchor="start">删除</text>
+<text x="450" y="444" class="head" text-anchor="middle">权重变化：+0.125，+0.075，−0.2</text>
+<rect x="100" y="476" width="700" height="86" rx="8" class="box c"/>
+<text x="450" y="509" class="small" text-anchor="middle">损失变化 ≈ 三个位置的梯度 × 各自权重变化</text>
+<text x="450" y="543" class="math" text-anchor="middle">E₃ = 0.125g₁ + 0.075g₂ − 0.2g₃</text>
+<text x="450" y="604" class="small" text-anchor="middle">梯度 g 来自校准回答的损失；数值为教学示例</text>
+</svg>

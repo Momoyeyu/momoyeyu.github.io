@@ -19,17 +19,13 @@ const className = Astro.props.class;
 const isLocal = !(
 	src.startsWith("/") ||
 	src.startsWith("http") ||
-	src.startsWith("https") ||
 	src.startsWith("data:")
 );
 const isPublic = src.startsWith("/");
 
-// TODO temporary workaround for images dynamic import
-// https://github.com/withastro/astro/issues/3373
-// biome-ignore lint/suspicious/noImplicitAnyLet: <check later>
-let img;
+let img: ImageMetadata | undefined;
 if (isLocal) {
-	const files = import.meta.glob<ImageMetadata>("../../**", {
+	const files = import.meta.glob<ImageMetadata>("../../**/*.{jpeg,jpg,png,tiff,webp,gif,svg,avif}", {
 		import: "default",
 	});
 	let normalizedPath = path

@@ -139,4 +139,56 @@ describe("assignSeriesMetadata", () => {
 		expect(posts[0].data.seriesPosition).toBe(-1);
 		expect(posts[1].data.seriesPosition).toBe(-1);
 	});
+
+	it("sorts private series buckets without reordering the input list", () => {
+		const posts = [makePost("last", "LLM", 2), makePost("other", "Math", 0), makePost("first", "LLM", 0)];
+		assignSeriesMetadata(posts);
+		expect(posts.map(post => post.slug)).toEqual(["last", "other", "first"]);
+		expect(bySlug(posts).first.seriesNextSlug).toBe("last");
+		expect(bySlug(posts).last.seriesPrevSlug).toBe("first");
+	});
+
+	it("keeps the input order for equal episode sort keys", () => {
+		const posts = [makePost("first", "LLM", 1), makePost("second", "LLM", 1)];
+		assignSeriesMetadata(posts);
+		expect(posts.map(post => post.data.seriesPosition)).toEqual([0, 1]);
+		expect(posts[0].data.seriesNextSlug).toBe("second");
+	});
+
+	it("supports category names that overlap object prototype keys", () => {
+		const posts = [makePost("later", "__proto__", 1), makePost("earlier", "__proto__", 0), makePost("other", "constructor", 0)];
+		assignSeriesMetadata(posts);
+		expect(bySlug(posts).earlier.seriesNextSlug).toBe("later");
+		expect(bySlug(posts).other.seriesTotal).toBe(1);
+	});
+});
+
+describe("post ordering", () => {
+	it("preserves chronological navigation while floating pinned posts", async () => {
+		vi.stubEnv("PROD", true);
+		const posts = [
+			{ slug: "older", episode: 0, day: 1, pinned: false },
+			{ slug: "pinned", episode: 1, day: 2, pinned: true },
+			{ slug: "newest", episode: 2, day: 3, pinned: false },
+		].map(({ slug, episode, day, pinned }) => ({
+			...makePost(slug, "LLM", episode),
+			data: { ...makePost(slug, "LLM", episode).data, date: new Date(2026, 0, day), tags: [], pinned },
+		}));
+		collectionPosts.splice(0, collectionPosts.length, ...posts);
+		const sorted = await getSortedPosts();
+		expect(sorted.map(post => post.slug)).toEqual(["pinned", "newest", "older"]);
+		expect(sorted[0].data.nextSlug).toBe("newest");
+		expect(sorted[0].data.prevSlug).toBe("older");
+		expect(sorted[0].data.seriesPosition).toBe(1);
+		expect((await getSortedPostsList()).map(post => post.slug)).toEqual(["newest", "pinned", "older"]);
+	});
+
+	it("does not reuse stale post data between content queries", async () => {
+		const older = makePost("older", "LLM", 0);
+		collectionPosts.splice(0, collectionPosts.length, { ...older, data: { ...older.data, date: new Date(2026, 0, 1), tags: [] } });
+		expect((await getSortedPostsList()).map(post => post.slug)).toEqual(["older"]);
+		const newer = makePost("newer", "LLM", 1);
+		collectionPosts.push({ ...newer, data: { ...newer.data, date: new Date(2026, 0, 2), tags: [] } });
+		expect((await getSortedPostsList()).map(post => post.slug)).toEqual(["newer", "older"]);
+	});
 });

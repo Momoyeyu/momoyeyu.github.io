@@ -15,13 +15,7 @@ async function getPublishedPosts() {
 
 async function getRawSortedPosts() {
 	const allBlogPosts = await getPublishedPosts();
-
-	const sorted = allBlogPosts.sort((a, b) => {
-		const dateA = new Date(a.data.date);
-		const dateB = new Date(b.data.date);
-		return dateA > dateB ? -1 : 1;
-	});
-	return sorted;
+	return allBlogPosts.sort((a, b) => a.data.date > b.data.date ? -1 : 1);
 }
 
 // Assigns series metadata (position, total, prev/next) to each post in a series.
@@ -30,18 +24,20 @@ async function getRawSortedPosts() {
 // within the series; the raw `episode` value is only used as a sort key, so
 // inserting a new article with episode: 2.5 cleanly slots in without renumbering.
 export function assignSeriesMetadata(sorted: CollectionEntry<"posts">[]) {
-	const byCategory: Record<string, CollectionEntry<"posts">[]> = {};
+	const byCategory = new Map<string, CollectionEntry<"posts">[]>();
 	for (const post of sorted) {
 		const cat = post.data.category;
 		if (!cat) continue;
 		if (typeof post.data.episode !== "number") continue;
-		if (!byCategory[cat]) byCategory[cat] = [];
-		byCategory[cat].push(post);
+		let group = byCategory.get(cat);
+		if (!group) {
+			group = [];
+			byCategory.set(cat, group);
+		}
+		group.push(post);
 	}
-	for (const cat of Object.keys(byCategory)) {
-		const arr = byCategory[cat]
-			.slice()
-			.sort((a, b) => (a.data.episode as number) - (b.data.episode as number));
+	for (const arr of byCategory.values()) {
+		arr.sort((a, b) => (a.data.episode as number) - (b.data.episode as number));
 		const total = arr.length;
 		for (let i = 0; i < total; i++) {
 			// EP is 0-indexed (programmer-style): first episode is EP.0.

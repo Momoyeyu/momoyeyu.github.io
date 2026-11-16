@@ -1,47 +1,55 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="900" height="480" viewBox="0 0 900 480" role="img" aria-labelledby="title desc">
-<title id="title">内联与溢出</title>
-<desc id="desc">上下文窗口当作缓存：先只放对象的 ID 与摘要，再按局部性把邻近内容逐层内联进来；超过预算的长内容留在窗口外，窗口里只保留一个指针，模型需要时再通过工具读取。</desc>
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="570" viewBox="0 0 960 570" role="img" aria-labelledby="title desc">
+<title id="title">先带上摘要，完整日志按需读取</title><desc id="desc">左侧为长 CI 日志。上下文窗口内联失败摘要和相关 ID，完整日志保存在外部；模型可以根据引用读取具体片段。</desc>
 <style>
-:root{--fg:#29303b;--line:#657285;--bg:#f8fafc;--a:#e0eee6;--b:#e7e4f3;--c:#f7ead6;--accent:#508369;--muted:#667386}
-@media(prefers-color-scheme:dark){:root{--fg:#e0e5ec;--line:#a4afbd;--bg:#222731;--a:#283e35;--b:#353148;--c:#483b2b;--accent:#86b49b;--muted:#b2bdcb}}
-text{font-family:Helvetica,Arial,'PingFang SC',sans-serif;fill:var(--fg);font-size:20px}
-.title{font-size:25px;font-weight:600}.head{font-size:21px;font-weight:600}.small{font-size:17px;fill:var(--muted)}
-.box{fill:var(--bg);stroke:var(--line);stroke-width:1.4}.a{fill:var(--a)}.b{fill:var(--b)}.c{fill:var(--c)}
-.arrow{fill:none;stroke:var(--line);stroke-width:1.7;stroke-linejoin:round;marker-end:url(#arrow)}
-.budget{stroke:var(--line);stroke-width:1;stroke-dasharray:5 5;opacity:.5}
+:root{color-scheme:light dark;--paper:#fcfcfa;--ink:#29333d;--muted:#677580;--line:#84918f;--grid:#dde3df;--soft:#f0f3f0;--green:#e1eee5;--green-ink:#417558;--purple:#ece8f5;--purple-ink:#776395;--amber:#f6ecd9;--amber-ink:#956e32}
+@media(prefers-color-scheme:dark){:root{--paper:#20262d;--ink:#e7ecec;--muted:#acb9bf;--line:#8b9e9c;--grid:#3e4b52;--soft:#29333a;--green:#2c443a;--green-ink:#9bc8ab;--purple:#3c354e;--purple-ink:#c1b0df;--amber:#463e2e;--amber-ink:#d9bc85}}
+text{font-family:'PingFang SC','Microsoft YaHei',Arial,sans-serif;fill:var(--ink);font-size:21px}
+.title{font-size:29px;font-weight:600;letter-spacing:.3px}.eyebrow{font-size:16px;font-weight:600;fill:var(--muted);letter-spacing:1.6px}.head{font-size:23px;font-weight:600}.small{font-size:18px;fill:var(--muted)}.mono{font-family:'SFMono-Regular',Consolas,monospace;font-size:18px}.label{font-size:19px}.green-text{fill:var(--green-ink)}.purple-text{fill:var(--purple-ink)}
+.box{fill:var(--paper);stroke:var(--line);stroke-width:1.4}.soft{fill:var(--soft)}.green{fill:var(--green)}.purple{fill:var(--purple)}.amber{fill:var(--amber)}.panel{fill:var(--soft);stroke:var(--grid);stroke-width:1.2}.dash{stroke-dasharray:6 5}.wire{fill:none;stroke:var(--line);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}.arrow{fill:none;stroke:var(--line);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#arrow)}.return{stroke-dasharray:5 5;stroke:var(--purple-ink);marker-end:url(#back)}.fast{stroke:var(--green-ink);stroke-width:2.5;marker-end:url(#fast)}.grid{stroke:var(--grid);stroke-width:1}.dot{fill:var(--green-ink)}
 </style>
 <defs>
-<marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="var(--line)"/></marker>
+<marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9Z" fill="var(--line)"/></marker>
+<marker id="back" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9Z" fill="var(--purple-ink)"/></marker>
+<marker id="fast" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9Z" fill="var(--green-ink)"/></marker>
+<pattern id="hatch" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M0 10L10 0" stroke="var(--line)" stroke-opacity=".15"/></pattern>
 </defs>
-
-<text x="450" y="34" class="title" text-anchor="middle">窗口当缓存用：先摘要，再内联，超限外置</text>
-<text x="450" y="62" class="small" text-anchor="middle">放进窗口的信息有预算，超出的部分只留一个指针</text>
-
-<rect x="60" y="92" width="400" height="270" rx="7" class="box"/>
-<text x="80" y="124" class="small">上下文窗口</text>
-
-<rect x="80" y="142" width="360" height="56" rx="5" class="box a"/>
-<text x="260" y="176" text-anchor="middle">① ID 与摘要</text>
-
-<rect x="80" y="210" width="360" height="56" rx="5" class="box b"/>
-<text x="260" y="244" text-anchor="middle">② 邻近消息与关键背景</text>
-
-<rect x="80" y="278" width="360" height="56" rx="5" class="box c"/>
-<text x="260" y="312" text-anchor="middle">③ 截断后的指针</text>
-
-
-<rect x="580" y="142" width="260" height="192" rx="7" class="box"/>
-<text x="710" y="176" class="head" text-anchor="middle">外部存储</text>
-<text x="710" y="208" class="small" text-anchor="middle">完整正文</text>
-<text x="710" y="234" class="small" text-anchor="middle">历史评论</text>
-<text x="710" y="260" class="small" text-anchor="middle">整段代码评审</text>
-
-<path d="M440 296 H576" class="arrow"/>
-<text x="510" y="284" class="small" text-anchor="middle">指针</text>
-
-<path d="M576 320 H444" class="arrow"/>
-<text x="512" y="344" class="small" text-anchor="middle">读取</text>
-
-<text x="450" y="430" class="small" text-anchor="middle">局部性决定先内联谁：先同类对象，再时间或空间上相邻的内容</text>
-<text x="450" y="458" class="small" text-anchor="middle">注入过多会稀释注意力，注入过少则要多走几次工具调用</text>
+<rect width="960" height="570" rx="12" fill="var(--paper)"/>
+<text x="32" y="29" class="eyebrow" text-anchor="start">03 / 上下文预算</text>
+<text x="32" y="71" class="title" text-anchor="start">先带上摘要，完整日志按需读取</text>
+<rect x="32" y="119" width="264" height="356" rx="9" class="panel"/>
+<text x="54" y="155" class="head" text-anchor="start">CI #318 · 完整日志</text>
+<path d="M54 183 H246" class="wire" opacity=".28"/>
+<path d="M54 205 H270" class="wire" opacity=".28"/>
+<path d="M54 227 H223" class="wire" opacity=".28"/>
+<rect x="48" y="236" width="232" height="22" rx="3" class="amber"/>
+<text x="56" y="252" class="mono" text-anchor="start">FAIL  login.spec.ts</text>
+<rect x="48" y="258" width="232" height="22" rx="3" class="amber"/>
+<text x="56" y="274" class="mono" text-anchor="start">Safari: timeout</text>
+<path d="M54 293 H265" class="wire" opacity=".28"/>
+<path d="M54 315 H228" class="wire" opacity=".28"/>
+<path d="M54 337 H267" class="wire" opacity=".28"/>
+<path d="M54 359 H244" class="wire" opacity=".28"/>
+<path d="M54 381 H209" class="wire" opacity=".28"/>
+<path d="M54 403 H260" class="wire" opacity=".28"/>
+<text x="54" y="454" class="small" text-anchor="start">数千行输出</text>
+<path d="M296 260 H356" class="arrow" />
+<text x="326" y="243" class="small" text-anchor="middle">内联</text>
+<rect x="356" y="119" width="572" height="258" rx="9" class="box green"/>
+<text x="380" y="155" class="head" text-anchor="start">当前上下文</text>
+<rect x="738" y="137" width="164" height="12" rx="6" class="soft"/>
+<rect x="738" y="137" width="103" height="12" rx="6" class="green-text"/>
+<text x="902" y="176" class="small" text-anchor="end">受预算限制</text>
+<rect x="376" y="191" width="532" height="53" rx="9" class="box"/>
+<text x="394" y="224" class="" text-anchor="start">CI 失败：Safari 登录测试超时</text>
+<rect x="376" y="254" width="532" height="48" rx="9" class="box"/>
+<text x="394" y="285" class="mono" text-anchor="start">关联 PR #42 · Worker W-3</text>
+<rect x="376" y="312" width="532" height="45" rx="9" class="box"/>
+<text x="394" y="341" class="mono" text-anchor="start">完整输出 → log:318</text>
+<path d="M164 475 V509 H356" class="arrow" />
+<text x="261" y="494" class="small" text-anchor="middle">溢出到外部</text>
+<rect x="356" y="453" width="572" height="91" rx="9" class="box purple"/>
+<text x="380" y="489" class="head" text-anchor="start">外部记录</text>
+<text x="380" y="521" class="small" text-anchor="start">log:318 · 保留完整日志，可读取指定片段</text>
+<path d="M814 453 V377" class="arrow" />
+<text x="797" y="420" class="small" text-anchor="end">需要时读取</text>
 </svg>

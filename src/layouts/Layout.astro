@@ -223,24 +223,12 @@ const siteLang = lang.replace("_", "-");
 
 <script>
 import 'overlayscrollbars/overlayscrollbars.css';
-import {
-	OverlayScrollbars,
-	// ScrollbarsHidingPlugin,
-	// SizeObserverPlugin,
-	// ClickScrollPlugin
-} from 'overlayscrollbars';
+import { OverlayScrollbars } from 'overlayscrollbars';
 import { getPostLayout, getStoredTheme, setPostLayout, setTheme } from "../utils/setting-utils";
 import {pathsEqual, url} from "../utils/url-utils";
 import { initReloadScrollRestoration } from "../utils/scroll-restoration";
-import {
-	BANNER_HEIGHT,
-	BANNER_HEIGHT_HOME,
-	BANNER_HEIGHT_EXTEND,
-	MAIN_PANEL_OVERLAPS_BANNER_HEIGHT
-} from "../constants/constants";
+import { BANNER_HEIGHT, BANNER_HEIGHT_EXTEND } from "../constants/constants";
 
-
-const bannerEnabled = false;
 initReloadScrollRestoration();
 
 function setClickOutsideToClose(panel: string, ignores: string[]) {
@@ -346,65 +334,21 @@ const setup = () => {
     window.swup.options.animateHistoryBrowsing = true;
     window.history.scrollRestoration = 'manual';
 	window.swup.hooks.on('link:click', () => {
-		// Remove the delay for the first time page load
-		document.documentElement.style.setProperty('--content-delay', '0ms')
-
-		// prevent elements from overlapping the navbar
-		if (!bannerEnabled) {
-			return
-		}
-		const threshold = window.innerHeight * (BANNER_HEIGHT / 100) - 72 - 16
-		const navbar = document.getElementById('navbar-wrapper')
-		if (!navbar || !document.body.classList.contains('lg:is-home')) {
-			return
-		}
-		if (document.body.scrollTop >= threshold || document.documentElement.scrollTop >= threshold) {
-			navbar.classList.add('navbar-hidden')
-		}
-	})
-	window.swup.hooks.on('content:replace', initCustomScrollbar)
+		document.documentElement.style.setProperty('--content-delay', '0ms');
+	});
+	window.swup.hooks.on('content:replace', initCustomScrollbar);
 	window.swup.hooks.on('visit:start', (visit: {to: {url: string}, scroll: {animate: boolean}}) => {
         if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) visit.scroll.animate = false;
-		// change banner height immediately when a link is clicked
-		const bodyElement = document.querySelector('body')
-		if (pathsEqual(visit.to.url, url('/'))) {
-			bodyElement!.classList.add('lg:is-home');
-		} else {
-			bodyElement!.classList.remove('lg:is-home');
-		}
-
-		// increase the page height during page transition to prevent the scrolling animation from jumping
-		const heightExtend = document.getElementById('page-height-extend')
-		if (heightExtend) {
-			heightExtend.classList.remove('hidden')
-		}
-
-		// Hide the TOC while scrolling back to top
-		let toc = document.getElementById('toc-wrapper');
-		if (toc) {
-			toc.classList.add('toc-not-ready')
-		}
+		document.body.classList.toggle('lg:is-home', pathsEqual(visit.to.url, url('/')));
+		document.getElementById('page-height-extend')?.classList.remove('hidden');
 	});
 	window.swup.hooks.on('page:view', () => {
-		// hide the temp high element when the transition is done
-		const heightExtend = document.getElementById('page-height-extend')
-		if (heightExtend) {
-			heightExtend.classList.remove('hidden')
-		}
+		document.getElementById('page-height-extend')?.classList.remove('hidden');
 	});
-	window.swup.hooks.on('visit:end', (_visit: {to: {url: string}}) => {
+	window.swup.hooks.on('visit:end', () => {
 		setTimeout(() => {
-			const heightExtend = document.getElementById('page-height-extend')
-			if (heightExtend) {
-				heightExtend.classList.add('hidden')
-			}
-
-            // Just make the transition looks better
-            const toc = document.getElementById('toc-wrapper');
-            if (toc) {
-                toc.classList.remove('toc-not-ready')
-            }
-        }, 200)
+			document.getElementById('page-height-extend')?.classList.add('hidden');
+        }, 200);
 	});
 }
 if (window?.swup?.hooks) {
@@ -413,46 +357,13 @@ if (window?.swup?.hooks) {
 	document.addEventListener('swup:enable', setup)
 }
 
-let backToTopBtn = document.getElementById('back-to-top-btn');
-let toc = document.getElementById('toc-wrapper');
-let navbar = document.getElementById('navbar-wrapper')
+const backToTopBtn = document.getElementById('back-to-top-btn');
 function scrollFunction() {
-	let bannerHeight = window.innerHeight * (BANNER_HEIGHT / 100)
-
-	if (backToTopBtn) {
-		if (document.body.scrollTop > bannerHeight || document.documentElement.scrollTop > bannerHeight) {
-			backToTopBtn.classList.remove('hide')
-		} else {
-			backToTopBtn.classList.add('hide')
-		}
-	}
-
-	if (bannerEnabled && toc) {
-		if (document.body.scrollTop > bannerHeight || document.documentElement.scrollTop > bannerHeight) {
-			toc.classList.remove('toc-hide')
-		} else {
-			toc.classList.add('toc-hide')
-		}
-	}
-
-	if (!bannerEnabled) return
-	if (navbar) {
-		const NAVBAR_HEIGHT = 72
-		const MAIN_PANEL_EXCESS_HEIGHT = MAIN_PANEL_OVERLAPS_BANNER_HEIGHT * 16			// The height the main panel overlaps the banner
-
-		let bannerHeight = BANNER_HEIGHT
-		if (document.body.classList.contains('lg:is-home') && window.innerWidth >= 1024) {
-			bannerHeight = BANNER_HEIGHT_HOME
-		}
-		let threshold = window.innerHeight * (bannerHeight / 100) - NAVBAR_HEIGHT - MAIN_PANEL_EXCESS_HEIGHT - 16
-		if (document.body.scrollTop >= threshold || document.documentElement.scrollTop >= threshold) {
-			navbar.classList.add('navbar-hidden')
-		} else {
-			navbar.classList.remove('navbar-hidden')
-		}
-	}
+	if (!backToTopBtn) return;
+	const bannerHeight = window.innerHeight * (BANNER_HEIGHT / 100);
+	backToTopBtn.classList.toggle('hide', !(document.body.scrollTop > bannerHeight || document.documentElement.scrollTop > bannerHeight));
 }
-window.onscroll = scrollFunction
+window.addEventListener('scroll', scrollFunction, { passive: true });
 
 window.onresize = () => {
 	// calculate the --banner-height-extend, which needs to be a multiple of 4 to avoid blurry text
@@ -502,10 +413,6 @@ function createPhotoSwipe() {
 }
 
 const setup = () => {
-    // The DOM is replaced without a document navigation. Let Swup restore its
-    // cached positions after replacement instead of native history restoring early.
-    window.swup.options.animateHistoryBrowsing = true;
-    window.history.scrollRestoration = 'manual';
 	if (!lightbox) {
 		createPhotoSwipe()
 	}

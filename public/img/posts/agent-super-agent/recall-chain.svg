@@ -1,51 +1,52 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="900" height="430" viewBox="0 0 900 430" role="img" aria-labelledby="title desc">
-<title id="title">召回链</title>
-<desc id="desc">从当前消息出发，沿着窗口里内联的对象 ID，依次找到它所属的话题、处理过这个话题的 Worker 会话，以及该会话关联的另一个评审话题。完整内容留在窗口外，需要时再读取。</desc>
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="432" viewBox="0 0 960 432" role="img" aria-labelledby="title desc">
+<title id="title">从当前消息，找到当时的修复 PR</title><desc id="desc">四个对象用稳定 ID 连接。当前消息携带 Thread ID，读取 Thread 可以找到 Worker，读取 Worker 可以找到它关联的 PR。每一跳只补充必要的信息。</desc>
 <style>
-:root{--fg:#29303b;--line:#657285;--bg:#f8fafc;--a:#e0eee6;--b:#e7e4f3;--c:#f7ead6;--accent:#508369;--muted:#667386}
-@media(prefers-color-scheme:dark){:root{--fg:#e0e5ec;--line:#a4afbd;--bg:#222731;--a:#283e35;--b:#353148;--c:#483b2b;--accent:#86b49b;--muted:#b2bdcb}}
-text{font-family:Helvetica,Arial,'PingFang SC',sans-serif;fill:var(--fg);font-size:20px}
-.title{font-size:25px;font-weight:600}.head{font-size:20px;font-weight:600}.small{font-size:17px;fill:var(--muted)}
-.box{fill:var(--bg);stroke:var(--line);stroke-width:1.4}.a{fill:var(--a)}.b{fill:var(--b)}.c{fill:var(--c)}
-.arrow{fill:none;stroke:var(--line);stroke-width:1.7;stroke-linejoin:round;marker-end:url(#arrow)}
-.ext{fill:none;stroke:var(--line);stroke-width:1.2;stroke-dasharray:5 4;opacity:.55}
-.link{stroke:var(--line);stroke-width:1.1;stroke-dasharray:3 4;opacity:.45}
+:root{color-scheme:light dark;--paper:#fcfcfa;--ink:#29333d;--muted:#677580;--line:#84918f;--grid:#dde3df;--soft:#f0f3f0;--green:#e1eee5;--green-ink:#417558;--purple:#ece8f5;--purple-ink:#776395;--amber:#f6ecd9;--amber-ink:#956e32}
+@media(prefers-color-scheme:dark){:root{--paper:#20262d;--ink:#e7ecec;--muted:#acb9bf;--line:#8b9e9c;--grid:#3e4b52;--soft:#29333a;--green:#2c443a;--green-ink:#9bc8ab;--purple:#3c354e;--purple-ink:#c1b0df;--amber:#463e2e;--amber-ink:#d9bc85}}
+text{font-family:'PingFang SC','Microsoft YaHei',Arial,sans-serif;fill:var(--ink);font-size:21px}
+.title{font-size:29px;font-weight:600;letter-spacing:.3px}.eyebrow{font-size:16px;font-weight:600;fill:var(--muted);letter-spacing:1.6px}.head{font-size:23px;font-weight:600}.small{font-size:18px;fill:var(--muted)}.mono{font-family:'SFMono-Regular',Consolas,monospace;font-size:18px}.label{font-size:19px}.green-text{fill:var(--green-ink)}.purple-text{fill:var(--purple-ink)}
+.box{fill:var(--paper);stroke:var(--line);stroke-width:1.4}.soft{fill:var(--soft)}.green{fill:var(--green)}.purple{fill:var(--purple)}.amber{fill:var(--amber)}.panel{fill:var(--soft);stroke:var(--grid);stroke-width:1.2}.dash{stroke-dasharray:6 5}.wire{fill:none;stroke:var(--line);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}.arrow{fill:none;stroke:var(--line);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#arrow)}.return{stroke-dasharray:5 5;stroke:var(--purple-ink);marker-end:url(#back)}.fast{stroke:var(--green-ink);stroke-width:2.5;marker-end:url(#fast)}.grid{stroke:var(--grid);stroke-width:1}.dot{fill:var(--green-ink)}
 </style>
 <defs>
-<marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="var(--line)"/></marker>
+<marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9Z" fill="var(--line)"/></marker>
+<marker id="back" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9Z" fill="var(--purple-ink)"/></marker>
+<marker id="fast" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9Z" fill="var(--green-ink)"/></marker>
+<pattern id="hatch" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M0 10L10 0" stroke="var(--line)" stroke-opacity=".15"/></pattern>
 </defs>
-
-<text x="450" y="34" class="title" text-anchor="middle">沿内联的 ID 一跳一跳往回找</text>
-<text x="450" y="62" class="small" text-anchor="middle">窗口里只有 ID 与摘要，完整内容留在外面</text>
-
-<rect x="40" y="140" width="150" height="76" rx="6" class="box"/>
-<text x="115" y="172" class="head" text-anchor="middle">当前消息</text>
-<text x="115" y="198" class="small" text-anchor="middle">IM 私聊</text>
-
-<rect x="235" y="140" width="160" height="76" rx="6" class="box c"/>
-<text x="315" y="172" class="head" text-anchor="middle">#T-812</text>
-<text x="315" y="198" class="small" text-anchor="middle">Safari 白屏</text>
-
-<rect x="440" y="140" width="150" height="76" rx="6" class="box a"/>
-<text x="515" y="172" class="head" text-anchor="middle">W-3</text>
-<text x="515" y="198" class="small" text-anchor="middle">复现与修复</text>
-
-<rect x="635" y="140" width="165" height="76" rx="6" class="box b"/>
-<text x="717" y="172" class="head" text-anchor="middle">PR #42</text>
-<text x="717" y="198" class="small" text-anchor="middle">评审讨论</text>
-
-<path d="M192 178 H231" class="arrow"/>
-<path d="M397 178 H436" class="arrow"/>
-<path d="M592 178 H631" class="arrow"/>
-
-<path d="M115 218 V296" class="link"/>
-<path d="M315 218 V296" class="link"/>
-<path d="M515 218 V296" class="link"/>
-<path d="M717 218 V296" class="link"/>
-
-<rect x="40" y="300" width="760" height="60" rx="6" class="ext"/>
-<text x="420" y="336" class="small" text-anchor="middle">完整正文、历史评论与工具结果，需要时才读取</text>
-
-<text x="450" y="392" class="small" text-anchor="middle">每一条边都是一次工具调用带回来的下一跳 ID</text>
-<text x="450" y="418" class="small" text-anchor="middle">引用图只连接系统见过的关系，跨渠道的联想仍要靠检索和追问</text>
+<rect width="960" height="432" rx="12" fill="var(--paper)"/>
+<text x="32" y="29" class="eyebrow" text-anchor="start">04 / 历史召回</text>
+<text x="32" y="71" class="title" text-anchor="start">从当前消息，找到当时的修复 PR</text>
+<circle cx="42" cy="126" r="15" class="box"/>
+<text x="42" y="132" class="small" text-anchor="middle">01</text>
+<rect x="24" y="157" width="204" height="163" rx="9" class="box amber"/>
+<text x="41" y="193" class="head" text-anchor="start">当前消息</text>
+<text x="41" y="232" class="small" text-anchor="start">“登录问题好了吗？”</text>
+<path d="M40 253 H212" class="grid" />
+<text x="41" y="290" class="mono" text-anchor="start">thread: T-812</text>
+<path d="M228 281 H260" class="arrow" />
+<circle cx="278" cy="126" r="15" class="box"/>
+<text x="278" y="132" class="small" text-anchor="middle">02</text>
+<rect x="260" y="157" width="204" height="163" rx="9" class="box "/>
+<text x="277" y="193" class="head" text-anchor="start">Thread T-812</text>
+<text x="277" y="232" class="small" text-anchor="start">登录故障讨论</text>
+<path d="M276 253 H448" class="grid" />
+<text x="277" y="290" class="mono" text-anchor="start">worker: W-3</text>
+<path d="M464 281 H496" class="arrow" />
+<circle cx="514" cy="126" r="15" class="box"/>
+<text x="514" y="132" class="small" text-anchor="middle">03</text>
+<rect x="496" y="157" width="204" height="163" rx="9" class="box green"/>
+<text x="513" y="193" class="head" text-anchor="start">Worker W-3</text>
+<text x="513" y="232" class="small" text-anchor="start">排查与修复记录</text>
+<path d="M512 253 H684" class="grid" />
+<text x="513" y="290" class="mono" text-anchor="start">pull_request: 42</text>
+<path d="M700 281 H732" class="arrow" />
+<circle cx="750" cy="126" r="15" class="box"/>
+<text x="750" y="132" class="small" text-anchor="middle">04</text>
+<rect x="732" y="157" width="204" height="163" rx="9" class="box purple"/>
+<text x="749" y="193" class="head" text-anchor="start">PR #42</text>
+<text x="749" y="232" class="small" text-anchor="start">查看变更与 CI</text>
+<path d="M748 253 H920" class="grid" />
+<text x="749" y="290" class="small" text-anchor="start">读取最新进展</text>
+<path d="M126 338 V356 H834 V338" class="wire" />
+<text x="480" y="390" class="small" text-anchor="middle">读取一个对象，同时拿到下一跳的摘要与 ID</text>
 </svg>

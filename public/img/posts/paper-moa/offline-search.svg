@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="835" viewBox="0 0 900 835" role="img" aria-labelledby="title desc">
+<title id="title">从长文回答，到可复用的窗口配置</title>
+<desc id="desc">完整模型先生成自己的校准摘要，在 2k、4k、8k 长度对回答损失反向传播，计算连接影响与各候选规则的预计损失，随后在密度预算内搜索配置，并在 12k 长度验证，留下每个头的窗口规则。在线推理只加载最终配置。</desc>
+<style>
+:root{--fg:#29303b;--line:#657285;--bg:#f8fafc;--a:#e0eee6;--b:#e7e4f3;--c:#f7ead6;--accent:#508369;--muted:#667386;--error:#aa5653;--grid:#dce2e9}
+@media(prefers-color-scheme:dark){:root{--fg:#e0e5ec;--line:#a4afbd;--bg:#222731;--a:#283e35;--b:#353148;--c:#483b2b;--accent:#86b49b;--muted:#b2bdcb;--error:#d99087;--grid:#3c4450}}
+text{font-family:Helvetica,Arial,'PingFang SC',sans-serif;fill:var(--fg);font-size:22px}
+.title{font-size:28px;font-weight:600}.head{font-size:24px;font-weight:600}.small{font-size:19px;fill:var(--muted)}.tiny{font-size:16px}.math{font-family:Times,'Times New Roman',serif;font-style:italic;font-size:25px}.box{fill:var(--bg);stroke:var(--line);stroke-width:1.5}.a{fill:var(--a)}.b{fill:var(--b)}.c{fill:var(--c)}.faint{opacity:.35}.cut{fill:var(--bg);stroke:var(--error);stroke-width:1.5;stroke-dasharray:5 4}.line{fill:none;stroke:var(--line);stroke-width:1.6}.grid{fill:none;stroke:var(--grid);stroke-width:1}.arrow{fill:none;stroke:var(--line);stroke-width:1.8;stroke-linejoin:round;marker-end:url(#arrow)}.accent{fill:var(--accent)}.red{fill:var(--error)}
+</style>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="var(--line)"/></marker></defs>
+<rect width="900" height="835" rx="14" fill="var(--bg)"/>
+<text x="450" y="43" class="title" text-anchor="middle">从长文回答，到可复用的窗口配置</text>
+<text x="450" y="82" class="small" text-anchor="middle">复杂的测量与搜索只做在离线，不进入每次请求</text>
+<rect x="45" y="120" width="350" height="110" rx="8" class="box a"/><text x="220" y="154" class="head" text-anchor="middle">完整注意力模型</text><text x="220" y="185" class="small" text-anchor="middle">长文输入</text><text x="220" y="212" class="small" text-anchor="middle">生成自己的摘要</text>
+<rect x="505" y="120" width="350" height="110" rx="8" class="box c"/><text x="680" y="154" class="head" text-anchor="middle">校准样本</text><text x="680" y="185" class="small" text-anchor="middle">长文 + 模型摘要</text><text x="680" y="212" class="small" text-anchor="middle">只对回答部分计算损失</text>
+<path d="M395 175 H505" class="arrow"/>
+<rect x="505" y="310" width="350" height="110" rx="8" class="box b"/><text x="680" y="344" class="head" text-anchor="middle">前向与反向传播</text><text x="680" y="375" class="small" text-anchor="middle">2k、4k、8k 分别测量</text><text x="680" y="402" class="small" text-anchor="middle">得到每条连接的平均影响</text>
+<path d="M680 230 V310" class="arrow"/>
+<rect x="45" y="310" width="350" height="110" rx="8" class="box c"/><text x="220" y="344" class="head" text-anchor="middle">候选规则表</text><text x="220" y="375" class="small" text-anchor="middle">每个头、每条窗口规则</text><text x="220" y="402" class="small" text-anchor="middle">预计损失 + KV 开销</text>
+<path d="M505 365 H395" class="arrow"/>
+<rect x="45" y="500" width="350" height="110" rx="8" class="box b"/><text x="220" y="534" class="head" text-anchor="middle">预算优化</text><text x="220" y="565" class="small" text-anchor="middle">在各长度的密度约束下</text><text x="220" y="592" class="small" text-anchor="middle">搜索 Pareto 候选配置</text>
+<path d="M220 420 V500" class="arrow"/>
+<rect x="505" y="500" width="350" height="110" rx="8" class="box a"/><text x="680" y="534" class="head" text-anchor="middle">真实损失验证</text><text x="680" y="565" class="small" text-anchor="middle">在 12k 验证候选方案</text><text x="680" y="592" class="small" text-anchor="middle">选择最终配置</text>
+<path d="M395 555 H505" class="arrow"/>
+<rect x="505" y="690" width="350" height="72" rx="8" class="box a"/>
+<text x="680" y="734" class="math" text-anchor="middle">每层、每个头的 α 与 β</text>
+<path d="M680 610 V690" class="arrow"/>
+<text x="220" y="712" class="head" text-anchor="middle">在线推理：加载配置</text>
+<text x="220" y="747" class="small" text-anchor="middle">不再运行这套搜索流程</text>
+<text x="450" y="805" class="small" text-anchor="middle">长度来自论文典型设置；没有更新模型权重</text>
+</svg>

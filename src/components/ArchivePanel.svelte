@@ -6,17 +6,15 @@ import { fly } from "svelte/transition";
 import I18nKey from "../i18n/i18nKey";
 import { i18n } from "../i18n/translation";
 import { getPostUrlBySlug, getTagUrl, url } from "../utils/url-utils";
+import { countArchivePosts } from "../utils/archive-utils";
 
-// Defaulted because the real values are read from URL params in onMount;
-// callers (archive.astro) intentionally don't pass tags/categories.
-export let tags: string[] = [];
-export let categories: string[] = [];
 export let sortedPosts: Post[] = [];
 
-const categoryOptions = [...new Set(sortedPosts.map(post => post.data.category).filter((category): category is string => !!category))].sort();
-const tagOptions = [...new Set(sortedPosts.flatMap(post => post.data.tags))].sort();
-const tagCount = (tag: string) => sortedPosts.filter(post => post.data.tags.includes(tag)).length;
-const categoryCount = (category: string) => sortedPosts.filter(post => post.data.category === category).length;
+const { categoryCounts, tagCounts } = countArchivePosts(sortedPosts);
+const categoryOptions = [...categoryCounts.keys()].sort();
+const tagOptions = [...tagCounts.keys()].sort();
+const tagCount = (tag: string) => tagCounts.get(tag) ?? 0;
+const categoryCount = (category: string) => categoryCounts.get(category) ?? 0;
 function filterUrl(kind: "category" | "tag", value: string) {
     const next = new URLSearchParams(window.location.search);
     next.delete("uncategorized");
@@ -27,8 +25,8 @@ function filterUrl(kind: "category" | "tag", value: string) {
 }
 
 const params = new URLSearchParams(window.location.search);
-tags = params.has("tag") ? params.getAll("tag") : [];
-categories = params.has("category") ? params.getAll("category") : [];
+const tags = params.getAll("tag");
+const categories = params.getAll("category");
 const uncategorized = params.get("uncategorized");
 
 interface Post {
@@ -75,7 +73,8 @@ let isMenuOpen = false;
 
 let activePeriod = "";
 function monthKey(date: Date) { return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`; }
-function monthLabel(date: Date) { return new Intl.DateTimeFormat((document.documentElement.lang || "zh-CN").replace("_", "-"), { month: "short" }).format(date); }
+const monthFormatter = new Intl.DateTimeFormat((document.documentElement.lang || "zh-CN").replace("_", "-"), { month: "short" });
+function monthLabel(date: Date) { return monthFormatter.format(date); }
 function monthsIn(group: Group) { return [...new Map(group.posts.map(post => [monthKey(post.data.date), post.data.date])).entries()].sort(([a], [b]) => b.localeCompare(a)); }
 function jumpToPeriod(event: MouseEvent, id: string) {
     const target = document.getElementById(id);
