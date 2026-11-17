@@ -3,7 +3,7 @@ title: Ubuntu 装机与环境配置
 date: 2025-05-14
 description: 'Ubuntu Server 装机全流程：系统安装、网络配置、Docker、NVIDIA 驱动与 CUDA 环境。'
 tags: [Linux, Docker, CUDA]
-category: 环境搭建
+category: 其他
 episode: 1
 draft: false
 lang: 'zh_CN'
