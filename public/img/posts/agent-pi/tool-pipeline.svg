@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="540" viewBox="0 0 900 540" role="img" aria-labelledby="title desc">
+<title id="title">工具执行管线</title>
+<desc id="desc">参数预处理与 schema 校验，beforeToolCall 钩子拦截，顺序或并行执行，afterToolCall 改写结果，最终生成 ToolResultMessage。</desc>
+<style>
+:root{--fg:#29303b;--line:#657285;--bg:#f8fafc;--muted:#667386;--accent:#508369;--error:#aa5653;--blue:#d7e4f2;--purple:#e3ddf0;--teal:#d5e8e6;--orange:#f3e2cd;--yellow:#f0e6c8;--green:#dcead9;--pink:#f2dbe4;--gray:#e8eaee}
+@media(prefers-color-scheme:dark){:root{--fg:#e0e5ec;--line:#a4afbd;--bg:#222731;--muted:#b2bdcb;--accent:#86b49b;--error:#d99087;--blue:#26374c;--purple:#352f47;--teal:#27403d;--orange:#453723;--yellow:#453e24;--green:#2c3d2f;--pink:#432c39;--gray:#33383f}}
+text{font-family:Helvetica,Arial,'PingFang SC',sans-serif;fill:var(--fg);font-size:16px}
+.title{font-size:25px;font-weight:600}.lead{font-size:15px;fill:var(--muted)}.cl{font-size:15px;font-weight:600;fill:var(--muted)}.tt{font-size:16px;font-weight:600}.ts{font-size:14px;fill:var(--muted)}.chip{font-size:13px}
+.bx{stroke:var(--line);stroke-width:1.4}.ct{fill:none;stroke:var(--line);stroke-width:1.2;opacity:.55}
+.f-blue{fill:var(--blue)}.f-purple{fill:var(--purple)}.f-teal{fill:var(--teal)}.f-orange{fill:var(--orange)}.f-yellow{fill:var(--yellow)}.f-green{fill:var(--green)}.f-pink{fill:var(--pink)}.f-gray{fill:var(--gray)}
+.ar{fill:none;stroke:var(--line);stroke-width:1.7;stroke-linejoin:round;marker-end:url(#ah)}.al{fill:none;stroke:var(--line);stroke-width:1.7;stroke-linejoin:round}.ard{fill:none;stroke:var(--muted);stroke-width:1.4;stroke-dasharray:5 4;stroke-linejoin:round;marker-end:url(#ah)}
+.dim{opacity:.42}
+</style>
+<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10Z" fill="var(--line)"/></marker></defs>
+<rect width="900" height="540" rx="14" fill="var(--bg)"/>
+<text x="450" y="42" class="title" text-anchor="middle">工具执行管线</text>
+<text x="450" y="72" class="lead" text-anchor="middle">每个 toolCall 都经过校验、钩子、执行与结果改写</text>
+<rect x="30" y="100" width="150" height="72" rx="8" class="bx f-blue"/><text x="105" y="124" class="tt" text-anchor="middle">assistant 消息</text><text x="105" y="144" class="ts" text-anchor="middle">content 含 toolCall[]</text>
+<path d="M180,136 H204" class="ar"/>
+<polygon points="300,100.0 395.0,136 300,172.0 205.0,136" class="bx f-yellow"/>
+<text x="300" y="132" class="ts" text-anchor="middle">stopReason</text>
+<text x="300" y="150" class="ts" text-anchor="middle">= length ?</text>
+<path d="M395,136 H418" class="ar"/>
+<text x="406" y="124" class="ts" text-anchor="middle">否</text>
+<path d="M300,172 V196 H110 V370 H138" class="ar"/>
+<text x="312" y="190" class="ts" text-anchor="start">是</text>
+<rect x="142" y="340" width="240" height="60" rx="8" class="bx f-orange"/><text x="262" y="364" class="tt" text-anchor="middle">整批合成错误结果</text><text x="262" y="384" class="ts" text-anchor="middle">参数可能被截断，均不执行</text>
+<path d="M220,340 V298" class="ar"/>
+<rect x="422" y="100" width="200" height="76" rx="8" class="bx f-teal"/><text x="522" y="124" class="tt" text-anchor="middle">prepareToolCall</text><text x="522" y="144" class="ts" text-anchor="middle">prepareArguments 预处理</text><text x="522" y="163" class="ts" text-anchor="middle">validateToolArguments 校验</text>
+<path d="M622,136 H646" class="ar"/>
+<rect x="650" y="100" width="220" height="76" rx="8" class="bx f-pink"/><text x="760" y="124" class="tt" text-anchor="middle">beforeToolCall 钩子</text><text x="760" y="144" class="ts" text-anchor="middle">权限扩展可 block / terminate</text><text x="760" y="163" class="ts" text-anchor="middle">block → 错误结果，跳过执行</text>
+<path d="M760,176 V214" class="ar"/>
+<rect x="650" y="218" width="220" height="76" rx="8" class="bx f-teal"/><text x="760" y="242" class="tt" text-anchor="middle">execute 执行</text><text x="760" y="262" class="ts" text-anchor="middle">顺序 或 并行 Promise.all</text><text x="760" y="281" class="ts" text-anchor="middle">onUpdate → 流式部分结果</text>
+<path d="M650,256 H626" class="ar"/>
+<rect x="406" y="218" width="220" height="76" rx="8" class="bx f-pink"/><text x="516" y="242" class="tt" text-anchor="middle">afterToolCall 钩子</text><text x="516" y="262" class="ts" text-anchor="middle">可改写 content / details</text><text x="516" y="281" class="ts" text-anchor="middle">/ isError / terminate</text>
+<path d="M406,256 H386" class="ar"/>
+<rect x="142" y="218" width="240" height="76" rx="8" class="bx f-green"/><text x="262" y="242" class="tt" text-anchor="middle">ToolResultMessage</text><text x="262" y="262" class="ts" text-anchor="middle">写回 context + newMessages</text><text x="262" y="281" class="ts" text-anchor="middle">tool_execution_start/update/end</text>
+<rect x="420" y="340" width="450" height="64" rx="8" class="bx f-gray" stroke-dasharray="6 4"/>
+<text x="645" y="366" class="tt" text-anchor="middle">嵌套调用 runToolCall(toolCall, options)</text>
+<text x="645" y="386" class="ts" text-anchor="middle">codemode 脚本内调工具，复用同一管线与全部钩子</text>
+<path d="M560,340 V298" class="ard"/>
+<rect x="420" y="428" width="450" height="56" rx="8" class="bx f-gray" stroke-dasharray="6 4"/>
+<text x="645" y="452" class="tt" text-anchor="middle">AbortSignal 中止</text>
+<text x="645" y="472" class="ts" text-anchor="middle">未完成调用统一记 Operation aborted，不留孤儿调用</text>
+</svg>

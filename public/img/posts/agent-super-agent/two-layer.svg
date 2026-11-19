@@ -18,10 +18,10 @@ text{font-family:'PingFang SC','Microsoft YaHei',Arial,sans-serif;fill:var(--ink
 <text x="32" y="71" class="title" text-anchor="start">统一的入口，独立的任务上下文</text>
 <rect x="235" y="109" width="490" height="58" rx="9" class="box amber"/>
 <text x="480" y="145" class="" text-anchor="middle">用户入口 · 群聊 / GitHub / 邮件</text>
-<path d="M350 167 V218" class="arrow" />
-<text x="334" y="199" class="small" text-anchor="end">请求</text>
-<path d="M610 218 V167" class="arrow return" />
-<text x="626" y="199" class="small" text-anchor="start">回复</text>
+<path d="M450 167 V218" class="arrow" />
+<text x="434" y="199" class="small" text-anchor="end">请求</text>
+<path d="M510 218 V167" class="arrow return" />
+<text x="526" y="199" class="small" text-anchor="start">回复</text>
 <rect x="235" y="218" width="490" height="91" rx="9" class="box purple"/>
 <text x="480" y="254" class="head" text-anchor="middle">Router</text>
 <text x="480" y="285" class="small" text-anchor="middle">接收请求 · 分派任务 · 汇总进展</text>

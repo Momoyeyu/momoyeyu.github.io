@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="700" viewBox="0 0 900 700" role="img" aria-labelledby="title desc">
+<title id="title">Session：会话树与读写路径</title>
+<desc id="desc">JSONL 会话树以 parentId 连接；读路径从 leaf 回溯经投影转为 LLM 消息；写路径把 agent 事件追加到会话文件。</desc>
+<style>
+:root{--fg:#29303b;--line:#657285;--bg:#f8fafc;--muted:#667386;--accent:#508369;--error:#aa5653;--blue:#d7e4f2;--purple:#e3ddf0;--teal:#d5e8e6;--orange:#f3e2cd;--yellow:#f0e6c8;--green:#dcead9;--pink:#f2dbe4;--gray:#e8eaee}
+@media(prefers-color-scheme:dark){:root{--fg:#e0e5ec;--line:#a4afbd;--bg:#222731;--muted:#b2bdcb;--accent:#86b49b;--error:#d99087;--blue:#26374c;--purple:#352f47;--teal:#27403d;--orange:#453723;--yellow:#453e24;--green:#2c3d2f;--pink:#432c39;--gray:#33383f}}
+text{font-family:Helvetica,Arial,'PingFang SC',sans-serif;fill:var(--fg);font-size:16px}
+.title{font-size:25px;font-weight:600}.lead{font-size:15px;fill:var(--muted)}.cl{font-size:15px;font-weight:600;fill:var(--muted)}.tt{font-size:16px;font-weight:600}.ts{font-size:14px;fill:var(--muted)}.chip{font-size:13px}
+.bx{stroke:var(--line);stroke-width:1.4}.ct{fill:none;stroke:var(--line);stroke-width:1.2;opacity:.55}
+.f-blue{fill:var(--blue)}.f-purple{fill:var(--purple)}.f-teal{fill:var(--teal)}.f-orange{fill:var(--orange)}.f-yellow{fill:var(--yellow)}.f-green{fill:var(--green)}.f-pink{fill:var(--pink)}.f-gray{fill:var(--gray)}
+.ar{fill:none;stroke:var(--line);stroke-width:1.7;stroke-linejoin:round;marker-end:url(#ah)}.al{fill:none;stroke:var(--line);stroke-width:1.7;stroke-linejoin:round}.ard{fill:none;stroke:var(--muted);stroke-width:1.4;stroke-dasharray:5 4;stroke-linejoin:round;marker-end:url(#ah)}
+.dim{opacity:.42}
+</style>
+<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10Z" fill="var(--line)"/></marker></defs>
+<rect width="900" height="700" rx="14" fill="var(--bg)"/>
+<text x="450" y="42" class="title" text-anchor="middle">Session：会话树与读写路径</text>
+<text x="450" y="72" class="lead" text-anchor="middle">记忆就是会话树：读路径从 leaf 回溯投影，写路径追加 JSONL</text>
+<rect x="20" y="100" width="440" height="570" rx="12" class="ct"/>
+<text x="40" y="126" class="cl" text-anchor="start">① 会话树：JSONL append-only，entry {id, parentId} 连成树</text>
+<path d="M125,150 V494" class="al"/>
+<rect x="60" y="140" width="130" height="32" rx="6" class="bx f-gray"/>
+<text x="125" y="161" class="chip" text-anchor="middle">header</text>
+<rect x="60" y="186" width="130" height="32" rx="6" class="bx f-blue"/>
+<text x="125" y="207" class="chip" text-anchor="middle">user</text>
+<rect x="60" y="232" width="130" height="32" rx="6" class="bx f-teal"/>
+<text x="125" y="253" class="chip" text-anchor="middle">assistant</text>
+<rect x="60" y="278" width="130" height="32" rx="6" class="bx f-teal"/>
+<text x="125" y="299" class="chip" text-anchor="middle">toolResult</text>
+<rect x="60" y="324" width="130" height="32" rx="6" class="bx f-blue"/>
+<text x="125" y="345" class="chip" text-anchor="middle">user</text>
+<rect x="60" y="370" width="130" height="32" rx="6" class="bx f-purple"/>
+<text x="125" y="391" class="chip" text-anchor="middle">compaction</text>
+<rect x="60" y="416" width="130" height="32" rx="6" class="bx f-blue"/>
+<text x="125" y="437" class="chip" text-anchor="middle">user</text>
+<rect x="60" y="462" width="130" height="32" rx="6" class="bx f-green"/>
+<text x="125" y="483" class="chip" text-anchor="middle">assistant ● leaf</text>
+<path d="M190,340 H226" class="ar"/>
+<rect x="230" y="324" width="130" height="32" rx="6" class="bx f-teal"/>
+<text x="295" y="345" class="chip" text-anchor="middle">assistant</text>
+<rect x="230" y="370" width="130" height="32" rx="6" class="bx f-teal"/>
+<text x="295" y="391" class="chip" text-anchor="middle">toolResult</text>
+<rect x="230" y="416" width="130" height="32" rx="6" class="bx f-orange"/>
+<text x="295" y="437" class="chip" text-anchor="middle">branch_summary</text>
+<path d="M295,356 V366 M295,402 V412" class="ar"/>
+<rect x="60" y="516" width="180" height="52" rx="6" class="bx f-gray"/>
+<text x="150" y="540" class="ts" text-anchor="middle">fork / clone</text>
+<text x="150" y="558" class="chip" text-anchor="middle">复制历史到新文件</text>
+<rect x="260" y="516" width="180" height="52" rx="6" class="bx f-gray"/>
+<text x="350" y="540" class="ts" text-anchor="middle">/tree 导航</text>
+<text x="350" y="558" class="chip" text-anchor="middle">可带 branch_summary</text>
+<path d="M125,494 V512" class="ard"/>
+<path d="M295,448 C320,480 330,490 340,512" class="ard"/>
+<text x="40" y="596" class="ts" text-anchor="start">entry 类型：</text>
+<rect x="130" y="580" width="74" height="24" rx="12" class="bx f-gray"/>
+<text x="167" y="596" class="chip" text-anchor="middle">message</text>
+<rect x="212" y="580" width="98" height="24" rx="12" class="bx f-gray"/>
+<text x="261" y="596" class="chip" text-anchor="middle">compaction</text>
+<rect x="40" y="612" width="130" height="24" rx="12" class="bx f-gray"/>
+<text x="105" y="628" class="chip" text-anchor="middle">branch_summary</text>
+<rect x="178" y="612" width="114" height="24" rx="12" class="bx f-gray"/>
+<text x="235" y="628" class="chip" text-anchor="middle">context_edit</text>
+<rect x="300" y="612" width="114" height="24" rx="12" class="bx f-gray"/>
+<text x="357" y="628" class="chip" text-anchor="middle">model_change</text>
+<rect x="40" y="644" width="186" height="24" rx="12" class="bx f-gray"/>
+<text x="133" y="660" class="chip" text-anchor="middle">thinking_level_change</text>
+<rect x="234" y="644" width="58" height="24" rx="12" class="bx f-gray"/>
+<text x="263" y="660" class="chip" text-anchor="middle">usage</text>
+<rect x="300" y="644" width="66" height="24" rx="12" class="bx f-gray"/>
+<text x="333" y="660" class="chip" text-anchor="middle">custom</text>
+<rect x="480" y="100" width="400" height="430" rx="12" class="ct"/>
+<text x="500" y="126" class="cl" text-anchor="start">② 读路径：每次请求的上下文装配</text>
+<rect x="510" y="140" width="340" height="44" rx="8" class="bx f-green"/>
+<text x="680" y="167" class="ts" text-anchor="middle">活动分支 entries（leaf → root 路径）</text>
+<path d="M680,184 V200" class="ar"/>
+<rect x="510" y="204" width="340" height="62" rx="8" class="bx f-teal"/><text x="680" y="228" class="tt" text-anchor="middle">Session projection 投影</text><text x="680" y="248" class="ts" text-anchor="middle">应用 context_edit：省略 / 替换 entry</text>
+<path d="M680,266 V280" class="ar"/>
+<rect x="510" y="284" width="340" height="62" rx="8" class="bx f-teal"/><text x="680" y="308" class="tt" text-anchor="middle">投影 → AgentMessage + 工具声明</text><text x="680" y="328" class="ts" text-anchor="middle">declareToolChanges 写入系统消息</text>
+<path d="M680,346 V360" class="ar"/>
+<rect x="510" y="364" width="340" height="44" rx="8" class="bx f-blue"/>
+<text x="680" y="391" class="ts" text-anchor="middle">convertToLlm → Message[]</text>
+<path d="M680,408 V424" class="ar"/>
+<rect x="510" y="428" width="340" height="44" rx="8" class="bx f-orange"/>
+<text x="680" y="455" class="ts" text-anchor="middle">发往 pi-ai → provider</text>
+<rect x="510" y="492" width="340" height="56" rx="8" class="bx f-yellow"/>
+<text x="680" y="516" class="ts" text-anchor="middle">系统提示词来源：base 指令</text>
+<text x="680" y="534" class="ts" text-anchor="middle">AGENTS.md · skills · 工具规则</text>
+<path d="M510,520 H494 V324 H506" class="ard"/>
+<rect x="480" y="550" width="400" height="110" rx="12" class="ct"/>
+<text x="500" y="576" class="cl" text-anchor="start">③ 写路径：持久化</text>
+<rect x="510" y="594" width="116" height="44" rx="8" class="bx f-blue"/>
+<text x="568" y="621" class="chip" text-anchor="middle">agent 事件流</text>
+<path d="M626,616 H634" class="ar"/>
+<rect x="636" y="594" width="116" height="44" rx="8" class="bx f-purple"/>
+<text x="694" y="621" class="chip" text-anchor="middle">AgentSession 订阅</text>
+<path d="M752,616 H760" class="ar"/>
+<rect x="762" y="594" width="116" height="44" rx="8" class="bx f-green"/>
+<text x="820" y="621" class="chip" text-anchor="middle">append → *.jsonl</text>
+</svg>

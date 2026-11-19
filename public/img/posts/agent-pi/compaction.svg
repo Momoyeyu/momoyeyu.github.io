@@ -1,0 +1,105 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1040" viewBox="0 0 900 1040" role="img" aria-labelledby="title desc">
+<title id="title">Compaction 上下文压缩</title>
+<desc id="desc">阈值、手动、溢出三种触发；选定切割点后由 LLM 生成结构化摘要并追加 CompactionEntry；原文保留在会话树中。</desc>
+<style>
+:root{--fg:#29303b;--line:#657285;--bg:#f8fafc;--muted:#667386;--accent:#508369;--error:#aa5653;--blue:#d7e4f2;--purple:#e3ddf0;--teal:#d5e8e6;--orange:#f3e2cd;--yellow:#f0e6c8;--green:#dcead9;--pink:#f2dbe4;--gray:#e8eaee}
+@media(prefers-color-scheme:dark){:root{--fg:#e0e5ec;--line:#a4afbd;--bg:#222731;--muted:#b2bdcb;--accent:#86b49b;--error:#d99087;--blue:#26374c;--purple:#352f47;--teal:#27403d;--orange:#453723;--yellow:#453e24;--green:#2c3d2f;--pink:#432c39;--gray:#33383f}}
+text{font-family:Helvetica,Arial,'PingFang SC',sans-serif;fill:var(--fg);font-size:16px}
+.title{font-size:25px;font-weight:600}.lead{font-size:15px;fill:var(--muted)}.cl{font-size:15px;font-weight:600;fill:var(--muted)}.tt{font-size:16px;font-weight:600}.ts{font-size:14px;fill:var(--muted)}.chip{font-size:13px}
+.bx{stroke:var(--line);stroke-width:1.4}.ct{fill:none;stroke:var(--line);stroke-width:1.2;opacity:.55}
+.f-blue{fill:var(--blue)}.f-purple{fill:var(--purple)}.f-teal{fill:var(--teal)}.f-orange{fill:var(--orange)}.f-yellow{fill:var(--yellow)}.f-green{fill:var(--green)}.f-pink{fill:var(--pink)}.f-gray{fill:var(--gray)}
+.ar{fill:none;stroke:var(--line);stroke-width:1.7;stroke-linejoin:round;marker-end:url(#ah)}.al{fill:none;stroke:var(--line);stroke-width:1.7;stroke-linejoin:round}.ard{fill:none;stroke:var(--muted);stroke-width:1.4;stroke-dasharray:5 4;stroke-linejoin:round;marker-end:url(#ah)}
+.dim{opacity:.42}
+</style>
+<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10Z" fill="var(--line)"/></marker></defs>
+<rect width="900" height="1040" rx="14" fill="var(--bg)"/>
+<text x="450" y="42" class="title" text-anchor="middle">Compaction 上下文压缩</text>
+<text x="450" y="72" class="lead" text-anchor="middle">旧消息交给 LLM 做结构化摘要，原文保留在会话树中</text>
+<rect x="30" y="110" width="270" height="84" rx="8" class="bx f-orange"/><text x="165" y="134" class="tt" text-anchor="middle">自动阈值触发</text><text x="165" y="154" class="ts" text-anchor="middle">turn 结束 · 新 prompt 前</text><text x="165" y="173" class="ts" text-anchor="middle">contextTokens &gt; window − 16K</text>
+<rect x="30" y="214" width="270" height="56" rx="8" class="bx f-blue"/><text x="165" y="238" class="tt" text-anchor="middle">手动触发</text><text x="165" y="258" class="ts" text-anchor="middle">/compact [聚焦指令]</text>
+<rect x="30" y="290" width="270" height="84" rx="8" class="bx f-purple"/><text x="165" y="314" class="tt" text-anchor="middle">溢出 / 长度恢复</text><text x="165" y="334" class="ts" text-anchor="middle">provider 溢出或 stopReason=length</text><text x="165" y="353" class="ts" text-anchor="middle">compact-and-retry，仅一次</text>
+<path d="M300,152 C330,160 340,170 358,180" class="ar"/>
+<path d="M300,242 H358" class="ar"/>
+<path d="M300,332 C330,324 340,314 358,304" class="ar"/>
+<rect x="360" y="160" width="320" height="60" rx="8" class="bx f-pink"/><text x="520" y="184" class="tt" text-anchor="middle">session_before_compact 扩展钩子</text><text x="520" y="204" class="ts" text-anchor="middle">可取消，或提供自定义摘要</text>
+<path d="M520,220 V246" class="ar"/>
+<polygon points="520,254.0 605.0,282 520,310.0 435.0,282" class="bx f-yellow"/>
+<text x="520" y="287" class="tt" text-anchor="middle">取消？</text>
+<path d="M605,282 H700" class="ar"/>
+<text x="652" y="270" class="ts" text-anchor="middle">是</text>
+<rect x="704" y="252" width="176" height="60" rx="8" class="bx f-gray"/><text x="792" y="276" class="tt" text-anchor="middle">取消压缩</text><text x="792" y="296" class="ts" text-anchor="middle">保留原上下文，继续运行</text>
+<path d="M520,310 V336" class="ar"/>
+<text x="534" y="330" class="ts" text-anchor="start">否</text>
+<rect x="360" y="340" width="320" height="88" rx="8" class="bx f-teal"/><text x="520" y="364" class="tt" text-anchor="middle">prepareCompaction 选定切割点</text><text x="520" y="384" class="ts" text-anchor="middle">反向累计至 keepRecentTokens(20K)</text><text x="520" y="403" class="ts" text-anchor="middle">切割点：user / assistant / bash / custom</text><text x="520" y="422" class="ts" text-anchor="middle">绝不切 toolResult</text>
+<path d="M520,428 V452" class="ar"/>
+<rect x="360" y="456" width="320" height="72" rx="8" class="bx f-teal"/><text x="520" y="480" class="tt" text-anchor="middle">收集待摘要内容</text><text x="520" y="500" class="ts" text-anchor="middle">split-turn：历史摘要 + 前缀摘要合并</text><text x="520" y="519" class="ts" text-anchor="middle">read / modified 清单跨压缩累积</text>
+<path d="M520,528 V552" class="ar"/>
+<rect x="360" y="556" width="320" height="96" rx="8" class="bx f-blue"/><text x="520" y="580" class="tt" text-anchor="middle">serializeConversation → LLM 生成摘要</text><text x="520" y="600" class="ts" text-anchor="middle">省略 thinking · 工具结果截断 2000 字符</text><text x="520" y="619" class="ts" text-anchor="middle">Goal / Progress / Key Decisions /</text><text x="520" y="638" class="ts" text-anchor="middle">Next Steps / Critical Context + 文件清单</text>
+<path d="M680,604 H700" class="ar"/>
+<rect x="704" y="556" width="176" height="96" rx="8" class="bx f-orange"/><text x="792" y="580" class="tt" text-anchor="middle">失败 / 中止</text><text x="792" y="600" class="ts" text-anchor="middle">session_compact_failed</text><text x="792" y="619" class="ts" text-anchor="middle">overflow 恢复失败</text><text x="792" y="638" class="ts" text-anchor="middle">→ 不再重试</text>
+<path d="M520,652 V676" class="ar"/>
+<rect x="360" y="680" width="320" height="88" rx="8" class="bx f-green"/><text x="520" y="704" class="tt" text-anchor="middle">追加 CompactionEntry → 重建上下文</text><text x="520" y="724" class="ts" text-anchor="middle">{summary, firstKeptEntryId, tokensBefore}</text><text x="520" y="743" class="ts" text-anchor="middle">写入 JSONL</text><text x="520" y="762" class="ts" text-anchor="middle">新上下文 = system + summary + kept 消息</text>
+<text x="60" y="812" class="cl" text-anchor="start">压缩前后（会话树 entry 序列）</text>
+<text x="30" y="856" class="ts" text-anchor="start">压缩前</text>
+<rect x="90" y="832" width="66" height="32" rx="6" class="bx f-gray"/>
+<text x="123" y="853" class="chip" text-anchor="middle">hdr</text>
+<rect x="162" y="832" width="66" height="32" rx="6" class="bx f-orange"/>
+<text x="195" y="853" class="chip" text-anchor="middle">usr</text>
+<rect x="234" y="832" width="66" height="32" rx="6" class="bx f-orange"/>
+<text x="267" y="853" class="chip" text-anchor="middle">ass</text>
+<rect x="306" y="832" width="66" height="32" rx="6" class="bx f-orange"/>
+<text x="339" y="853" class="chip" text-anchor="middle">tool</text>
+<rect x="378" y="832" width="66" height="32" rx="6" class="bx f-green"/>
+<text x="411" y="853" class="chip" text-anchor="middle">usr</text>
+<rect x="450" y="832" width="66" height="32" rx="6" class="bx f-green"/>
+<text x="483" y="853" class="chip" text-anchor="middle">ass</text>
+<rect x="522" y="832" width="66" height="32" rx="6" class="bx f-green"/>
+<text x="555" y="853" class="chip" text-anchor="middle">tool</text>
+<rect x="594" y="832" width="66" height="32" rx="6" class="bx f-green"/>
+<text x="627" y="853" class="chip" text-anchor="middle">tool</text>
+<rect x="666" y="832" width="66" height="32" rx="6" class="bx f-green"/>
+<text x="699" y="853" class="chip" text-anchor="middle">ass</text>
+<rect x="738" y="832" width="66" height="32" rx="6" class="bx f-green"/>
+<text x="771" y="853" class="chip" text-anchor="middle">tool</text>
+<text x="30" y="916" class="ts" text-anchor="start">压缩后</text>
+<rect x="90" y="892" width="66" height="32" rx="6" class="bx f-gray"/>
+<text x="123" y="913" class="chip" text-anchor="middle">hdr</text>
+<rect x="162" y="892" width="66" height="32" rx="6" class="bx f-orange" opacity=".45"/>
+<text x="195" y="913" class="chip" text-anchor="middle">usr</text>
+<rect x="234" y="892" width="66" height="32" rx="6" class="bx f-orange" opacity=".45"/>
+<text x="267" y="913" class="chip" text-anchor="middle">ass</text>
+<rect x="306" y="892" width="66" height="32" rx="6" class="bx f-orange" opacity=".45"/>
+<text x="339" y="913" class="chip" text-anchor="middle">tool</text>
+<rect x="378" y="892" width="66" height="32" rx="6" class="bx f-green"/>
+<text x="411" y="913" class="chip" text-anchor="middle">usr</text>
+<rect x="450" y="892" width="66" height="32" rx="6" class="bx f-green"/>
+<text x="483" y="913" class="chip" text-anchor="middle">ass</text>
+<rect x="522" y="892" width="66" height="32" rx="6" class="bx f-green"/>
+<text x="555" y="913" class="chip" text-anchor="middle">tool</text>
+<rect x="594" y="892" width="66" height="32" rx="6" class="bx f-green"/>
+<text x="627" y="913" class="chip" text-anchor="middle">tool</text>
+<rect x="666" y="892" width="66" height="32" rx="6" class="bx f-green"/>
+<text x="699" y="913" class="chip" text-anchor="middle">ass</text>
+<rect x="738" y="892" width="66" height="32" rx="6" class="bx f-green"/>
+<text x="771" y="913" class="chip" text-anchor="middle">tool</text>
+<rect x="810" y="892" width="66" height="32" rx="6" class="bx f-purple"/>
+<text x="843" y="913" class="chip" text-anchor="middle">cmp</text>
+<text x="30" y="976" class="ts" text-anchor="start">LLM 视角</text>
+<rect x="90" y="952" width="66" height="32" rx="6" class="bx f-gray"/>
+<text x="123" y="973" class="chip" text-anchor="middle">system</text>
+<rect x="162" y="952" width="66" height="32" rx="6" class="bx f-purple"/>
+<text x="195" y="973" class="chip" text-anchor="middle">summary</text>
+<rect x="234" y="952" width="66" height="32" rx="6" class="bx f-green"/>
+<text x="267" y="973" class="chip" text-anchor="middle">usr</text>
+<rect x="306" y="952" width="66" height="32" rx="6" class="bx f-green"/>
+<text x="339" y="973" class="chip" text-anchor="middle">ass</text>
+<rect x="378" y="952" width="66" height="32" rx="6" class="bx f-green"/>
+<text x="411" y="973" class="chip" text-anchor="middle">tool</text>
+<rect x="450" y="952" width="66" height="32" rx="6" class="bx f-green"/>
+<text x="483" y="973" class="chip" text-anchor="middle">tool</text>
+<rect x="522" y="952" width="66" height="32" rx="6" class="bx f-green"/>
+<text x="555" y="973" class="chip" text-anchor="middle">ass</text>
+<rect x="594" y="952" width="66" height="32" rx="6" class="bx f-green"/>
+<text x="627" y="973" class="chip" text-anchor="middle">tool</text>
+<text x="90" y="1020" class="ts" text-anchor="start">待摘要区间（usr/ass/tool）被压缩为 summary；原始 entry 不删除，仍保留在会话树中</text>
+</svg>

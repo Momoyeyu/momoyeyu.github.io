@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1258" viewBox="0 0 900 1258" role="img" aria-labelledby="title desc">
+<title id="title">Agent Loop 双层循环</title>
+<desc id="desc">内层循环处理工具调用与 steering 消息，外层在 Agent 空闲时注入 follow-up；错误与中止直接结束 run；事件以 AgentEvent 流实时外发。</desc>
+<style>
+:root{--fg:#29303b;--line:#657285;--bg:#f8fafc;--muted:#667386;--accent:#508369;--error:#aa5653;--blue:#d7e4f2;--purple:#e3ddf0;--teal:#d5e8e6;--orange:#f3e2cd;--yellow:#f0e6c8;--green:#dcead9;--pink:#f2dbe4;--gray:#e8eaee}
+@media(prefers-color-scheme:dark){:root{--fg:#e0e5ec;--line:#a4afbd;--bg:#222731;--muted:#b2bdcb;--accent:#86b49b;--error:#d99087;--blue:#26374c;--purple:#352f47;--teal:#27403d;--orange:#453723;--yellow:#453e24;--green:#2c3d2f;--pink:#432c39;--gray:#33383f}}
+text{font-family:Helvetica,Arial,'PingFang SC',sans-serif;fill:var(--fg);font-size:16px}
+.title{font-size:25px;font-weight:600}.lead{font-size:15px;fill:var(--muted)}.cl{font-size:15px;font-weight:600;fill:var(--muted)}.tt{font-size:16px;font-weight:600}.ts{font-size:14px;fill:var(--muted)}.chip{font-size:13px}
+.bx{stroke:var(--line);stroke-width:1.4}.ct{fill:none;stroke:var(--line);stroke-width:1.2;opacity:.55}
+.f-blue{fill:var(--blue)}.f-purple{fill:var(--purple)}.f-teal{fill:var(--teal)}.f-orange{fill:var(--orange)}.f-yellow{fill:var(--yellow)}.f-green{fill:var(--green)}.f-pink{fill:var(--pink)}.f-gray{fill:var(--gray)}
+.ar{fill:none;stroke:var(--line);stroke-width:1.7;stroke-linejoin:round;marker-end:url(#ah)}.al{fill:none;stroke:var(--line);stroke-width:1.7;stroke-linejoin:round}.ard{fill:none;stroke:var(--muted);stroke-width:1.4;stroke-dasharray:5 4;stroke-linejoin:round;marker-end:url(#ah)}
+.dim{opacity:.42}
+</style>
+<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10Z" fill="var(--line)"/></marker></defs>
+<rect width="900" height="1258" rx="14" fill="var(--bg)"/>
+<text x="450" y="42" class="title" text-anchor="middle">Agent Loop 双层循环</text>
+<text x="450" y="72" class="lead" text-anchor="middle">内层循环处理工具调用与 steering，外层在空闲时注入 follow-up</text>
+<rect x="170" y="100" width="340" height="56" rx="28" class="bx f-teal"/><text x="340" y="133" class="tt" text-anchor="middle">agentLoop(prompts, context, config)</text>
+<text x="340" y="168" class="ts" text-anchor="middle">agent_start · 追加初始消息 · turn_start</text>
+<path d="M340,156 V196" class="ar"/>
+<rect x="170" y="200" width="340" height="76" rx="8" class="bx f-orange"/><text x="340" y="224" class="tt" text-anchor="middle">prepareNextTurn（每轮开始）</text><text x="340" y="244" class="ts" text-anchor="middle">自动压缩 · 切换模型 / thinking</text><text x="340" y="263" class="ts" text-anchor="middle">收取 steering 队列 · turn_start</text>
+<path d="M340,276 V310" class="ar"/>
+<rect x="170" y="314" width="340" height="56" rx="8" class="bx f-teal"/><text x="340" y="338" class="tt" text-anchor="middle">declareToolChanges → prepareRequest</text><text x="340" y="358" class="ts" text-anchor="middle">工具增删写入系统消息 · 请求前调整</text>
+<path d="M340,370 V404" class="ar"/>
+<rect x="170" y="408" width="340" height="76" rx="8" class="bx f-blue"/><text x="340" y="432" class="tt" text-anchor="middle">streamAssistantResponse</text><text x="340" y="452" class="ts" text-anchor="middle">transformContext → convertToLlm → streamFn(pi-ai)</text><text x="340" y="471" class="ts" text-anchor="middle">message_start / update / end 流式</text>
+<path d="M340,484 V512" class="ar"/>
+<polygon points="340,524.0 440.0,556 340,588.0 240.0,556" class="bx f-yellow"/>
+<text x="340" y="561" class="tt" text-anchor="middle">stopReason?</text>
+<path d="M440,556 H540" class="ar"/>
+<text x="490" y="544" class="ts" text-anchor="middle">error / aborted</text>
+<rect x="544" y="520" width="250" height="72" rx="8" class="bx f-orange"/><text x="669" y="544" class="tt" text-anchor="middle">turn_end → agent_end</text><text x="669" y="564" class="ts" text-anchor="middle">保留已产出消息，运行结束</text>
+<path d="M669,592 V1052 H514" class="ar"/>
+<path d="M240,556 H120 V758 H166" class="ar"/>
+<text x="180" y="544" class="ts" text-anchor="middle">无 toolCall</text>
+<path d="M340,588 V624" class="ar"/>
+<text x="354" y="612" class="ts" text-anchor="start">含 toolCall</text>
+<rect x="170" y="628" width="340" height="64" rx="8" class="bx f-teal"/><text x="340" y="652" class="tt" text-anchor="middle">执行工具批次 executeToolCalls</text><text x="340" y="672" class="ts" text-anchor="middle">stopReason=length → 整批合成错误结果</text>
+<path d="M340,692 V726" class="ar"/>
+<rect x="170" y="730" width="340" height="56" rx="8" class="bx f-teal"/><text x="340" y="754" class="tt" text-anchor="middle">toolResult 写回 + turn_end</text><text x="340" y="774" class="ts" text-anchor="middle">finishTurn 决策：end / continue</text>
+<path d="M340,786 V814" class="ar"/>
+<polygon points="340,826.0 440.0,858 340,890.0 240.0,858" class="bx f-yellow"/>
+<text x="340" y="863" class="tt" text-anchor="middle">继续下一轮？</text>
+<path d="M240,858 H104 V238 H166" class="ar"/>
+<text x="196" y="846" class="ts" text-anchor="middle">steering · toolCall · continue</text>
+<text x="88" y="540" class="ts" text-anchor="middle" transform="rotate(-90 88 540)">内层循环</text>
+<path d="M340,890 V918" class="ar"/>
+<text x="354" y="912" class="ts" text-anchor="start">无待办</text>
+<polygon points="340,930.0 445.0,962 340,994.0 235.0,962" class="bx f-yellow"/>
+<text x="340" y="967" class="tt" text-anchor="middle">follow-up 队列？</text>
+<path d="M235,962 H56 V206 H166" class="ar"/>
+<text x="160" y="950" class="ts" text-anchor="middle">有 follow-up</text>
+<text x="40" y="580" class="ts" text-anchor="middle" transform="rotate(-90 40 580)">外层循环</text>
+<path d="M340,994 V1022" class="ar"/>
+<text x="354" y="1016" class="ts" text-anchor="start">无</text>
+<rect x="170" y="1026" width="340" height="52" rx="26" class="bx f-green"/><text x="340" y="1057" class="tt" text-anchor="middle">agent_end · 返回 newMessages[]</text>
+<rect x="20" y="1110" width="860" height="128" rx="12" class="ct"/>
+<text x="40" y="1136" class="cl" text-anchor="start">一个 run 的事件序列（AgentEvent 流）</text>
+<rect x="40" y="1152" width="112" height="40" rx="6" class="bx f-gray"/>
+<text x="96" y="1177" class="chip" text-anchor="middle">agent_start</text>
+<path d="M152,1172 H160" class="ar"/>
+<rect x="162" y="1152" width="112" height="40" rx="6" class="bx f-gray"/>
+<text x="218" y="1177" class="chip" text-anchor="middle">turn_start</text>
+<path d="M274,1172 H282" class="ar"/>
+<rect x="284" y="1152" width="112" height="40" rx="6" class="bx f-blue"/>
+<text x="340" y="1177" class="chip" text-anchor="middle">message_*</text>
+<path d="M396,1172 H404" class="ar"/>
+<rect x="406" y="1152" width="112" height="40" rx="6" class="bx f-teal"/>
+<text x="462" y="1177" class="chip" text-anchor="middle">tool_execution_*</text>
+<path d="M518,1172 H526" class="ar"/>
+<rect x="528" y="1152" width="112" height="40" rx="6" class="bx f-blue"/>
+<text x="584" y="1177" class="chip" text-anchor="middle">message_*</text>
+<path d="M640,1172 H648" class="ar"/>
+<rect x="650" y="1152" width="112" height="40" rx="6" class="bx f-gray"/>
+<text x="706" y="1177" class="chip" text-anchor="middle">turn_end</text>
+<path d="M762,1172 H770" class="ar"/>
+<rect x="772" y="1152" width="112" height="40" rx="6" class="bx f-gray"/>
+<text x="828" y="1177" class="chip" text-anchor="middle">agent_end</text>
+<text x="450" y="1226" class="ts" text-anchor="middle">message_* 含 start / update / end；EventStream 实时推给 TUI、JSON/RPC 与 SessionManager 持久化</text>
+</svg>

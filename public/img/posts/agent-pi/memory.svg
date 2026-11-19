@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="548" viewBox="0 0 900 548" role="img" aria-labelledby="title desc">
+<title id="title">Memory：四条长期记忆通道</title>
+<desc id="desc">AGENTS.md、Skills 按需加载、压缩摘要迭代、恢复与分支，四条通道共同构成 Pi 的长期记忆。</desc>
+<style>
+:root{--fg:#29303b;--line:#657285;--bg:#f8fafc;--muted:#667386;--accent:#508369;--error:#aa5653;--blue:#d7e4f2;--purple:#e3ddf0;--teal:#d5e8e6;--orange:#f3e2cd;--yellow:#f0e6c8;--green:#dcead9;--pink:#f2dbe4;--gray:#e8eaee}
+@media(prefers-color-scheme:dark){:root{--fg:#e0e5ec;--line:#a4afbd;--bg:#222731;--muted:#b2bdcb;--accent:#86b49b;--error:#d99087;--blue:#26374c;--purple:#352f47;--teal:#27403d;--orange:#453723;--yellow:#453e24;--green:#2c3d2f;--pink:#432c39;--gray:#33383f}}
+text{font-family:Helvetica,Arial,'PingFang SC',sans-serif;fill:var(--fg);font-size:16px}
+.title{font-size:25px;font-weight:600}.lead{font-size:15px;fill:var(--muted)}.cl{font-size:15px;font-weight:600;fill:var(--muted)}.tt{font-size:16px;font-weight:600}.ts{font-size:14px;fill:var(--muted)}.chip{font-size:13px}
+.bx{stroke:var(--line);stroke-width:1.4}.ct{fill:none;stroke:var(--line);stroke-width:1.2;opacity:.55}
+.f-blue{fill:var(--blue)}.f-purple{fill:var(--purple)}.f-teal{fill:var(--teal)}.f-orange{fill:var(--orange)}.f-yellow{fill:var(--yellow)}.f-green{fill:var(--green)}.f-pink{fill:var(--pink)}.f-gray{fill:var(--gray)}
+.ar{fill:none;stroke:var(--line);stroke-width:1.7;stroke-linejoin:round;marker-end:url(#ah)}.al{fill:none;stroke:var(--line);stroke-width:1.7;stroke-linejoin:round}.ard{fill:none;stroke:var(--muted);stroke-width:1.4;stroke-dasharray:5 4;stroke-linejoin:round;marker-end:url(#ah)}
+.dim{opacity:.42}
+</style>
+<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10Z" fill="var(--line)"/></marker></defs>
+<rect width="900" height="548" rx="14" fill="var(--bg)"/>
+<text x="450" y="42" class="title" text-anchor="middle">Memory：四条长期记忆通道</text>
+<rect x="20" y="92" width="860" height="56" rx="8" class="bx f-gray" stroke-dasharray="6 4"/>
+<text x="450" y="118" class="tt" text-anchor="middle">Pi 没有独立的 memory 模块</text>
+<text x="450" y="138" class="ts" text-anchor="middle">「记忆」= 会话树持久化 + 上下文装配 + 压缩摘要迭代 + 上下文文件与 Skills</text>
+<text x="60" y="190" class="cl" text-anchor="start">长期记忆的四条通道</text>
+<rect x="40" y="210" width="410" height="120" rx="8" class="bx f-green"/><text x="245" y="234" class="tt" text-anchor="middle">AGENTS.md 上下文文件</text><text x="245" y="254" class="ts" text-anchor="middle">项目指令进入系统提示词</text><text x="245" y="273" class="ts" text-anchor="middle">全局 ~/.pi/agent/AGENTS.md</text><text x="245" y="292" class="ts" text-anchor="middle">+ 项目目录逐层发现</text>
+<rect x="470" y="210" width="410" height="120" rx="8" class="bx f-pink"/><text x="675" y="234" class="tt" text-anchor="middle">Skills 按需加载</text><text x="675" y="254" class="ts" text-anchor="middle">名称 / 描述进系统提示词</text><text x="675" y="273" class="ts" text-anchor="middle">命中任务时 read SKILL.md</text><text x="675" y="292" class="ts" text-anchor="middle">全文与其资源文件</text>
+<rect x="40" y="350" width="410" height="120" rx="8" class="bx f-orange"/><text x="245" y="374" class="tt" text-anchor="middle">压缩摘要迭代</text><text x="245" y="394" class="ts" text-anchor="middle">Goal / Progress / 关键决策</text><text x="245" y="413" class="ts" text-anchor="middle">+ read·modified 文件清单</text><text x="245" y="432" class="ts" text-anchor="middle">跨压缩滚动传递</text>
+<rect x="470" y="350" width="410" height="120" rx="8" class="bx f-blue"/><text x="675" y="374" class="tt" text-anchor="middle">恢复与分支</text><text x="675" y="394" class="ts" text-anchor="middle">resume 继续历史会话</text><text x="675" y="413" class="ts" text-anchor="middle">fork / clone 复制分支</text><text x="675" y="432" class="ts" text-anchor="middle">/tree 导航 + 分支摘要</text>
+<text x="450" y="528" class="lead" text-anchor="middle">压缩、编辑与分支都只是树上的新 entry：「忘记」是读取时的投影行为，不是删除。</text>
+</svg>
