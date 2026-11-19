@@ -1,7 +1,7 @@
 ---
 title: How Jev Works
 date: 2026-11-11
-updated: 2026-11-19
+updated: 2026-11-20
 description: 从类型化判断、概率校准和共享输入理解 Jev 这条技术路线，拆解速度与费用的来源，再用独立评测看清它的能力边界。
 tags: [LLM, Jev, System-One, RLCD, 推理]
 category: LLM
@@ -220,7 +220,7 @@ print(f"官方费用比: {Decimal(recorded_separate) / recorded_batch:.2f}x")
 
 对照程序值得看一下。[官方 adapter 源码](https://github.com/typesafe-ai/system-one-adapter-python/tree/e1d4cc938204b22fc5a3c3aca7044072fe3f712d)把多个问题组合成一次 LLM 请求，要求直接输出完整候选概率，并支持原生严格 schema。它没有为每个字段单独调用一次，也没有靠反复采样估计概率。不过，让 LLM 写出全部概率，比只返回最佳标签承担了更多输出工作，这部分差异会算进对照的成本里。
 
-## 批处理会改变判断吗？
+## 调用方式与判断稳定性
 
 [Parallel questions](https://docs.typesafe.ai/cookbooks/parallel_questions) 用 Jev 1.14 回答同一篇 GDPR 材料上的 13 个问题。合并与逐题调用各跑五轮。我取出[公开缓存](https://raw.githubusercontent.com/typesafe-ai/typesafe-public-examples/main/cookbooks/parallel_questions/parallel_questions_cache.json)，复算每轮的输入量、耗时和费用，再把二元题的概率交给同一条业务规则。
 
@@ -293,7 +293,7 @@ Rubric Judges 的实验中，在 Jev 最自信却答错的子集上，快速档 
 
 # 实验复现
 
-以下 TODO 需要在有 GPU 的机器上执行，单个实验用一张 24 GB 显存的消费级显卡即可。每个 TODO 都写清目的、做法和结果写回位置，完成后直接替换对应小节里的表述。
+以下 TODO 需要在有 GPU 的机器上执行，单个实验用一张 24 GB 显存的消费级显卡即可。每个 TODO 都写清目的、做法和结果写回位置，完成后直接替换对应小节里的表述。合并与串行两组已用公开缓存复算，见上文「调用方式与判断稳定性」，其余实验仍待完成。
 
 ## TODO 1 开源实现的对照验证
 
@@ -312,6 +312,8 @@ Rubric Judges 的实验中，在 Jev 最自信却答错的子集上，快速档 
 写回：新增小节「置信度与校准」，放一张分桶表，列为 confidence 区间、样本数、平均 confidence、准确率，再补一句可靠性图的结论。若高 confidence 桶的准确率仍明显偏低，把「级联判断」一节里阈值路由的建议改成「先校准再路由」。
 
 ## TODO 3 批量与串行的吞吐成本
+
+状态：合并与串行两组已用公开缓存复算，输入、耗时与阈值稳定性见上文「调用方式与判断稳定性」。剩余工作是开源模型上的三组实测，尤其是并发组。
 
 目的：在可控环境里复测 Parallel questions 实验，确认输入复用与并行评价各自的贡献。
 
