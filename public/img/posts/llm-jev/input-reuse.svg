@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="548" viewBox="0 0 900 548" role="img" aria-labelledby="title desc">
+<title id="title">输入复用：重复前缀与一次共享</title>
+<desc id="desc">逐题请求重复发送 state，合并请求只发一份；官方缓存的输入量、费用与耗时对照。</desc>
+<style>
+:root{--fg:#29303b;--line:#657285;--bg:#f8fafc;--muted:#667386;--accent:#508369;--error:#aa5653;--blue:#d7e4f2;--purple:#e3ddf0;--teal:#d5e8e6;--orange:#f3e2cd;--yellow:#f0e6c8;--green:#dcead9;--pink:#f2dbe4;--gray:#e8eaee}
+@media(prefers-color-scheme:dark){:root{--fg:#e0e5ec;--line:#a4afbd;--bg:#222731;--muted:#b2bdcb;--accent:#86b49b;--error:#d99087;--blue:#26374c;--purple:#352f47;--teal:#27403d;--orange:#453723;--yellow:#453e24;--green:#2c3d2f;--pink:#432c39;--gray:#33383f}}
+text{font-family:Helvetica,Arial,'PingFang SC',sans-serif;fill:var(--fg);font-size:16px}
+.title{font-size:25px;font-weight:600}.lead{font-size:15px;fill:var(--muted)}.cl{font-size:15px;font-weight:600;fill:var(--muted)}.tt{font-size:16px;font-weight:600}.ts{font-size:14px;fill:var(--muted)}.chip{font-size:13px}.math{font-family:Times,'Times New Roman',serif;font-style:italic;font-size:22px}
+.bx{stroke:var(--line);stroke-width:1.4}.ct{fill:none;stroke:var(--line);stroke-width:1.2;opacity:.55}
+.f-blue{fill:var(--blue)}.f-purple{fill:var(--purple)}.f-teal{fill:var(--teal)}.f-orange{fill:var(--orange)}.f-yellow{fill:var(--yellow)}.f-green{fill:var(--green)}.f-pink{fill:var(--pink)}.f-gray{fill:var(--gray)}
+.ar{fill:none;stroke:var(--line);stroke-width:1.7;stroke-linejoin:round;marker-end:url(#ah)}.al{fill:none;stroke:var(--line);stroke-width:1.7;stroke-linejoin:round}.ard{fill:none;stroke:var(--muted);stroke-width:1.4;stroke-dasharray:5 4;stroke-linejoin:round;marker-end:url(#ah)}
+.err{fill:var(--error)}.ok{fill:var(--accent)}
+</style>
+<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10Z" fill="var(--line)"/></marker></defs>
+<rect width="900" height="548" rx="14" fill="var(--bg)"/>
+<text x="450" y="42" class="title" text-anchor="middle">输入复用：重复前缀与一次共享</text>
+<text x="450" y="72" class="lead" text-anchor="middle">官方 Parallel questions 缓存：同一份材料，13 个问题</text>
+<rect x="30" y="110" width="400" height="330" rx="12" class="ct"/>
+<text x="50" y="136" class="cl" text-anchor="start">逐题请求：state 重复发送</text>
+<rect x="60" y="168" width="250" height="52" rx="6" class="bx f-orange"/>
+<rect x="318" y="168" width="70" height="52" rx="6" class="bx f-teal"/>
+<text x="185" y="200" class="chip" text-anchor="middle">state</text>
+<text x="353" y="200" class="chip" text-anchor="middle">Q1</text>
+<rect x="60" y="242" width="250" height="52" rx="6" class="bx f-orange"/>
+<rect x="318" y="242" width="70" height="52" rx="6" class="bx f-teal"/>
+<text x="185" y="274" class="chip" text-anchor="middle">state</text>
+<text x="353" y="274" class="chip" text-anchor="middle">Q2</text>
+<rect x="60" y="316" width="250" height="52" rx="6" class="bx f-orange"/>
+<rect x="318" y="316" width="70" height="52" rx="6" class="bx f-teal"/>
+<text x="185" y="348" class="chip" text-anchor="middle">state</text>
+<text x="353" y="348" class="chip" text-anchor="middle">Q3</text>
+<text x="230" y="420" class="tt" text-anchor="middle">N·S + ΣQ_i = 145,002 token</text>
+<rect x="470" y="110" width="400" height="330" rx="12" class="ct"/>
+<text x="490" y="136" class="cl" text-anchor="start">合并请求：state 只发一次</text>
+<rect x="500" y="168" width="200" height="180" rx="6" class="bx f-orange"/>
+<text x="600" y="262" class="chip" text-anchor="middle">state</text>
+<rect x="716" y="168" width="110" height="46" rx="6" class="bx f-teal"/>
+<text x="771" y="197" class="chip" text-anchor="middle">Q1</text>
+<rect x="716" y="226" width="110" height="46" rx="6" class="bx f-teal"/>
+<text x="771" y="255" class="chip" text-anchor="middle">Q2</text>
+<rect x="716" y="284" width="110" height="46" rx="6" class="bx f-teal"/>
+<text x="771" y="313" class="chip" text-anchor="middle">Q3</text>
+<text x="670" y="420" class="tt" text-anchor="middle">S + ΣQ_i = 11,838 token</text>
+<rect x="30" y="470" width="840" height="54" rx="8" class="bx f-green"/>
+<text x="450" y="494" class="tt" text-anchor="middle">费用比 12.25×：0.000497 美元  vs  0.006090 美元</text>
+<text x="450" y="514" class="ts" text-anchor="middle">耗时 0.239 秒  vs  2.809 秒（合并  vs  串行）</text>
+</svg>

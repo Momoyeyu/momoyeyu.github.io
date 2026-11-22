@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="530" viewBox="0 0 900 530" role="img" aria-labelledby="title desc">
+<title id="title">级联判断：成本公式与错误相关性</title>
+<desc id="desc">阈值路由的期望成本公式，以及后备模型与前级错误重叠对收益的限制。</desc>
+<style>
+:root{--fg:#29303b;--line:#657285;--bg:#f8fafc;--muted:#667386;--accent:#508369;--error:#aa5653;--blue:#d7e4f2;--purple:#e3ddf0;--teal:#d5e8e6;--orange:#f3e2cd;--yellow:#f0e6c8;--green:#dcead9;--pink:#f2dbe4;--gray:#e8eaee}
+@media(prefers-color-scheme:dark){:root{--fg:#e0e5ec;--line:#a4afbd;--bg:#222731;--muted:#b2bdcb;--accent:#86b49b;--error:#d99087;--blue:#26374c;--purple:#352f47;--teal:#27403d;--orange:#453723;--yellow:#453e24;--green:#2c3d2f;--pink:#432c39;--gray:#33383f}}
+text{font-family:Helvetica,Arial,'PingFang SC',sans-serif;fill:var(--fg);font-size:16px}
+.title{font-size:25px;font-weight:600}.lead{font-size:15px;fill:var(--muted)}.cl{font-size:15px;font-weight:600;fill:var(--muted)}.tt{font-size:16px;font-weight:600}.ts{font-size:14px;fill:var(--muted)}.chip{font-size:13px}.math{font-family:Times,'Times New Roman',serif;font-style:italic;font-size:22px}
+.bx{stroke:var(--line);stroke-width:1.4}.ct{fill:none;stroke:var(--line);stroke-width:1.2;opacity:.55}
+.f-blue{fill:var(--blue)}.f-purple{fill:var(--purple)}.f-teal{fill:var(--teal)}.f-orange{fill:var(--orange)}.f-yellow{fill:var(--yellow)}.f-green{fill:var(--green)}.f-pink{fill:var(--pink)}.f-gray{fill:var(--gray)}
+.ar{fill:none;stroke:var(--line);stroke-width:1.7;stroke-linejoin:round;marker-end:url(#ah)}.al{fill:none;stroke:var(--line);stroke-width:1.7;stroke-linejoin:round}.ard{fill:none;stroke:var(--muted);stroke-width:1.4;stroke-dasharray:5 4;stroke-linejoin:round;marker-end:url(#ah)}
+.err{fill:var(--error)}.ok{fill:var(--accent)}
+</style>
+<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10Z" fill="var(--line)"/></marker></defs>
+<rect width="900" height="530" rx="14" fill="var(--bg)"/>
+<text x="450" y="42" class="title" text-anchor="middle">级联判断：成本公式与错误相关性</text>
+<text x="450" y="72" class="math" text-anchor="middle">E[cost] = C_J + P(c &lt; τ) · C_F</text>
+<rect x="40" y="130" width="200" height="64" rx="8" class="bx f-teal"/><text x="140" y="153" class="tt" text-anchor="middle">Jev 判断</text><text x="140" y="173" class="ts" text-anchor="middle">先付 C_J</text>
+<path d="M240,162 H290" class="ar"/>
+<rect x="294" y="130" width="200" height="64" rx="8" class="bx f-yellow"/><text x="394" y="167" class="tt" text-anchor="middle">c ≥ τ ?</text>
+<path d="M494,146 H580" class="ar"/>
+<text x="536" y="134" class="ts" text-anchor="middle">是</text>
+<rect x="584" y="114" width="240" height="60" rx="8" class="bx f-green"/><text x="704" y="149" class="tt" text-anchor="middle">采用当前判断</text>
+<path d="M494,178 H580" class="ar"/>
+<text x="536" y="204" class="ts" text-anchor="middle">否</text>
+<rect x="584" y="178" width="240" height="60" rx="8" class="bx f-orange"/><text x="704" y="201" class="tt" text-anchor="middle">交给后备模型</text><text x="704" y="221" class="ts" text-anchor="middle">再付 C_F</text>
+<rect x="40" y="300" width="800" height="200" rx="12" class="ct"/>
+<text x="60" y="330" class="cl" text-anchor="start">错误相关性决定换人有没有帮助</text>
+<rect x="80" y="360" width="36" height="36" rx="5" class="bx f-orange"/>
+<text x="98" y="384" class="chip" text-anchor="middle">×</text>
+<rect x="136" y="360" width="36" height="36" rx="5" class="bx f-orange"/>
+<text x="154" y="384" class="chip" text-anchor="middle">×</text>
+<rect x="192" y="360" width="36" height="36" rx="5" class="bx f-orange"/>
+<text x="210" y="384" class="chip" text-anchor="middle">×</text>
+<rect x="248" y="360" width="36" height="36" rx="5" class="bx f-green"/>
+<text x="266" y="384" class="chip" text-anchor="middle">✓</text>
+<rect x="304" y="360" width="36" height="36" rx="5" class="bx f-green"/>
+<text x="322" y="384" class="chip" text-anchor="middle">✓</text>
+<rect x="360" y="360" width="36" height="36" rx="5" class="bx f-green"/>
+<text x="378" y="384" class="chip" text-anchor="middle">✓</text>
+<rect x="416" y="360" width="36" height="36" rx="5" class="bx f-green"/>
+<text x="434" y="384" class="chip" text-anchor="middle">✓</text>
+<rect x="472" y="360" width="36" height="36" rx="5" class="bx f-green"/>
+<text x="490" y="384" class="chip" text-anchor="middle">✓</text>
+<rect x="80" y="412" width="36" height="36" rx="5" class="bx f-green"/>
+<text x="98" y="436" class="chip" text-anchor="middle">✓</text>
+<rect x="136" y="412" width="36" height="36" rx="5" class="bx f-green"/>
+<text x="154" y="436" class="chip" text-anchor="middle">✓</text>
+<rect x="192" y="412" width="36" height="36" rx="5" class="bx f-orange"/>
+<text x="210" y="436" class="chip" text-anchor="middle">×</text>
+<rect x="248" y="412" width="36" height="36" rx="5" class="bx f-orange"/>
+<text x="266" y="436" class="chip" text-anchor="middle">×</text>
+<rect x="304" y="412" width="36" height="36" rx="5" class="bx f-orange"/>
+<text x="322" y="436" class="chip" text-anchor="middle">×</text>
+<rect x="360" y="412" width="36" height="36" rx="5" class="bx f-orange"/>
+<text x="378" y="436" class="chip" text-anchor="middle">×</text>
+<rect x="416" y="412" width="36" height="36" rx="5" class="bx f-green"/>
+<text x="434" y="436" class="chip" text-anchor="middle">✓</text>
+<rect x="472" y="412" width="36" height="36" rx="5" class="bx f-green"/>
+<text x="490" y="436" class="chip" text-anchor="middle">✓</text>
+<text x="66" y="384" class="chip" text-anchor="end">Jev</text>
+<text x="66" y="436" class="chip" text-anchor="end">后备</text>
+<text x="520" y="384" class="ts" text-anchor="start">重叠错误：换一个模型，还是同样的答案</text>
+<text x="520" y="424" class="ts" text-anchor="start">最自信却答错的子集上，</text>
+<text x="520" y="448" class="ts" text-anchor="start">96% 判定重复同一错误</text>
+</svg>

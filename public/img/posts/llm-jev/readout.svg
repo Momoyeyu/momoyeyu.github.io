@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="644" viewBox="0 0 900 644" role="img" aria-labelledby="title desc">
+<title id="title">读出方式：从生成到判断</title>
+<desc id="desc">生成模型在整个词表上逐步取 token；判断模型在小候选集上一次归一化，直接得到概率分布。</desc>
+<style>
+:root{--fg:#29303b;--line:#657285;--bg:#f8fafc;--muted:#667386;--accent:#508369;--error:#aa5653;--blue:#d7e4f2;--purple:#e3ddf0;--teal:#d5e8e6;--orange:#f3e2cd;--yellow:#f0e6c8;--green:#dcead9;--pink:#f2dbe4;--gray:#e8eaee}
+@media(prefers-color-scheme:dark){:root{--fg:#e0e5ec;--line:#a4afbd;--bg:#222731;--muted:#b2bdcb;--accent:#86b49b;--error:#d99087;--blue:#26374c;--purple:#352f47;--teal:#27403d;--orange:#453723;--yellow:#453e24;--green:#2c3d2f;--pink:#432c39;--gray:#33383f}}
+text{font-family:Helvetica,Arial,'PingFang SC',sans-serif;fill:var(--fg);font-size:16px}
+.title{font-size:25px;font-weight:600}.lead{font-size:15px;fill:var(--muted)}.cl{font-size:15px;font-weight:600;fill:var(--muted)}.tt{font-size:16px;font-weight:600}.ts{font-size:14px;fill:var(--muted)}.chip{font-size:13px}.math{font-family:Times,'Times New Roman',serif;font-style:italic;font-size:22px}
+.bx{stroke:var(--line);stroke-width:1.4}.ct{fill:none;stroke:var(--line);stroke-width:1.2;opacity:.55}
+.f-blue{fill:var(--blue)}.f-purple{fill:var(--purple)}.f-teal{fill:var(--teal)}.f-orange{fill:var(--orange)}.f-yellow{fill:var(--yellow)}.f-green{fill:var(--green)}.f-pink{fill:var(--pink)}.f-gray{fill:var(--gray)}
+.ar{fill:none;stroke:var(--line);stroke-width:1.7;stroke-linejoin:round;marker-end:url(#ah)}.al{fill:none;stroke:var(--line);stroke-width:1.7;stroke-linejoin:round}.ard{fill:none;stroke:var(--muted);stroke-width:1.4;stroke-dasharray:5 4;stroke-linejoin:round;marker-end:url(#ah)}
+.err{fill:var(--error)}.ok{fill:var(--accent)}
+</style>
+<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10Z" fill="var(--line)"/></marker></defs>
+<rect width="900" height="644" rx="14" fill="var(--bg)"/>
+<text x="450" y="42" class="title" text-anchor="middle">读出方式：从生成到判断</text>
+<text x="450" y="72" class="lead" text-anchor="middle">生成在整个词表上逐步取 token，判断在小候选集上一次归一化</text>
+<rect x="30" y="100" width="400" height="440" rx="12" class="ct"/>
+<text x="50" y="126" class="cl" text-anchor="start">生成模型</text>
+<rect x="70" y="148" width="320" height="56" rx="8" class="bx f-blue"/><text x="230" y="181" class="tt" text-anchor="middle">隐藏状态 h_t</text>
+<path d="M230,204 V234" class="ar"/>
+<rect x="70" y="238" width="320" height="66" rx="8" class="bx f-orange"/><text x="230" y="261" class="tt" text-anchor="middle">softmax(W_V h_t)</text><text x="230" y="281" class="ts" text-anchor="middle">|V| 通常数万</text>
+<path d="M230,304 V334" class="ar"/>
+<rect x="70" y="338" width="320" height="56" rx="8" class="bx f-teal"/><text x="230" y="371" class="tt" text-anchor="middle">取出一个 token</text>
+<path d="M110,394 C60,430 60,180 96,176" class="ard"/>
+<text x="56" y="300" class="ts" text-anchor="middle" transform="rotate(-90 56 300)">拼回上下文</text>
+<text x="230" y="452" class="ts" text-anchor="middle">字段名、标签、概率、标点</text>
+<text x="230" y="476" class="ts" text-anchor="middle">都要逐 token 生成</text>
+<rect x="470" y="100" width="400" height="440" rx="12" class="ct"/>
+<text x="490" y="126" class="cl" text-anchor="start">判断模型</text>
+<rect x="510" y="148" width="320" height="56" rx="8" class="bx f-blue"/><text x="670" y="181" class="tt" text-anchor="middle">state · q_i · C_i 一次编码</text>
+<path d="M670,204 V234" class="ar"/>
+<rect x="510" y="238" width="320" height="66" rx="8" class="bx f-teal"/><text x="670" y="261" class="tt" text-anchor="middle">每个候选一个 logit</text><text x="670" y="281" class="ts" text-anchor="middle">softmax，n ≤ 255</text>
+<path d="M670,304 V334" class="ar"/>
+<rect x="510" y="342" width="60" height="36" rx="6" class="bx f-gray"/>
+<text x="540" y="365" class="chip" text-anchor="middle">退款</text>
+<rect x="586" y="342" width="210" height="36" rx="6" class="bx f-green"/>
+<text x="830" y="365" class="chip" text-anchor="middle">0.70</text>
+<rect x="510" y="394" width="60" height="36" rx="6" class="bx f-gray"/>
+<text x="540" y="417" class="chip" text-anchor="middle">咨询</text>
+<rect x="586" y="394" width="60" height="36" rx="6" class="bx f-yellow"/>
+<text x="680" y="417" class="chip" text-anchor="middle">0.20</text>
+<rect x="510" y="446" width="60" height="36" rx="6" class="bx f-gray"/>
+<text x="540" y="469" class="chip" text-anchor="middle">投诉</text>
+<rect x="586" y="446" width="30" height="36" rx="6" class="bx f-orange"/>
+<text x="650" y="469" class="chip" text-anchor="middle">0.10</text>
+<text x="670" y="522" class="ts" text-anchor="middle">一次得到整份分布</text>
+<rect x="30" y="566" width="840" height="54" rx="8" class="bx f-gray"/>
+<text x="450" y="590" class="tt" text-anchor="middle">词表数万、串行 L 步    vs    候选 n ≤ 255、一次分布</text>
+<text x="450" y="610" class="ts" text-anchor="middle">速度与成本的差异都从这个读出端推出</text>
+</svg>
