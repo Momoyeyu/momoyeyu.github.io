@@ -1,5 +1,5 @@
 ---
-title: 推理引擎概览
+title: 推理引擎入门
 date: 2026-11-23
 description: 用 nano-vLLM 走一遍请求从输入到输出的过程，认识推理引擎中的调度、KV 缓存、模型执行与采样。
 tags: [nano-vLLM, 推理, KV Cache, CUDA]
@@ -11,7 +11,7 @@ lang: zh_CN
 
 # 前言
 
-本文用 [nano-vLLM](https://github.com/GeeeekExplorer/nano-vllm) 看一个推理引擎由哪些部分组成。上一篇 [How Strata Works](../ai-infra-strata/) 从显存放不下模型讲起，这次先把模型装进显卡，再看同一块卡上，两条提示词怎样变成两条回答。
+本文用 [nano-vLLM](https://github.com/GeeeekExplorer/nano-vllm) 走一遍最基本的推理流程。模型已经装进显卡，两条提示词进来之后，怎样一步步变成两条回答？
 
 单看模型，答案是反复做前向，每次预测下一枚 token。但两条请求的输入长度不同，生成也不会同时结束。程序要决定这一轮算谁、把算过的历史存在哪、哪条结束后该归还显存。这些工作合在一起，就是推理引擎。
 
@@ -19,7 +19,7 @@ nano-vLLM 把这些工作拆成了几块容易顺着读的代码。本文以提�
 
 # 整体架构
 
-![房子式总览：顶层处理请求和初始化，CPU 层负责调度与 KV 块管理，执行层负责准备张量、跑模型和采样，底层提供图重放和张量并行](/img/posts/ai-infra-nano-vllm/overview.svg)
+![房子式总览：顶层处理请求和初始化，CPU 层负责调度与 KV 块管理，执行层负责准备张量、跑模型和采样，底层提供图重放和张量并行](/img/posts/ai-infra-inference-engine/overview.svg)
 
 从屋顶往下读。用户通过 `LLM.generate()` 提交提示词和采样参数，`LLMEngine` 把它们变成序列，再一轮轮推进。启动时还要装模型、划显存，这条路径只在开始时走一次。
 
@@ -29,7 +29,7 @@ nano-vLLM 把这些工作拆成了几块容易顺着读的代码。本文以提�
 
 # 请求与主循环
 
-![请求从提示词变成 Sequence 进入等待队列，反复调度、执行、回写，最后按输入顺序返回](/img/posts/ai-infra-nano-vllm/engine-loop.svg)
+![请求从提示词变成 Sequence 进入等待队列，反复调度、执行、回写，最后按输入顺序返回](/img/posts/ai-infra-inference-engine/engine-loop.svg)
 
 假设一次提交 A、B 两条请求。文本先被 tokenizer 编成 token ID，已经是 ID 的输入可以直接用。每条请求封成一个 `Sequence`，它记着输入和生成的 token、已有多少位置算完了 KV，以及这些 KV 对应哪些物理块。
 
@@ -37,7 +37,7 @@ nano-vLLM 把这些工作拆成了几块容易顺着读的代码。本文以提�
 
 # 启动与装载
 
-![每张卡先加载本地权重并预热，再根据显存预算分配 KV 池，按配置选择是否捕获解码图](/img/posts/ai-infra-nano-vllm/startup.svg)
+![每张卡先加载本地权重并预热，再根据显存预算分配 KV 池，按配置选择是否捕获解码图](/img/posts/ai-infra-inference-engine/startup.svg)
 
 第一条请求入队前，[ModelRunner](https://github.com/GeeeekExplorer/nano-vllm/blob/bb823b3e06983d71485a8e1f23715ebd87d98ef8/nanovllm/engine/model_runner.py#L17-L39) 已经读好模型配置、建好 Qwen3 并从本地 safetensors 装入权重。装载时，原来分别保存的 Q、K、V 权重会填进同一份融合参数，前向时可以用一次投影算出来。
 
@@ -45,7 +45,7 @@ nano-vLLM 把这些工作拆成了几块容易顺着读的代码。本文以提�
 
 # 批次调度
 
-![四轮调度示例：长请求 A 拆成两轮 prefill，随后处理短请求 B，最后两条请求一起 decode](/img/posts/ai-infra-nano-vllm/scheduler.svg)
+![四轮调度示例：长请求 A 拆成两轮 prefill，随后处理短请求 B，最后两条请求一起 decode](/img/posts/ai-infra-inference-engine/scheduler.svg)
 
 先认识推理的两个阶段。**Prefill** 处理提示词，建立历史缓存，并在输入算完时拿到第一枚输出。**Decode** 把上一轮刚生成的 token 再送进去，沿着已有历史预测下一个。前者一条请求可以送很多 token，后者一轮给每条请求送一个。
 
@@ -57,7 +57,7 @@ nano-vLLM 把这些工作拆成了几块容易顺着读的代码。本文以提�
 
 # KV 块管理
 
-![两条序列的逻辑块表指向同一个前缀块和各自的尾块，写入地址由物理块号和块内偏移共同决定](/img/posts/ai-infra-nano-vllm/kv-blocks.svg)
+![两条序列的逻辑块表指向同一个前缀块和各自的尾块，写入地址由物理块号和块内偏移共同决定](/img/posts/ai-infra-inference-engine/kv-blocks.svg)
 
 KV 缓存是模型留给后续 token 阅读的历史。想象有两条请求都以同一份说明书开头，后面的提问不同。如果说明书已经被模型算过一次，两条请求就可以共用这一段历史的 K 和 V。
 
@@ -67,7 +67,7 @@ KV 缓存是模型留给后续 token 阅读的历史。想象有两条请求都�
 
 # 张量准备
 
-![Prefill 把不同长度的输入片段拼成一条张量并保留边界，decode 每条序列只传最后一个 token 与历史地址](/img/posts/ai-infra-nano-vllm/prepare-batch.svg)
+![Prefill 把不同长度的输入片段拼成一条张量并保留边界，decode 每条序列只传最后一个 token 与历史地址](/img/posts/ai-infra-inference-engine/prepare-batch.svg)
 
 调度器给的是序列列表，GPU 要的是可以批量处理的张量。[ModelRunner](https://github.com/GeeeekExplorer/nano-vllm/blob/bb823b3e06983d71485a8e1f23715ebd87d98ef8/nanovllm/engine/model_runner.py#L129-L188)负责这层转换。
 
@@ -77,7 +77,7 @@ Decode 简单一些，每条序列只送上一轮生成的最后一个 token，�
 
 # 模型与注意力
 
-![每层先生成 QKV 并写入新缓存，再按 prefill 或 decode 选择历史读取路径](/img/posts/ai-infra-nano-vllm/attention.svg)
+![每层先生成 QKV 并写入新缓存，再按 prefill 或 decode 选择历史读取路径](/img/posts/ai-infra-inference-engine/attention.svg)
 
 输入到 GPU 之后进入 [Qwen3 Decoder](https://github.com/GeeeekExplorer/nano-vllm/blob/bb823b3e06983d71485a8e1f23715ebd87d98ef8/nanovllm/models/qwen3.py#L72-L183)。每层投影出 Q、K、V，给 Q 和 K 加上位置编码，然后用注意力读历史。随后经过输出投影和 MLP，把新表示交给下一层。
 
@@ -87,7 +87,7 @@ Decode 简单一些，每条序列只送上一轮生成的最后一个 token，�
 
 # 采样与提交
 
-![词表打分和采样先产出候选，调度器根据输入进度决定是否提交，并在结束时归还块](/img/posts/ai-infra-nano-vllm/sampling.svg)
+![词表打分和采样先产出候选，调度器根据输入进度决定是否提交，并在结束时归还块](/img/posts/ai-infra-inference-engine/sampling.svg)
 
 模型最后给出词表分数，也就是 logits。Prefill 时，[LM Head](https://github.com/GeeeekExplorer/nano-vllm/blob/bb823b3e06983d71485a8e1f23715ebd87d98ef8/nanovllm/layers/embed_head.py#L56-L66)只取每条片段的最后一行。采样器用每条请求自己的温度调整分布，为它选出一个候选 token。
 
@@ -111,7 +111,7 @@ Decode 简单一些，每条序列只送上一轮生成的最后一个 token，�
 
 # CUDA Graph
 
-![直接前向与图重放是两条执行路径，图重放把本轮数据填进固定缓冲区，再重复启动同一套模型操作](/img/posts/ai-infra-nano-vllm/cuda-graph.svg)
+![直接前向与图重放是两条执行路径，图重放把本轮数据填进固定缓冲区，再重复启动同一套模型操作](/img/posts/ai-infra-inference-engine/cuda-graph.svg)
 
 Decode 的计算步骤高度重复：每一轮都要启动一串 GPU 算子。nano-vLLM [提前捕获](https://github.com/GeeeekExplorer/nano-vllm/blob/bb823b3e06983d71485a8e1f23715ebd87d98ef8/nanovllm/engine/model_runner.py#L222-L257)几种批量大小的模型前向。假设这轮有 3 条序列，就选能容纳它们的 4 槽图，把 token 和地址写进固定缓冲区，再重放。填充槽位标成 `-1`，写缓存时跳过。
 
@@ -119,7 +119,7 @@ Decode 的计算步骤高度重复：每一轮都要启动一串 GPU 算子。na
 
 # 张量并行
 
-![主进程将同一批任务通知其他 rank，各 GPU 计算权重分片，通过 NCCL 聚合，最终在 rank 0 采样](/img/posts/ai-infra-nano-vllm/tensor-parallel.svg)
+![主进程将同一批任务通知其他 rank，各 GPU 计算权重分片，通过 NCCL 聚合，最终在 rank 0 采样](/img/posts/ai-infra-inference-engine/tensor-parallel.svg)
 
 有两张 GPU 时，每张卡都是一个 rank，各自装一部分模型权重。这里的分法是**同一个 batch 的同一层，两张卡合起来算**。主进程管理队列，用共享内存写下要执行的调用和序列元数据，再用事件通知其他 rank 开工。
 
@@ -133,4 +133,4 @@ Decode 的计算步骤高度重复：每一轮都要启动一串 GPU 算子。na
 
 # 参考资料
 
-- https://github.com/GeeeekExplorer/nano-vllm/tree/bb823b3e06983d71485a8e1f23715ebd87d98ef8
+- https://github.com/GeeeekExplorer/nano-vllm
