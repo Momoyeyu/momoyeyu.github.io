@@ -1,5 +1,5 @@
 ---
-title: How MoA Works
+title: MoA技术原理
 date: 2026-11-12
 updated: 2026-11-20
 description: 从注意力头的分工出发，理解 MoA 如何离线搜索弹性窗口，并用静态稀疏注意力降低长上下文推理开销。

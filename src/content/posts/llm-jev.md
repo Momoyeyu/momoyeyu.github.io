@@ -1,5 +1,5 @@
 ---
-title: How Jev Works
+title: Jev 实测
 date: 2026-11-11
 updated: 2026-11-20
 description: 从判断的计算形式、概率校准的数学和输入复用的成本结构，讲清 Jev 这条技术路线的工作原理。
